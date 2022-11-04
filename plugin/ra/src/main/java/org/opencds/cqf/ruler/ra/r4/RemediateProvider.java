@@ -21,17 +21,14 @@ import java.util.Map;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
-public class ResolveProvider extends DaoRegistryOperationProvider implements RiskAdjustmentUser, ParameterUser {
+public class RemediateProvider extends DaoRegistryOperationProvider implements RiskAdjustmentUser, ParameterUser {
 
-	@Operation(name = "$davinci-ra.resolve", idempotent = true, type = MeasureReport.class)
-	public Parameters resolve(
+	@Operation(name = "$ra.remediate", idempotent = true, type = MeasureReport.class)
+	public Parameters remediate(
 		RequestDetails requestDetails,
 		@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
 		@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
-		@OperationParam(name = RAConstants.SUBJECT) String subject,
-		@OperationParam(name = RAConstants.MEASURE_ID) List<String> measureId,
-		@OperationParam(name = RAConstants.MEASURE_IDENTIFIER) List<String> measureIdentifier,
-		@OperationParam(name = RAConstants.MEASURE_URL) List<String> measureUrl) {
+		@OperationParam(name = RAConstants.SUBJECT) String subject) {
 
 		try {
 			validateParameters(requestDetails);
@@ -41,12 +38,10 @@ public class ResolveProvider extends DaoRegistryOperationProvider implements Ris
 		}
 
 		List<MeasureReport> reports = new ArrayList<>();
-		List<String> measureReferences = getMeasureReferences(measureId, measureIdentifier, measureUrl);
 		getPatientListFromSubject(subject).forEach(
 			patient -> reports.addAll(
-				getMeasureReportsWithMeasureReference(
-					patient.getIdElement().getIdPart(), periodStart.getValueAsString(),
-					periodEnd.getValueAsString(), measureReferences))
+				getMeasureReports(patient.getIdElement().getIdPart(),
+					periodStart.getValueAsString(), periodEnd.getValueAsString()))
 		);
 		Map<MeasureReport, List<DetectedIssue>> issues = getIssueMap(reports);
 		List<Bundle> raBundles = buildCompositionsAndBundles(subject, issues);
@@ -67,7 +62,5 @@ public class ResolveProvider extends DaoRegistryOperationProvider implements Ris
 		Operations.validatePeriod(requestDetails, RAConstants.PERIOD_START, RAConstants.PERIOD_END);
 		Operations.validateSingularPattern(requestDetails, RAConstants.SUBJECT,
 			Operations.PATIENT_OR_GROUP_REFERENCE);
-		Operations.validateAtLeastOne(requestDetails, RAConstants.MEASURE_ID,
-			RAConstants.MEASURE_IDENTIFIER, RAConstants.MEASURE_URL);
 	}
 }

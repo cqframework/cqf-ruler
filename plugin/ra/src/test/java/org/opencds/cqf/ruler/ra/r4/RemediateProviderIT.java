@@ -21,9 +21,9 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { ResolveProviderIT.class, RAConfig.class },
+	classes = { RemediateProviderIT.class, RAConfig.class },
 	properties = { "hapi.fhir.fhir_version=r4" })
-class ResolveProviderIT extends RestIntegrationTest {
+class RemediateProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	private RAProperties myRaProperties;
@@ -35,7 +35,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testResolveProvider() {
+	void testRemediateProvider() {
 		Parameters params = parameters(
 			stringPart("periodStart", "2021-01-01"),
 			stringPart("periodEnd", "2021-12-31"),
@@ -45,7 +45,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadTransaction("resolve-test-bundle.json");
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$davinci-ra.resolve").withParameters(params)
+			.named("$ra.remediate").withParameters(params)
 			.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
