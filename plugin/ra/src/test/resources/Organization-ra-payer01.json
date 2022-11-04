@@ -1,0 +1,53 @@
+{
+	"resourceType" : "Organization",
+	"id" : "ra-payer01",
+	"meta" : {
+		"extension" : [
+			{
+				"url" : "http://hl7.org/fhir/StructureDefinition/instance-name",
+				"valueString" : "Payer"
+			},
+			{
+				"url" : "http://hl7.org/fhir/StructureDefinition/instance-description",
+				"valueMarkdown" : "Payer that generated Risk Adjustment Coding Gap Report."
+			}
+		],
+		"profile" : [
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+		]
+	},
+	"active" : true,
+	"type" : [
+		{
+			"coding" : [
+				{
+					"system" : "http://terminology.hl7.org/CodeSystem/organization-type",
+					"code" : "pay",
+					"display" : "payer"
+				}
+			]
+		}
+	],
+	"name" : "ABC Payer",
+	"telecom" : [
+		{
+			"system" : "phone",
+			"value" : "(+1) 123-456-7890"
+		},
+		{
+			"system" : "email",
+			"value" : "customer-service@ABCPayer.com"
+		}
+	],
+	"address" : [
+		{
+			"line" : [
+				"100 Insurance Lane, Suite 700"
+			],
+			"city" : "Amherst",
+			"state" : "MA",
+			"postalCode" : "01002",
+			"country" : "USA"
+		}
+	]
+}

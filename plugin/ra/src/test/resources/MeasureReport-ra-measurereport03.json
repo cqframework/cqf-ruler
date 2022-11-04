@@ -1,0 +1,175 @@
+{
+	"resourceType": "MeasureReport",
+	"id": "ra-measurereport03",
+	"meta": {
+		"profile": [
+			"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"
+		]
+	},
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-clinicalDataCollectionDeadline",
+			"valueDate": "2022-03-31"
+		}
+	],
+	"status": "complete",
+	"type": "individual",
+	"measure": "https://build.fhir.org/ig/HL7/davinci-ra/Measure-RAModelExample01",
+	"subject": {
+		"reference": "Patient/ra-patient02"
+	},
+	"date": "2021-10-18",
+	"reporter": {
+		"reference": "Organization/ra-payer01"
+	},
+	"period": {
+		"start": "2021-01-01",
+		"end": "2021-09-30"
+	},
+	"group": [
+		{
+			"id": "group-001",
+			"code": {
+				"coding": [
+					{
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "96",
+						"display": "Specified Heart.Arrhythmias"
+					}
+				],
+				"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
+			},
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "historic",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "closed-gap",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "applied-not-superseded",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status"
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": "group-002",
+			"code": {
+				"coding": [
+					{
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "110",
+						"display": "Cystic Fibrosis"
+					}
+				],
+				"text": "HCC 110: Cystic Fibrosis"
+			},
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "suspected",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "open-gap",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate",
+					"valueDate": "2020-07-15"
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"code": "applied-not-superseded",
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status"
+							}
+						]
+					}
+				}
+			]
+		}
+	],
+	"evaluatedResource": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				}
+			],
+			"reference": "Condition/ra-condition31pat02"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				}
+			],
+			"reference": "Encounter/ra-encounter31pat02"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-002"
+				}
+			],
+			"reference": "Observation/ra-obs01pat02"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-002"
+				}
+			],
+			"reference": "Patient/ra-patient02"
+		}
+	]
+}
