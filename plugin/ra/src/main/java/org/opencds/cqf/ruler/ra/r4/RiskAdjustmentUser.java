@@ -1,9 +1,13 @@
 package org.opencds.cqf.ruler.ra.r4;
 
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.SortOrderEnum;
+import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.util.BundleUtil;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Composition;
@@ -55,6 +59,62 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 			}).collect(Collectors.toList());
 	}
 
+	default List<Bundle> getMostRecentCodingGapReportBundles(String subject) {
+		// Something like the following should work, but the composition search parameter doesn't appear to be implemented
+//		return search(Bundle.class, SearchParameterMap.newSynchronous()
+//			.add(Bundle.SP_TYPE, new TokenParam("document"))
+//			.add(Bundle.SP_COMPOSITION, new ReferenceParam("Composition", Composition.SP_SUBJECT, subject))
+//			.setSort(new SortSpec(Bundle.SP_TIMESTAMP, SortOrderEnum.DESC))).getAllResourcesTyped();
+		return search(Bundle.class, SearchParameterMap.newSynchronous()
+			.add(Bundle.SP_TYPE, new TokenParam("document"))
+			.add("_profile", new UriParam(RAConstants.CODING_GAP_BUNDLE_URL))
+			.setSort(new SortSpec(Bundle.SP_TIMESTAMP, SortOrderEnum.DESC)))
+			.getAllResourcesTyped();
+	}
+
+	default Bundle getMostRecentCodingGapReportBundle(String subject) {
+		return getMostRecentCodingGapReportBundles(subject).stream().filter(
+				bundle -> bundle.hasEntry() && bundle.getEntryFirstRep().hasResource()
+					&& bundle.getEntryFirstRep().getResource() instanceof Composition
+					&& ((Composition) bundle.getEntryFirstRep().getResource()).getSubject().getReference().endsWith(subject))
+			.collect(Collectors.toList()).stream().findFirst().orElse(null);
+	}
+
+	default Bundle getMostRecentCodingGapReportBundle(String subject, Date periodStart, Date periodEnd) {
+		return getMostRecentCodingGapReportBundles(subject).stream().filter(
+				bundle -> bundle.hasEntry() && bundle.getEntryFirstRep().hasResource()
+					&& bundle.getEntryFirstRep().getResource() instanceof Composition
+					&& ((Composition) bundle.getEntryFirstRep().getResource()).getSubject().getReference().endsWith(subject)
+					&& bundle.getEntry().stream().anyMatch(
+						entry -> entry.hasResource() && entry.getResource() instanceof MeasureReport
+							&& ((MeasureReport) entry.getResource()).hasDate()
+							&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodStart) >= 0
+							&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodEnd) <= 0))
+			.collect(Collectors.toList()).stream().findFirst().orElse(null);
+	}
+
+	default List<MeasureReport> getReportsFromBundles(List<Bundle> bundles) {
+		List<MeasureReport> reports = new ArrayList<>();
+		for (Bundle bundle : bundles) {
+			reports.addAll(BundleUtil.toListOfResourcesOfType(getFhirContext(), bundle, MeasureReport.class));
+		}
+		return reports;
+	}
+
+	default Composition getCompositionFromBundle(Bundle bundle) {
+		return BundleUtil.toListOfResourcesOfType(
+			getFhirContext(), bundle, Composition.class).stream().findFirst().orElse(null);
+	}
+
+	default MeasureReport getReportFromBundle(Bundle bundle) {
+		return BundleUtil.toListOfResourcesOfType(
+			getFhirContext(), bundle, MeasureReport.class).stream().findFirst().orElse(null);
+	}
+
+	default List<DetectedIssue> getIssuesFromBundle(Bundle bundle) {
+		return BundleUtil.toListOfResourcesOfType(getFhirContext(), bundle, DetectedIssue.class);
+	}
+
 	default List<DetectedIssue> getOriginalIssues(String measureReportReference) {
 		return search(DetectedIssue.class, SearchParameterMap.newSynchronous()
 			.add(DetectedIssue.SP_IMPLICATED, new ReferenceParam(measureReportReference))
@@ -64,17 +124,16 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 
 	default List<DetectedIssue> getAssociatedIssues(String measureReportReference) {
 		return search(DetectedIssue.class, SearchParameterMap.newSynchronous()
-			.add(DetectedIssue.SP_IMPLICATED, new ReferenceParam(measureReportReference)))
+			.add(DetectedIssue.SP_IMPLICATED, new ReferenceParam(measureReportReference))
+			.add("_profile", new UriParam(RAConstants.CLINICAL_EVALUATION_ISSUE_PROFILE_URL)))
 			.getAllResourcesTyped();
 	}
 
-	default Map<MeasureReport, List<DetectedIssue>> getIssueMap(List<MeasureReport> reports) {
-		Map<MeasureReport, List<DetectedIssue>> issues = new HashMap<>();
-		for (MeasureReport report : reports) {
-			issues.put(report, getAssociatedIssues(report.getIdElement().getValue()));
-		}
-
-		return issues;
+	default List<DetectedIssue> getAllIssues(String measureReportReference) {
+		List<DetectedIssue> allIssues = new ArrayList<>();
+		allIssues.addAll(getOriginalIssues(measureReportReference));
+		allIssues.addAll(getAssociatedIssues(measureReportReference));
+		return allIssues;
 	}
 
 	default List<Reference> getEvidenceById(String groupId, MeasureReport report) {
@@ -139,14 +198,13 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return raBundles;
 	}
 
-	default Composition buildComposition(String subject, MeasureReport report, List<DetectedIssue> issues) {
-		Composition composition = new Composition();
+	default void updateComposition(Composition composition, MeasureReport report, List<DetectedIssue> issues) {
 		composition.setMeta(RAConstants.COMPOSITION_META);
-		composition.setIdentifier(
-			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
-		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
-			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
-			.setDate(Date.from(Instant.now()));
+		composition.setSection(new ArrayList<>());
+		resolveIssues(composition, report, issues);
+	}
+
+	default void resolveIssues(Composition composition, MeasureReport report, List<DetectedIssue> issues) {
 		issues.forEach(
 			issue -> {
 				Composition.SectionComponent section = new Composition.SectionComponent();
@@ -172,6 +230,17 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 				}
 			}
 		);
+	}
+
+	default Composition buildComposition(String subject, MeasureReport report, List<DetectedIssue> issues) {
+		Composition composition = new Composition();
+		composition.setMeta(RAConstants.COMPOSITION_META);
+		composition.setIdentifier(
+			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
+		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
+			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
+			.setDate(Date.from(Instant.now()));
+		resolveIssues(composition, report, issues);
 		return composition;
 	}
 
@@ -183,6 +252,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		codingGapReportBundle.setIdentifier(
 			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		codingGapReportBundle.setType(Bundle.BundleType.DOCUMENT);
+		codingGapReportBundle.setTimestamp(new Date());
 		return codingGapReportBundle;
 	}
 
