@@ -29,9 +29,9 @@ import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ReportProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RACodingGapsProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-class ReportProviderIT extends RestIntegrationTest {
+class RACodingGapsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
 
@@ -47,7 +47,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.PERIOD_END, "2021-12-31"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -59,7 +59,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_END, "2021-12-31"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -71,7 +71,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -83,7 +83,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_START, "2021-01-01"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -97,7 +97,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -110,7 +110,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -121,7 +121,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 				stringPart(RAConstants.PERIOD_END, "2021-12-31"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -133,7 +133,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_START, "2021-01-01"),
 				datePart(RAConstants.PERIOD_END, "2021-12-31"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -146,7 +146,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.PERIOD_END, "2020-12-31"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -159,7 +159,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_END, "2020-12-31"),
 				stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -174,7 +174,7 @@ class ReportProviderIT extends RestIntegrationTest {
 
 		loadResource("Patient-ra-patient01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -189,7 +189,7 @@ class ReportProviderIT extends RestIntegrationTest {
 
 		loadResource("Patient-ra-patient01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -205,7 +205,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Group-ra-group01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -222,7 +222,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Group-ra-group01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -236,7 +236,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.PERIOD_END, "2021-12-31"),
 				stringPart(RAConstants.SUBJECT, "ra-patient01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -249,7 +249,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_END, "2021-12-31"),
 				stringPart(RAConstants.SUBJECT, "ra-patient01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -263,7 +263,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Patient/bad-patient"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -276,7 +276,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Patient/bad-patient"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -289,7 +289,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Group/bad-group"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -302,7 +302,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				stringPart(RAConstants.SUBJECT, "Group/bad-group"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-				.onType(MeasureReport.class).named("$ra.report").withParameters(params)
+				.onType(MeasureReport.class).named("$ra.coding-gaps").withParameters(params)
 				.returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -320,7 +320,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -337,7 +337,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -354,7 +354,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Patient-ra-patient03.json");
 		loadResource("Group-ra-group02.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -372,7 +372,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Patient-ra-patient03.json");
 		loadResource("Group-ra-group02.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -408,7 +408,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Encounter-ra-encounter44pat01.json");
 		loadResource("MeasureReport-ra-measurereport01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertNotNull(result);
@@ -451,7 +451,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Encounter-ra-encounter44pat01.json");
 		loadResource("MeasureReport-ra-measurereport01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertNotNull(result);
@@ -496,7 +496,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		// this is not an evaluatedResource of the report
 		loadResource("Encounter-ra-encounter45pat01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
@@ -538,7 +538,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		// this is not an evaluatedResource of the report
 		loadResource("Encounter-ra-encounter45pat01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
@@ -565,7 +565,7 @@ class ReportProviderIT extends RestIntegrationTest {
 				datePart(RAConstants.PERIOD_END, "2021-12-31"),
 				stringPart(RAConstants.SUBJECT, "Patient/ra-patient02"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.coding-gaps")
 				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("return"));

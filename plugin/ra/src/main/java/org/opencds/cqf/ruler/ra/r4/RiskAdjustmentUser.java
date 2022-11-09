@@ -163,7 +163,6 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		originalIssue.setMeta(new Meta().addProfile(
 			RAConstants.ORIGINAL_ISSUE_PROFILE_URL).setLastUpdated(new Date()));
 		originalIssue.addExtension().setUrl(RAConstants.GROUP_REFERENCE_URL).setValue(new StringType(groupId));
-		originalIssue.addModifierExtension(RAConstants.CODING_GAP_TYPE_EXTENSION);
 		originalIssue.setStatus(DetectedIssue.DetectedIssueStatus.PRELIMINARY);
 		originalIssue.setCode(RAConstants.CODING_GAP_CODE);
 		if (report.getSubject().getReference().startsWith("Patient/")) {
@@ -239,7 +238,8 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
 			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
-			.setDate(Date.from(Instant.now()));
+			.setDate(Date.from(Instant.now()))
+			.setAuthor(Collections.singletonList(report.getReporter()));
 		resolveIssues(composition, report, issues);
 		return composition;
 	}

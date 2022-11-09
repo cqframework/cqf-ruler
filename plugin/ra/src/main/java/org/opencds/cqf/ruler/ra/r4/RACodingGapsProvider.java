@@ -26,12 +26,12 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class ReportProvider extends DaoRegistryOperationProvider
+public class RACodingGapsProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
 
 	/**
 	 * Implements the <a href=
-	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$ra.report</a>
+	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-ra.coding-gaps.html">$ra.coding-gaps</a>
 	 * operation found in the
 	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
 	 * Adjustment IG</a>.
@@ -45,9 +45,9 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	 * @return a Parameters with Bundles of MeasureReports and evaluatedResource
 	 *         Resources
 	 */
-	@Description(shortDefinition = "$ra.report operation", value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-davinci-ra.report.html\">$ra.report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
-	@Operation(name = "$ra.report", idempotent = true, type = MeasureReport.class)
-	public Parameters report(
+	@Description(shortDefinition = "$ra.coding-gaps operation", value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-ra.coding-gaps.html\">$ra.coding-gaps</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
+	@Operation(name = "$ra.coding-gaps", idempotent = true, type = MeasureReport.class)
+	public Parameters raCodingGaps(
 			RequestDetails requestDetails,
 			@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
 			@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
