@@ -187,11 +187,13 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return issues;
 	}
 
-	default List<Bundle> buildCompositionsAndBundles(String subject, Map<MeasureReport, List<DetectedIssue>> issues) {
+	default List<Bundle> buildCompositionsAndBundles(String subject, Map<MeasureReport, List<DetectedIssue>> issues,
+																	 IdType compositionSectionAuthor) {
 		List<Bundle> raBundles = new ArrayList<>();
 		for (Map.Entry<MeasureReport, List<DetectedIssue>> issuesSet : issues.entrySet()) {
 			raBundles.add(buildCodingGapReportBundle(buildComposition(
-				subject, issuesSet.getKey(), issuesSet.getValue()), issuesSet.getValue(), issuesSet.getKey()));
+				subject, issuesSet.getKey(), issuesSet.getValue(), compositionSectionAuthor),
+				issuesSet.getValue(), issuesSet.getKey()));
 		}
 
 		return raBundles;
@@ -231,7 +233,8 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		);
 	}
 
-	default Composition buildComposition(String subject, MeasureReport report, List<DetectedIssue> issues) {
+	default Composition buildComposition(String subject, MeasureReport report,
+													 List<DetectedIssue> issues, IdType compositionSectionAuthor) {
 		Composition composition = new Composition();
 		composition.setMeta(RAConstants.COMPOSITION_META);
 		composition.setIdentifier(
@@ -239,7 +242,8 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
 			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
 			.setDate(Date.from(Instant.now()))
-			.setAuthor(Collections.singletonList(report.getReporter()));
+			.setAuthor(Collections.singletonList(new Reference(compositionSectionAuthor)))
+			.setTitle("Risk Adjustment Coding Gaps Report for " + subject);
 		resolveIssues(composition, report, issues);
 		return composition;
 	}

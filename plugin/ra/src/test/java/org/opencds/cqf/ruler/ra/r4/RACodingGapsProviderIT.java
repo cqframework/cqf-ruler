@@ -29,8 +29,10 @@ import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RACodingGapsProviderIT.class,
-		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+	classes = { RACodingGapsProviderIT.class, RAConfig.class },
+	properties = {"hapi.fhir.fhir_version=r4",
+		"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author" })
 class RACodingGapsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
@@ -39,6 +41,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 	public void beforeEach() {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
+		loadResource("AlphoraAuthor-organization.json");
 	}
 
 	@Test
@@ -557,8 +560,6 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-condition31pat02.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		// loadResource("DetectedIssue-ra-measurereport03-report-96.json");
-		// loadResource("DetectedIssue-ra-measurereport03-report-110.json");
 
 		Parameters params = parameters(
 				datePart(RAConstants.PERIOD_START, "2021-01-01"),
@@ -575,6 +576,11 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(bundle.hasEntry());
 		assertEquals(8, bundle.getEntry().size());
 		assertTrue(bundle.getEntryFirstRep().getResource() instanceof Composition);
+
+		// test that Composition author is same as config properties
+		assertTrue(((Composition) bundle.getEntryFirstRep().getResource()).hasAuthor());
+		assertEquals("Organization/alphora-author", ((Composition) bundle.getEntryFirstRep().getResource()).getAuthorFirstRep().getReference());
+
 		assertTrue(bundle.getEntry().get(1).getResource() instanceof DetectedIssue);
 		assertTrue(bundle.getEntry().get(2).getResource() instanceof DetectedIssue);
 		assertTrue(bundle.getEntry().get(3).getResource() instanceof MeasureReport);

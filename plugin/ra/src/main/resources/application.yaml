@@ -1,6 +1,8 @@
 hapi:
-  fhir:
-    ra:
-      enabled: true
-      report:
-        endpoint: ''
+   fhir:
+      ra:
+         enabled: true
+         report:
+            endpoint: ''
+         composition:
+            ra_composition_section_author: Organization/alphora-author
