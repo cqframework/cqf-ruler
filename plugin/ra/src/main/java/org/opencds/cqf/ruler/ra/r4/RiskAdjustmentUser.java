@@ -163,7 +163,6 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		originalIssue.setMeta(new Meta().addProfile(
 			RAConstants.ORIGINAL_ISSUE_PROFILE_URL).setLastUpdated(new Date()));
 		originalIssue.addExtension().setUrl(RAConstants.GROUP_REFERENCE_URL).setValue(new StringType(groupId));
-		originalIssue.addModifierExtension(RAConstants.CODING_GAP_TYPE_EXTENSION);
 		originalIssue.setStatus(DetectedIssue.DetectedIssueStatus.PRELIMINARY);
 		originalIssue.setCode(RAConstants.CODING_GAP_CODE);
 		if (report.getSubject().getReference().startsWith("Patient/")) {
@@ -188,11 +187,13 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return issues;
 	}
 
-	default List<Bundle> buildCompositionsAndBundles(String subject, Map<MeasureReport, List<DetectedIssue>> issues) {
+	default List<Bundle> buildCompositionsAndBundles(String subject, Map<MeasureReport, List<DetectedIssue>> issues,
+																	 IdType compositionSectionAuthor) {
 		List<Bundle> raBundles = new ArrayList<>();
 		for (Map.Entry<MeasureReport, List<DetectedIssue>> issuesSet : issues.entrySet()) {
 			raBundles.add(buildCodingGapReportBundle(buildComposition(
-				subject, issuesSet.getKey(), issuesSet.getValue()), issuesSet.getValue(), issuesSet.getKey()));
+				subject, issuesSet.getKey(), issuesSet.getValue(), compositionSectionAuthor),
+				issuesSet.getValue(), issuesSet.getKey()));
 		}
 
 		return raBundles;
@@ -232,14 +233,17 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		);
 	}
 
-	default Composition buildComposition(String subject, MeasureReport report, List<DetectedIssue> issues) {
+	default Composition buildComposition(String subject, MeasureReport report,
+													 List<DetectedIssue> issues, IdType compositionSectionAuthor) {
 		Composition composition = new Composition();
 		composition.setMeta(RAConstants.COMPOSITION_META);
 		composition.setIdentifier(
 			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
 			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
-			.setDate(Date.from(Instant.now()));
+			.setDate(Date.from(Instant.now()))
+			.setAuthor(Collections.singletonList(new Reference(compositionSectionAuthor)))
+			.setTitle("Risk Adjustment Coding Gaps Report for " + subject);
 		resolveIssues(composition, report, issues);
 		return composition;
 	}
