@@ -28,8 +28,9 @@ public class RAConstants {
 	public static final String ORIGINAL_ISSUE_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue";
 	public static final String CLINICAL_EVALUATION_ISSUE_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-clinical-evaluation-detectedissue";
 	public static final String GROUP_REFERENCE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference";
-	public static final String CODING_GAP_REQUEST_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/extension-ra-codingGapRequest";
-	public static final Extension CODING_GAP_TYPE_EXTENSION = new Extension().addExtension().setUrl(CODING_GAP_REQUEST_URL)
+	public static final String CODING_GAP_REQUEST_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-codingGapRequest";
+	public static final Extension CODING_GAP_TYPE_EXTENSION = new Extension().addExtension()
+			.setUrl(CODING_GAP_REQUEST_URL)
 			.setValue(
 					new CodeableConcept().addCoding(
 							new Coding().setSystem("http://hl7.org/fhir/us/davinci-ra/CodeSystem/coding-gap-type")
