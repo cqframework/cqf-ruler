@@ -1,7 +1,9 @@
 package org.opencds.cqf.ruler.ra;
 
+import java.util.Collections;
 import java.util.Date;
 
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
@@ -55,6 +57,11 @@ public class RAConstants {
 	public static final Extension EVIDENCE_STATUS_CLOSED_EXT = new Extension().setUrl(EVIDENCE_STATUS_URL).setValue(CLOSED_GAP_CONCEPT);
 	public static final Extension EVIDENCE_STATUS_OPEN_EXT = new Extension().setUrl(EVIDENCE_STATUS_URL).setValue(OPEN_GAP_CONCEPT);
 	public static final Extension EVIDENCE_STATUS_INVALID_EXT = new Extension().setUrl(EVIDENCE_STATUS_URL).setValue(INVALID_GAP_CONCEPT);
+
+	// Bundle constants
+	public static final Meta CODING_GAP_REPORT_BUNDLE_META = new Meta().setProfile(
+			Collections.singletonList(new CanonicalType(RAConstants.CODING_GAP_BUNDLE_URL)))
+		.setLastUpdated(new Date());
 
 	// Composition constants
 	public static final Meta COMPOSITION_META = new Meta().addProfile(

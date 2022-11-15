@@ -9,7 +9,6 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.util.BundleUtil;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
@@ -279,10 +278,12 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 					updateMeasureReportGroup(report,
 						issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue(),
 						(CodeableConcept) issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).get(0).getValue());
+					report.setMeta(RAConstants.CODING_GAP_REPORT_BUNDLE_META);
 				}
 				// creation
 				else if (!issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).isEmpty()) {
 					createMeasureReportGroup(report, issue.getCode());
+					report.setMeta(RAConstants.CODING_GAP_REPORT_BUNDLE_META);
 				}
 			}
 		);
@@ -333,9 +334,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 
 	default Bundle startCodingGapReportBundle() {
 		Bundle codingGapReportBundle = new Bundle();
-		codingGapReportBundle.setMeta(new Meta().setProfile(
-			Collections.singletonList(new CanonicalType(RAConstants.CODING_GAP_BUNDLE_URL)))
-			.setLastUpdated(new Date()));
+		codingGapReportBundle.setMeta(RAConstants.CODING_GAP_REPORT_BUNDLE_META);
 		codingGapReportBundle.setIdentifier(
 			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		codingGapReportBundle.setType(Bundle.BundleType.DOCUMENT);
