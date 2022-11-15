@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.ra.RAConfig;
+import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.utility.Urls;
@@ -52,7 +54,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateBundle(raBundle);
 
 		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
-		validateMeasureReport(response, "historic", "open-gap", "2020-01-31");
+		validateMeasureReport(response, "historic", "open-gap", new DateType("2020-01-31"));
 	}
 
 	@Test
@@ -66,7 +68,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateBundle(raBundle);
 
 		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
-		validateMeasureReport(response, "historic", "closed-gap", "2022-01-31");
+		validateMeasureReport(response, "historic", "closed-gap", new DateType("2022-01-31"));
 	}
 
 	@Test
@@ -80,7 +82,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateBundle(raBundle);
 
 		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
-		validateMeasureReport(response, "net-new", "closed-gap", "2022-01-31");
+		validateMeasureReport(response, "net-new", "closed-gap", new DateType("2022-01-31"));
 	}
 
 	private Parameters getRequestParameters(String subject) {
@@ -139,7 +141,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	private void validateMeasureReport(MeasureReport response, String suspectType,
-												  String evidenceStatus, String evidenceStatusDate) {
+												  String evidenceStatus, DateType evidenceStatusDate) {
 		assertFalse(response.getGroup().isEmpty());
 		assertEquals(1, response.getGroup().size());
 		assertFalse(response.getGroupFirstRep().getExtension().isEmpty());
@@ -147,26 +149,21 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		assertTrue(response.getGroupFirstRep().getExtensionFirstRep().hasValue());
 		assertTrue(response.getGroupFirstRep().getExtensionFirstRep().getValue() instanceof CodeableConcept
 			&& ((CodeableConcept) response.getGroupFirstRep().getExtensionFirstRep().getValue()).hasCoding());
-		assertEquals("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+		assertEquals(RAConstants.SUSPECT_TYPE_SYSTEM,
 			((CodeableConcept) response.getGroupFirstRep().getExtensionFirstRep().getValue()).getCodingFirstRep()
 				.getSystem());
 		assertEquals(suspectType, ((CodeableConcept) response.getGroupFirstRep().getExtensionFirstRep().getValue())
 			.getCodingFirstRep().getCode());
 		assertTrue(response.getGroupFirstRep().getExtension().get(1).getValue() instanceof CodeableConcept
 			&& ((CodeableConcept) response.getGroupFirstRep().getExtension().get(1).getValue()).hasCoding());
-		assertEquals("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+		assertEquals(RAConstants.EVIDENCE_STATUS_SYSTEM,
 			((CodeableConcept) response.getGroupFirstRep().getExtension().get(1).getValue()).getCodingFirstRep()
 				.getSystem());
 		assertEquals(evidenceStatus, ((CodeableConcept) response.getGroupFirstRep().getExtension().get(1).getValue())
 			.getCodingFirstRep().getCode());
-		assertTrue(response.getGroupFirstRep().getExtension().get(2).getValue() instanceof CodeableConcept
-			&& ((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue()).hasCoding());
-		assertEquals("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate",
-			((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue()).getCodingFirstRep()
-				.getSystem());
-		assertEquals(evidenceStatusDate,
-			((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue())
-				.getCodingFirstRep().getCode());
+		assertTrue(response.getGroupFirstRep().getExtension().get(2).getValue() instanceof DateType);
+		assertEquals(evidenceStatusDate.getValue(),
+			((DateType) response.getGroupFirstRep().getExtension().get(2).getValue()).getValue());
 		assertTrue(response.getGroupFirstRep().hasCode() && response.getGroupFirstRep().getCode().hasCoding());
 		assertTrue(response.getGroupFirstRep().getCode().getCodingFirstRep().hasSystem());
 		assertEquals("http://terminology.hl7.org/CodeSystem/cmshcc",

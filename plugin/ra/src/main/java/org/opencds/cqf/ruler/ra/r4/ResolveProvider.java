@@ -1,0 +1,87 @@
+package org.opencds.cqf.ruler.ra.r4;
+
+import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
+import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Parameters;
+import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
+import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.ra.RAConstants;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+
+public class ResolveProvider extends DaoRegistryOperationProvider
+	implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
+
+	/**
+	 * Implements the <a href=
+	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-ra.resolve-coding-gaps.html">$ra.resolve-coding-gaps</a>
+	 * operation found in the
+	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
+	 * Adjustment IG</a>.
+	 *
+	 * @param requestDetails metadata about the current request being processed.
+	 *                       Generally auto-populated by the HAPI FHIR server
+	 *                       framework.
+	 * @param periodStart    the start of the clinical evaluation period
+	 * @param periodEnd      the end of the clinical evaluation period
+	 * @param subject        a Patient or Patient Group
+	 * @return a Parameters with Bundles of MeasureReports and evaluatedResource
+	 *         Resources
+	 */
+	@Description(shortDefinition = "$ra.resolve-coding-gaps operation", value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-ra.resolve-coding-gaps.html\">$ra.resolve-coding-gaps</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
+	@Operation(name = "$ra.resolve-coding-gaps", idempotent = true, type = MeasureReport.class)
+	public Parameters resolve(
+			RequestDetails requestDetails,
+			@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
+			@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
+			@OperationParam(name = RAConstants.SUBJECT) String subject) throws FHIRException {
+		try {
+			validateParameters(requestDetails);
+		} catch (Exception e) {
+			return parameters(part(RAConstants.INVALID_PARAMETERS_NAME,
+				generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
+		}
+
+		List<Bundle> codingGapReportBundles = new ArrayList<>();
+		getPatientListFromSubject(subject).forEach(
+			patient -> {
+				Bundle b = getMostRecentCodingGapReportBundle(subject, periodStart.getValue(), periodEnd.getValue());
+				MeasureReport mr = getReportFromBundle(b);
+				Composition composition = getCompositionFromBundle(b);
+				List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
+				updateMeasureReportGroups(mr, issues);
+				updateCompositionToFinal(composition, mr, issues);
+				codingGapReportBundles.add(buildCodingGapReportBundle(composition, issues, mr));
+			}
+		);
+
+		Parameters result = newResource(Parameters.class, RAConstants.RESOLVE_ID_PREFIX + UUID.randomUUID());
+
+		for (Bundle codingGapReportBundle : codingGapReportBundles) {
+			result.addParameter(part(RAConstants.RETURN_PARAM_NAME, codingGapReportBundle));
+		}
+
+		return result;
+	}
+
+	@Override
+	public void validateParameters(RequestDetails theRequestDetails) {
+
+	}
+}

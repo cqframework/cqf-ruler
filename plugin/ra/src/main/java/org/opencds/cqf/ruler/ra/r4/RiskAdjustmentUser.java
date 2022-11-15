@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.util.BundleUtil;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.IdType;
@@ -27,12 +28,17 @@ import org.opencds.cqf.ruler.utility.Ids;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 public interface RiskAdjustmentUser extends MeasureReportUser {
 
@@ -113,6 +119,24 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 
 	default List<DetectedIssue> getIssuesFromBundle(Bundle bundle) {
 		return BundleUtil.toListOfResourcesOfType(getFhirContext(), bundle, DetectedIssue.class);
+	}
+
+	default List<DetectedIssue> getMostRecentIssuesFromBundle(Bundle bundle) {
+		List<DetectedIssue> issues = BundleUtil.toListOfResourcesOfType(getFhirContext(), bundle, DetectedIssue.class);
+		// Sort issues by lastUpdated date
+		issues.sort((issue1, issue2) -> {
+			if (issue1.hasMeta() && issue1.getMeta().hasLastUpdated()
+				&& issue2.hasMeta() && issue2.getMeta().hasLastUpdated()) {
+				return issue2.getMeta().getLastUpdated().compareTo(issue1.getMeta().getLastUpdated());
+			}
+			throw new IllegalArgumentException(String.format(
+				"All DetectedIssue resources within %s must have the lastUpdated meta property",
+				bundle.getIdElement()));
+		});
+		// Remove duplicates
+		return issues.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(
+			Comparator.comparing(issue -> issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL)
+				.getValue().primitiveValue()))), ArrayList::new));
 	}
 
 	default List<DetectedIssue> getOriginalIssues(String measureReportReference) {
@@ -203,6 +227,73 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		composition.setMeta(RAConstants.COMPOSITION_META);
 		composition.setSection(new ArrayList<>());
 		resolveIssues(composition, report, issues);
+	}
+
+	default void updateCompositionToFinal(Composition composition, MeasureReport report, List<DetectedIssue> issues) {
+		composition.setMeta(RAConstants.COMPOSITION_META);
+		composition.setStatus(Composition.CompositionStatus.FINAL);
+		composition.setSection(new ArrayList<>());
+		resolveIssues(composition, report, issues);
+	}
+
+	default void updateMeasureReportGroup(MeasureReport report, String groupId, CodeableConcept codingGapRequest) {
+		report.getGroup().forEach(
+			group -> {
+				if (group.getId().equals(groupId) && group.hasExtension(RAConstants.EVIDENCE_STATUS_URL)
+						&& codingGapRequest.hasCoding() && codingGapRequest.getCodingFirstRep().hasCode()) {
+					if (codingGapRequest.getCodingFirstRep().getCode().startsWith("closure")) {
+						group.removeExtension(RAConstants.EVIDENCE_STATUS_URL);
+						group.addExtension(RAConstants.EVIDENCE_STATUS_CLOSED_EXT);
+					}
+					else if (codingGapRequest.getCodingFirstRep().getCode().startsWith("invalidation")) {
+						group.removeExtension(RAConstants.EVIDENCE_STATUS_URL);
+						group.addExtension(RAConstants.EVIDENCE_STATUS_INVALID_EXT);
+					}
+					else {
+						throw new IllegalArgumentException("Unknown/invalid coding-gap-request value: "
+							+ codingGapRequest.getCodingFirstRep().getCode());
+					}
+				}
+			}
+		);
+	}
+
+	default void createMeasureReportGroup(MeasureReport report, CodeableConcept hccCode) {
+		// ensure no other groups have this code
+		report.getGroup().forEach(
+			group -> {
+				if (group.hasCode() && group.getCode().hasCoding()
+						&& group.getCode().getCodingFirstRep().hasCode() && hccCode.hasCoding()
+						&& hccCode.getCodingFirstRep().hasCode()
+						&& group.getCode().getCodingFirstRep().getCode().equals(hccCode.getCodingFirstRep().getCode())) {
+					throw new IllegalArgumentException("The MeasureReport already contains a group with HCC Code: "
+						+ hccCode.getCodingFirstRep().getCode());
+				}
+			});
+		MeasureReport.MeasureReportGroupComponent newGroup = new MeasureReport.MeasureReportGroupComponent();
+		newGroup.setId("create-" + UUID.randomUUID());
+		newGroup.setCode(hccCode);
+		newGroup.addExtension(RAConstants.SUSPECT_TYPE_NET_NEW_EXT);
+		newGroup.addExtension(RAConstants.EVIDENCE_STATUS_CLOSED_EXT);
+		report.addGroup(newGroup);
+	}
+
+	default void updateMeasureReportGroups(MeasureReport report, List<DetectedIssue> issues) {
+		issues.forEach(
+			issue -> {
+				// closure and invalidation
+				if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)
+					&& issue.hasExtension(RAConstants.CODING_GAP_REQUEST_URL)) {
+					updateMeasureReportGroup(report,
+						issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue(),
+						(CodeableConcept) issue.getExtensionByUrl(RAConstants.CODING_GAP_REQUEST_URL).getValue());
+				}
+				// creation
+				else if (issue.hasExtension(RAConstants.CODING_GAP_REQUEST_URL)) {
+					createMeasureReportGroup(report, issue.getCode());
+				}
+			}
+		);
 	}
 
 	default void resolveIssues(Composition composition, MeasureReport report, List<DetectedIssue> issues) {
