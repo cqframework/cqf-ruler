@@ -28,17 +28,12 @@ import org.opencds.cqf.ruler.utility.Ids;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 
 public interface RiskAdjustmentUser extends MeasureReportUser {
 
@@ -133,10 +128,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 				"All DetectedIssue resources within %s must have the lastUpdated meta property",
 				bundle.getIdElement()));
 		});
-		// Remove duplicates
-		return issues.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(
-			Comparator.comparing(issue -> issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL)
-				.getValue().primitiveValue()))), ArrayList::new));
+		return issues;
 	}
 
 	default List<DetectedIssue> getOriginalIssues(String measureReportReference) {
@@ -282,14 +274,14 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		issues.forEach(
 			issue -> {
 				// closure and invalidation
-				if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)
-					&& issue.hasExtension(RAConstants.CODING_GAP_REQUEST_URL)) {
+				if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL) && issue.hasModifierExtension()
+						&& !issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).isEmpty()) {
 					updateMeasureReportGroup(report,
 						issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue(),
-						(CodeableConcept) issue.getExtensionByUrl(RAConstants.CODING_GAP_REQUEST_URL).getValue());
+						(CodeableConcept) issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).get(0).getValue());
 				}
 				// creation
-				else if (issue.hasExtension(RAConstants.CODING_GAP_REQUEST_URL)) {
+				else if (!issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).isEmpty()) {
 					createMeasureReportGroup(report, issue.getCode());
 				}
 			}
