@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
@@ -7,7 +9,10 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
@@ -18,10 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = { ResolveProviderIT.class, RAConfig.class },
 	properties = { "hapi.fhir.fhir_version=r4" })
@@ -36,6 +43,32 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
+	@Order(1)
+	void preconditionTest() {
+		loadResource("Organization-ra-payer01.json");
+		loadResource("Observation-ra-obs01pat02.json");
+		loadResource("Encounter-ra-encounter31pat02.json");
+		loadResource("Encounter-ra-measurereport03-remediate.json");
+		loadResource("Condition-ra-condition31pat02.json");
+		loadResource("Condition-ra-measurereport03-remediate.json");
+		loadResource("Patient-ra-patient02.json");
+		loadResource("MeasureReport-ra-measurereport03.json");
+		loadResource("Bundle-ra-remediate-result-precondition-error.json");
+
+		Parameters params = parameters(
+			stringPart("periodStart", "2021-01-01"),
+			stringPart("periodEnd", "2021-12-31"),
+			stringPart("subject", "Patient/ra-patient02"));
+
+		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
+			.named("$ra.resolve-coding-gaps").withParameters(params)
+			.useHttpGet().returnResourceType(Parameters.class);
+
+		assertThrows(InternalErrorException.class, shouldThrow::execute);
+	}
+
+	@Test
+	@Order(2)
 	void closureTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -88,6 +121,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
+	@Order(3)
 	void invalidationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -139,7 +173,9 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(11, raBundle.getEntry().size());
 	}
 
+	@SuppressWarnings("java:S5961")
 	@Test
+	@Order(4)
 	void creationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -196,5 +232,30 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.NET_NEW_CODE, ((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().getCode());
 
 		assertEquals(11, raBundle.getEntry().size());
+	}
+
+	@Test
+	@Order(5)
+	void creationErrorTest() {
+		loadResource("Organization-ra-payer01.json");
+		loadResource("Observation-ra-obs01pat02.json");
+		loadResource("Encounter-ra-encounter31pat02.json");
+		loadResource("Encounter-ra-measurereport03-remediate.json");
+		loadResource("Condition-ra-condition31pat02.json");
+		loadResource("Condition-ra-measurereport03-remediate.json");
+		loadResource("Patient-ra-patient02.json");
+		loadResource("MeasureReport-ra-measurereport03.json");
+		loadResource("Bundle-ra-remediate-result-creation-error.json");
+
+		Parameters params = parameters(
+			stringPart("periodStart", "2021-01-01"),
+			stringPart("periodEnd", "2021-12-31"),
+			stringPart("subject", "Patient/ra-patient02"));
+
+		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
+			.named("$ra.resolve-coding-gaps").withParameters(params)
+			.useHttpGet().returnResourceType(Parameters.class);
+
+		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}
 }

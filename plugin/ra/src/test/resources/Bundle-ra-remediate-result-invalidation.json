@@ -2,7 +2,7 @@
 	"resourceType": "Bundle",
 	"id": "ra-remediate-result-invalidation",
 	"meta": {
-		"lastUpdated": "2022-11-07T22:32:06.759-07:00",
+		"lastUpdated": "2022-11-07T12:32:06.759-07:00",
 		"profile": [
 			"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle"
 		]
@@ -12,7 +12,7 @@
 		"value": "urn:uuid:7d8e6407-0ccd-4e68-b485-0b0cce5f6787"
 	},
 	"type": "document",
-	"timestamp": "2022-11-07T22:32:06.759-07:00",
+	"timestamp": "2022-11-07T12:32:06.759-07:00",
 	"entry": [
 		{
 			"resource": {

@@ -227,6 +227,23 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		resolveIssues(composition, report, issues);
 	}
 
+	default void validateMeasureReportPrecondition(MeasureReport report, List<DetectedIssue> issues) {
+		List<String> groupsWithFinalStatusIssues = new ArrayList<>();
+		issues.forEach(
+			issue -> {
+				if (issue.hasStatus() && issue.getStatus().toCode().equals("final")
+						&& issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)) {
+					String groupId = issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue();
+					if (groupsWithFinalStatusIssues.contains(groupId)) {
+						throw new IllegalArgumentException(
+							"Found multiple DetectedIssue resources with a final status referencing the same MeasureReport group element.");
+					}
+					groupsWithFinalStatusIssues.add(groupId);
+				}
+			}
+		);
+	}
+
 	default void updateMeasureReportGroup(MeasureReport report, String groupId, CodeableConcept codingGapRequest) {
 		report.getGroup().forEach(
 			group -> {

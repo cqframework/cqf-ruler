@@ -1,8 +1,8 @@
 {
 	"resourceType": "Bundle",
-	"id": "ra-remediate-result-closure",
+	"id": "ra-remediate-result-creation-error",
 	"meta": {
-		"lastUpdated": "2022-11-07T11:32:06.759-07:00",
+		"lastUpdated": "2022-11-07T14:32:06.759-07:00",
 		"profile": [
 			"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle"
 		]
@@ -12,7 +12,7 @@
 		"value": "urn:uuid:7d8e6407-0ccd-4e68-b485-0b0cce5f6787"
 	},
 	"type": "document",
-	"timestamp": "2022-11-07T11:32:06.759-07:00",
+	"timestamp": "2022-11-07T14:32:06.759-07:00",
 	"entry": [
 		{
 			"resource": {
@@ -260,7 +260,7 @@
 		{
 			"resource": {
 				"resourceType": "DetectedIssue",
-				"id": "ra-measurereport03-remediate-closure",
+				"id": "ra-measurereport03-remediate-creation-error",
 				"meta": {
 					"versionId": "1",
 					"lastUpdated": "2022-11-07T22:32:06.623-07:00",
@@ -268,12 +268,6 @@
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-clinical-evaluation-detectedissue"
 					]
 				},
-				"extension": [
-					{
-						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-						"valueString": "group-002"
-					}
-				],
 				"modifierExtension": [
 					{
 						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-codingGapRequest",
@@ -281,7 +275,7 @@
 							"coding": [
 								{
 									"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/coding-gap-request",
-									"code": "closure-request"
+									"code": "creation-request"
 								}
 							]
 						}
@@ -291,11 +285,13 @@
 				"code": {
 					"coding": [
 						{
-							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-							"code": "CODINGGAP",
-							"display": "Coding Gaps"
+							"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+							"version": "24",
+							"code": "96",
+							"display": "Specified Heart.Arrhythmias"
 						}
-					]
+					],
+					"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
 				},
 				"patient": {
 					"reference": "Patient/ra-patient02"
@@ -309,21 +305,43 @@
 					{
 						"detail": [
 							{
-								"reference": "MeasureReport/ra-measurereport03"
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+										"valueString": "group-001"
+									}
+								],
+								"reference": "Condition/ra-condition31pat02"
 							}
 						]
 					},
 					{
 						"detail": [
 							{
-								"reference": "Condition/ra-measurereport03-remediate"
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+										"valueString": "group-001"
+									}
+								],
+								"reference": "Encounter/ra-encounter31pat02"
 							}
 						]
 					},
 					{
 						"detail": [
 							{
-								"reference": "Encounter/ra-measurereport03-remediate"
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+										"valueString": "group-001"
+									},
+									{
+										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+										"valueString": "group-002"
+									}
+								],
+								"reference": "Patient/ra-patient02"
 							}
 						]
 					}

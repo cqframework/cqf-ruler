@@ -16,6 +16,7 @@ import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
+import org.opencds.cqf.ruler.utility.Operations;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +66,7 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 				MeasureReport mr = getReportFromBundle(b);
 				Composition composition = getCompositionFromBundle(b);
 				List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
+				validateMeasureReportPrecondition(mr, issues);
 				updateMeasureReportGroups(mr, issues);
 				updateCompositionToFinal(composition, mr, issues);
 				codingGapReportBundles.add(buildCodingGapReportBundle(composition, issues, mr));
@@ -81,7 +83,12 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 	}
 
 	@Override
-	public void validateParameters(RequestDetails theRequestDetails) {
-
+	public void validateParameters(RequestDetails requestDetails) {
+		Operations.validateCardinality(requestDetails, RAConstants.PERIOD_START, 1);
+		Operations.validateCardinality(requestDetails, RAConstants.PERIOD_END, 1);
+		Operations.validateCardinality(requestDetails, RAConstants.SUBJECT, 1);
+		Operations.validatePeriod(requestDetails, RAConstants.PERIOD_START, RAConstants.PERIOD_END);
+		Operations.validateSingularPattern(requestDetails, RAConstants.SUBJECT,
+			Operations.PATIENT_OR_GROUP_REFERENCE);
 	}
 }
