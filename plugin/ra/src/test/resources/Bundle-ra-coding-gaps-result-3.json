@@ -105,7 +105,7 @@
 				],
 				"modifierExtension": [
 					{
-						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/extension-ra-codingGapType",
+						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-codingGapRequest",
 						"valueCodeableConcept": {
 							"coding": [
 								{
@@ -199,7 +199,7 @@
 				],
 				"modifierExtension": [
 					{
-						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/extension-ra-codingGapType",
+						"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-codingGapRequest",
 						"valueCodeableConcept": {
 							"coding": [
 								{
