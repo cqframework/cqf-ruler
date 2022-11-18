@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.datePart;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.datePart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
@@ -29,10 +29,9 @@ import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { RACodingGapsProviderIT.class, RAConfig.class },
-	properties = {"hapi.fhir.fhir_version=r4",
-		"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RACodingGapsProviderIT.class,
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
+				"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author" })
 class RACodingGapsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
@@ -579,7 +578,8 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 
 		// test that Composition author is same as config properties
 		assertTrue(((Composition) bundle.getEntryFirstRep().getResource()).hasAuthor());
-		assertEquals("Organization/alphora-author", ((Composition) bundle.getEntryFirstRep().getResource()).getAuthorFirstRep().getReference());
+		assertEquals("Organization/alphora-author",
+				((Composition) bundle.getEntryFirstRep().getResource()).getAuthorFirstRep().getReference());
 
 		assertTrue(bundle.getEntry().get(1).getResource() instanceof DetectedIssue);
 		assertTrue(bundle.getEntry().get(2).getResource() instanceof DetectedIssue);

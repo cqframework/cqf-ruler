@@ -8,10 +8,10 @@ import org.cqframework.cql.cql2elm.LibraryContentType;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.cql.evaluator.fhir.util.Libraries;
+import org.opencds.cqf.cql.evaluator.fhir.util.Versions;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.opencds.cqf.ruler.utility.Versions;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;

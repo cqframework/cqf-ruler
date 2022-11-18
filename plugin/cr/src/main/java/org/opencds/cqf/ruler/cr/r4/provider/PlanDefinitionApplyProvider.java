@@ -25,6 +25,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation;
 import org.opencds.cqf.ruler.cr.r4.builder.AttachmentBuilder;
@@ -36,7 +37,6 @@ import org.opencds.cqf.ruler.cr.r4.builder.RelatedArtifactBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupActionBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupBuilder;
 import org.opencds.cqf.ruler.cr.r4.helper.ContainedHelper;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,7 +187,8 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 						result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
 								(ActivityDefinition) resolveContained(session.getPlanDefinition(),
 										action.getDefinitionCanonicalType().getValue()),
-								session.getPatientId(), session.getPractitionerId(), session.getOrganizationId(), theRequest);
+								session.getPatientId(), session.getPractitionerId(), session.getOrganizationId(),
+								theRequest);
 					} else {
 						result = this.activityDefinitionApplyProvider.apply(
 								theRequest, new IdType(Canonicals.getIdPart(action.getDefinitionCanonicalType())),
@@ -252,7 +253,8 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 										(Base) result);
 							} catch (Exception e) {
 								throw new RuntimeException(
-										String.format("Could not set path %s to value: %s", dynamicValue.getPath(), result));
+										String.format("Could not set path %s to value: %s", dynamicValue.getPath(),
+												result));
 							}
 						}
 					}
@@ -297,10 +299,12 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 				Object result;
 				if (language.equals("text/cql.identifier") || language.equals("text/cql-identifier")
 						|| language.equals("text/cql.name") || language.equals("text/cql-name")) {
-					result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
+					result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql,
+							session.getPatientId(),
 							true, theRequest);
 				} else {
-					result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
+					result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql,
+							session.getPatientId(),
 							theRequest);
 				}
 
@@ -433,7 +437,8 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 							}
 							try {
 								this.activityDefinitionApplyProvider
-										.apply(theRequest, new IdType(action.getDefinitionCanonicalType().getId()), patientId,
+										.apply(theRequest, new IdType(action.getDefinitionCanonicalType().getId()),
+												patientId,
 												null,
 												null, null, null, null, null, null, null)
 										.setId(UUID.randomUUID().toString());

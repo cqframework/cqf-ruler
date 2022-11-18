@@ -9,7 +9,6 @@ import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r5.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -36,7 +35,7 @@ public class ExampleServerR5IT {
 	@LocalServerPort
 	private int port;
 
-	@Test
+	// @Test
 	public void testCreateAndRead() {
 
 		String methodName = "testCreateResourceConditional";

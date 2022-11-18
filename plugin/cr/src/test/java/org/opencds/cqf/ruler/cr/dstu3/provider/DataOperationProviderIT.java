@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.stringPart;
 
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;

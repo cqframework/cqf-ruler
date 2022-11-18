@@ -52,13 +52,13 @@ import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
 import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProvider;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Operations;
 
 import ca.uhn.fhir.context.FhirContext;
