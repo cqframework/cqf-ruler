@@ -1,5 +1,11 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
@@ -14,15 +20,8 @@ import org.opencds.cqf.ruler.test.utility.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { RemediateProviderIT.class, RAConfig.class },
-	properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RemediateProviderIT.class,
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class RemediateProviderIT extends RestIntegrationTest {
 
 	@Autowired
@@ -53,13 +52,13 @@ class RemediateProviderIT extends RestIntegrationTest {
 		loadResource("DetectedIssue-ra-measurereport03-remediate.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.remediate-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.named("$ra.remediate-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
 		assertTrue(result.hasParameter("return"));
@@ -78,11 +77,14 @@ class RemediateProviderIT extends RestIntegrationTest {
 		// check that Composition identifier has not changed
 		assertTrue(((Composition) raBundle.getEntryFirstRep().getResource()).hasIdentifier());
 		assertTrue(((Composition) raBundle.getEntryFirstRep().getResource()).getIdentifier().hasValue());
-		assertEquals("urn:uuid:e729e44f-756b-43cd-a9a3-2913d3bce01d", ((Composition) raBundle.getEntryFirstRep().getResource()).getIdentifier().getValue());
+		assertEquals("urn:uuid:e729e44f-756b-43cd-a9a3-2913d3bce01d",
+				((Composition) raBundle.getEntryFirstRep().getResource()).getIdentifier().getValue());
 		// check that Composition date has not changed
 		assertTrue(((Composition) raBundle.getEntryFirstRep().getResource()).hasDate());
-		assertEquals("2022-11-06T15:50:24-06:00", ((Composition) raBundle.getEntryFirstRep().getResource()).getDateElement().getValueAsString());
-		// check that new DetectedIssue was added to Composition (section size was 2 -> should now be 3)
+		assertEquals("2022-11-06T15:50:24-06:00",
+				((Composition) raBundle.getEntryFirstRep().getResource()).getDateElement().getValueAsString());
+		// check that new DetectedIssue was added to Composition (section size was 2 ->
+		// should now be 3)
 		assertTrue(((Composition) raBundle.getEntryFirstRep().getResource()).hasSection());
 		assertEquals(3, ((Composition) raBundle.getEntryFirstRep().getResource()).getSection().size());
 		// check that next three entries are DetectedIssues

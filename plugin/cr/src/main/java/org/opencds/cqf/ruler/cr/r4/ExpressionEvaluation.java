@@ -23,6 +23,7 @@ import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDal;
@@ -30,7 +31,6 @@ import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -105,7 +105,8 @@ public class ExpressionEvaluation {
 				// log error
 			}
 			if (executionLibrary == null) {
-				Library library = (Library) jpaFhirDal.read(new IdType("Library", Canonicals.getIdPart(libraries.get(0))));
+				Library library = (Library) jpaFhirDal
+						.read(new IdType("Library", Canonicals.getIdPart(libraries.get(0))));
 				vi.setId(library.getName());
 				if (library.getVersion() != null) {
 					vi.setVersion(library.getVersion());

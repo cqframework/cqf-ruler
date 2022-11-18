@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.getPartsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.getPartsByName;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.junit.jupiter.api.Test;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.cr.CqlBuilder;
 import org.opencds.cqf.ruler.cr.dstu3.Libraries;
 import org.opencds.cqf.ruler.cr.dstu3.MeasureBuilder;
 import org.opencds.cqf.ruler.cr.dstu3.Patients;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
-import org.opencds.cqf.ruler.utility.Ids;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -54,11 +54,11 @@ class CollectDataProviderIT extends DaoIntegrationTest {
 		this.create(john);
 
 		Observation obs = newResource(Observation.class)
-			.setSubject(new Reference(john));
+				.setSubject(new Reference(john));
 		this.create(obs);
 
 		Encounter enc = newResource(Encounter.class)
-			.setSubject(new Reference(john));
+				.setSubject(new Reference(john));
 		this.create(enc);
 
 		// Submit it

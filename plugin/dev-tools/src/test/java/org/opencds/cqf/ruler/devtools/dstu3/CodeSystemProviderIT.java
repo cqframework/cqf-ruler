@@ -33,10 +33,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { CodeSystemProviderIT.class, DevToolsConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CodeSystemProviderIT.class,
+		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CodeSystemProviderIT extends RestIntegrationTest {
 	private final Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
@@ -57,12 +55,14 @@ class CodeSystemProviderIT extends RestIntegrationTest {
 	@Test
 	@Order(1)
 	void testCodeSystemUpdateValueSetDNE() {
-		ValueSet vs = (ValueSet) readResource("org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
+		ValueSet vs = (ValueSet) readResource(
+				"org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
 		OperationOutcome outcome = codeSystemUpdateProvider.updateCodeSystems(vs.getIdElement());
 		assertEquals(1, outcome.getIssue().size());
 		OperationOutcomeIssueComponent issue = outcome.getIssue().get(0);
 		assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
-		assertTrue(issue.getDetails().getText().startsWith("Unable to find Resource: " + vs.getIdElement().getIdPart()));
+		assertTrue(
+				issue.getDetails().getText().startsWith("Unable to find Resource: " + vs.getIdElement().getIdPart()));
 	}
 
 	@Test
@@ -79,7 +79,8 @@ class CodeSystemProviderIT extends RestIntegrationTest {
 	@Order(3)
 	void testDSTU3RxNormCodeSystemUpdateById() {
 		log.info("Beginning Test DSTU3 RxNorm CodeSystemUpdate");
-		ValueSet vs = (ValueSet) loadResource("org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
+		ValueSet vs = (ValueSet) loadResource(
+				"org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
 
 		assertEquals(0, performCodeSystemSearchByUrl(rxNormUrl).size());
 		OperationOutcome outcome = codeSystemUpdateProvider.updateCodeSystems(vs.getIdElement());

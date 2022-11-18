@@ -19,7 +19,7 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.utility.Clients;
+import org.opencds.cqf.cql.evaluator.fhir.util.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -194,27 +194,27 @@ public class ExtractProvider implements OperationProvider {
     return client.transaction().withBundle(observationsBundle).execute();
   }
 
-	private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl) {
-		String url = mySdcProperties.getExtract().getEndpoint();
-		if (null == url || url.length() < 1) {
-			throw new IllegalArgumentException(
-					"Unable to GET Questionnaire.  No observation.endpoint defined in sdc properties.");
-		}
-		String user = mySdcProperties.getExtract().getUsername();
-		String password = mySdcProperties.getExtract().getPassword();
+  private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl) {
+    String url = mySdcProperties.getExtract().getEndpoint();
+    if (null == url || url.length() < 1) {
+      throw new IllegalArgumentException(
+          "Unable to GET Questionnaire.  No observation.endpoint defined in sdc properties.");
+    }
+    String user = mySdcProperties.getExtract().getUsername();
+    String password = mySdcProperties.getExtract().getPassword();
 
-		IGenericClient client = Clients.forUrl(myFhirContext, url);
-		Clients.registerBasicAuth(client, user, password);
+    IGenericClient client = Clients.forUrl(myFhirContext, url);
+    Clients.registerBasicAuth(client, user, password);
 
-		Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
+    Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
 
-		if (questionnaire == null) {
-			throw new IllegalArgumentException(
-					"Unable to find resource by URL " + questionnaireUrl);
-		}
+    if (questionnaire == null) {
+      throw new IllegalArgumentException(
+          "Unable to find resource by URL " + questionnaireUrl);
+    }
 
-		return createCodeMap(questionnaire);
-	}
+    return createCodeMap(questionnaire);
+  }
 
   // this is based on "if a questionnaire.item has items then this item is a
   // header and will not have a specific code to be used with an answer"

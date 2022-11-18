@@ -1,5 +1,8 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,9 +35,6 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
-
 @Configurable
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
 
@@ -52,11 +52,11 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	@Operation(name = "$davinci-ra.evaluate-measure", idempotent = true, type = Measure.class)
 	public Parameters evaluateRiskConditionCategory(
-		RequestDetails requestDetails,
-		@IdParam IdType theId,
-		@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
-		@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
-		@OperationParam(name = RAConstants.SUBJECT) String subject) {
+			RequestDetails requestDetails,
+			@IdParam IdType theId,
+			@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
+			@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
+			@OperationParam(name = RAConstants.SUBJECT) String subject) {
 
 		try {
 			Operations.validateCardinality(requestDetails, RAConstants.PERIOD_START, 1);
@@ -64,29 +64,30 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			Operations.validateCardinality(requestDetails, RAConstants.SUBJECT, 1);
 		} catch (Exception e) {
 			return parameters(part(RAConstants.INVALID_PARAMETERS_NAME,
-				generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
+					generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
 		}
 
 		ensureSupplementalDataElementSearchParameter(requestDetails);
 
 		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(requestDetails,
-			theId, periodStart.getValueAsString(), periodEnd.getValueAsString(), null, subject,
-			null, null, null, null, null);
+				theId, periodStart.getValueAsString(), periodEnd.getValueAsString(), null, subject,
+				null, null, null, null, null);
 
 		Parameters riskAdjustmentParameters = new Parameters();
 
 		RiskAdjustmentReturnElement riskAdjustmentReturnElement = new RiskAdjustmentReturnElement(
-			unprocessedReport.getSubject().getReference(), unprocessedReport);
+				unprocessedReport.getSubject().getReference(), unprocessedReport);
 		resolveRiskAdjustmentReport(riskAdjustmentReturnElement);
 		riskAdjustmentParameters.addParameter()
-			.setName(riskAdjustmentReturnElement.reference)
-			.setResource(riskAdjustmentReturnElement.getRiskAdjustmentOutcome());
+				.setName(riskAdjustmentReturnElement.reference)
+				.setResource(riskAdjustmentReturnElement.getRiskAdjustmentOutcome());
 
 		return riskAdjustmentParameters;
 	}
 
 	private void resolveRiskAdjustmentReport(RiskAdjustmentReturnElement riskAdjustmentReturnElement) {
-		for (MeasureReport.MeasureReportGroupComponent group : riskAdjustmentReturnElement.unprocessedReport.getGroup()) {
+		for (MeasureReport.MeasureReportGroupComponent group : riskAdjustmentReturnElement.unprocessedReport
+				.getGroup()) {
 			CodeableConcept hccCode = group.getCode();
 			visited = null;
 			for (MeasureReport.MeasureReportGroupStratifierComponent stratifier : group.getStratifier()) {
@@ -95,17 +96,20 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 					CodeableConcept value = stratum.getValue();
 					Quantity score = stratum.getMeasureScore();
 					if (stratifierPopCode.hasCoding()
-						&& stratifierPopCode.getCodingFirstRep().getCode().equals(HISTORIC)) {
+							&& stratifierPopCode.getCodingFirstRep().getCode().equals(HISTORIC)) {
 						resolveGroup(riskAdjustmentReturnElement,
-							new Historic(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+								new Historic(hccCode, value, score,
+										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
 					} else if (stratifierPopCode.hasCoding()
-						&& stratifierPopCode.getCodingFirstRep().getCode().equals(SUSPECTED)) {
+							&& stratifierPopCode.getCodingFirstRep().getCode().equals(SUSPECTED)) {
 						resolveGroup(riskAdjustmentReturnElement,
-							new Suspected(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+								new Suspected(hccCode, value, score,
+										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
 					} else if (stratifierPopCode.hasCoding()
-						&& stratifierPopCode.getCodingFirstRep().getCode().equals(NET_NEW)) {
+							&& stratifierPopCode.getCodingFirstRep().getCode().equals(NET_NEW)) {
 						resolveGroup(riskAdjustmentReturnElement,
-							new NetNew(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+								new NetNew(hccCode, value, score,
+										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
 					}
 				}
 			}
@@ -113,16 +117,16 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 	}
 
 	private void resolveGroup(RiskAdjustmentReturnElement riskAdjustmentReturnElement,
-									  RiskAdjustmentGroup riskAdjustmentGroup) {
+			RiskAdjustmentGroup riskAdjustmentGroup) {
 		if (riskAdjustmentGroup.value != null && riskAdjustmentGroup.value.hasText()
-			&& riskAdjustmentGroup.value.getText().equalsIgnoreCase("true")) {
+				&& riskAdjustmentGroup.value.getText().equalsIgnoreCase("true")) {
 			if (visited != null) {
 				riskAdjustmentReturnElement.createIssue(
-					String.format(
-						"Disjoint populations found. The %s and %s populations cannot be included in the same group",
-						visited, riskAdjustmentGroup.name));
+						String.format(
+								"Disjoint populations found. The %s and %s populations cannot be included in the same group",
+								visited, riskAdjustmentGroup.name));
 			} else if (riskAdjustmentGroup instanceof NetNew && riskAdjustmentGroup.score.hasValue()
-				&& riskAdjustmentGroup.score.getValue().intValue() == 0) {
+					&& riskAdjustmentGroup.score.getValue().intValue() == 0) {
 				riskAdjustmentReturnElement.createIssue("Invalid open gap detected for net-new population");
 			} else {
 				riskAdjustmentReturnElement.processedReport.addGroup(riskAdjustmentGroup.resolveGroup());
@@ -137,18 +141,19 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 				continue;
 			Observation containedObservation = (Observation) contained;
 			if (containedObservation.hasCode() && containedObservation.getCode().hasCoding()
-				&& containedObservation.getCode().getCodingFirstRep().hasSystem()
-				&& containedObservation.getCode().getCodingFirstRep().getSystem().equals(
-				"http://terminology.hl7.org/CodeSystem/measure-data-usage")
-				&& ((Observation) contained).hasValueCodeableConcept()
-				&& ((Observation) contained).getValueCodeableConcept().hasCoding()
-				&& ((Observation) contained).getValueCodeableConcept().getCodingFirstRep().hasCode()) {
+					&& containedObservation.getCode().getCodingFirstRep().hasSystem()
+					&& containedObservation.getCode().getCodingFirstRep().getSystem().equals(
+							"http://terminology.hl7.org/CodeSystem/measure-data-usage")
+					&& ((Observation) contained).hasValueCodeableConcept()
+					&& ((Observation) contained).getValueCodeableConcept().hasCoding()
+					&& ((Observation) contained).getValueCodeableConcept().getCodingFirstRep().hasCode()) {
 				return new Extension().setUrl(EVIDENCE_STATUS_DATE_URL).setValue(
-					new CodeableConcept().setCoding(
-						Collections.singletonList(new Coding()
-							.setCode(
-								((Observation) contained).getValueCodeableConcept().getCodingFirstRep().getCode())
-							.setSystem(EVIDENCE_STATUS_DATE_URL))));
+						new CodeableConcept().setCoding(
+								Collections.singletonList(new Coding()
+										.setCode(
+												((Observation) contained).getValueCodeableConcept().getCodingFirstRep()
+														.getCode())
+										.setSystem(EVIDENCE_STATUS_DATE_URL))));
 			}
 		}
 		return null;
@@ -156,11 +161,11 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private static class RiskAdjustmentGroup {
 		private final Extension closedGapExtension = new Extension().setUrl(EVIDENCE_STATUS_URL).setValue(
-			new CodeableConcept().setCoding(
-				Collections.singletonList(new Coding().setCode("closed-gap").setSystem(EVIDENCE_STATUS_URL))));
+				new CodeableConcept().setCoding(
+						Collections.singletonList(new Coding().setCode("closed-gap").setSystem(EVIDENCE_STATUS_URL))));
 		private final Extension openGapExtension = new Extension().setUrl(EVIDENCE_STATUS_URL).setValue(
-			new CodeableConcept().setCoding(
-				Collections.singletonList(new Coding().setCode("open-gap").setSystem(EVIDENCE_STATUS_URL))));
+				new CodeableConcept().setCoding(
+						Collections.singletonList(new Coding().setCode("open-gap").setSystem(EVIDENCE_STATUS_URL))));
 
 		String name;
 		CodeableConcept hccCode;
@@ -171,7 +176,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		Extension evidenceStatusDateExtension;
 
 		RiskAdjustmentGroup(CodeableConcept hccCode, CodeableConcept value, Quantity score,
-								  Extension evidenceStatusDateExtension) {
+				Extension evidenceStatusDateExtension) {
 			this.hccCode = hccCode;
 			this.value = value;
 			this.score = score;
@@ -181,33 +186,35 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		MeasureReport.MeasureReportGroupComponent resolveGroup() {
 			MeasureReport.MeasureReportGroupComponent group = new MeasureReport.MeasureReportGroupComponent();
 			evidenceStatusExtension = score.hasValue() && score.getValue().intValue() == 1 ? closedGapExtension
-				: openGapExtension;
+					: openGapExtension;
 			group.setCode(hccCode)
-				.addExtension(suspectTypeExtension)
-				.addExtension(evidenceStatusExtension)
-				.addExtension(evidenceStatusDateExtension);
+					.addExtension(suspectTypeExtension)
+					.addExtension(evidenceStatusExtension)
+					.addExtension(evidenceStatusDateExtension);
 			return group;
 		}
 	}
 
 	private static class Historic extends RiskAdjustmentGroup {
 
-		Historic(CodeableConcept hccCode, CodeableConcept value, Quantity score, Extension evidenceStatusDateExtension) {
+		Historic(CodeableConcept hccCode, CodeableConcept value, Quantity score,
+				Extension evidenceStatusDateExtension) {
 			super(hccCode, value, score, evidenceStatusDateExtension);
 			this.suspectTypeExtension = new Extension().setUrl(SUSPECT_TYPE_URL).setValue(
-				new CodeableConcept().setCoding(
-					Collections.singletonList(new Coding().setCode(HISTORIC).setSystem(SUSPECT_TYPE_URL))));
+					new CodeableConcept().setCoding(
+							Collections.singletonList(new Coding().setCode(HISTORIC).setSystem(SUSPECT_TYPE_URL))));
 			this.name = HISTORIC;
 		}
 	}
 
 	private static class Suspected extends RiskAdjustmentGroup {
 
-		Suspected(CodeableConcept hccCode, CodeableConcept value, Quantity score, Extension evidenceStatusDateExtension) {
+		Suspected(CodeableConcept hccCode, CodeableConcept value, Quantity score,
+				Extension evidenceStatusDateExtension) {
 			super(hccCode, value, score, evidenceStatusDateExtension);
 			this.suspectTypeExtension = new Extension().setUrl(SUSPECT_TYPE_URL).setValue(
-				new CodeableConcept().setCoding(
-					Collections.singletonList(new Coding().setCode(SUSPECTED).setSystem(SUSPECT_TYPE_URL))));
+					new CodeableConcept().setCoding(
+							Collections.singletonList(new Coding().setCode(SUSPECTED).setSystem(SUSPECT_TYPE_URL))));
 			this.name = SUSPECTED;
 		}
 	}
@@ -217,8 +224,8 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		NetNew(CodeableConcept hccCode, CodeableConcept value, Quantity score, Extension evidenceStatusDateExtension) {
 			super(hccCode, value, score, evidenceStatusDateExtension);
 			this.suspectTypeExtension = new Extension().setUrl(SUSPECT_TYPE_URL).setValue(
-				new CodeableConcept().setCoding(
-					Collections.singletonList(new Coding().setCode(NET_NEW).setSystem(SUSPECT_TYPE_URL))));
+					new CodeableConcept().setCoding(
+							Collections.singletonList(new Coding().setCode(NET_NEW).setSystem(SUSPECT_TYPE_URL))));
 			this.name = NET_NEW;
 		}
 	}
@@ -236,7 +243,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			this.unprocessedReport.copyValues(this.processedReport);
 			this.processedReport.getGroup().clear();
 			this.processedReport.setMeta(
-				new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"));
+					new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"));
 		}
 
 		void createIssue(String issue) {
