@@ -11,6 +11,7 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
@@ -19,7 +20,6 @@ import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.opencds.cqf.ruler.utility.Canonicals;
 
 /**
  * This class provides an implementation of the cql-engine's TerminologyProvider
@@ -61,7 +61,8 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		// This could possibly be refactored into a single call to the underlying HAPI
 		// Terminology service. Need to think through that..,
 
-		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId()).withVersion(valueSet.getVersion());
+		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId())
+				.withVersion(valueSet.getVersion());
 
 		if (this.myGlobalCodeCache.containsKey(vsId)) {
 			return this.myGlobalCodeCache.get(vsId);
@@ -72,12 +73,11 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		valueSetExpansionOptions.setCount(Integer.MAX_VALUE);
 
 		if (valueSet.getVersion() != null && Canonicals.getUrl(valueSet.getId()) != null
-			&& Canonicals.getVersion(valueSet.getId()) == null) {
+				&& Canonicals.getVersion(valueSet.getId()) == null) {
 			valueSet.setId(valueSet.getId() + "|" + valueSet.getVersion());
 		}
 
-		org.hl7.fhir.r4.model.ValueSet vs =
-			myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());
+		org.hl7.fhir.r4.model.ValueSet vs = myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());
 
 		List<Code> codes = getCodes(vs);
 		this.myGlobalCodeCache.put(vsId, codes);
@@ -87,7 +87,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 	@Override
 	public Code lookup(Code code, CodeSystemInfo codeSystem) throws ResourceNotFoundException {
 		LookupCodeResult cs = myTerminologySvc.lookupCode(
-			new ValidationSupportContext(myValidationSupport), codeSystem.getId(), code.getCode());
+				new ValidationSupportContext(myValidationSupport), codeSystem.getId(), code.getCode());
 
 		if (cs != null) {
 			code.setDisplay(cs.getCodeDisplay());
@@ -99,7 +99,8 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
 	protected List<Code> getCodes(org.hl7.fhir.r4.model.ValueSet theValueSet) {
 		checkState(theValueSet.hasExpansion(),
-				"ValueSet {} did not have an expansion. Unable to get codes unexpanded ValueSet.", theValueSet.getUrl());
+				"ValueSet {} did not have an expansion. Unable to get codes unexpanded ValueSet.",
+				theValueSet.getUrl());
 		List<Code> codes = new ArrayList<>();
 
 		for (org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()

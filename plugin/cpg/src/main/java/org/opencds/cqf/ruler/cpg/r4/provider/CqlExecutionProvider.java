@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,13 +32,13 @@ import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * This class is used to provide an {@link DaoRegistryOperationProvider
@@ -250,15 +250,16 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			if (StringUtils.isBlank(content)) {
 				List<StringType> headerList = Stream.of(new StringType("Content-Type: application/json"),
 						new StringType("Authorization: " + requestDetails.getHeader("Authorization")))
-					.collect(Collectors.toList());
-				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase()).setHeader(headerList);
+						.collect(Collectors.toList());
+				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
+						.setHeader(headerList);
 				return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
-					parameters == null ? new Parameters() : parameters, subject,
-					evaluationHelper.resolveIncludedLibraries(library),
-					useServerData == null || useServerData.booleanValue(), data, null,
-					dataEndpoint == null ? defaultEndpoint : dataEndpoint,
-					contentEndpoint == null ? defaultEndpoint : contentEndpoint,
-					terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
+						parameters == null ? new Parameters() : parameters, subject,
+						evaluationHelper.resolveIncludedLibraries(library),
+						useServerData == null || useServerData.booleanValue(), data, null,
+						dataEndpoint == null ? defaultEndpoint : dataEndpoint,
+						contentEndpoint == null ? defaultEndpoint : contentEndpoint,
+						terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
 			}
 
 			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,

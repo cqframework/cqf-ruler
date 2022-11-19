@@ -3,8 +3,6 @@ package org.opencds.cqf.ruler.cr.dstu3.provider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.google.common.collect.Lists;
-
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.Observation;
@@ -15,6 +13,8 @@ import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.opencds.cqf.ruler.utility.Searches;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.google.common.collect.Lists;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 

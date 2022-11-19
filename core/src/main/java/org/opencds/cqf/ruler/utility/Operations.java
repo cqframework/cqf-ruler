@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import ca.uhn.fhir.rest.api.RequestTypeEnum;
-import ca.uhn.fhir.rest.param.DateRangeParam;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+import org.opencds.cqf.cql.evaluator.fhir.util.Parameters;
 
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 
 /**
  * This class provides utilities for implementing FHIR operations
@@ -35,7 +37,7 @@ public class Operations {
 
 	/**
 	 * This function returns a fullUrl for a resource.
-	 * 
+	 *
 	 * @param serverAddress the address of the server
 	 * @param fhirType      the type of the resource
 	 * @param elementId     the id of the resource
@@ -48,7 +50,7 @@ public class Operations {
 
 	/**
 	 * This function returns a fullUrl for a resource.
-	 * 
+	 *
 	 * @param serverAddress the address of the server
 	 * @param resource      the resource
 	 * @return the full url as a String
@@ -59,7 +61,7 @@ public class Operations {
 
 	/**
 	 * This function validates a string as a representation of a FHIR date.
-	 * 
+	 *
 	 * @param theParameter the name of the parameter
 	 * @param theValue     the value of the parameter
 	 */
@@ -72,7 +74,7 @@ public class Operations {
 	 * This function validates a parameter as a string representation of a FHIR
 	 * date.
 	 * Precondition: the parameter has one and only one value.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
 	 *                          framework.
@@ -82,10 +84,9 @@ public class Operations {
 		validateCardinality(theRequestDetails, theParameter, 1, 1);
 		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
 			validateDate(theParameter, theRequestDetails.getParameters().get(theParameter)[0]);
-		}
-		else {
+		} else {
 			Optional<String> theValue = Parameters.getSingularStringPart(
-				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theParameter);
+					theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theParameter);
 			theValue.ifPresent(s -> validateDate(theParameter, s));
 		}
 	}
@@ -96,18 +97,18 @@ public class Operations {
 	 * @param requestDetails metadata about the current request being processed.
 	 *                       Generally auto-populated by the HAPI FHIR server
 	 *                       framework.
-	 * @param parameter		 the name of the parameter
-	 * @return					 the number of input parameters as an integer
+	 * @param parameter      the name of the parameter
+	 * @return the number of input parameters as an integer
 	 */
 	public static int getNumberOfParametersFromRequest(RequestDetails requestDetails, String parameter) {
 		if (requestDetails.getRequestType() == RequestTypeEnum.POST) {
-			List<?> parameterList = Parameters.getPartsByName(requestDetails.getFhirContext(), requestDetails.getResource(), parameter);
+			List<?> parameterList = Parameters.getPartsByName(requestDetails.getFhirContext(),
+					requestDetails.getResource(), parameter);
 			if (parameterList == null) {
 				return 0;
 			}
 			return parameterList.size();
-		}
-		else {
+		} else {
 			String[] parameterArr = requestDetails.getParameters().get(parameter);
 			if (parameterArr == null) {
 				return 0;
@@ -119,7 +120,7 @@ public class Operations {
 	/**
 	 * This function validates the minimal and maximum number (inclusive) of values
 	 * (cardinality) of a parameter.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
 	 *                          framework.
@@ -139,7 +140,7 @@ public class Operations {
 	/**
 	 * This function validates the minimal number (inclusive) of values
 	 * (cardinality) of a parameter.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
 	 *                          framework.
@@ -161,7 +162,7 @@ public class Operations {
 	 * FHIR dates and that they are a valid interval.
 	 * This includes that the start value is before the end value.
 	 * Precondition: the start and end parameters have one and only one value.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
 	 *                          framework.
@@ -175,13 +176,12 @@ public class Operations {
 		validateCardinality(theRequestDetails, theEndParameter, 1, 1);
 		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
 			new DateRangeParam(theRequestDetails.getParameters().get(theStartParameter)[0],
-				theRequestDetails.getParameters().get(theEndParameter)[0]);
-		}
-		else {
+					theRequestDetails.getParameters().get(theEndParameter)[0]);
+		} else {
 			Optional<String> start = Parameters.getSingularStringPart(
-				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theStartParameter);
+					theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theStartParameter);
 			Optional<String> end = Parameters.getSingularStringPart(
-				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theEndParameter);
+					theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theEndParameter);
 			if (start.isPresent() && end.isPresent()) {
 				new DateRangeParam(start.get(), end.get());
 			}
@@ -191,7 +191,7 @@ public class Operations {
 	/**
 	 * This function validates the value provided for a parameter matches a
 	 * specified regex pattern.
-	 * 
+	 *
 	 * @param theParameter the name of the parameter
 	 * @param theValue     the value of the parameter
 	 * @param thePattern   the regex pattern to match
@@ -207,7 +207,7 @@ public class Operations {
 	 * Pattern matching is only enforced if the parameter has a non null/empty
 	 * value.
 	 * Precondition: the parameter has one and only one value.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
 	 *                          framework.
@@ -221,9 +221,9 @@ public class Operations {
 		}
 		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
 			validatePattern(theParameter, theRequestDetails.getParameters().get(theParameter)[0], thePattern);
-		}
-		else {
-			Optional<String> theValue = Parameters.getSingularStringPart(theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theParameter);
+		} else {
+			Optional<String> theValue = Parameters.getSingularStringPart(theRequestDetails.getFhirContext(),
+					theRequestDetails.getResource(), theParameter);
 			theValue.ifPresent(s -> validatePattern(theParameter, s, thePattern));
 		}
 	}
@@ -233,7 +233,7 @@ public class Operations {
 	 * parameters.
 	 * Exclusivity is only enforced if the exclusive parameter has at least one
 	 * value.
-	 * 
+	 *
 	 * @param theRequestDetails     metadata about the current request being
 	 *                              processed.
 	 *                              Generally auto-populated by the HAPI FHIR server
@@ -249,7 +249,7 @@ public class Operations {
 		}
 		for (String excludedParameter : theExcludedParameters) {
 			checkArgument(getNumberOfParametersFromRequest(theRequestDetails, excludedParameter) <= 0,
-				"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
+					"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
 		}
 	}
 
@@ -258,7 +258,7 @@ public class Operations {
 	 * parameter.
 	 * Inclusivity is only enforced if the inclusive parameter has at least one
 	 * value.
-	 * 
+	 *
 	 * @param theRequestDetails     metadata about the current request being
 	 *                              processed.
 	 *                              Generally auto-populated by the HAPI FHIR server
@@ -274,7 +274,7 @@ public class Operations {
 		}
 		for (String includedParameter : theIncludedParameters) {
 			checkArgument(getNumberOfParametersFromRequest(theRequestDetails, includedParameter) > 0,
-				"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
+					"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
 		}
 	}
 
@@ -283,7 +283,7 @@ public class Operations {
 	 * value.
 	 * It is an exception that neither of the parameters has a value.
 	 * It is also an exception that both of the parameters has a value.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being
 	 *                          processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
@@ -304,7 +304,7 @@ public class Operations {
 	 * This function validates that at least one of a set of parameters has a value.
 	 * It is an exception that none of the parameters has a value.
 	 * It is not an exception that some or all of the parameters have a value.
-	 * 
+	 *
 	 * @param theRequestDetails metadata about the current request being
 	 *                          processed.
 	 *                          Generally auto-populated by the HAPI FHIR server

@@ -22,14 +22,14 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+import org.opencds.cqf.cql.evaluator.fhir.util.Libraries;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
 import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.opencds.cqf.ruler.cr.utility.DataRequirements;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Ids;
-import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +109,8 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		}
 
 		if (library == null) {
-			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails)
+					.firstOrNull();
 		}
 		return library;
 	}

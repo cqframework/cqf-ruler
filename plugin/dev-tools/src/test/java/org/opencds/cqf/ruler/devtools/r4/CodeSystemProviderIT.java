@@ -61,7 +61,8 @@ class CodeSystemProviderIT extends RestIntegrationTest {
 		assertEquals(1, outcome.getIssue().size());
 		OperationOutcomeIssueComponent issue = outcome.getIssue().get(0);
 		assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
-		assertTrue(issue.getDetails().getText().startsWith("Unable to find Resource: " + vs.getIdElement().getIdPart()));
+		assertTrue(
+				issue.getDetails().getText().startsWith("Unable to find Resource: " + vs.getIdElement().getIdPart()));
 	}
 
 	@Test
@@ -99,7 +100,8 @@ class CodeSystemProviderIT extends RestIntegrationTest {
 		log.info("Beginning Test R4 SNOMED CodeSystemUpdate");
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(CodeSystemProviderIT.class.getResourceAsStream("valueset" + "/" + "valueset-pdmp-review-procedure.json"))));
+				Objects.requireNonNull(CodeSystemProviderIT.class
+						.getResourceAsStream("valueset" + "/" + "valueset-pdmp-review-procedure.json"))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		ValueSet vs = (ValueSet) loadResource("json", resourceString);

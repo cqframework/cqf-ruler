@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +36,11 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	 * operation found in the
 	 * <a href="http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html">FHIR
 	 * Clinical Reasoning Module</a>.
-	 * 
+	 *
 	 * <p>
 	 * Returns a set of parameters with the generated MeasureReport and the
 	 * resources that were used during the Measure evaluation
-	 * 
+	 *
 	 * @param theRequestDetails generally auto-populated by the HAPI server
 	 *                          framework.
 	 * @param theId             the Id of the Measure to sub data for

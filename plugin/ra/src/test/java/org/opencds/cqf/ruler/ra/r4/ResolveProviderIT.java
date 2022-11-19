@@ -1,7 +1,12 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
@@ -21,17 +26,12 @@ import org.opencds.cqf.ruler.test.utility.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { ResolveProviderIT.class, RAConfig.class },
-	properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ResolveProviderIT.class,
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ResolveProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
@@ -56,13 +56,13 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-precondition-error.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}
@@ -81,13 +81,13 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-closure.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
 		assertTrue(result.hasParameter("return"));
@@ -110,12 +110,15 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).hasGroup());
 		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).hasId());
 		assertEquals("group-002", ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).getId());
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).hasExtension(RAConstants.EVIDENCE_STATUS_URL));
-		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
+		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1)
+				.hasExtension(RAConstants.EVIDENCE_STATUS_URL));
+		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1)
+				.getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
 		assertTrue(shouldBeClosed.hasValue() && shouldBeClosed.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeClosed.getValue()).hasCoding());
 		assertTrue(((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().hasCode());
-		assertEquals(RAConstants.CLOSED_GAP_CODE, ((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
+		assertEquals(RAConstants.CLOSED_GAP_CODE,
+				((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
 
 		assertEquals(11, raBundle.getEntry().size());
 	}
@@ -134,13 +137,13 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-invalidation.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
 		assertTrue(result.hasParameter("return"));
@@ -163,12 +166,15 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).hasGroup());
 		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).hasId());
 		assertEquals("group-002", ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).getId());
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).hasExtension(RAConstants.EVIDENCE_STATUS_URL));
-		Extension shouldBeInvalid = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1).getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
+		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1)
+				.hasExtension(RAConstants.EVIDENCE_STATUS_URL));
+		Extension shouldBeInvalid = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(1)
+				.getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
 		assertTrue(shouldBeInvalid.hasValue() && shouldBeInvalid.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeInvalid.getValue()).hasCoding());
 		assertTrue(((CodeableConcept) shouldBeInvalid.getValue()).getCodingFirstRep().hasCode());
-		assertEquals(RAConstants.INVALID_GAP_CODE, ((CodeableConcept) shouldBeInvalid.getValue()).getCodingFirstRep().getCode());
+		assertEquals(RAConstants.INVALID_GAP_CODE,
+				((CodeableConcept) shouldBeInvalid.getValue()).getCodingFirstRep().getCode());
 
 		assertEquals(11, raBundle.getEntry().size());
 	}
@@ -188,13 +194,13 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-creation.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
 		assertTrue(result.hasParameter("return"));
@@ -216,20 +222,26 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertTrue(raBundle.getEntry().get(4).getResource() instanceof MeasureReport);
 		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).hasGroup());
 		assertEquals(3, ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().size());
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2).hasExtension(RAConstants.EVIDENCE_STATUS_URL));
+		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+				.hasExtension(RAConstants.EVIDENCE_STATUS_URL));
 
-		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2).getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
+		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+				.getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
 		assertTrue(shouldBeClosed.hasValue() && shouldBeClosed.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeClosed.getValue()).hasCoding());
 		assertTrue(((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().hasCode());
-		assertEquals(RAConstants.CLOSED_GAP_CODE, ((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
+		assertEquals(RAConstants.CLOSED_GAP_CODE,
+				((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
 
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2).hasExtension(RAConstants.SUSPECT_TYPE_URL));
-		Extension shouldBeNetNew = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2).getExtensionByUrl(RAConstants.SUSPECT_TYPE_URL);
+		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+				.hasExtension(RAConstants.SUSPECT_TYPE_URL));
+		Extension shouldBeNetNew = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+				.getExtensionByUrl(RAConstants.SUSPECT_TYPE_URL);
 		assertTrue(shouldBeNetNew.hasValue() && shouldBeNetNew.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeNetNew.getValue()).hasCoding());
 		assertTrue(((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().hasCode());
-		assertEquals(RAConstants.NET_NEW_CODE, ((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().getCode());
+		assertEquals(RAConstants.NET_NEW_CODE,
+				((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().getCode());
 
 		assertEquals(11, raBundle.getEntry().size());
 	}
@@ -248,13 +260,13 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-creation-error.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}

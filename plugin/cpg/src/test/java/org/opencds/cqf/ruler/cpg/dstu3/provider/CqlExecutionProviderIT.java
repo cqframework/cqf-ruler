@@ -1,30 +1,29 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.booleanPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.datePart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.stringPart;
+
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IntegerType;
 import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.booleanPart;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.datePart;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { CqlExecutionProviderIT.class, CpgConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
@@ -122,24 +121,24 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 				stringPart("subject", "Patient/SimplePatient"),
 				stringPart("content", "library SimpleSTU3Library\n" +
-								"\n" +
-								"using FHIR version '3.0.1'\n" +
-								"\n" +
-								"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
-								"\n" +
-								"context Patient\n" +
-								"\n" +
-								"define simpleBooleanExpression: true\n" +
-								"\n" +
-								"define observationRetrieve: [Observation]\n" +
-								"\n" +
-								"define observationHasCode: not IsNull(([Observation]).code)\n" +
-								"\n" +
-								"define \"Initial Population\": observationHasCode\n" +
-								"\n" +
-								"define \"Denominator\": \"Initial Population\"\n" +
-								"\n" +
-								"define \"Numerator\": \"Denominator\""));
+						"\n" +
+						"using FHIR version '3.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define simpleBooleanExpression: true\n" +
+						"\n" +
+						"define observationRetrieve: [Observation]\n" +
+						"\n" +
+						"define observationHasCode: not IsNull(([Observation]).code)\n" +
+						"\n" +
+						"define \"Initial Population\": observationHasCode\n" +
+						"\n" +
+						"define \"Denominator\": \"Initial Population\"\n" +
+						"\n" +
+						"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -168,24 +167,24 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 				stringPart("subject", "Patient/SimplePatient"),
 				stringPart("expression", "Numerator"),
 				stringPart("content", "library SimpleSTU3Library\n" +
-								"\n" +
-								"using FHIR version '3.0.1'\n" +
-								"\n" +
-								"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
-								"\n" +
-								"context Patient\n" +
-								"\n" +
-								"define simpleBooleanExpression: true\n" +
-								"\n" +
-								"define observationRetrieve: [Observation]\n" +
-								"\n" +
-								"define observationHasCode: not IsNull(([Observation]).code)\n" +
-								"\n" +
-								"define \"Initial Population\": observationHasCode\n" +
-								"\n" +
-								"define \"Denominator\": \"Initial Population\"\n" +
-								"\n" +
-								"define \"Numerator\": \"Denominator\""));
+						"\n" +
+						"using FHIR version '3.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define simpleBooleanExpression: true\n" +
+						"\n" +
+						"define observationRetrieve: [Observation]\n" +
+						"\n" +
+						"define observationHasCode: not IsNull(([Observation]).code)\n" +
+						"\n" +
+						"define \"Initial Population\": observationHasCode\n" +
+						"\n" +
+						"define \"Denominator\": \"Initial Population\"\n" +
+						"\n" +
+						"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -208,6 +207,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameterFirstRep().hasResource());
 		assertTrue(results.getParameterFirstRep().getResource() instanceof OperationOutcome);
 		assertEquals("Unsupported interval point type for FHIR conversion java.lang.Integer",
-				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails().getText());
+				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails()
+						.getText());
 	}
 }
