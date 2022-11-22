@@ -22,7 +22,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	private KnowledgeArtifactProcessor artifactProcessor;
 
 	 @Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
-	 @Description(shortDefinition = "$draft", value = "Create a new draft library version")
+	 @Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
 	 public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId)
 		 throws FHIRException {
 		 FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
