@@ -23,14 +23,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void draftOperation_test() {
-		Library specLibrary = (Library) readResource("ersd-library-example.json");
-		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
-		Parameters params = parameters( part("specification", specLibrary) );
+		loadTransaction("ersd-active-transaction-bundle-example.json");
 
 		Resource returnResource = getClient().operation()
-			.onServer()
+			.onInstance("Library/SpecificationLibrary")
 			.named("$draft")
-			.withParameters(params)
+			.withNoParameters(Parameters.class)
 			.returnResourceType(Library.class)
 			.execute();
 
@@ -39,7 +37,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void releaseResource_test() {
-		loadTransaction("ersd-transaction-bundle-example.json");
+		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Library returnResource = getClient().operation()
 			.onInstance("Library/SpecificationLibrary")
 			.named("$release")
@@ -63,7 +61,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void publishResource_test() {
 		Library specLibrary = (Library) readResource("ersd-library-example.json");
-		loadTransaction("ersd-transaction-bundle-example.json");
+		loadTransaction("ersd-active-transaction-bundle-example.json");
 
 		Parameters params = parameters( part("specification", specLibrary) );
 
