@@ -205,7 +205,7 @@ public class CqlConfig {
 			}
 
 			return new CacheAwareLibraryLoaderDecorator(
-					new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions), globalLibraryCache) {
+					new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions), globalLibraryCache, null) {
 				// TODO: This is due to a bug with the ELM annotations which prevent options
 				// from matching the way they should
 				@Override
