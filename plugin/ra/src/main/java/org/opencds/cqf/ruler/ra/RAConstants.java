@@ -18,7 +18,7 @@ public class RAConstants {
 	public static final String REPORT_ID_PREFIX = "coding-gaps-";
 	public static final String REMEDIATE_ID_PREFIX = "remediate-coding-gaps-";
 	public static final String RESOLVE_ID_PREFIX = "resolve-coding-gaps-";
-	public static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
+	public static final String PATIENT_REPORT_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport";
 	public static final String CODING_GAP_BUNDLE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle";
 	public static final String SUSPECT_TYPE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";
 	public static final String EVIDENCE_STATUS_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
@@ -63,6 +63,11 @@ public class RAConstants {
 			.setValue(OPEN_GAP_CONCEPT);
 	public static final Extension EVIDENCE_STATUS_INVALID_EXT = new Extension().setUrl(EVIDENCE_STATUS_URL)
 			.setValue(INVALID_GAP_CONCEPT);
+
+	// MeasureReport constants
+	public static final Meta PATIENT_REPORT_META = new Meta().setProfile(
+			Collections.singletonList(new CanonicalType(RAConstants.PATIENT_REPORT_URL)))
+			.setLastUpdated(new Date());
 
 	// Bundle constants
 	public static final Meta CODING_GAP_REPORT_BUNDLE_META = new Meta().setProfile(

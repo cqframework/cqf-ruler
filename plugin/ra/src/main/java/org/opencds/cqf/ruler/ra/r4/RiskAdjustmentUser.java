@@ -183,6 +183,24 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return evidence;
 	}
 
+	default Resource getAuthorFromBundle(Bundle bundle, Composition composition) {
+		Reference author = composition.getAuthor().get(0);
+		checkArgument(
+				author != null,
+				String.format("The author element is required for the composition (id=%s).",
+						composition.getIdElement().getIdPart()));
+
+		Optional<Bundle.BundleEntryComponent> authorResource = bundle.getEntry().stream()
+				.filter(entry -> entry.getResource().getIdElement().getIdPart()
+						.equals(author.getReferenceElement().getIdPart()))
+				.findFirst();
+		checkArgument(
+				authorResource.isPresent(),
+				String.format("The author resource is a required entry in the bundle (id=%s).",
+						bundle.getIdElement().getIdPart()));
+		return authorResource.get().getResource();
+	}
+
 	default DetectedIssue buildOriginalIssueStart(MeasureReport report, String groupId) {
 		DetectedIssue originalIssue = new DetectedIssue();
 		originalIssue.setIdElement(new IdType(
@@ -195,7 +213,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 				.filter(group -> group.getId().equals(groupId)).findFirst();
 		checkArgument(
 				groupComponent.isPresent(),
-				String.format("The code element is required for the MeasureReport.group component (%s).", groupId));
+				String.format("The code element is required for the MeasureReport.group component (id=%s).", groupId));
 
 		originalIssue.setCode(groupComponent.get().getCode());
 		if (report.getSubject().getReference().startsWith("Patient/")) {
@@ -296,12 +314,12 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 								issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue(),
 								(CodeableConcept) issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).get(0)
 										.getValue());
-						report.setMeta(RAConstants.CODING_GAP_REPORT_BUNDLE_META);
+						report.setMeta(RAConstants.PATIENT_REPORT_META);
 					}
 					// creation
 					else if (!issue.getModifierExtensionsByUrl(RAConstants.CODING_GAP_REQUEST_URL).isEmpty()) {
 						createMeasureReportGroup(report, issue.getCode());
-						report.setMeta(RAConstants.CODING_GAP_REPORT_BUNDLE_META);
+						report.setMeta(RAConstants.PATIENT_REPORT_META);
 					}
 				});
 	}

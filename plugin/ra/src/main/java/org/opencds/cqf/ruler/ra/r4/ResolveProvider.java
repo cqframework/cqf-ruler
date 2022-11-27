@@ -15,8 +15,8 @@ import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
-import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class ResolveProvider extends DaoRegistryOperationProvider
-		implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
+		implements ParameterUser, ResourceCreator, RiskAdjustmentUser {
 
 	/**
 	 * Implements the <a href=
@@ -67,13 +67,13 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 					MeasureReport mr = getReportFromBundle(b);
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
+					Resource author = getAuthorFromBundle(b, composition);
 					validateMeasureReportPrecondition(mr, issues);
 					updateMeasureReportGroups(mr, issues);
 					updateCompositionToFinal(composition, mr, issues);
-					// TODO: get author from bundle
 					codingGapReportBundles
 							.add(buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr,
-									null));
+									author));
 				});
 
 		Parameters result = newResource(Parameters.class, RAConstants.RESOLVE_ID_PREFIX + UUID.randomUUID());
