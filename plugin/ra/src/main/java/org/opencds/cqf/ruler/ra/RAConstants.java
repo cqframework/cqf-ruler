@@ -18,6 +18,7 @@ public class RAConstants {
 	public static final String REPORT_ID_PREFIX = "coding-gaps-";
 	public static final String REMEDIATE_ID_PREFIX = "remediate-cc-gaps-";
 	public static final String RESOLVE_ID_PREFIX = "resolve-coding-gaps-";
+	public static final String APPROVE_ID_PREFIX = "approve-coding-gaps-";
 	public static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
 	public static final String CODING_GAP_BUNDLE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle";
 	public static final String SUSPECT_TYPE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";

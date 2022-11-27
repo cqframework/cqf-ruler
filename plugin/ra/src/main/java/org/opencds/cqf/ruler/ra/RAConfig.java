@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.ra;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cr.CrConfig;
+import org.opencds.cqf.ruler.ra.r4.ApproveProvider;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.RACodingGapsProvider;
 import org.opencds.cqf.ruler.ra.r4.RemediateProvider;
@@ -44,6 +45,11 @@ public class RAConfig {
 		return new RemediateProvider();
 	}
 
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4ApproveProvider() {
+		return new ApproveProvider();
+	}
 	@Bean
 	@Conditional(OnR4Condition.class)
 	public OperationProvider r4ResolveProvider() {

@@ -22,6 +22,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.ra.RAConstants;
@@ -97,6 +98,22 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 										&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodStart) >= 0
 										&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodEnd) <= 0))
 				.collect(Collectors.toList()).stream().findFirst().orElse(null);
+	}
+
+	default Bundle getMostRecentCodingGapReportBundle(String subject, String measureId, Date periodStart, Date periodEnd) {
+		return getMostRecentCodingGapReportBundles(subject).stream().filter(
+				bundle -> bundle.hasEntry() && bundle.getEntryFirstRep().hasResource()
+					&& bundle.getEntryFirstRep().getResource() instanceof Composition
+					&& ((Composition) bundle.getEntryFirstRep().getResource()).getSubject().getReference()
+					.endsWith(subject)
+					&& bundle.getEntry().stream().anyMatch(
+					entry -> entry.hasResource() && entry.getResource() instanceof MeasureReport
+						&& ((MeasureReport) entry.getResource()).hasMeasure()
+						&& ((MeasureReport) entry.getResource()).getMeasure().endsWith(measureId)
+						&& ((MeasureReport) entry.getResource()).hasDate()
+						&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodStart) >= 0
+						&& ((MeasureReport) entry.getResource()).getDate().compareTo(periodEnd) <= 0))
+			.collect(Collectors.toList()).stream().findFirst().orElse(null);
 	}
 
 	default List<MeasureReport> getReportsFromBundles(List<Bundle> bundles) {
@@ -406,4 +423,17 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		}
 		return measureIdentifier;
 	}
+
+	default String normalizeMeasureReference(
+			List<String> measureId, List<String> measureIdentifier, List<String> measureUrl) {
+		String measureReference = getMeasureReferences(measureId, measureIdentifier, measureUrl).get(0);
+		if (measureReference.startsWith("Measure/")) {
+			return measureReference.replace("Measure/", "");
+		}
+		else if (measureReference.startsWith("http")) {
+			return Canonicals.getIdPart(measureReference);
+		}
+		return measureReference;
+	}
+
 }
