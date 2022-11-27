@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.base.Strings;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -17,30 +16,33 @@ import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.ConfigurationUser;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
-import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.utility.Operations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import com.google.common.base.Strings;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class RACodingGapsProvider extends DaoRegistryOperationProvider
-		implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
+		implements ParameterUser, ConfigurationUser, ResourceCreator, RiskAdjustmentUser {
 
 	@Autowired
 	private RAProperties raProperties;
 
 	private IdType compositionSectionAuthor;
+	private Resource author;
 
 	/**
 	 * Implements the <a href=
@@ -89,12 +91,14 @@ public class RACodingGapsProvider extends DaoRegistryOperationProvider
 							patient.getIdElement().getIdPart(), periodStart.getValueAsString(), periodEnd.getValueAsString());
 					if (reports.isEmpty()) {
 						result.addParameter(part(
-								RAConstants.RETURN_PARAM_NAME, buildMissingMeasureReportCodingGapReportBundle(patient)));
+								RAConstants.RETURN_PARAM_NAME,
+								buildMissingMeasureReportCodingGapReportBundle(requestDetails.getFhirServerBase(), patient)));
 					} else {
 						reports.forEach(report -> {
 							List<DetectedIssue> issues = buildOriginalIssues(report);
 							Composition composition = buildComposition(subject, report, issues, compositionSectionAuthor);
-							Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
+							Bundle bundle = buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues,
+									report, author);
 							result.addParameter(part(RAConstants.RETURN_PARAM_NAME,
 									bundle.setId(UUID.randomUUID().toString())));
 						});
@@ -115,10 +119,13 @@ public class RACodingGapsProvider extends DaoRegistryOperationProvider
 
 	@Override
 	public void validateConfiguration(RequestDetails theRequestDetails) {
-		checkArgument(!Strings.isNullOrEmpty(raProperties.getComposition().getCompositionSectionAuthor()),
-			"The composition.ra_composition_section_author setting is required for the $ra.coding-gaps operation.");
+		checkArgument(
+				raProperties.getComposition() != null
+						&& !Strings.isNullOrEmpty(raProperties.getComposition().getCompositionSectionAuthor()),
+				"The composition.ra_composition_section_author setting is required for the $ra.coding-gaps operation.");
 		compositionSectionAuthor = new IdType(raProperties.getComposition().getCompositionSectionAuthor());
-		// This will throw a ResourceNotFound exception if the Organization resource is not loaded in the server
-		read(compositionSectionAuthor);
+		// This will throw a ResourceNotFound exception if the Organization resource is
+		// not loaded in the server
+		author = read(compositionSectionAuthor);
 	}
 }

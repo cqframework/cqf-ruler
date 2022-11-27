@@ -1,9 +1,13 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import ca.uhn.fhir.model.api.annotation.Description;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -18,16 +22,13 @@ import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.utility.Operations;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class ResolveProvider extends DaoRegistryOperationProvider
-	implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
+		implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
 
 	/**
 	 * Implements the <a href=
@@ -56,22 +57,24 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 			validateParameters(requestDetails);
 		} catch (Exception e) {
 			return parameters(part(RAConstants.INVALID_PARAMETERS_NAME,
-				generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
+					generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
 		}
 
 		List<Bundle> codingGapReportBundles = new ArrayList<>();
 		getPatientListFromSubject(subject).forEach(
-			patient -> {
-				Bundle b = getMostRecentCodingGapReportBundle(subject, periodStart.getValue(), periodEnd.getValue());
-				MeasureReport mr = getReportFromBundle(b);
-				Composition composition = getCompositionFromBundle(b);
-				List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
-				validateMeasureReportPrecondition(mr, issues);
-				updateMeasureReportGroups(mr, issues);
-				updateCompositionToFinal(composition, mr, issues);
-				codingGapReportBundles.add(buildCodingGapReportBundle(composition, issues, mr));
-			}
-		);
+				patient -> {
+					Bundle b = getMostRecentCodingGapReportBundle(subject, periodStart.getValue(), periodEnd.getValue());
+					MeasureReport mr = getReportFromBundle(b);
+					Composition composition = getCompositionFromBundle(b);
+					List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
+					validateMeasureReportPrecondition(mr, issues);
+					updateMeasureReportGroups(mr, issues);
+					updateCompositionToFinal(composition, mr, issues);
+					// TODO: get author from bundle
+					codingGapReportBundles
+							.add(buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr,
+									null));
+				});
 
 		Parameters result = newResource(Parameters.class, RAConstants.RESOLVE_ID_PREFIX + UUID.randomUUID());
 
@@ -89,6 +92,6 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 		Operations.validateCardinality(requestDetails, RAConstants.SUBJECT, 1);
 		Operations.validatePeriod(requestDetails, RAConstants.PERIOD_START, RAConstants.PERIOD_END);
 		Operations.validateSingularPattern(requestDetails, RAConstants.SUBJECT,
-			Operations.PATIENT_OR_GROUP_REFERENCE);
+				Operations.PATIENT_OR_GROUP_REFERENCE);
 	}
 }

@@ -20,7 +20,7 @@
 				"meta": {
 					"lastUpdated": "2022-11-07T22:32:06.759-07:00",
 					"profile": [
-						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-composition"
+						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-composition"
 					]
 				},
 				"identifier": {
