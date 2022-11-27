@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -169,8 +172,9 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 							resource.getExtensionsByUrl(RAConstants.GROUP_REFERENCE_URL).forEach(
 									extension -> {
 										if (extension.getValue().primitiveValue().equals(groupId)) {
-											resource.removeExtension(RAConstants.GROUP_REFERENCE_URL);
-											evidence.add(resource);
+											Reference detail = resource.copy();
+											detail.removeExtension(RAConstants.GROUP_REFERENCE_URL);
+											evidence.add(detail);
 										}
 									});
 						}
@@ -187,7 +191,13 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 				RAConstants.ORIGINAL_ISSUE_PROFILE_URL).setLastUpdated(new Date()));
 		originalIssue.addExtension().setUrl(RAConstants.GROUP_REFERENCE_URL).setValue(new StringType(groupId));
 		originalIssue.setStatus(DetectedIssue.DetectedIssueStatus.PRELIMINARY);
-		originalIssue.setCode(RAConstants.CODING_GAP_CODE);
+		Optional<MeasureReport.MeasureReportGroupComponent> groupComponent = report.getGroup().stream()
+				.filter(group -> group.getId().equals(groupId)).findFirst();
+		checkArgument(
+				groupComponent.isPresent(),
+				String.format("The code element is required for the MeasureReport.group component (%s).", groupId));
+
+		originalIssue.setCode(groupComponent.get().getCode());
 		if (report.getSubject().getReference().startsWith("Patient/")) {
 			originalIssue.setPatient(report.getSubject());
 		}

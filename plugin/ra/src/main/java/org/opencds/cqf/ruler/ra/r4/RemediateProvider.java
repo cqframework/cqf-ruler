@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
 
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -46,7 +47,7 @@ public class RemediateProvider extends DaoRegistryOperationProvider implements R
 					MeasureReport mr = getReportFromBundle(b);
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getIssuesFromBundle(b);
-					issues.addAll(getAssociatedIssues(mr.getIdElement().getValue()));
+					issues.addAll(getAssociatedIssues(Ids.simple(mr)));
 					updateComposition(composition, mr, issues);
 
 					// TODO: get author from bundle
