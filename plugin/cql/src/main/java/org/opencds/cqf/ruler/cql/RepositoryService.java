@@ -46,7 +46,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Library publishVersion(RequestDetails requestDetails, @OperationParam(name = "specification") Library library)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.publishVersion(fhirDal, library);
+		return (Library) this.artifactProcessor.publish(fhirDal, library);
 	}
 
 	@Operation(name = "$revise")

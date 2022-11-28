@@ -3,12 +3,10 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.cqframework.fhir.api.FhirDal;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -171,39 +169,11 @@ public class KnowledgeArtifactProcessor {
 			}
 	}
 
-	// Update status
-	// Main spec library
-	// 	PlanDefinition
-	//			Any DEPENDSON update to active
-	// 	ValueSet Library
-	// 		Grouping ValueSets
-	// DEPENDSON - update or validate active status
-
-	// FOR each Library, PlanDefinition, ValueSet Library, Grouping ValueSet
-	//		check status for draft (throw if not draft)
-	// 	update status
-	// 	FOR ALL DEPENDSON
-	//			check status for draft (throw if not draft)
-	//			update status
-	public MetadataResource publishVersion(FhirDal fhirDal, MetadataResource resource) {
-		List<RelatedArtifact> artifacts = new ArrayList<>();
-		if (resource instanceof Library) {
-			artifacts = ((Library) resource).getRelatedArtifact();
-		}
-		else if (resource instanceof PlanDefinition) {
-			artifacts = ((PlanDefinition) resource).getRelatedArtifact();
+	public MetadataResource publish(FhirDal fhirDal, MetadataResource resource) {
+		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
+			throw new ResourceAccessException(String.format("The posted resource must have status of 'active'. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
 
-		for (RelatedArtifact relatedArtifact : artifacts) {
-			if (relatedArtifact.hasType() &&
-				(relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF
-					|| relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)
-				&& relatedArtifact.hasResource()) {
-				publishVersion(fhirDal, (MetadataResource) fhirDal.read(new IdType(relatedArtifact.getResource())));
-			}
-		}
-
-		resource.setStatus(Enumerations.PublicationStatus.ACTIVE);
 		fhirDal.update(resource);
 		return resource;
 	}
@@ -217,7 +187,7 @@ public class KnowledgeArtifactProcessor {
 		if (!resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
 			throw new ResourceAccessException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
-		
+
 		fhirDal.update(resource);
 		return resource;
 	}
