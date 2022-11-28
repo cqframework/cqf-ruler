@@ -62,7 +62,7 @@ public class KnowledgeArtifactProcessor {
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(null);
 
-			fhirDal.create(newResource);
+			//fhirDal.create(newResource);
 
 			for (RelatedArtifact ra : adapter.getRelatedArtifact()) {
 				// If it is a composed-of relation then do a deep copy, else shallow
