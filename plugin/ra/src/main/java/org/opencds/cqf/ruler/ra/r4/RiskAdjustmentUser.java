@@ -205,17 +205,17 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		checkArgument(
 				composition.getAuthor().size() > 0 && composition.getAuthor().get(0) != null,
 				String.format("The author element is required for the composition (id=%s).",
-						composition.getIdElement().getIdPart()));
+						composition.hasIdElement() ? composition.getIdElement().getIdPart() : "null"));
 
 		Reference author = composition.getAuthor().get(0);
 		Optional<Bundle.BundleEntryComponent> authorResource = bundle.getEntry().stream()
-				.filter(entry -> entry.getResource().getIdElement().getIdPart()
+				.filter(entry -> entry.getResource().hasIdElement() && entry.getResource().getIdElement().getIdPart()
 						.equals(author.getReferenceElement().getIdPart()))
 				.findFirst();
 		checkArgument(
 				authorResource.isPresent(),
 				String.format("The author resource is a required entry in the bundle (id=%s).",
-						bundle.getIdElement().getIdPart()));
+						bundle.hasIdElement() ? bundle.getIdElement().getIdPart() : "null"));
 		return authorResource.get().getResource();
 	}
 
@@ -228,7 +228,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		originalIssue.addExtension().setUrl(RAConstants.GROUP_REFERENCE_URL).setValue(new StringType(groupId));
 		originalIssue.setStatus(DetectedIssue.DetectedIssueStatus.PRELIMINARY);
 		Optional<MeasureReport.MeasureReportGroupComponent> groupComponent = report.getGroup().stream()
-				.filter(group -> group.getId().equals(groupId)).findFirst();
+				.filter(group -> group.hasId() && group.getId().equals(groupId)).findFirst();
 		checkArgument(
 				groupComponent.isPresent(),
 				String.format("The code element is required for the MeasureReport.group component (id=%s).", groupId));
