@@ -3,10 +3,12 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -20,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
@@ -204,27 +209,15 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
-		List<RelatedArtifact> artifacts = new ArrayList<>();
-		System.out.println("Resource Status: " + resource.getStatus());
-		if(resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
-			if (resource instanceof Library) {
-				artifacts = ((Library) resource).getRelatedArtifact();
-			} else if (resource instanceof PlanDefinition) {
-				artifacts = ((PlanDefinition) resource).getRelatedArtifact();
-			}
-
-			for (RelatedArtifact relatedArtifact : artifacts) {
-				if (relatedArtifact.hasType() &&
-					(relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF
-						|| relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)
-					&& relatedArtifact.hasResource()) {
-					revise(fhirDal, (MetadataResource) fhirDal.read(new IdType(relatedArtifact.getResource())));
-				}
-			}
-		} else {
-			throw new ResourceAccessException("Resource is not in a draft status.  Unable to process.");
+		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
+			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getUrl()));
 		}
-		resource.setStatus(Enumerations.PublicationStatus.DRAFT);
+
+		if (!resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
+			throw new ResourceAccessException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
+		}
+		
 		fhirDal.update(resource);
 		return resource;
 	}

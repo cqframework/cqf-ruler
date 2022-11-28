@@ -4,8 +4,6 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-//import org.hl7.fhir.r4.model.ValueSet;
-//import org.hl7.fhir.r4.model.ValueSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +23,6 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 			default: return new ArrayList<>();
 		}
 	}
-
-//	public MetadataResource setRelatedArtifact(List<RelatedArtifact> theRelatedArtifact) {
-//		if(resource.getResourceType().equals("Library")) {
-//			((Library) resource).setRelatedArtifact(theRelatedArtifact);
-//		} else if(resource.getResourceType().equals("PlanDefinition")) {
-//			((PlanDefinition) resource).setRelatedArtifact(theRelatedArtifact);
-//		}
-//		return resource;
-//
-//	}
 
 	public MetadataResource setRelatedArtifact(List<RelatedArtifact> theRelatedArtifact) {
 		System.out.println("getName: " + resource.getName());
