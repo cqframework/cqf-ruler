@@ -15,6 +15,7 @@ import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
@@ -66,10 +67,13 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 					MeasureReport mr = getReportFromBundle(b);
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
+					Resource author = getAuthorFromBundle(b, composition);
 					validateMeasureReportPrecondition(mr, issues);
 					updateMeasureReportGroups(mr, issues);
 					updateCompositionToFinal(composition, mr, issues);
-					codingGapReportBundles.add(buildCodingGapReportBundle(composition, issues, mr));
+					codingGapReportBundles
+							.add(buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr,
+									author));
 				});
 
 		Parameters result = newResource(Parameters.class, RAConstants.RESOLVE_ID_PREFIX + UUID.randomUUID());
