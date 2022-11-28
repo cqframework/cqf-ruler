@@ -174,12 +174,26 @@ public class KnowledgeArtifactProcessor {
 			throw new ResourceAccessException(String.format("The posted resource must have status of 'active'. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
 
-		fhirDal.update(resource);
+		if (resource.getId() == null || resource.getId().isEmpty()) {
+			fhirDal.create(resource);
+		} else {
+			MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+			if (existingResource != null) {
+				fhirDal.update(resource);
+			}
+		}
+
+		//TODO: This is wrong. Once the FhirDal implementation supports returning the resource
+		// (or at least ID so it can be retrieved) that resource should be returned rather than the proposed resource.
 		return resource;
 	}
 
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+		if (existingResource == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
+		}
+
 		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
 			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getUrl()));
 		}
@@ -189,6 +203,8 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		fhirDal.update(resource);
+		//TODO: This is a short-term and incorrect solution. Once the FhirDal supports returning the
+		// resource from the update method, the updated resource should be returned (i.e., not the proposed resource).
 		return resource;
 	}
 }

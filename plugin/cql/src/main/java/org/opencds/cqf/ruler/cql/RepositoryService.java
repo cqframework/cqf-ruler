@@ -43,17 +43,17 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$publish")
 	@Description(shortDefinition = "$publish", value = "Post a new artifact with active status")
-	public Library publishVersion(RequestDetails requestDetails, @OperationParam(name = "specification") Library library)
+	public Library publishOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.publish(fhirDal, library);
+		return (Library) this.artifactProcessor.publish(fhirDal, resource);
 	}
 
 	@Operation(name = "$revise")
-	@Description(shortDefinition = "$revise", value = "Put an existing with active draft")
-	public Library revise(RequestDetails requestDetails, @OperationParam(name = "specification") Library library)
+	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
+	public Library reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.revise(fhirDal, library);
+		return (Library)this.artifactProcessor.revise(fhirDal, resource);
 	}
 }
