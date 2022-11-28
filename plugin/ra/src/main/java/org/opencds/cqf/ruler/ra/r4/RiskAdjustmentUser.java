@@ -202,12 +202,12 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 	}
 
 	default Resource getAuthorFromBundle(Bundle bundle, Composition composition) {
-		Reference author = composition.getAuthor().get(0);
 		checkArgument(
-				author != null,
+				composition.getAuthor().size() > 0 && composition.getAuthor().get(0) != null,
 				String.format("The author element is required for the composition (id=%s).",
 						composition.getIdElement().getIdPart()));
 
+		Reference author = composition.getAuthor().get(0);
 		Optional<Bundle.BundleEntryComponent> authorResource = bundle.getEntry().stream()
 				.filter(entry -> entry.getResource().getIdElement().getIdPart()
 						.equals(author.getReferenceElement().getIdPart()))
