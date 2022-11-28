@@ -161,8 +161,8 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	void testBCSEHEDISMY2022() {
 		loadTransaction("BCSEHEDISMY2022-bundle.json");
 
-		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-5", 0, 0, 0, 0, false,
-				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
+//		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-5", 0, 0, 0, 0, false,
+//				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-7", 1, 1, 0, 0, true,
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-9", 0, 0, 0, 0, true,
