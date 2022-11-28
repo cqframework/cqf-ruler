@@ -421,7 +421,8 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		// all the resources inserted above are in the bundle entry
 		// plus a DetectedIssue resource for each group in the MeasureReport is in the
 		// bundle entry
-		assertEquals(21 + 10, bundle.getEntry().size());
+		// plus the author Organization is in the bundle entry
+		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
 	@Test
@@ -464,7 +465,8 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		// all the resources inserted above are in the bundle entry
 		// plus a DetectedIssue resource for each group in the MeasureReport is in the
 		// bundle entry
-		assertEquals(21 + 10, bundle.getEntry().size());
+		// plus the author organization is in the bundle entry
+		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
 	@Test
@@ -506,7 +508,8 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		// was not evaluated
 		// plus a DetectedIssue resource for each group in the MeasureReport is in the
 		// bundle entry
-		assertEquals(21 + 10, bundle.getEntry().size());
+		// plus the author organization is in the bundle entry
+		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
 	@Test
@@ -548,7 +551,8 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		// was not evaluated
 		// plus a DetectedIssue resource for each group in the MeasureReport is in the
 		// bundle entry
-		assertEquals(21 + 10, bundle.getEntry().size());
+		// plus the author Organization is in the bundle entry
+		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
 	@Test
@@ -573,7 +577,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 
 		assertNotNull(bundle);
 		assertTrue(bundle.hasEntry());
-		assertEquals(8, bundle.getEntry().size());
+		assertEquals(9, bundle.getEntry().size());
 		assertTrue(bundle.getEntryFirstRep().getResource() instanceof Composition);
 
 		// test that Composition author is same as config properties
