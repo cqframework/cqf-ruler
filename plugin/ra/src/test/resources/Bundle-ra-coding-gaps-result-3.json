@@ -23,6 +23,7 @@
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-composition"
 					]
 				},
+				"id": "eceb8717-6ae5-4921-99db-ae8625b15821",
 				"identifier": {
 					"system": "urn:ietf:rfc:3986",
 					"value": "urn:uuid:e729e44f-756b-43cd-a9a3-2913d3bce01d"

@@ -120,7 +120,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.CLOSED_GAP_CODE,
 				((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
 
-		assertEquals(11, raBundle.getEntry().size());
+		assertEquals(12, raBundle.getEntry().size());
 	}
 
 	@Test
@@ -176,7 +176,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.INVALID_GAP_CODE,
 				((CodeableConcept) shouldBeInvalid.getValue()).getCodingFirstRep().getCode());
 
-		assertEquals(11, raBundle.getEntry().size());
+		assertEquals(12, raBundle.getEntry().size());
 	}
 
 	@SuppressWarnings("java:S5961")
@@ -243,7 +243,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.NET_NEW_CODE,
 				((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().getCode());
 
-		assertEquals(11, raBundle.getEntry().size());
+		assertEquals(12, raBundle.getEntry().size());
 	}
 
 	@Test
