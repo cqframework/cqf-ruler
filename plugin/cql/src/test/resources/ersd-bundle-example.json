@@ -143,7 +143,7 @@
 					{
 						"type": "depends-on",
 						"label": "RCTC Value Set Library of Trigger Codes",
-						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example"
+						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2022-01-01"
 					}
 				],
 				"action": [
