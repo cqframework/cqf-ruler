@@ -136,7 +136,7 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
 							.getValueAsPrimitive().getValueAsString();
 					assertEquals(
-							"Coverage?policy-holder=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
+							"Coverage?beneficiary=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
 							query);
 				}
 					break;
@@ -208,7 +208,7 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
 							.getValueAsPrimitive().getValueAsString();
 					assertEquals(
-							"Coverage?policy-holder=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
+							"Coverage?beneficiary=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
 							query);
 				}
 					break;
