@@ -34,6 +34,7 @@ class ExampleServerDstu3IT {
 	@LocalServerPort
 	private int port;
 
+
 	@BeforeEach
 	void beforeEach() {
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
