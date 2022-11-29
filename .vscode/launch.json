@@ -29,12 +29,7 @@
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
-				"-Dspring.batch.job.enabled=false",
-				"-Dhapi.fhir.server_address=http://localhost:8080/fhir",
-				"-Dhapi.fhir.fhir_versions=R4",
-				"-Dhapi.fhir.enforce_referential_integrity_on_write=false",
-				"-Dhapi.fhir.enforce_referential_integrity_on_delete=false",
-				"-Dhapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author"
+				"-Dspring.batch.job.enabled=false"
 			],
 			"classPaths": [
 				"$Auto",
