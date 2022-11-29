@@ -101,6 +101,6 @@ class RemediateProviderIT extends RestIntegrationTest {
 		assertTrue(raBundle.getEntry().size() > 4);
 		assertTrue(raBundle.getEntry().get(4).hasResource());
 		assertTrue(raBundle.getEntry().get(4).getResource() instanceof MeasureReport);
-		assertEquals(11, raBundle.getEntry().size());
+		assertEquals(12, raBundle.getEntry().size());
 	}
 }

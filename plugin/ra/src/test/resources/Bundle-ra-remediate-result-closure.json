@@ -2,30 +2,32 @@
 	"resourceType": "Bundle",
 	"id": "ra-remediate-result-closure",
 	"meta": {
-		"lastUpdated": "2022-11-07T11:32:06.759-07:00",
+		"lastUpdated": "2022-11-27T11:41:40.374-07:00",
 		"profile": [
 			"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle"
 		]
 	},
 	"identifier": {
 		"system": "urn:ietf:rfc:3986",
-		"value": "urn:uuid:7d8e6407-0ccd-4e68-b485-0b0cce5f6787"
+		"value": "urn:uuid:5f7284dc-a19a-4f21-b1d7-3c901825700e"
 	},
 	"type": "document",
-	"timestamp": "2022-11-07T11:32:06.759-07:00",
+	"timestamp": "2022-11-27T11:44:33.918-07:00",
 	"entry": [
 		{
+			"fullUrl": "http://localhost:8080/fhir/Composition/e1e54c14-dd88-4843-8a6a-4ebc8481c0e2",
 			"resource": {
 				"resourceType": "Composition",
+				"id": "e1e54c14-dd88-4843-8a6a-4ebc8481c0e2",
 				"meta": {
-					"lastUpdated": "2022-11-07T22:32:06.759-07:00",
+					"lastUpdated": "2022-11-27T11:41:40.374-07:00",
 					"profile": [
-						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-composition"
+						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-composition"
 					]
 				},
 				"identifier": {
 					"system": "urn:ietf:rfc:3986",
-					"value": "urn:uuid:e729e44f-756b-43cd-a9a3-2913d3bce01d"
+					"value": "urn:uuid:86130cbc-a8f0-461e-a02f-7c1b18a7fd9f"
 				},
 				"status": "preliminary",
 				"type": {
@@ -40,7 +42,13 @@
 				"subject": {
 					"reference": "Patient/ra-patient02"
 				},
-				"date": "2022-11-06T15:50:24-06:00",
+				"date": "2022-11-27T11:42:12-07:00",
+				"author": [
+					{
+						"reference": "Organization/alphora-author"
+					}
+				],
+				"title": "Risk Adjustment Coding Gaps Report for Patient/ra-patient02",
 				"section": [
 					{
 						"code": {
@@ -109,11 +117,12 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/DetectedIssue/ra-measurereport03-group-001",
 			"resource": {
 				"resourceType": "DetectedIssue",
 				"id": "ra-measurereport03-group-001",
 				"meta": {
-					"lastUpdated": "2022-11-06T15:50:24.082-06:00",
+					"lastUpdated": "2022-11-27T11:42:12.844-07:00",
 					"profile": [
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue"
 					]
@@ -128,11 +137,13 @@
 				"code": {
 					"coding": [
 						{
-							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-							"code": "CODINGGAP",
-							"display": "Coding Gaps"
+							"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+							"version": "24",
+							"code": "96",
+							"display": "Specified Heart.Arrhythmias"
 						}
-					]
+					],
+					"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
 				},
 				"patient": {
 					"reference": "Patient/ra-patient02"
@@ -146,12 +157,6 @@
 					{
 						"detail": [
 							{
-								"extension": [
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-001"
-									}
-								],
 								"reference": "Condition/ra-condition31pat02"
 							}
 						]
@@ -159,12 +164,6 @@
 					{
 						"detail": [
 							{
-								"extension": [
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-001"
-									}
-								],
 								"reference": "Encounter/ra-encounter31pat02"
 							}
 						]
@@ -172,16 +171,6 @@
 					{
 						"detail": [
 							{
-								"extension": [
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-001"
-									},
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-002"
-									}
-								],
 								"reference": "Patient/ra-patient02"
 							}
 						]
@@ -190,11 +179,12 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/DetectedIssue/ra-measurereport03-group-002",
 			"resource": {
 				"resourceType": "DetectedIssue",
 				"id": "ra-measurereport03-group-002",
 				"meta": {
-					"lastUpdated": "2022-11-06T15:50:24.083-06:00",
+					"lastUpdated": "2022-11-27T11:42:12.846-07:00",
 					"profile": [
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue"
 					]
@@ -209,11 +199,13 @@
 				"code": {
 					"coding": [
 						{
-							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-							"code": "CODINGGAP",
-							"display": "Coding Gaps"
+							"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+							"version": "24",
+							"code": "110",
+							"display": "Cystic Fibrosis"
 						}
-					]
+					],
+					"text": "HCC 110: Cystic Fibrosis"
 				},
 				"patient": {
 					"reference": "Patient/ra-patient02"
@@ -227,12 +219,6 @@
 					{
 						"detail": [
 							{
-								"extension": [
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-002"
-									}
-								],
 								"reference": "Observation/ra-obs01pat02"
 							}
 						]
@@ -240,16 +226,6 @@
 					{
 						"detail": [
 							{
-								"extension": [
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-001"
-									},
-									{
-										"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
-										"valueString": "group-002"
-									}
-								],
 								"reference": "Patient/ra-patient02"
 							}
 						]
@@ -258,12 +234,14 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/DetectedIssue/ra-measurereport03-remediate",
 			"resource": {
 				"resourceType": "DetectedIssue",
-				"id": "ra-measurereport03-remediate-closure",
+				"id": "ra-measurereport03-remediate",
 				"meta": {
 					"versionId": "1",
-					"lastUpdated": "2022-11-07T22:32:06.623-07:00",
+					"lastUpdated": "2022-11-27T11:44:26.107-07:00",
+					"source": "#0j179M7WsPgvYFoV",
 					"profile": [
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-clinical-evaluation-detectedissue"
 					]
@@ -291,11 +269,13 @@
 				"code": {
 					"coding": [
 						{
-							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-							"code": "CODINGGAP",
-							"display": "Coding Gaps"
+							"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+							"version": "24",
+							"code": "110",
+							"display": "Cystic Fibrosis"
 						}
-					]
+					],
+					"text": "HCC 110: Cystic Fibrosis"
 				},
 				"patient": {
 					"reference": "Patient/ra-patient02"
@@ -331,12 +311,14 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/MeasureReport/ra-measurereport03",
 			"resource": {
 				"resourceType": "MeasureReport",
 				"id": "ra-measurereport03",
 				"meta": {
 					"versionId": "1",
-					"lastUpdated": "2022-11-06T15:50:23.924-06:00",
+					"lastUpdated": "2022-11-27T11:41:32.446-07:00",
+					"source": "#wAgGoE23HHuP7Olf",
 					"profile": [
 						"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"
 					]
@@ -510,12 +492,73 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Organization/alphora-author",
+			"resource": {
+				"resourceType": "Organization",
+				"id": "alphora-author",
+				"meta": {
+					"extension": [
+						{
+							"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+							"valueString": "Organization for STU2 Testing"
+						},
+						{
+							"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+							"valueMarkdown": "Provider Organization for STU2 Testing data"
+						}
+					],
+					"versionId": "1",
+					"lastUpdated": "2022-11-27T11:41:32.782-07:00",
+					"source": "#5Ky1usO18wcPq977",
+					"profile": [
+						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+					]
+				},
+				"active": true,
+				"type": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/organization-type",
+								"code": "prov",
+								"display": "Healthcare Provider"
+							}
+						]
+					}
+				],
+				"name": "GHH Outpatient Clinic",
+				"telecom": [
+					{
+						"system": "phone",
+						"value": "(+1) 555-555-3013 (ext 999)"
+					},
+					{
+						"system": "email",
+						"value": "patient_question_outpatient_clinic@GHH.com"
+					}
+				],
+				"address": [
+					{
+						"line": [
+							"1060 Village Avenue"
+						],
+						"city": "Ann Harbor",
+						"state": "MI",
+						"postalCode": "99999",
+						"country": "USA"
+					}
+				]
+			}
+		},
+		{
+			"fullUrl": "http://localhost:8080/fhir/Patient/ra-patient02",
 			"resource": {
 				"resourceType": "Patient",
 				"id": "ra-patient02",
 				"meta": {
-					"versionId": "2",
-					"lastUpdated": "2022-11-07T22:32:06.522-07:00",
+					"versionId": "1",
+					"lastUpdated": "2022-11-27T11:41:32.865-07:00",
+					"source": "#L6a8KNlpUj1zD7Wq",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
 					]
@@ -631,12 +674,14 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Condition/ra-measurereport03-remediate",
 			"resource": {
 				"resourceType": "Condition",
 				"id": "ra-measurereport03-remediate",
 				"meta": {
-					"versionId": "2",
-					"lastUpdated": "2022-11-07T22:32:06.509-07:00",
+					"versionId": "1",
+					"lastUpdated": "2022-11-27T11:44:26.001-07:00",
+					"source": "#rr44OXm1zw9Fo1Z3",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
 					]
@@ -690,6 +735,7 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Encounter/ra-encounter31pat02",
 			"resource": {
 				"resourceType": "Encounter",
 				"id": "ra-encounter31pat02",
@@ -705,7 +751,8 @@
 						}
 					],
 					"versionId": "1",
-					"lastUpdated": "2022-11-07T22:32:06.435-07:00",
+					"lastUpdated": "2022-11-27T11:41:33.479-07:00",
+					"source": "#vPSJNOHeU56J67w1",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
 					]
@@ -754,6 +801,7 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Observation/ra-obs01pat02",
 			"resource": {
 				"resourceType": "Observation",
 				"id": "ra-obs01pat02",
@@ -769,7 +817,8 @@
 						}
 					],
 					"versionId": "1",
-					"lastUpdated": "2022-11-07T22:32:06.272-07:00",
+					"lastUpdated": "2022-11-27T11:41:33.556-07:00",
+					"source": "#vf05vDlGPNIU5oBM",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab"
 					]
@@ -836,12 +885,14 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Condition/ra-condition31pat02",
 			"resource": {
 				"resourceType": "Condition",
 				"id": "ra-condition31pat02",
 				"meta": {
-					"versionId": "2",
-					"lastUpdated": "2022-11-07T22:32:06.482-07:00",
+					"versionId": "1",
+					"lastUpdated": "2022-11-27T11:41:33.395-07:00",
+					"source": "#otgPmT2aiMeoCSO4",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
 					]
@@ -895,6 +946,7 @@
 			}
 		},
 		{
+			"fullUrl": "http://localhost:8080/fhir/Encounter/ra-measurereport03-remediate",
 			"resource": {
 				"resourceType": "Encounter",
 				"id": "ra-measurereport03-remediate",
@@ -910,7 +962,8 @@
 						}
 					],
 					"versionId": "1",
-					"lastUpdated": "2022-11-07T22:32:06.463-07:00",
+					"lastUpdated": "2022-11-27T11:44:26.061-07:00",
+					"source": "#VFM1hTYwSB3wHh5C",
 					"profile": [
 						"http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
 					]

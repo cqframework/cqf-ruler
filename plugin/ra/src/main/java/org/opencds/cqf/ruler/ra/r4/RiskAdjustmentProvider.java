@@ -140,7 +140,8 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 					&& ((Observation) contained).getValueCodeableConcept().hasCoding()
 					&& ((Observation) contained).getValueCodeableConcept().getCodingFirstRep().hasCode()) {
 				return new Extension().setUrl(RAConstants.EVIDENCE_STATUS_DATE_URL).setValue(
-						new DateType(((Observation) contained).getValueCodeableConcept().getCodingFirstRep().getCode()));
+						new DateType(
+								((Observation) contained).getValueCodeableConcept().getCodingFirstRep().getCode()));
 			}
 		}
 		return null;
@@ -219,7 +220,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			this.unprocessedReport.copyValues(this.processedReport);
 			this.processedReport.getGroup().clear();
 			this.processedReport.setMeta(
-					new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"));
+					new Meta().addProfile(RAConstants.PATIENT_REPORT_URL));
 		}
 
 		void createIssue(String issue) {
@@ -232,7 +233,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 		private Bundle bundleReport() {
 			Bundle raBundle = new Bundle().setType(Bundle.BundleType.COLLECTION);
-			raBundle.setMeta(new Meta().addProfile(RAConstants.PATIENT_REPORT_PROFILE_URL));
+			raBundle.setMeta(new Meta().addProfile(RAConstants.CODING_GAP_BUNDLE_URL));
 			raBundle.addEntry().setResource(processedReport);
 
 			Map<String, Resource> evalPlusSDE = new HashMap<>();
