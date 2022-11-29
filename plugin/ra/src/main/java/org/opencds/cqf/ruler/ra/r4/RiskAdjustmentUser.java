@@ -286,20 +286,30 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		resolveIssues(composition, report, issues);
 	}
 
-	default void validateMeasureReportPrecondition(MeasureReport report, List<DetectedIssue> issues) {
+	default void validateApprovePrecondition(List<DetectedIssue> issues) {
 		List<String> groupsWithFinalStatusIssues = new ArrayList<>();
+		List<String> groups = new ArrayList<>();
 		issues.forEach(
 				issue -> {
-					if (issue.hasStatus() && issue.getStatus().toCode().equals("final")
-							&& issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)) {
+					if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)) {
 						String groupId = issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue();
-						if (groupsWithFinalStatusIssues.contains(groupId)) {
-							throw new IllegalArgumentException(
-									"Found multiple DetectedIssue resources with a final status referencing the same MeasureReport group element.");
+						if (!groups.contains(groupId)) {
+							groups.add(groupId);
 						}
-						groupsWithFinalStatusIssues.add(groupId);
+						if (issue.hasStatus() && issue.getStatus().toCode().equals("final")) {
+							if (groupsWithFinalStatusIssues.contains(groupId)) {
+								throw new IllegalArgumentException(
+									"Found multiple DetectedIssue resources with a final status referencing the same MeasureReport group element.");
+							}
+							groupsWithFinalStatusIssues.add(groupId);
+						}
 					}
 				});
+		if (groups.size() != groupsWithFinalStatusIssues.size()) {
+			throw new IllegalArgumentException(
+				"Found MeasureReport group element without a DetectedIssue resource with final status. The $ra.approve-coding-gaps operation must be run prior to this operation."
+			);
+		}
 	}
 
 	default void updateMeasureReportGroup(MeasureReport report, String groupId, CodeableConcept codingGapRequest) {

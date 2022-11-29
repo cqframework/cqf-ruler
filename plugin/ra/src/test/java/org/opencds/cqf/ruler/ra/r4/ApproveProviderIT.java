@@ -23,7 +23,7 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ApproveProviderIT.class,
 	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ApproveProviderIT extends RestIntegrationTest {
+class ApproveProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	private RAProperties myRaProperties;

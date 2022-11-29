@@ -68,7 +68,7 @@ public class ResolveProvider extends DaoRegistryOperationProvider
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
 					Resource author = getAuthorFromBundle(b, composition);
-					validateMeasureReportPrecondition(mr, issues);
+					validateApprovePrecondition(issues);
 					updateMeasureReportGroups(mr, issues);
 					updateCompositionToFinal(composition, mr, issues);
 					codingGapReportBundles

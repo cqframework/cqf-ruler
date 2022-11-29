@@ -14,10 +14,7 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
@@ -29,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ResolveProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ResolveProviderIT extends RestIntegrationTest {
@@ -43,32 +39,6 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(1)
-	void preconditionTest() {
-		loadResource("Organization-ra-payer01.json");
-		loadResource("Observation-ra-obs01pat02.json");
-		loadResource("Encounter-ra-encounter31pat02.json");
-		loadResource("Encounter-ra-measurereport03-remediate.json");
-		loadResource("Condition-ra-condition31pat02.json");
-		loadResource("Condition-ra-measurereport03-remediate.json");
-		loadResource("Patient-ra-patient02.json");
-		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("Bundle-ra-remediate-result-precondition-error.json");
-
-		Parameters params = parameters(
-				stringPart("periodStart", "2021-01-01"),
-				stringPart("periodEnd", "2021-12-31"),
-				stringPart("subject", "Patient/ra-patient02"));
-
-		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-				.named("$ra.resolve-coding-gaps").withParameters(params)
-				.useHttpGet().returnResourceType(Parameters.class);
-
-		assertThrows(InternalErrorException.class, shouldThrow::execute);
-	}
-
-	@Test
-	@Order(5)
 	void closureTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -78,7 +48,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-measurereport03-remediate.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("Bundle-ra-remediate-result-closure.json");
+		loadResource("Bundle-ra-approve-result-closure.json");
 
 		Parameters params = parameters(
 				stringPart("periodStart", "2021-01-01"),
@@ -124,7 +94,6 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(2)
 	void invalidationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -134,7 +103,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-measurereport03-remediate.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("Bundle-ra-remediate-result-invalidation.json");
+		loadResource("Bundle-ra-approve-result-invalidation.json");
 
 		Parameters params = parameters(
 				stringPart("periodStart", "2021-01-01"),
@@ -181,17 +150,18 @@ class ResolveProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5961")
 	@Test
-	@Order(3)
 	void creationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
 		loadResource("Encounter-ra-encounter31pat02.json");
+		loadResource("Encounter-ra-measurereport03-remediate.json");
 		loadResource("Encounter-ra-encounter01pat02.json");
 		loadResource("Condition-ra-condition31pat02.json");
+		loadResource("Condition-ra-measurereport03-remediate.json");
 		loadResource("Condition-ra-condition01pat02.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("Bundle-ra-remediate-result-creation.json");
+		loadResource("Bundle-ra-approve-result-creation.json");
 
 		Parameters params = parameters(
 				stringPart("periodStart", "2021-01-01"),
@@ -217,15 +187,15 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals("final", ((Composition) raBundle.getEntryFirstRep().getResource()).getStatus().toCode());
 
 		// Check that the MR group has been updated (closed and net-new)
-		assertTrue(raBundle.getEntry().size() > 4);
-		assertTrue(raBundle.getEntry().get(4).hasResource());
-		assertTrue(raBundle.getEntry().get(4).getResource() instanceof MeasureReport);
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).hasGroup());
-		assertEquals(3, ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().size());
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+		assertTrue(raBundle.getEntry().size() > 5);
+		assertTrue(raBundle.getEntry().get(5).hasResource());
+		assertTrue(raBundle.getEntry().get(5).getResource() instanceof MeasureReport);
+		assertTrue(((MeasureReport) raBundle.getEntry().get(5).getResource()).hasGroup());
+		assertEquals(3, ((MeasureReport) raBundle.getEntry().get(5).getResource()).getGroup().size());
+		assertTrue(((MeasureReport) raBundle.getEntry().get(5).getResource()).getGroup().get(2)
 				.hasExtension(RAConstants.EVIDENCE_STATUS_URL));
 
-		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+		Extension shouldBeClosed = ((MeasureReport) raBundle.getEntry().get(5).getResource()).getGroup().get(2)
 				.getExtensionByUrl(RAConstants.EVIDENCE_STATUS_URL);
 		assertTrue(shouldBeClosed.hasValue() && shouldBeClosed.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeClosed.getValue()).hasCoding());
@@ -233,9 +203,9 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.CLOSED_GAP_CODE,
 				((CodeableConcept) shouldBeClosed.getValue()).getCodingFirstRep().getCode());
 
-		assertTrue(((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+		assertTrue(((MeasureReport) raBundle.getEntry().get(5).getResource()).getGroup().get(2)
 				.hasExtension(RAConstants.SUSPECT_TYPE_URL));
-		Extension shouldBeNetNew = ((MeasureReport) raBundle.getEntry().get(4).getResource()).getGroup().get(2)
+		Extension shouldBeNetNew = ((MeasureReport) raBundle.getEntry().get(5).getResource()).getGroup().get(2)
 				.getExtensionByUrl(RAConstants.SUSPECT_TYPE_URL);
 		assertTrue(shouldBeNetNew.hasValue() && shouldBeNetNew.getValue() instanceof CodeableConcept);
 		assertTrue(((CodeableConcept) shouldBeNetNew.getValue()).hasCoding());
@@ -243,11 +213,46 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(RAConstants.NET_NEW_CODE,
 				((CodeableConcept) shouldBeNetNew.getValue()).getCodingFirstRep().getCode());
 
-		assertEquals(12, raBundle.getEntry().size());
+		assertEquals(15, raBundle.getEntry().size());
 	}
+}
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { FailureCases.class,
+	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+class FailureCases extends RestIntegrationTest {
+
+	@Autowired
+	private RAProperties myRaProperties;
+
+	@BeforeEach
+	void beforeEach() {
+		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
+		myRaProperties.getReport().setEndpoint(ourServerBase);
+	}
 	@Test
-	@Order(4)
+	void preconditionTest() {
+		loadResource("Organization-ra-payer01.json");
+		loadResource("Observation-ra-obs01pat02.json");
+		loadResource("Encounter-ra-encounter31pat02.json");
+		loadResource("Encounter-ra-measurereport03-remediate.json");
+		loadResource("Condition-ra-condition31pat02.json");
+		loadResource("Condition-ra-measurereport03-remediate.json");
+		loadResource("Patient-ra-patient02.json");
+		loadResource("MeasureReport-ra-measurereport03.json");
+		loadResource("Bundle-ra-approve-result-precondition-error.json");
+
+		Parameters params = parameters(
+			stringPart("periodStart", "2021-01-01"),
+			stringPart("periodEnd", "2021-12-31"),
+			stringPart("subject", "Patient/ra-patient02"));
+
+		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
+			.named("$ra.resolve-coding-gaps").withParameters(params)
+			.useHttpGet().returnResourceType(Parameters.class);
+
+		assertThrows(InternalErrorException.class, shouldThrow::execute);
+	}
+	@Test
 	void creationErrorTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -257,16 +262,16 @@ class ResolveProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-measurereport03-remediate.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("Bundle-ra-remediate-result-creation-error.json");
+		loadResource("Bundle-ra-approve-result-creation-error.json");
 
 		Parameters params = parameters(
-				stringPart("periodStart", "2021-01-01"),
-				stringPart("periodEnd", "2021-12-31"),
-				stringPart("subject", "Patient/ra-patient02"));
+			stringPart("periodStart", "2021-01-01"),
+			stringPart("periodEnd", "2021-12-31"),
+			stringPart("subject", "Patient/ra-patient02"));
 
 		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-				.named("$ra.resolve-coding-gaps").withParameters(params)
-				.useHttpGet().returnResourceType(Parameters.class);
+			.named("$ra.resolve-coding-gaps").withParameters(params)
+			.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}
