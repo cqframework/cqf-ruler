@@ -17,6 +17,8 @@ public class RAConstants {
 	public static final String REMEDIATE_ID_PREFIX = "remediate-coding-gaps-";
 	public static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
 	public static final String CODING_GAP_BUNDLE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle";
+	public static final String MEASURE_REPORT_PROFILE_URL = "https://build.fhir.org/ig/HL7/davinci-ra/StructureDefinition-ra-measurereport.html";
+	public static final String HCC_CODESYSTEM_URL = "http://terminology.hl7.org/CodeSystem/cmshcc";
 
 	// Composition constants
 	public static final Meta COMPOSITION_META = new Meta().addProfile(
