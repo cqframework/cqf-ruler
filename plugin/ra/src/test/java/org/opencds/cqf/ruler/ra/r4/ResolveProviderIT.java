@@ -68,7 +68,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(2)
+	@Order(5)
 	void closureTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -124,7 +124,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(3)
+	@Order(2)
 	void invalidationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -181,7 +181,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5961")
 	@Test
-	@Order(4)
+	@Order(3)
 	void creationTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");
@@ -247,7 +247,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(4)
 	void creationErrorTest() {
 		loadResource("Organization-ra-payer01.json");
 		loadResource("Observation-ra-obs01pat02.json");

@@ -75,7 +75,7 @@ public class ApproveProvider extends DaoRegistryOperationProvider
 					MeasureReport mr = getReportFromBundle(b);
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getMostRecentIssuesFromBundle(b);
-					updateDetectedIssueStatusByGroup(issues);
+					updateDetectedIssueStatusByCode(issues);
 					Resource author = getAuthorFromBundle(b, composition);
 					codingGapReportBundles.add(
 							buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr, author));

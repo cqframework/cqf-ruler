@@ -8,7 +8,6 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.ra.RAConfig;
-import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.utility.Urls;
@@ -75,8 +74,7 @@ public class ApproveProviderIT extends RestIntegrationTest {
 			entry -> {
 				if (entry.getResource() instanceof DetectedIssue) {
 					DetectedIssue.DetectedIssueStatus status = ((DetectedIssue) entry.getResource()).getStatus();
-					if (((DetectedIssue) entry.getResource()).getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL)
-							.getValue().primitiveValue().equals("group-001")) {
+					if (((DetectedIssue) entry.getResource()).getCode().getCodingFirstRep().getCode().equals("96")) {
 						assertSame(DetectedIssue.DetectedIssueStatus.FINAL, status);
 					}
 					else {

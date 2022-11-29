@@ -160,17 +160,17 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return issues;
 	}
 
-	default void updateDetectedIssueStatusByGroup(List<DetectedIssue> issues) {
-		List<String> visitedGroups = new ArrayList<>();
+	default void updateDetectedIssueStatusByCode(List<DetectedIssue> issues) {
+		List<String> visitedCodes = new ArrayList<>();
 		issues.forEach(
 			issue -> {
-				if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)) {
-					String groupId = issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue();
-					if (visitedGroups.contains(groupId)) {
+				if (issue.hasCode() && issue.getCode().hasCoding() && issue.getCode().getCodingFirstRep().hasCode()) {
+					String code = issue.getCode().getCodingFirstRep().getCode();
+					if (visitedCodes.contains(code)) {
 						issue.setStatus(DetectedIssue.DetectedIssueStatus.CANCELLED);
 					}
 					else {
-						visitedGroups.add(groupId);
+						visitedCodes.add(code);
 						issue.setStatus(DetectedIssue.DetectedIssueStatus.FINAL);
 					}
 					issue.getMeta().setLastUpdated(new Date());
