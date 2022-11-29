@@ -160,6 +160,25 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return issues;
 	}
 
+	default void updateDetectedIssueStatusByGroup(List<DetectedIssue> issues) {
+		List<String> visitedGroups = new ArrayList<>();
+		issues.forEach(
+			issue -> {
+				if (issue.hasExtension(RAConstants.GROUP_REFERENCE_URL)) {
+					String groupId = issue.getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL).getValue().primitiveValue();
+					if (visitedGroups.contains(groupId)) {
+						issue.setStatus(DetectedIssue.DetectedIssueStatus.CANCELLED);
+					}
+					else {
+						visitedGroups.add(groupId);
+						issue.setStatus(DetectedIssue.DetectedIssueStatus.FINAL);
+					}
+					issue.getMeta().setLastUpdated(new Date());
+				}
+			}
+		);
+	}
+
 	default List<DetectedIssue> getOriginalIssues(String measureReportReference) {
 		return search(DetectedIssue.class, SearchParameterMap.newSynchronous()
 				.add(DetectedIssue.SP_IMPLICATED, new ReferenceParam(measureReportReference))
@@ -203,7 +222,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 
 	default Resource getAuthorFromBundle(Bundle bundle, Composition composition) {
 		checkArgument(
-				composition.getAuthor().size() > 0 && composition.getAuthor().get(0) != null,
+				composition.hasAuthor() && composition.getAuthorFirstRep() != null,
 				String.format("The author element is required for the composition (id=%s).",
 						composition.hasIdElement() ? composition.getIdElement().getIdPart() : "null"));
 

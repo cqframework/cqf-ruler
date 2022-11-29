@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.ra.RAConfig;
+import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.utility.Urls;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
@@ -73,7 +75,14 @@ public class ApproveProviderIT extends RestIntegrationTest {
 			entry -> {
 				if (entry.getResource() instanceof DetectedIssue) {
 					DetectedIssue.DetectedIssueStatus status = ((DetectedIssue) entry.getResource()).getStatus();
-					assertTrue(status == DetectedIssue.DetectedIssueStatus.CANCELLED || status == DetectedIssue.DetectedIssueStatus.FINAL);
+					if (((DetectedIssue) entry.getResource()).getExtensionByUrl(RAConstants.GROUP_REFERENCE_URL)
+							.getValue().primitiveValue().equals("group-001")) {
+						assertSame(DetectedIssue.DetectedIssueStatus.FINAL, status);
+					}
+					else {
+						assertTrue(status == DetectedIssue.DetectedIssueStatus.CANCELLED
+							|| status == DetectedIssue.DetectedIssueStatus.FINAL);
+					}
 				}
 			}
 		);
