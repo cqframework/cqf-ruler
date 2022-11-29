@@ -22,7 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,23 +62,7 @@ class AssistedProviderIT extends RestIntegrationTest {
 
 			CloseableHttpResponse response = httpClient.execute(request);
 			String result = EntityUtils.toString(response.getEntity());
-
-			IBaseResource resource = FhirContext.forR4Cached().newJsonParser().parseResource(result);
-			assertTrue(resource instanceof Bundle);
-			Bundle bundle = (Bundle) resource;
-			assertTrue(bundle.hasType());
-			assertEquals(Bundle.BundleType.TRANSACTION, bundle.getType());
-			assertTrue(bundle.hasEntry());
-			assertTrue(bundle.getEntryFirstRep().hasResource());
-			assertTrue(bundle.getEntryFirstRep().getResource() instanceof MeasureReport);
-			MeasureReport mr = (MeasureReport) bundle.getEntryFirstRep().getResource();
-			assertTrue(mr.hasStatus() && mr.getStatus() == MeasureReport.MeasureReportStatus.COMPLETE);
-			assertTrue(mr.hasType() && mr.getType() == MeasureReport.MeasureReportType.INDIVIDUAL);
-			assertTrue(mr.hasPeriod());
-			assertEquals(new Date(1609484400000L), mr.getPeriod().getStart());
-			assertEquals(new Date(1632981600000L), mr.getPeriod().getEnd());
-			assertTrue(mr.hasGroup());
-			assertEquals(11, mr.getGroup().size());
+			validateResult(result);
 		} catch (IOException ioe) {
 			fail(ioe.getMessage());
 		}
@@ -91,27 +77,31 @@ class AssistedProviderIT extends RestIntegrationTest {
 
 			CloseableHttpResponse response = httpClient.execute(request);
 			String result = EntityUtils.toString(response.getEntity());
-
-			IBaseResource resource = FhirContext.forR4Cached().newJsonParser().parseResource(result);
-			assertTrue(resource instanceof Bundle);
-			Bundle bundle = (Bundle) resource;
-			assertTrue(bundle.hasType());
-			assertEquals(Bundle.BundleType.TRANSACTION, bundle.getType());
-			assertTrue(bundle.hasEntry());
-			assertTrue(bundle.getEntryFirstRep().hasResource());
-			assertTrue(bundle.getEntryFirstRep().getResource() instanceof MeasureReport);
-			MeasureReport mr = (MeasureReport) bundle.getEntryFirstRep().getResource();
-			assertTrue(mr.hasStatus() && mr.getStatus() == MeasureReport.MeasureReportStatus.COMPLETE);
-			assertTrue(mr.hasType() && mr.getType() == MeasureReport.MeasureReportType.INDIVIDUAL);
-			assertTrue(mr.hasPeriod());
-			assertEquals(new Date(1609484400000L), mr.getPeriod().getStart());
-			assertEquals(new Date(1632981600000L), mr.getPeriod().getEnd());
-			assertTrue(mr.hasGroup());
-			assertEquals(11, mr.getGroup().size());
+			validateResult(result);
 		} catch (IOException ioe) {
 			fail(ioe.getMessage());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	void validateResult(String result) {
+		IBaseResource resource = FhirContext.forR4Cached().newJsonParser().parseResource(result);
+		assertTrue(resource instanceof Bundle);
+		Bundle bundle = (Bundle) resource;
+		assertTrue(bundle.hasType());
+		assertEquals(Bundle.BundleType.TRANSACTION, bundle.getType());
+		assertTrue(bundle.hasEntry());
+		assertTrue(bundle.getEntryFirstRep().hasResource());
+		assertTrue(bundle.getEntryFirstRep().getResource() instanceof MeasureReport);
+		MeasureReport mr = (MeasureReport) bundle.getEntryFirstRep().getResource();
+		assertTrue(mr.hasStatus() && mr.getStatus() == MeasureReport.MeasureReportStatus.COMPLETE);
+		assertTrue(mr.hasType() && mr.getType() == MeasureReport.MeasureReportType.INDIVIDUAL);
+		assertTrue(mr.hasPeriod());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		assertEquals("2021-01-01", formatter.format(mr.getPeriod().getStart()));
+		assertEquals("2021-09-30", formatter.format(mr.getPeriod().getEnd()));
+		assertTrue(mr.hasGroup());
+		assertEquals(11, mr.getGroup().size());
 	}
 }
