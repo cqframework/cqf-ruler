@@ -10,10 +10,5 @@
 	<artifactId>cqf-ruler-sdc</artifactId>
 	<dependencies>
 
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.fhir</artifactId>
-		</dependency>
-
 	</dependencies>
 </project>

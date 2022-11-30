@@ -3,9 +3,11 @@ package org.opencds.cqf.ruler.ra;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cr.CrConfig;
+import org.opencds.cqf.ruler.ra.r4.ApproveProvider;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.RACodingGapsProvider;
 import org.opencds.cqf.ruler.ra.r4.RemediateProvider;
+import org.opencds.cqf.ruler.ra.r4.ResolveProvider;
 import org.opencds.cqf.ruler.ra.r4.RiskAdjustmentProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -41,6 +43,17 @@ public class RAConfig {
 	@Conditional(OnR4Condition.class)
 	public OperationProvider r4RemediateProvider() {
 		return new RemediateProvider();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4ApproveProvider() {
+		return new ApproveProvider();
+	}
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4ResolveProvider() {
+		return new ResolveProvider();
 	}
 
 	@Bean
