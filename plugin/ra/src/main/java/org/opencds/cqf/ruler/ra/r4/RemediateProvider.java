@@ -49,7 +49,7 @@ public class RemediateProvider extends DaoRegistryOperationProvider implements R
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getIssuesFromBundle(b);
 					Resource author = getAuthorFromBundle(b, composition);
-					issues.addAll(getAssociatedIssues(mr.getIdElement().getValue()));
+					issues.addAll(getAssociatedIssues(Ids.simple(mr)));
 					updateComposition(composition, mr, issues);
 					codingGapReportBundles.add(
 							buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr, author));
