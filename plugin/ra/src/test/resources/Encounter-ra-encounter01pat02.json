@@ -1,0 +1,53 @@
+{
+	"resourceType": "Encounter",
+	"id": "ra-encounter01pat02",
+	"meta": {
+		"extension": [{
+			"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+			"valueString": "Encounter with Dr Pump on 20210714 for Patient 02"
+		},
+			{
+				"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+				"valueMarkdown": "This is Encounter with Dr Howell on 20210714 for Patient 02."
+			}
+		],
+		"lastUpdated": "2021-07-14T11:56:57.250-04:00",
+		"profile": [
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+		]
+	},
+	"status": "finished",
+	"class": {
+		"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+		"code": "AMB",
+		"display": "ambulatory"
+	},
+	"type": [{
+		"coding": [{
+			"system": "http://www.ama-assn.org/go/cpt",
+			"code": "99215"
+		}],
+		"text": "Office Visit, High Complexity"
+	}],
+	"subject": {
+		"reference": "Patient/ra-patient02"
+	},
+
+	"participant": [{
+		"individual": {
+			"reference": "Practitioner/ra-prac02pat02"
+		}
+	}],
+	"diagnosis": [{
+		"condition": {
+			"reference": "Condition/ra-condition01pat02"
+		}
+	}],
+	"period": {
+		"start": "2021-07-14",
+		"end": "2021-07-14"
+	},
+	"serviceProvider": {
+		"reference": "Organization/ra-org02pat02"
+	}
+}

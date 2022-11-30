@@ -56,6 +56,8 @@ public class Operations {
 	 * @return the full url as a String
 	 */
 	public static String getFullUrl(String serverAddress, IBaseResource resource) {
+		checkArgument(resource.getIdElement().hasIdPart(),
+				"Cannot generate a fullUrl because the resource does not have an id.");
 		return getFullUrl(serverAddress, resource.fhirType(), Ids.simplePart(resource));
 	}
 

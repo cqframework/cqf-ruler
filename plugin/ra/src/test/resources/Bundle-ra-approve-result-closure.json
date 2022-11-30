@@ -1,0 +1,760 @@
+{
+	"resourceType": "Bundle",
+	"id": "ra-approve-result-closure",
+	"meta": {
+		"lastUpdated": "2022-11-28T19:24:48.753-07:00",
+		"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-bundle" ]
+	},
+	"identifier": {
+		"system": "urn:ietf:rfc:3986",
+		"value": "urn:uuid:0b27e72d-ae42-46df-a536-583acaf83c58"
+	},
+	"type": "document",
+	"timestamp": "2022-11-28T19:24:48.753-07:00",
+	"entry": [ {
+		"fullUrl": "http://localhost:58738/fhir/Composition/e1e54c14-dd88-4843-8a6a-4ebc8481c0e2",
+		"resource": {
+			"resourceType": "Composition",
+			"id": "e1e54c14-dd88-4843-8a6a-4ebc8481c0e2",
+			"meta": {
+				"lastUpdated": "2022-11-27T11:41:40.374-07:00",
+				"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-composition" ]
+			},
+			"identifier": {
+				"system": "urn:ietf:rfc:3986",
+				"value": "urn:uuid:86130cbc-a8f0-461e-a02f-7c1b18a7fd9f"
+			},
+			"status": "preliminary",
+			"type": {
+				"coding": [ {
+					"system": "http://loinc.org",
+					"code": "96315-7",
+					"display": "Gaps in care report"
+				} ]
+			},
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"date": "2022-11-27T11:42:12-07:00",
+			"author": [ {
+				"reference": "Organization/alphora-author"
+			} ],
+			"title": "Risk Adjustment Coding Gaps Report for Patient/ra-patient02",
+			"section": [ {
+				"code": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "96",
+						"display": "Specified Heart.Arrhythmias"
+					} ],
+					"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
+				},
+				"focus": {
+					"reference": "MeasureReport/ra-measurereport03"
+				},
+				"entry": [ {
+					"reference": "DetectedIssue/ra-measurereport03-group-001"
+				} ]
+			}, {
+				"code": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "110",
+						"display": "Cystic Fibrosis"
+					} ],
+					"text": "HCC 110: Cystic Fibrosis"
+				},
+				"focus": {
+					"reference": "MeasureReport/ra-measurereport03"
+				},
+				"entry": [ {
+					"reference": "DetectedIssue/ra-measurereport03-group-002"
+				} ]
+			}, {
+				"code": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "110",
+						"display": "Cystic Fibrosis"
+					} ],
+					"text": "HCC 110: Cystic Fibrosis"
+				},
+				"focus": {
+					"reference": "MeasureReport/ra-measurereport03"
+				},
+				"entry": [ {
+					"reference": "DetectedIssue/ra-measurereport03-remediate"
+				} ]
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/DetectedIssue/ra-measurereport03-remediate",
+		"resource": {
+			"resourceType": "DetectedIssue",
+			"id": "ra-measurereport03-remediate",
+			"meta": {
+				"versionId": "1",
+				"lastUpdated": "2022-11-28T19:24:48.752-07:00",
+				"source": "#0j179M7WsPgvYFoV",
+				"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-clinical-evaluation-detectedissue" ]
+			},
+			"extension": [ {
+				"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+				"valueString": "group-002"
+			} ],
+			"modifierExtension": [ {
+				"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-codingGapRequest",
+				"valueCodeableConcept": {
+					"coding": [ {
+						"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/coding-gap-request",
+						"code": "closure-request"
+					} ]
+				}
+			} ],
+			"status": "final",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+					"version": "24",
+					"code": "110",
+					"display": "Cystic Fibrosis"
+				} ],
+				"text": "HCC 110: Cystic Fibrosis"
+			},
+			"patient": {
+				"reference": "Patient/ra-patient02"
+			},
+			"implicated": [ {
+				"reference": "MeasureReport/ra-measurereport03"
+			} ],
+			"evidence": [ {
+				"detail": [ {
+					"reference": "MeasureReport/ra-measurereport03"
+				} ]
+			}, {
+				"detail": [ {
+					"reference": "Condition/ra-measurereport03-remediate"
+				} ]
+			}, {
+				"detail": [ {
+					"reference": "Encounter/ra-measurereport03-remediate"
+				} ]
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/DetectedIssue/ra-measurereport03-group-002",
+		"resource": {
+			"resourceType": "DetectedIssue",
+			"id": "ra-measurereport03-group-002",
+			"meta": {
+				"lastUpdated": "2022-11-28T19:24:48.752-07:00",
+				"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue" ]
+			},
+			"extension": [ {
+				"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+				"valueString": "group-002"
+			} ],
+			"status": "cancelled",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+					"version": "24",
+					"code": "110",
+					"display": "Cystic Fibrosis"
+				} ],
+				"text": "HCC 110: Cystic Fibrosis"
+			},
+			"patient": {
+				"reference": "Patient/ra-patient02"
+			},
+			"implicated": [ {
+				"reference": "MeasureReport/ra-measurereport03"
+			} ],
+			"evidence": [ {
+				"detail": [ {
+					"reference": "Observation/ra-obs01pat02"
+				} ]
+			}, {
+				"detail": [ {
+					"reference": "Patient/ra-patient02"
+				} ]
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/DetectedIssue/ra-measurereport03-group-001",
+		"resource": {
+			"resourceType": "DetectedIssue",
+			"id": "ra-measurereport03-group-001",
+			"meta": {
+				"lastUpdated": "2022-11-28T19:24:48.752-07:00",
+				"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue" ]
+			},
+			"extension": [ {
+				"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+				"valueString": "group-001"
+			} ],
+			"status": "final",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+					"version": "24",
+					"code": "96",
+					"display": "Specified Heart.Arrhythmias"
+				} ],
+				"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
+			},
+			"patient": {
+				"reference": "Patient/ra-patient02"
+			},
+			"implicated": [ {
+				"reference": "MeasureReport/ra-measurereport03"
+			} ],
+			"evidence": [ {
+				"detail": [ {
+					"reference": "Condition/ra-condition31pat02"
+				} ]
+			}, {
+				"detail": [ {
+					"reference": "Encounter/ra-encounter31pat02"
+				} ]
+			}, {
+				"detail": [ {
+					"reference": "Patient/ra-patient02"
+				} ]
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/MeasureReport/ra-measurereport03",
+		"resource": {
+			"resourceType": "MeasureReport",
+			"id": "ra-measurereport03",
+			"meta": {
+				"versionId": "1",
+				"lastUpdated": "2022-11-27T11:41:32.446-07:00",
+				"source": "#wAgGoE23HHuP7Olf",
+				"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport" ]
+			},
+			"extension": [ {
+				"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-clinicalDataCollectionDeadline",
+				"valueDate": "2022-03-31"
+			} ],
+			"status": "complete",
+			"type": "individual",
+			"measure": "https://build.fhir.org/ig/HL7/davinci-ra/Measure-RAModelExample01",
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"date": "2021-10-18",
+			"reporter": {
+				"reference": "Organization/ra-payer01"
+			},
+			"period": {
+				"start": "2021-01-01",
+				"end": "2021-09-30"
+			},
+			"group": [ {
+				"id": "group-001",
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+							"code": "historic"
+						} ]
+					}
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+							"code": "closed-gap"
+						} ]
+					}
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status",
+							"code": "applied-not-superseded"
+						} ]
+					}
+				} ],
+				"code": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "96",
+						"display": "Specified Heart.Arrhythmias"
+					} ],
+					"text": "CMS HCC: 96, Specified Heart.Arrhythmias"
+				}
+			}, {
+				"id": "group-002",
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+							"code": "suspected"
+						} ]
+					}
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+							"code": "open-gap"
+						} ]
+					}
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate",
+					"valueDate": "2020-07-15"
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus",
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status",
+							"code": "applied-not-superseded"
+						} ]
+					}
+				} ],
+				"code": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"version": "24",
+						"code": "110",
+						"display": "Cystic Fibrosis"
+					} ],
+					"text": "HCC 110: Cystic Fibrosis"
+				}
+			} ],
+			"evaluatedResource": [ {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				} ],
+				"reference": "Condition/ra-condition31pat02"
+			}, {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				} ],
+				"reference": "Encounter/ra-encounter31pat02"
+			}, {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-002"
+				} ],
+				"reference": "Observation/ra-obs01pat02"
+			}, {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-001"
+				}, {
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference",
+					"valueString": "group-002"
+				} ],
+				"reference": "Patient/ra-patient02"
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Organization/alphora-author",
+		"resource": {
+			"resourceType": "Organization",
+			"id": "alphora-author",
+			"meta": {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+					"valueString": "Organization for STU2 Testing"
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+					"valueMarkdown": "Provider Organization for STU2 Testing data"
+				} ],
+				"versionId": "1",
+				"lastUpdated": "2022-11-27T11:41:32.782-07:00",
+				"source": "#5Ky1usO18wcPq977",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization" ]
+			},
+			"active": true,
+			"type": [ {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/organization-type",
+					"code": "prov",
+					"display": "Healthcare Provider"
+				} ]
+			} ],
+			"name": "GHH Outpatient Clinic",
+			"telecom": [ {
+				"system": "phone",
+				"value": "(+1) 555-555-3013 (ext 999)"
+			}, {
+				"system": "email",
+				"value": "patient_question_outpatient_clinic@GHH.com"
+			} ],
+			"address": [ {
+				"line": [ "1060 Village Avenue" ],
+				"city": "Ann Harbor",
+				"state": "MI",
+				"postalCode": "99999",
+				"country": "USA"
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Patient/ra-patient02",
+		"resource": {
+			"resourceType": "Patient",
+			"id": "ra-patient02",
+			"meta": {
+				"versionId": "2",
+				"lastUpdated": "2022-11-28T19:24:48.597-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient" ]
+			},
+			"text": {
+				"status": "generated",
+				"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Adam <b>EVERYMAN </b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>23456</td></tr><tr><td>Address</td><td><span>2222 Home Street </span><br/><span>Ann Arbor </span><span>MI </span><span>USA </span></td></tr><tr><td>Date of birth</td><td><span>16 December 1950</span></td></tr></tbody></table></div>"
+			},
+			"extension": [ {
+				"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+				"valueCode": "M"
+			}, {
+				"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+				"extension": [ {
+					"url": "ombCategory",
+					"valueCoding": {
+						"system": "urn:oid:2.16.840.1.113883.6.238",
+						"code": "2106-3",
+						"display": "White"
+					}
+				}, {
+					"url": "text",
+					"valueString": "White"
+				} ]
+			}, {
+				"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+				"extension": [ {
+					"url": "ombCategory",
+					"valueCoding": {
+						"system": "urn:oid:2.16.840.1.113883.6.238",
+						"code": "2186-5",
+						"display": "Not Hispanic or Latino"
+					}
+				}, {
+					"url": "text",
+					"valueString": "Not Hispanic or Latino"
+				} ]
+			} ],
+			"identifier": [ {
+				"use": "usual",
+				"type": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+						"code": "MR",
+						"display": "Medical record number"
+					} ]
+				},
+				"system": "http://hospital.davinci.org",
+				"value": "23456"
+			} ],
+			"active": true,
+			"name": [ {
+				"use": "official",
+				"family": "Everyman",
+				"given": [ "Adam" ]
+			} ],
+			"gender": "female",
+			"birthDate": "1950-12-16",
+			"deceasedBoolean": false,
+			"address": [ {
+				"use": "home",
+				"line": [ "2222 Home Street" ],
+				"city": "Ann Arbor",
+				"state": "MI",
+				"postalCode": "99999",
+				"country": "USA"
+			} ],
+			"maritalStatus": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+					"code": "M",
+					"display": "Married"
+				} ]
+			},
+			"communication": [ {
+				"language": {
+					"coding": [ {
+						"system": "urn:ietf:bcp:47",
+						"code": "en-US",
+						"display": "English (Region=United States)"
+					} ]
+				},
+				"preferred": true
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Condition/ra-measurereport03-remediate",
+		"resource": {
+			"resourceType": "Condition",
+			"id": "ra-measurereport03-remediate",
+			"meta": {
+				"versionId": "2",
+				"lastUpdated": "2022-11-28T19:24:48.584-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+			},
+			"clinicalStatus": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+					"code": "active",
+					"display": "Active"
+				} ],
+				"text": "Active"
+			},
+			"verificationStatus": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+					"code": "confirmed",
+					"display": "Confirmed"
+				} ],
+				"text": "Confirmed"
+			},
+			"category": [ {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-category",
+					"code": "encounter-diagnosis",
+					"display": "Encounter Diagnosis"
+				} ],
+				"text": "Encounter Diagnosis"
+			} ],
+			"code": {
+				"coding": [ {
+					"system": "http://hl7.org/fhir/sid/icd-10-cm",
+					"code": "E84.19",
+					"display": "Cystic fibrosis with other intestinal manifestations"
+				} ],
+				"text": "E84.19: Cystic fibrosis with other intestinal manifestations"
+			},
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"onsetDateTime": "1978-01-31"
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Encounter/ra-encounter31pat02",
+		"resource": {
+			"resourceType": "Encounter",
+			"id": "ra-encounter31pat02",
+			"meta": {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+					"valueString": "Encounter with Dr Pump on 20210806 for Patient 02"
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+					"valueMarkdown": "This is Encounter with Dr Howell on 20210806 for Patient 02."
+				} ],
+				"versionId": "1",
+				"lastUpdated": "2022-11-28T19:24:48.510-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" ]
+			},
+			"status": "finished",
+			"class": {
+				"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+				"code": "AMB",
+				"display": "ambulatory"
+			},
+			"type": [ {
+				"coding": [ {
+					"system": "http://www.ama-assn.org/go/cpt",
+					"code": "99215"
+				} ],
+				"text": "Office Visit, High Complexity"
+			} ],
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"participant": [ {
+				"individual": {
+					"reference": "Practitioner/ra-prac02pat02"
+				}
+			} ],
+			"period": {
+				"start": "2021-08-06",
+				"end": "2021-08-06"
+			},
+			"diagnosis": [ {
+				"condition": {
+					"reference": "Condition/ra-condition31pat02"
+				}
+			} ],
+			"serviceProvider": {
+				"reference": "Organization/ra-org02pat02"
+			}
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Observation/ra-obs01pat02",
+		"resource": {
+			"resourceType": "Observation",
+			"id": "ra-obs01pat02",
+			"meta": {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+					"valueString": "Trypsin [Mass/volume] in Serum or Plasma for Pat01"
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+					"valueMarkdown": "Trypsin [Mass/volume] in Serum or Plasma for Pat01*."
+				} ],
+				"versionId": "1",
+				"lastUpdated": "2022-11-28T19:24:48.324-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab" ]
+			},
+			"status": "final",
+			"category": [ {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+					"code": "laboratory",
+					"display": "Laboratory"
+				} ],
+				"text": "Laboratory"
+			} ],
+			"code": {
+				"coding": [ {
+					"system": "http://loinc.org",
+					"code": "33325-2",
+					"display": "Trypsin [Mass/volume] in Serum or Plasma"
+				} ],
+				"text": "Trypsin [Mass/volume] in Serum or Plasma"
+			},
+			"subject": {
+				"reference": "Patient/ra-patient02",
+				"display": "Adam Everyman"
+			},
+			"effectiveDateTime": "2019-06-17",
+			"valueQuantity": {
+				"value": 770,
+				"unit": "ng/mL",
+				"system": "http://unitsofmeasure.org"
+			},
+			"referenceRange": [ {
+				"low": {
+					"value": 169,
+					"unit": "ng/mL",
+					"system": "http://unitsofmeasure.org",
+					"code": "ng/mL"
+				},
+				"high": {
+					"value": 773,
+					"unit": "ng/mL",
+					"system": "http://unitsofmeasure.org",
+					"code": "mg/dL"
+				},
+				"type": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+						"code": "normal",
+						"display": "Normal Range"
+					} ],
+					"text": "Normal Range"
+				}
+			} ]
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Encounter/ra-measurereport03-remediate",
+		"resource": {
+			"resourceType": "Encounter",
+			"id": "ra-measurereport03-remediate",
+			"meta": {
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-name",
+					"valueString": "Encounter with Dr Howell on 20210714 for Patient 02"
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/instance-description",
+					"valueMarkdown": "This is Encounter with Dr Howell on 20210714 for Patient 02."
+				} ],
+				"versionId": "1",
+				"lastUpdated": "2022-11-28T19:24:48.538-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" ]
+			},
+			"status": "finished",
+			"class": {
+				"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+				"code": "AMB",
+				"display": "ambulatory"
+			},
+			"type": [ {
+				"coding": [ {
+					"system": "http://www.ama-assn.org/go/cpt",
+					"code": "99215"
+				} ],
+				"text": "Office Visit, High Complexity"
+			} ],
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"participant": [ {
+				"individual": {
+					"reference": "Practitioner/ra-prac01pat01"
+				}
+			} ],
+			"period": {
+				"start": "2021-03-27",
+				"end": "2021-03-27"
+			},
+			"diagnosis": [ {
+				"condition": {
+					"reference": "Condition/ra-measurereport03-remediate"
+				}
+			} ],
+			"serviceProvider": {
+				"reference": "Organization/ra-org02pat02"
+			}
+		}
+	}, {
+		"fullUrl": "http://localhost:58738/fhir/Condition/ra-condition31pat02",
+		"resource": {
+			"resourceType": "Condition",
+			"id": "ra-condition31pat02",
+			"meta": {
+				"versionId": "2",
+				"lastUpdated": "2022-11-28T19:24:48.555-07:00",
+				"profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+			},
+			"clinicalStatus": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+					"code": "active",
+					"display": "Active"
+				} ],
+				"text": "Active"
+			},
+			"verificationStatus": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+					"code": "confirmed",
+					"display": "Confirmed"
+				} ],
+				"text": "Confirmed"
+			},
+			"category": [ {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/condition-category",
+					"code": "encounter-diagnosis",
+					"display": "Encounter Diagnosis"
+				} ],
+				"text": "Encounter Diagnosis"
+			} ],
+			"code": {
+				"coding": [ {
+					"system": "http://hl7.org/fhir/sid/icd-10-cm",
+					"code": "I48.3",
+					"display": "Typical atrial flutter"
+				} ],
+				"text": "Typical atrial flutter"
+			},
+			"subject": {
+				"reference": "Patient/ra-patient02"
+			},
+			"onsetDateTime": "2021-08-06"
+		}
+	} ]
+}
