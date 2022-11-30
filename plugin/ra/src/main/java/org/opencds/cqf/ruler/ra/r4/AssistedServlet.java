@@ -101,26 +101,21 @@ public class AssistedServlet extends HttpServlet {
 		group.setId("group-" + data.getCcCode());
 		group.setCode(new CodeableConcept(new Coding().setCode(data.getCcCode())
 				.setSystem(RAConstants.HCC_CODESYSTEM_URL).setVersion(data.getModelVersion())));
-		// TODO: use RAConstant values when pushed to master
 		if (data.getSuspectType() != null && !data.getSuspectType().isBlank()) {
-			group.addExtension(createCodeableConceptExtension(
-					"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
-					"http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type", data.getSuspectType()));
+			group.addExtension(createCodeableConceptExtension(RAConstants.SUSPECT_TYPE_URL,
+				RAConstants.SUSPECT_TYPE_SYSTEM, data.getSuspectType()));
 		}
 		if (data.getEvidenceStatus() != null && !data.getEvidenceStatus().isBlank()) {
-			group.addExtension(createCodeableConceptExtension(
-					"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
-					"http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status", data.getEvidenceStatus()));
+			group.addExtension(createCodeableConceptExtension(RAConstants.EVIDENCE_STATUS_URL,
+				RAConstants.EVIDENCE_STATUS_SYSTEM, data.getEvidenceStatus()));
 		}
 		if (data.getEvidenceStatusDate() != null && !data.getEvidenceStatusDate().isBlank()) {
-			group.addExtension(new Extension().setUrl(
-					"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate")
+			group.addExtension(new Extension().setUrl(RAConstants.EVIDENCE_STATUS_DATE_URL)
 					.setValue(new DateType(data.getEvidenceStatusDate())));
 		}
 		if (data.getHiearchicalStatus() != null && !data.getHiearchicalStatus().isBlank()) {
-			group.addExtension(createCodeableConceptExtension(
-					"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus",
-					"http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status", data.getHiearchicalStatus()));
+			group.addExtension(createCodeableConceptExtension(RAConstants.HIERARCHICAL_STATUS_URL,
+				RAConstants.HIERARCHICAL_STATUS_SYSTEM, data.getHiearchicalStatus()));
 		}
 		mr.addGroup(group);
 	}

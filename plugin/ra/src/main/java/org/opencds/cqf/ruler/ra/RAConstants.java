@@ -26,6 +26,8 @@ public class RAConstants {
 	public static final String SUSPECT_TYPE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";
 	public static final String EVIDENCE_STATUS_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
 	public static final String EVIDENCE_STATUS_DATE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate";
+	public static final String HIERARCHICAL_STATUS_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-hierarchicalStatus";
+	public static final String HIERARCHICAL_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-ra/CodeSystem/hierarchical-status";
 	// Suspect Type
 	public static final String SUSPECT_TYPE_SYSTEM = "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type";
 	public static final String HISTORIC_CODE = "historic";
