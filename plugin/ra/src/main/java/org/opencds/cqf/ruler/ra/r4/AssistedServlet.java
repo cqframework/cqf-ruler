@@ -19,11 +19,11 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.ra.RAConstants;
 
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -58,7 +58,7 @@ public class AssistedServlet extends HttpServlet {
 		transaction.setType(Bundle.BundleType.TRANSACTION);
 		for (Map.Entry<String, MeasureReport> entry : mrMap.entrySet()) {
 			transaction.addEntry().setResource(entry.getValue()).setRequest(new Bundle.BundleEntryRequestComponent()
-					.setMethod(Bundle.HTTPVerb.PUT).setUrl(Ids.simple(entry.getValue())));
+					.setMethod(Bundle.HTTPVerb.PUT).setUrl(entry.getValue().getIdElement().getValue()));
 		}
 
 		response.setStatus(200);
@@ -73,7 +73,7 @@ public class AssistedServlet extends HttpServlet {
 
 	private MeasureReport createMeasureReport(AssistedRowData data) {
 		MeasureReport mr = new MeasureReport();
-		mr.setId("assisted-" + UUID.randomUUID());
+		mr.setIdElement(new IdType("MeasureReport", "assisted-" + UUID.randomUUID()));
 		mr.setMeta(new Meta().addProfile(RAConstants.MEASURE_REPORT_PROFILE_URL));
 		mr.setStatus(MeasureReport.MeasureReportStatus.COMPLETE);
 		mr.setType(MeasureReport.MeasureReportType.INDIVIDUAL);

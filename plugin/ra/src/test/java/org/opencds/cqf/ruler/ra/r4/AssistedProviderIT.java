@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -103,5 +104,7 @@ class AssistedProviderIT extends RestIntegrationTest {
 		assertEquals("2021-09-30", formatter.format(mr.getPeriod().getEnd()));
 		assertTrue(mr.hasGroup());
 		assertEquals(11, mr.getGroup().size());
+		Bundle transaction = transaction(bundle);
+		assertNotNull(transaction);
 	}
 }
