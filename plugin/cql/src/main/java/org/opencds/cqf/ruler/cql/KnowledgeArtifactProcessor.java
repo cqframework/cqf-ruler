@@ -193,7 +193,7 @@ public class KnowledgeArtifactProcessor {
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}
-
+		System.out.println("Status: " + existingResource.getStatus());
 		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
 			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getUrl()));
 		}
