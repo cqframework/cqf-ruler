@@ -15,6 +15,7 @@ import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
@@ -49,7 +50,7 @@ public class RemediateProvider extends DaoRegistryOperationProvider implements R
 					Composition composition = getCompositionFromBundle(b);
 					List<DetectedIssue> issues = getIssuesFromBundle(b);
 					Resource author = getAuthorFromBundle(b, composition);
-					issues.addAll(getAssociatedIssues(mr.getIdElement().getValue()));
+					issues.addAll(getAssociatedIssues(Ids.simple(mr)));
 					updateComposition(composition, mr, issues);
 					codingGapReportBundles.add(
 							buildCodingGapReportBundle(requestDetails.getFhirServerBase(), composition, issues, mr, author));
