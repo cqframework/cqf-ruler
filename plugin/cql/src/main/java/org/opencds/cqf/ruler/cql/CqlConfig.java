@@ -144,6 +144,7 @@ public class CqlConfig {
 				provider.setTerminologyProvider(t);
 				provider.setExpandValueSets(true);
 				provider.setMaxCodesPerQuery(2048);
+				provider.setQueryBatchThreshold(5);
 				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);

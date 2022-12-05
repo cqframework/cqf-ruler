@@ -5,6 +5,7 @@ hapi:
          fhirserver:
             expandValueSets: true
             maxCodesPerQuery: 64
+            queryBatchThreshold: 5
             searchStyle: GET
          prefetch:
             maxUriLength: 8000

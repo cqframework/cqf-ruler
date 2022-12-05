@@ -8,21 +8,23 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 public class ProviderConfiguration {
 
 	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, 64,
-			SearchStyleEnum.GET, 8000, false);
+			SearchStyleEnum.GET, 8000, false, 5);
 
 	private int maxCodesPerQuery;
 	private SearchStyleEnum searchStyle;
 	private boolean expandValueSets;
+	private int queryBatchThreshold;
 	private int maxUriLength;
 	private boolean cqlLoggingEnabled;
 
 	public ProviderConfiguration(boolean expandValueSets, int maxCodesPerQuery, SearchStyleEnum searchStyle,
-			int maxUriLength, boolean cqlLoggingEnabled) {
+			int maxUriLength, boolean cqlLoggingEnabled, int queryBatchThreshold) {
 		this.maxCodesPerQuery = maxCodesPerQuery;
 		this.searchStyle = searchStyle;
 		this.expandValueSets = expandValueSets;
 		this.maxUriLength = maxUriLength;
 		this.cqlLoggingEnabled = cqlLoggingEnabled;
+		this.queryBatchThreshold = queryBatchThreshold;
 	}
 
 	public ProviderConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties) {
@@ -30,6 +32,7 @@ public class ProviderConfiguration {
 		this.maxCodesPerQuery = cdsProperties.getFhirServer().getMaxCodesPerQuery();
 		this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
 		this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
+		this.queryBatchThreshold = cdsProperties.getFhirServer().getQueryBatchThreshold();
 		this.cqlLoggingEnabled = cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled();
 	}
 
@@ -44,6 +47,8 @@ public class ProviderConfiguration {
 	public boolean getExpandValueSets() {
 		return this.expandValueSets;
 	}
+
+	public int getQueryBatchThreshold() { return this.queryBatchThreshold; }
 
 	public int getMaxUriLength() {
 		return this.maxUriLength;
