@@ -7,18 +7,18 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 
 public class ProviderConfiguration {
 
-	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, 64,
-			SearchStyleEnum.GET, 8000, false, 5);
+	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, null,
+			SearchStyleEnum.GET, 8000, false, null);
 
-	private int maxCodesPerQuery;
+	private Integer maxCodesPerQuery;
 	private SearchStyleEnum searchStyle;
 	private boolean expandValueSets;
-	private int queryBatchThreshold;
+	private Integer queryBatchThreshold;
 	private int maxUriLength;
 	private boolean cqlLoggingEnabled;
 
-	public ProviderConfiguration(boolean expandValueSets, int maxCodesPerQuery, SearchStyleEnum searchStyle,
-			int maxUriLength, boolean cqlLoggingEnabled, int queryBatchThreshold) {
+	public ProviderConfiguration(boolean expandValueSets, Integer maxCodesPerQuery, SearchStyleEnum searchStyle,
+			int maxUriLength, boolean cqlLoggingEnabled, Integer queryBatchThreshold) {
 		this.maxCodesPerQuery = maxCodesPerQuery;
 		this.searchStyle = searchStyle;
 		this.expandValueSets = expandValueSets;

@@ -161,13 +161,21 @@ public class DataRequirements {
 		try {
 			BaseFhirQueryGenerator fhirQueryGenerator = new R4FhirQueryGenerator(searchParameterResolver,
 					terminologyProvider, modelResolver);
-			// TODO: ExpandValueSets needs to come from configuration
-			fhirQueryGenerator.setExpandValueSets(true);
-			fhirQueryGenerator.setMaxCodesPerQuery(cqlOptions.getCqlEngineOptions().getMaxCodesPerQuery());
+
 			if (cqlOptions.getCqlEngineOptions().getPageSize() != null) {
 				fhirQueryGenerator.setPageSize(cqlOptions.getCqlEngineOptions().getPageSize());
 			}
-			fhirQueryGenerator.setQueryBatchThreshold(cqlOptions.getCqlEngineOptions().getQueryBatchThreshold());
+			fhirQueryGenerator.setExpandValueSets(cqlOptions.getCqlEngineOptions().shouldExpandValueSets());
+
+			Integer maxCodesPerQuery = cqlOptions.getCqlEngineOptions().getMaxCodesPerQuery();
+			if (maxCodesPerQuery != null && maxCodesPerQuery > 0) {
+				fhirQueryGenerator.setMaxCodesPerQuery(cqlOptions.getCqlEngineOptions().getMaxCodesPerQuery());
+			}
+
+			Integer queryBatchThreshold = cqlOptions.getCqlEngineOptions().getQueryBatchThreshold();
+			if (queryBatchThreshold != null && queryBatchThreshold > 0) {
+				fhirQueryGenerator.setQueryBatchThreshold(cqlOptions.getCqlEngineOptions().getQueryBatchThreshold());
+			}
 
 			Map<String, Object> contextValues = new HashMap<String, Object>();
 			SubjectContext contextValue = getContextForSubject(library.getSubject());
