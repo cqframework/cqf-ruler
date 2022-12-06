@@ -32,6 +32,10 @@ hapi:
          engine:
             # debug_logging_enabled: false
             options: "EnableExpressionCaching"
+#            max_codes_per_query: 64
+#            query_batch_threshold: 10
+
+
          # use_embedded_libraries: true
          # translator:
          #    analyzeDataRequirements: false
@@ -96,8 +100,9 @@ hapi:
       cdshooks:
          enabled: true
          fhirserver:
-            expandValueSets: true
-            maxCodesPerQuery: 64
+#            expandValueSets: true
+#            maxCodesPerQuery: 64
+#            queryBatchThreshold: 10
             searchStyle: GET
          prefetch:
             maxUriLength: 8000

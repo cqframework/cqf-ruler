@@ -48,6 +48,16 @@ public class CdsHooksProperties {
 			this.expandValueSets = expandValueSets;
 		}
 
+		private Integer queryBatchThreshold;
+
+		public Integer getQueryBatchThreshold() {
+			return queryBatchThreshold;
+		}
+
+		public void setQueryBatchThreshold(Integer queryBatchThreshold) {
+			this.queryBatchThreshold = queryBatchThreshold;
+		}
+
 		private SearchStyleEnum searchStyle;
 
 		public SearchStyleEnum getSearchStyle() {
