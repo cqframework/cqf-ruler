@@ -29,6 +29,9 @@ import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 public class KnowledgeArtifactProcessor {
 
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
+	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
+	private List<RelatedArtifact> comparedRelatedArtifactList = new ArrayList<>();
+	private List<String> comparedURLStringList = new ArrayList<>();
 
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
@@ -62,17 +65,23 @@ public class KnowledgeArtifactProcessor {
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(null);
 
-			//fhirDal.create(newResource);
+			if(!comparedURLStringList.contains(newResource.getUrl())) {
+				comparedURLStringList.add(newResource.getUrl());
+				fhirDal.create(newResource);
+			}
 
 			for (RelatedArtifact ra : adapter.getRelatedArtifact()) {
 				// If it is a composed-of relation then do a deep copy, else shallow
 				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 					if (ra.hasUrl()) {
+						if(!comparedRelatedArtifactList.contains(ra)) {
+							comparedRelatedArtifactList.add(ra);
+						}
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle);
+						processReferencedResource(fhirDal, referencedResourceBundle, ra);
 					} else if (ra.hasResource()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle);
+						processReferencedResource(fhirDal, referencedResourceBundle, ra);
 					}
 				}
 			}
@@ -83,12 +92,19 @@ public class KnowledgeArtifactProcessor {
 		return newResource;
 	}
 
-	private void processReferencedResource(FhirDal fhirDal, Bundle referencedResourceBundle) {
+	private void processReferencedResource(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
-				internalDraft(referencedResource, fhirDal);
+				if(!comparedURLStringList.contains(referencedResource.getUrl())) {
+					comparedURLStringList.add(referencedResource.getUrl());
+				}
+				if(!comparedRelatedArtifactList.contains(ra)) {
+					comparedRelatedArtifactList.add(ra);
+					internalDraft(referencedResource, fhirDal);
+				}
+
 			}
 		}
 	}
@@ -111,7 +127,7 @@ public class KnowledgeArtifactProcessor {
 		int listCounter=0;
 		int listSize = finalRelatedArtifactList.size();
 		for (RelatedArtifact ra : finalRelatedArtifactList) {
-			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra);
+			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, true, bundleEntryComponentList);
 			listCounter++;
 			if(listCounter == listSize) {
 				break;
@@ -124,12 +140,14 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
-	private void getAdditionReleaseData(List<RelatedArtifact> finalRelatedArtifactList, FhirDal fhirDal, RelatedArtifact ra) {
+	private void getAdditionReleaseData(List<RelatedArtifact> finalRelatedArtifactList, FhirDal fhirDal, RelatedArtifact ra, boolean release, List<Bundle.BundleEntryComponent> bundleEntryComponentList) {
 		// update root artifact with relatedArtifacts that reflect all of its direct and transitive references.
 		// This bit should be it's own method so that we can call it recursively:
 
 			if (ra.hasResource()) {
-				ra.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+				if(release) {
+					ra.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+				}
 				String resourceData = ra.getResource();
 				if(Canonicals.getUrl(resourceData) != null) {
 					List < IQueryParameterType > list = new ArrayList<>();
@@ -147,21 +165,25 @@ public class KnowledgeArtifactProcessor {
 
 						if (referencedResourceEntry.hasResource()) {
 							MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
-							KnowledgeArtifactAdapter<MetadataResource> adapterNew = new KnowledgeArtifactAdapter<>(referencedResource);
-							List<RelatedArtifact> newRelatedArtifactList = adapterNew.getRelatedArtifact();
-							boolean found = false;
-
-							for(RelatedArtifact newOne : newRelatedArtifactList) {
-								for(RelatedArtifact nextOne : finalRelatedArtifactList) {
-									if(newOne.getResource().equals(nextOne.getResource())) {
-										found = true;
-										break;
+							if(release) {
+								KnowledgeArtifactAdapter<MetadataResource> adapterNew = new KnowledgeArtifactAdapter<>(referencedResource);
+								List<RelatedArtifact> newRelatedArtifactList = adapterNew.getRelatedArtifact();
+								boolean found = false;
+								for(RelatedArtifact newOne : newRelatedArtifactList) {
+									for (RelatedArtifact nextOne : finalRelatedArtifactList) {
+										if (newOne.getResource().equals(nextOne.getResource())) {
+											found = true;
+											break;
+										}
+									}
+									if (!found) {
+										finalRelatedArtifactList.add(newOne);
+										getAdditionReleaseData(finalRelatedArtifactList, fhirDal, newOne, release, bundleEntryComponentList);
 									}
 								}
-								if(!found) {
-									finalRelatedArtifactList.add(newOne);
-									getAdditionReleaseData(finalRelatedArtifactList, fhirDal, newOne);
-								}
+							} else {
+								bundleEntryComponentList.add(referencedResourceEntry);
+								referencedResourceBundle.setEntry(bundleEntryComponentList);
 							}
 						}
 					}
@@ -193,7 +215,7 @@ public class KnowledgeArtifactProcessor {
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}
-		System.out.println("Status: " + existingResource.getStatus());
+
 		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
 			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getUrl()));
 		}

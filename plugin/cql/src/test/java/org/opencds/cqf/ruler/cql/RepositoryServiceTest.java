@@ -38,6 +38,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
+ 		assertTrue(isActive("Library/SpecificationLibrary"));
+		assertTrue(isActive("PlanDefinition/plandefinition-ersd-instance-example"));
+		assertTrue(isActive("Library/library-rctc-example"));
+		assertTrue(isActive("ValueSet/dxtc"));
+		assertTrue(isActive("ValueSet/lotc"));
+		assertTrue(isActive("ValueSet/lrtc"));
+		assertTrue(isActive("ValueSet/mrtc"));
+		assertTrue(isActive("ValueSet/ostc"));
+		assertTrue(isActive("ValueSet/sdtc"));
 	}
 
 	@Test
