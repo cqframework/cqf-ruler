@@ -36,7 +36,7 @@ public class ProviderConfiguration {
 		this.cqlLoggingEnabled = cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled();
 	}
 
-	public int getMaxCodesPerQuery() {
+	public Integer getMaxCodesPerQuery() {
 		return this.maxCodesPerQuery;
 	}
 
@@ -48,7 +48,7 @@ public class ProviderConfiguration {
 		return this.expandValueSets;
 	}
 
-	public int getQueryBatchThreshold() { return this.queryBatchThreshold; }
+	public Integer getQueryBatchThreshold() { return this.queryBatchThreshold; }
 
 	public int getMaxUriLength() {
 		return this.maxUriLength;
