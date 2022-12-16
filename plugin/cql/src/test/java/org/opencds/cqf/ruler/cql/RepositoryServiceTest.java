@@ -7,12 +7,10 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.IdType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 
