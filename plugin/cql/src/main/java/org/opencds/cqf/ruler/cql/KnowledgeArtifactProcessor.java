@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.r4.model.Bundle;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
@@ -24,14 +26,13 @@ public class KnowledgeArtifactProcessor {
 
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
 	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
-	private List<RelatedArtifact> comparedRelatedArtifactList = new ArrayList<>();
-	private List<String> comparedURLStringList = new ArrayList<>();
 
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
+		//TODO: Needs to be transactional
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 
 		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
-		// performed her to facilitate that different treatment for the root artifact and those referenced by it.
+		// performed here to facilitate that different treatment for the root artifact and those referenced by it.
 		if (resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
 			throw new IllegalArgumentException(
 				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", resource.getUrl(), resource.getStatus().toString()));
@@ -41,9 +42,6 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	private MetadataResource internalDraft(MetadataResource resource, FhirDal fhirDal) {
-		//TODO: Needs to be transactional
-
-		//TODO: Can we really assume MetadataResource here?
 		Bundle existingArtifactsForUrl = searchResourceByUrl(resource.getUrl(), fhirDal);
 		Optional<Bundle.BundleEntryComponent> existingDrafts = existingArtifactsForUrl.getEntry().stream().filter(
 			e -> ((MetadataResource) e.getResource()).getStatus() == Enumerations.PublicationStatus.DRAFT).findFirst();
@@ -54,23 +52,24 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		if (newResource == null) {
-			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
-			newResource = adapter.copy();
+			KnowledgeArtifactAdapter<MetadataResource> sourceResourceAdapter = new KnowledgeArtifactAdapter<>(resource);
+			newResource = sourceResourceAdapter.copy();
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
+			newResource.setId((String)null);
 			newResource.setVersion(null);
 
-			if(!comparedURLStringList.contains(newResource.getUrl())) {
-				comparedURLStringList.add(newResource.getUrl());
-				fhirDal.create(newResource);
-			}
+			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<>(newResource);
 
-			for (RelatedArtifact ra : adapter.getRelatedArtifact()) {
+			// For each Resource relatedArtifact, strip the version of the reference.
+			newResourceAdapter.getRelatedArtifact().stream().filter(ra -> ra.hasResource()).collect(Collectors.toList())
+				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource())));
+
+			fhirDal.create(newResource);
+
+			for (RelatedArtifact ra : sourceResourceAdapter.getRelatedArtifact()) {
 				// If it is a composed-of relation then do a deep copy, else shallow
 				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 					if (ra.hasUrl()) {
-						if(!comparedRelatedArtifactList.contains(ra)) {
-							comparedRelatedArtifactList.add(ra);
-						}
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
 						processReferencedResource(fhirDal, referencedResourceBundle, ra);
 					} else if (ra.hasResource()) {
@@ -81,8 +80,6 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 
-		fhirDal.create(newResource);
-
 		return newResource;
 	}
 
@@ -91,24 +88,26 @@ public class KnowledgeArtifactProcessor {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
-				if(!comparedURLStringList.contains(referencedResource.getUrl())) {
-					comparedURLStringList.add(referencedResource.getUrl());
-				}
-				if(!comparedRelatedArtifactList.contains(ra)) {
-					comparedRelatedArtifactList.add(ra);
-					internalDraft(referencedResource, fhirDal);
-				}
 
+				internalDraft(referencedResource, fhirDal);
 			}
 		}
 	}
 
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
-		List<IQueryParameterType> list = new ArrayList<>();
-		list.add(new UriParam(url));
-
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
-		searchParams.put("url", List.of(list));
+
+		List<IQueryParameterType> urlList = new ArrayList<>();
+		urlList.add(new UriParam(Canonicals.getUrl(url)));
+		searchParams.put("url", List.of(urlList));
+
+		List<IQueryParameterType> versionList = new ArrayList<>();
+		String version = Canonicals.getVersion(url);
+		if (version != null && !version.isEmpty()) {
+			versionList.add(new TokenParam(Canonicals.getVersion((url))));
+			searchParams.put("version", List.of(versionList));
+		}
+
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
