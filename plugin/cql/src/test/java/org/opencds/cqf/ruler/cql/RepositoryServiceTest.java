@@ -145,4 +145,72 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		assertTrue(actualMessage.contains("Only resources with status of 'draft' can be revised."));
 	}
+
+	@Test
+	void packageOperation_active_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
+		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
+		Parameters params = parameters( part("resource", specLibrary) );
+
+		Library returnResource = getClient().operation()
+			.onServer()
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnResource);
+		assertTrue(isActive("Library/SpecificationLibrary"));
+		assertTrue(isActive("PlanDefinition/plandefinition-ersd-instance-example"));
+		assertTrue(isActive("Library/library-rctc-example"));
+		assertTrue(isActive("ValueSet/dxtc"));
+		assertTrue(isActive("ValueSet/lotc"));
+		assertTrue(isActive("ValueSet/lrtc"));
+		assertTrue(isActive("ValueSet/mrtc"));
+		assertTrue(isActive("ValueSet/ostc"));
+		assertTrue(isActive("ValueSet/sdtc"));
+	}
+
+	@Test
+	void packageOperation_draft_test() {
+		boolean thrown = false;
+		loadTransaction("ersd-draft-transaction-bundle-example.json");
+		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
+		String actualMessage = "";
+		Parameters params = parameters( part("resource", specLibrary) );
+		try {
+			Library returnResource = getClient().operation()
+				.onServer()
+				.named("$package")
+				.withParameters(params)
+				.returnResourceType(Library.class)
+				.execute();
+		} catch ( Exception e) {
+			actualMessage = e.getMessage();
+			assertTrue(actualMessage.contains("Only resources with status of 'active' can be packaged."));
+		}
+	}
+
+	@Test
+	void packageOperation_active_id_test() {
+		loadResource("ersd-active-library-example.json");
+		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
+		specLibrary.setName("NewSpecificationLibrary");
+		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
+		specLibrary.setId("");
+		String actualMessage = "";
+		Parameters params = parameters( part("resource", specLibrary) );
+		try {
+			Library returnResource = getClient().operation()
+				.onServer()
+				.named("$package")
+				.withParameters(params)
+				.returnResourceType(Library.class)
+				.execute();
+		} catch ( Exception e) {
+			actualMessage = e.getMessage();
+			assertTrue(actualMessage.contains("The resource must have a valid id to be packaged."));
+		}
+	}
 }

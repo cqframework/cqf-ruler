@@ -239,7 +239,7 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("The resource status must be 'active' and cannot be published. The proposed resource has status: %s", resource.getStatus().toString()));
+			throw new ResourceAccessException(String.format("The resource status must be 'active' and cannot be packaged. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
 
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
