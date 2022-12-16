@@ -5,12 +5,16 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.IdType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.ResourceAccessException;
+
+import java.util.List;
 
 import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,10 +29,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_active_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
-
-		Parameters params = parameters( part("specification", specLibrary) );
 
 		Resource returnResource = getClient().operation()
 			.onInstance("Library/SpecificationLibrary")
@@ -37,27 +37,23 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Library.class)
 			.execute();
 
-		assertNotNull(returnResource);
- 		assertTrue(isActive("Library/SpecificationLibrary"));
-		assertTrue(isActive("PlanDefinition/plandefinition-ersd-instance-example"));
-		assertTrue(isActive("Library/library-rctc-example"));
-		assertTrue(isActive("ValueSet/dxtc"));
-		assertTrue(isActive("ValueSet/lotc"));
-		assertTrue(isActive("ValueSet/lrtc"));
-		assertTrue(isActive("ValueSet/mrtc"));
-		assertTrue(isActive("ValueSet/ostc"));
-		assertTrue(isActive("ValueSet/sdtc"));
+		Library returnedLibrary = (Library)returnResource;
+		assertNotNull(returnedLibrary);
+		assertTrue(((Library)returnedLibrary).getStatus() == Enumerations.PublicationStatus.DRAFT);
+		List<RelatedArtifact> relatedArtifacts = returnedLibrary.getRelatedArtifact();
+		assertTrue(!relatedArtifacts.isEmpty());
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()) == null);
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()) == null);
 	}
 
 	@Test
 	void draftOperation_draft_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
+
 		String actualMessage = "";
-		Parameters params = parameters( part("specification", specLibrary) );
 		try {
 			Resource returnResource = getClient().operation()
-				.onInstance("Library/SpecificationLibrary")
+				.onInstance("Library/DraftSpecificationLibrary")
 				.named("$draft")
 				.withNoParameters(Parameters.class)
 				.returnResourceType(Library.class)
@@ -118,11 +114,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		assertNotNull(returnResource);
 		assertTrue(returnResource.getName().equals("NewSpecificationLibrary"));
-	}
-
-	private boolean isActive(String id) {
-		MetadataResource resource = read(new IdType(id));
-		return resource.getStatus() == Enumerations.PublicationStatus.ACTIVE;
 	}
 
 	@Test
