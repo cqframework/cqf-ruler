@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr;
 
 import java.util.function.Function;
 
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
@@ -34,6 +35,11 @@ public class CrConfig {
 	@Bean
 	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
 		return new SearchParameterResolver(fhirContext);
+	}
+
+	@Bean
+	JpaCRFhirDalFactory jpaCRFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaCRFhirDal(daoRegistry, rd);
 	}
 
 	@Bean

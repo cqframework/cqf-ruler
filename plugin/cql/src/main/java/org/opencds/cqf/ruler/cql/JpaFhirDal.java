@@ -1,13 +1,20 @@
 package org.opencds.cqf.ruler.cql;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
-
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.UriParam;
+import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.instance.model.api.IBase;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirDal implements FhirDal {
@@ -45,16 +52,38 @@ public class JpaFhirDal implements FhirDal {
 
 	}
 
-	// TODO: the search interfaces need some work
 	@Override
-	public Iterable<IBaseResource> search(String theResourceType) {
-		return this.daoRegistry.getResourceDao(theResourceType).search(SearchParameterMap.newSynchronous())
-				.getAllResources();
-	}
+	public IBaseBundle search(String theResourceType, Map<String, List<List<IQueryParameterType>>> theSearchParameters) {
+		SearchParameterMap searchParameterMap = new SearchParameterMap();
+		for(Map.Entry<String, List<List<IQueryParameterType>>> entry : theSearchParameters.entrySet()) {
+			String keyValue = entry.getKey();
 
-	@Override
-	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
-		return this.daoRegistry.getResourceDao(theResourceType)
-				.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
+			for(List<IQueryParameterType> value : entry.getValue()) {
+				for (IQueryParameterType query : value) {
+					searchParameterMap.add(keyValue, query);
+				}
+			}
+		}
+
+		List<IBaseResource> searchResults = this.daoRegistry.getResourceDao(theResourceType).search(searchParameterMap).getAllResources();
+
+		FhirContext fhirContext = FhirContext.forR4Cached();
+		ca.uhn.fhir.util.BundleBuilder builder = new ca.uhn.fhir.util.BundleBuilder(fhirContext);
+		builder
+			.setBundleField("type", "searchset")
+			.setBundleField("id", UUID.randomUUID().toString())
+			.setMetaField("lastUpdated", builder.newPrimitive("instant", new java.util.Date()));
+
+		for (var resource : searchResults) {
+			IBase entry = builder.addEntry();
+			builder.addToEntry(entry, "resource", resource);
+
+			// Add search results
+			IBase search = builder.addSearch(entry);
+			builder.setSearchField(search, "mode", "match");
+			builder.setSearchField(search, "score", builder.newPrimitive("decimal", BigDecimal.ONE));
+		}
+
+		return builder.getBundle();
 	}
 }
