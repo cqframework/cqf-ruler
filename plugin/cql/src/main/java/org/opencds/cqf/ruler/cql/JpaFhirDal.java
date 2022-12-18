@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -67,8 +66,7 @@ public class JpaFhirDal implements FhirDal {
 
 		List<IBaseResource> searchResults = this.daoRegistry.getResourceDao(theResourceType).search(searchParameterMap).getAllResources();
 
-		FhirContext fhirContext = FhirContext.forR4Cached();
-		ca.uhn.fhir.util.BundleBuilder builder = new ca.uhn.fhir.util.BundleBuilder(fhirContext);
+		ca.uhn.fhir.util.BundleBuilder builder = new ca.uhn.fhir.util.BundleBuilder(daoRegistry.getSystemDao().getContext());
 		builder
 			.setBundleField("type", "searchset")
 			.setBundleField("id", UUID.randomUUID().toString())
