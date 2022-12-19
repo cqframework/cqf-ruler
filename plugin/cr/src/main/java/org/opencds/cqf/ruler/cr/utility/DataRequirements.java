@@ -25,6 +25,7 @@ import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,7 @@ public class DataRequirements {
 	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(org.hl7.fhir.r4.model.Measure measureToUse,
 			LibraryManager libraryManager,
 			CompiledLibrary translatedLibrary,
-			CqlTranslatorOptions options,
+			CqlOptions cqlOptions,
 			SearchParameterResolver searchParameterResolver,
 			TerminologyProvider terminologyProvider,
 			ModelResolver modelResolver,
@@ -111,28 +112,28 @@ public class DataRequirements {
 		Set<String> expressionList = getExpressions(r5Measure);
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
 		org.hl7.fhir.r5.model.Library effectiveDataRequirements = dqReqTrans.gatherDataRequirements(libraryManager,
-				translatedLibrary, options, expressionList, true);
+				translatedLibrary, cqlOptions.getCqlTranslatorOptions(), expressionList, true);
 		org.hl7.fhir.r4.model.Library r4EffectiveDataRequirements = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50
 				.convertResource(effectiveDataRequirements);
 		r4EffectiveDataRequirements = addDataRequirementFhirQueries(r4EffectiveDataRequirements, searchParameterResolver,
-				terminologyProvider, modelResolver, capStatement);
+				terminologyProvider, modelResolver, cqlOptions, capStatement);
 		return r4EffectiveDataRequirements;
 	}
 
 	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(LibraryManager libraryManager,
 			CompiledLibrary translatedLibrary,
-			CqlTranslatorOptions options,
+			CqlOptions cqlOptions,
 			SearchParameterResolver searchParameterResolver,
 			TerminologyProvider terminologyProvider,
 			ModelResolver modelResolver,
 			IBaseConformance capStatement) {
 		org.hl7.fhir.r5.model.Library libraryR5 = getModuleDefinitionLibraryR5(libraryManager, translatedLibrary,
-				options);
+			cqlOptions.getCqlTranslatorOptions());
 		VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
 		org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50
 				.convertResource(libraryR5);
 		libraryR4 = addDataRequirementFhirQueries(libraryR4, searchParameterResolver, terminologyProvider, modelResolver,
-				capStatement);
+				cqlOptions, capStatement);
 		return libraryR4;
 	}
 
@@ -153,12 +154,28 @@ public class DataRequirements {
 			SearchParameterResolver searchParameterResolver,
 			TerminologyProvider terminologyProvider,
 			ModelResolver modelResolver,
+			CqlOptions cqlOptions,
 			IBaseConformance capStatement) {
 		List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = library.getDataRequirement();
 
 		try {
 			BaseFhirQueryGenerator fhirQueryGenerator = new R4FhirQueryGenerator(searchParameterResolver,
 					terminologyProvider, modelResolver);
+
+			if (cqlOptions.getCqlEngineOptions().getPageSize() != null) {
+				fhirQueryGenerator.setPageSize(cqlOptions.getCqlEngineOptions().getPageSize());
+			}
+			fhirQueryGenerator.setExpandValueSets(cqlOptions.getCqlEngineOptions().shouldExpandValueSets());
+
+			Integer maxCodesPerQuery = cqlOptions.getCqlEngineOptions().getMaxCodesPerQuery();
+			if (maxCodesPerQuery != null && maxCodesPerQuery > 0) {
+				fhirQueryGenerator.setMaxCodesPerQuery(cqlOptions.getCqlEngineOptions().getMaxCodesPerQuery());
+			}
+
+			Integer queryBatchThreshold = cqlOptions.getCqlEngineOptions().getQueryBatchThreshold();
+			if (queryBatchThreshold != null && queryBatchThreshold > 0) {
+				fhirQueryGenerator.setQueryBatchThreshold(cqlOptions.getCqlEngineOptions().getQueryBatchThreshold());
+			}
 
 			Map<String, Object> contextValues = new HashMap<String, Object>();
 			SubjectContext contextValue = getContextForSubject(library.getSubject());

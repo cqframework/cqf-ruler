@@ -23,14 +23,14 @@ import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaFhirDal;
-import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
+import org.opencds.cqf.ruler.cr.JpaCRFhirDal;
+import org.opencds.cqf.ruler.cr.JpaCRFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -49,7 +49,7 @@ public class ExpressionEvaluation {
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	@Autowired
-	private JpaFhirDalFactory jpaFhirDalFactory;
+	private JpaCRFhirDalFactory jpaCRFhirDalFactory;
 	@Autowired
 	private CqlProperties cqlProperties;
 	@Autowired
@@ -72,7 +72,7 @@ public class ExpressionEvaluation {
 
 	private Context setupContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression,
 			RequestDetails theRequest) {
-		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequest);
+		JpaCRFhirDal jpaCRFhirDal = jpaCRFhirDalFactory.create(theRequest);
 		List<CanonicalType> libraries = getLibraryReferences(instance, theRequest);
 
 		String fhirVersion = this.fhirContext.getVersion().getVersion().getFhirVersionString();
@@ -105,7 +105,8 @@ public class ExpressionEvaluation {
 				// log error
 			}
 			if (executionLibrary == null) {
-				Library library = (Library) jpaFhirDal.read(new IdType("Library", Canonicals.getIdPart(libraries.get(0))));
+				Library library = (Library) jpaCRFhirDal
+						.read(new IdType("Library", Canonicals.getIdPart(libraries.get(0))));
 				vi.setId(library.getName());
 				if (library.getVersion() != null) {
 					vi.setVersion(library.getVersion());
@@ -115,7 +116,7 @@ public class ExpressionEvaluation {
 					"library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"
 							+ fhirVersion
 							+ "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-					buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(),
+					buildIncludes(tempLibraryLoader, jpaCRFhirDal, libraries, theRequest), instance.fhirType(),
 					instance.fhirType(), instance.fhirType(), vi.getId() + ".\"" + cql + "\"");
 
 		} else {
@@ -123,7 +124,7 @@ public class ExpressionEvaluation {
 					"library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"
 							+ fhirVersion
 							+ "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-					buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(),
+					buildIncludes(tempLibraryLoader, jpaCRFhirDal, libraries, theRequest), instance.fhirType(),
 					instance.fhirType(), instance.fhirType(), cql);
 
 		}
@@ -143,7 +144,7 @@ public class ExpressionEvaluation {
 			for (Resource resource : instance.getContained()) {
 				if (resource instanceof Library) {
 					resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-					this.jpaFhirDalFactory.create(theRequest).update((Library) resource);
+					this.jpaCRFhirDalFactory.create(theRequest).update((Library) resource);
 					// getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
 					// getLibraryLoader().toElmLibrary((Library) resource));
 				}
@@ -178,8 +179,8 @@ public class ExpressionEvaluation {
 		return cleanReferences(references);
 	}
 
-	private String buildIncludes(LibraryLoader libraryLoader, JpaFhirDal jpaFhirDal, Iterable<CanonicalType> references,
-			RequestDetails theRequest) {
+	private String buildIncludes(LibraryLoader libraryLoader, JpaCRFhirDal jpaCRFhirDal, Iterable<CanonicalType> references,
+										  RequestDetails theRequest) {
 		StringBuilder builder = new StringBuilder();
 		for (CanonicalType reference : references) {
 
@@ -199,7 +200,7 @@ public class ExpressionEvaluation {
 			}
 			// else check local data for Library to get name and version from
 			else {
-				Library library = (Library) jpaFhirDal.read(new IdType("Library", Canonicals.getIdPart(reference)));
+				Library library = (Library) jpaCRFhirDal.read(new IdType("Library", Canonicals.getIdPart(reference)));
 				builder.append(buildLibraryIncludeString(
 						new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
 			}

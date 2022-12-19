@@ -7,22 +7,24 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 
 public class ProviderConfiguration {
 
-	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, 64,
-			SearchStyleEnum.GET, 8000, false);
+	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, null,
+			SearchStyleEnum.GET, 8000, false, null);
 
-	private int maxCodesPerQuery;
+	private Integer maxCodesPerQuery;
 	private SearchStyleEnum searchStyle;
 	private boolean expandValueSets;
+	private Integer queryBatchThreshold;
 	private int maxUriLength;
 	private boolean cqlLoggingEnabled;
 
-	public ProviderConfiguration(boolean expandValueSets, int maxCodesPerQuery, SearchStyleEnum searchStyle,
-			int maxUriLength, boolean cqlLoggingEnabled) {
+	public ProviderConfiguration(boolean expandValueSets, Integer maxCodesPerQuery, SearchStyleEnum searchStyle,
+			int maxUriLength, boolean cqlLoggingEnabled, Integer queryBatchThreshold) {
 		this.maxCodesPerQuery = maxCodesPerQuery;
 		this.searchStyle = searchStyle;
 		this.expandValueSets = expandValueSets;
 		this.maxUriLength = maxUriLength;
 		this.cqlLoggingEnabled = cqlLoggingEnabled;
+		this.queryBatchThreshold = queryBatchThreshold;
 	}
 
 	public ProviderConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties) {
@@ -30,10 +32,11 @@ public class ProviderConfiguration {
 		this.maxCodesPerQuery = cdsProperties.getFhirServer().getMaxCodesPerQuery();
 		this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
 		this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
+		this.queryBatchThreshold = cdsProperties.getFhirServer().getQueryBatchThreshold();
 		this.cqlLoggingEnabled = cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled();
 	}
 
-	public int getMaxCodesPerQuery() {
+	public Integer getMaxCodesPerQuery() {
 		return this.maxCodesPerQuery;
 	}
 
@@ -44,6 +47,8 @@ public class ProviderConfiguration {
 	public boolean getExpandValueSets() {
 		return this.expandValueSets;
 	}
+
+	public Integer getQueryBatchThreshold() { return this.queryBatchThreshold; }
 
 	public int getMaxUriLength() {
 		return this.maxUriLength;

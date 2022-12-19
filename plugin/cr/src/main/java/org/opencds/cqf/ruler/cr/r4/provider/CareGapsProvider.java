@@ -2,8 +2,13 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Map.ofEntries;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +17,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
@@ -31,6 +36,8 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+import org.opencds.cqf.cql.evaluator.fhir.util.Resources;
 import org.opencds.cqf.ruler.behavior.ConfigurationUser;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
@@ -43,9 +50,7 @@ import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
 import org.opencds.cqf.ruler.builder.NarrativeSettings;
 import org.opencds.cqf.ruler.cr.CrProperties;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
-import org.opencds.cqf.ruler.utility.Resources;
 import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +65,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class CareGapsProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser {
+
 	private static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
 	@Autowired
 	private MeasureEvaluateProvider measureEvaluateProvider;
@@ -67,7 +73,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	private CrProperties crProperties;
 	@Autowired
 	private Executor cqlExecutor;
-	private Map<String, Resource> configuredResources = new HashMap<>();
+	private final Map<String, Resource> configuredResources = new HashMap<>();
 	private static final Pattern CARE_GAPS_STATUS = Pattern.compile("(open-gap|closed-gap|not-applicable)");
 	private static final String CARE_GAPS_REPORT_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm";
 	private static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
@@ -76,27 +82,13 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	private static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
 	private static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
 	public static final String CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-reporterGroup";
-	private static final Map<String, CodeableConceptSettings> CARE_GAPS_CODES;
-	static {
-		CARE_GAPS_CODES = new HashMap<>();
-		CARE_GAPS_CODES.put("http://loinc.org/96315-7",
-				new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"));
-		CARE_GAPS_CODES.put("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP", new CodeableConceptSettings()
-				.add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care Gaps"));
-	}
-
-	// TODO: I guess this isn't available yet? Replace when we update to newer
-	// version of Java.
-	// = ofEntries(
-	// new AbstractMap.SimpleEntry<String,
-	// CodeableConceptSettings>("http://loinc.org/96315-7",
-	// new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in
-	// care report")),
-	// new AbstractMap.SimpleEntry<String, CodeableConceptSettings>(
-	// "http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP", new
-	// CodeableConceptSettings()
-	// .add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care
-	// Gaps")));
+	private static final Map<String, CodeableConceptSettings> CARE_GAPS_CODES = ofEntries(
+			new AbstractMap.SimpleEntry<>("http://loinc.org/96315-7",
+					new CodeableConceptSettings().add(
+							"http://loinc.org", "96315-7", "Gaps in care report")),
+			new AbstractMap.SimpleEntry<>("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP",
+					new CodeableConceptSettings().add(
+							"http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care Gaps")));
 
 	public enum CareGapsStatusCode {
 		OPEN_GAP("open-gap"), CLOSED_GAP("closed-gap"), NOT_APPLICABLE("not-applicable");
@@ -139,20 +131,20 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	 * operation found in the
 	 * <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical
 	 * Reasoning Module</a>.
-	 * 
+	 *
 	 * The operation calculates measures describing gaps in care. For more details,
 	 * reference the <a href=
 	 * "http://build.fhir.org/ig/HL7/davinci-deqm/gaps-in-care-reporting.html">Gaps
 	 * in Care Reporting</a> section of the
 	 * <a href="http://build.fhir.org/ig/HL7/davinci-deqm/index.html">Da Vinci DEQM
 	 * FHIR Implementation Guide</a>.
-	 * 
+	 *
 	 * A Parameters resource that includes zero to many document bundles that
 	 * include Care Gap Measure Reports will be returned.
-	 * 
+	 *
 	 * Usage:
 	 * URL: [base]/Measure/$care-gaps
-	 * 
+	 *
 	 * @param theRequestDetails generally auto-populated by the HAPI server
 	 *                          framework.
 	 * @param periodStart       the start of the gaps through period
@@ -178,11 +170,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	 * @return Parameters of bundles of Care Gap Measure Reports
 	 */
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	@Description(shortDefinition = "$care-gaps", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
+	@Description(shortDefinition = "$care-gaps operation", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
-	public Parameters careGapsReport(RequestDetails theRequestDetails,
-			@OperationParam(name = "periodStart") String periodStart,
-			@OperationParam(name = "periodEnd") String periodEnd,
+	public Parameters careGapsReport(
+			RequestDetails theRequestDetails,
+			@OperationParam(name = "periodStart", typeName = "date") IPrimitiveType<Date> periodStart,
+			@OperationParam(name = "periodEnd", typeName = "date") IPrimitiveType<Date> periodEnd,
 			@OperationParam(name = "topic") List<String> topic,
 			@OperationParam(name = "subject") String subject,
 			@OperationParam(name = "practitioner") String practitioner,
@@ -193,8 +186,16 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			@OperationParam(name = "measureUrl") List<CanonicalType> measureUrl,
 			@OperationParam(name = "program") List<String> program) {
 
-		validateConfiguration(theRequestDetails);
-		validateParameters(theRequestDetails);
+		try {
+			validateConfiguration(theRequestDetails);
+		} catch (Exception e) {
+			return parameters(part("Invalid configuration", generateIssue("error", e.getMessage())));
+		}
+		try {
+			validateParameters(theRequestDetails);
+		} catch (Exception e) {
+			return parameters(part("Invalid parameters", generateIssue("error", e.getMessage())));
+		}
 
 		// TODO: filter by topic.
 		// TODO: filter by program.
@@ -205,7 +206,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			patients = getPatientListFromSubject(subject);
 		} else {
 			// TODO: implement non subject parameters (practitioner and organization)
-			throw new NotImplementedException("Non subject parameters have not been implemented.");
+			return parameters(part("Unsupported configuration",
+					generateIssue("error", "Non subject parameters have not been implemented.")));
 		}
 
 		ensureSupplementalDataElementSearchParameter(theRequestDetails);
@@ -214,17 +216,17 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		if (crProperties.getThreadedCareGapsEnabled()) {
 			(patients)
 					.forEach(
-							patient -> {
-								futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
-										periodStart, periodEnd, patient, status, measures, organization), cqlExecutor));
-							});
+							patient -> futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
+									periodStart.getValueAsString(), periodEnd.getValueAsString(), patient, status, measures,
+									organization), cqlExecutor)));
 
 			futures.forEach(x -> result.addParameter(x.join()));
 		} else {
 			(patients).forEach(
 					patient -> {
 						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
-								periodStart, periodEnd, patient, status, measures, organization);
+								periodStart.getValueAsString(), periodEnd.getValueAsString(), patient, status, measures,
+								organization);
 						if (patientParameter != null) {
 							result.addParameter(patientParameter);
 						}
@@ -294,7 +296,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private Parameters initializeResult() {
-		return newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
+		return newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID());
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters

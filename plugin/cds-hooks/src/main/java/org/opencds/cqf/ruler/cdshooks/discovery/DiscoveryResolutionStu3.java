@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cdshooks.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DataRequirement;
@@ -13,9 +12,11 @@ import org.hl7.fhir.dstu3.model.ValueSet;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.utility.Searches;
 
+import com.google.gson.JsonObject;
+
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
-public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
+public class DiscoveryResolutionStu3 implements DaoRegistryUser {
 
 	private final String PATIENT_ID_CONTEXT = "{{context.patientId}}";
 	private final int DEFAULT_MAX_URI_LENGTH = 8000;
@@ -135,7 +136,8 @@ public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 	public List<String> createRequestUrl(DataRequirement dataRequirement) {
 		if (!isPatientCompartment(dataRequirement.getType()))
 			return null;
-		String patientRelatedResource = dataRequirement.getType() + "?" + getPatientSearchParam(dataRequirement.getType())
+		String patientRelatedResource = dataRequirement.getType() + "?"
+				+ getPatientSearchParam(dataRequirement.getType())
 				+ "=Patient/" + PATIENT_ID_CONTEXT;
 		List<String> ret = new ArrayList<>();
 		if (dataRequirement.hasCodeFilter()) {

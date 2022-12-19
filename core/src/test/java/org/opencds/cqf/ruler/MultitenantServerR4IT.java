@@ -22,7 +22,7 @@ import ca.uhn.fhir.rest.server.provider.ProviderConstants;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
 		"spring.batch.job.enabled=false",
-		"spring.datasource.url=jdbc:hsqldb:mem:dbr4-mt",
+		"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
 		"hapi.fhir.fhir_version=r4",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false"

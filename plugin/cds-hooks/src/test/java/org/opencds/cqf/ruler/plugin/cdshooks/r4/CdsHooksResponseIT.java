@@ -1,7 +1,11 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.IOException;
+import java.util.Collections;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -20,101 +24,97 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes =
-        { CdsHooksResponseIT.class, CdsHooksConfig.class },
-        properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CdsHooksResponseIT.class,
+		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class CdsHooksResponseIT extends RestIntegrationTest {
-    @Autowired
-    CdsServicesCache cdsServicesCache;
-    private String ourCdsBase;
+	@Autowired
+	CdsServicesCache cdsServicesCache;
+	private String ourCdsBase;
 
-    @BeforeEach
-    void beforeEach() {
-        ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
-    }
+	@BeforeEach
+	void beforeEach() {
+		ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
+	}
 
-    @Test
-    void testUnicodeResponse() {
-        loadResource("library-unicode.json");
-        loadResource("plandefinition-unicode.json");
+	@Test
+	void testUnicodeResponse() {
+		loadResource("library-unicode.json");
+		loadResource("plandefinition-unicode.json");
 
-        ResourceChangeEvent rce = new ResourceChangeEvent();
-        rce.setUpdatedResourceIds(Collections.singletonList(new IdType("unicode")));
-        cdsServicesCache.handleChange(rce);
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setUpdatedResourceIds(Collections.singletonList(new IdType("unicode")));
+		cdsServicesCache.handleChange(rce);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            String cdsHooksRequestString = stringFromResource("unicode-request.json");
-            Gson jsonParser = new Gson();
-            JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
-            cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			String cdsHooksRequestString = stringFromResource("unicode-request.json");
+			Gson jsonParser = new Gson();
+			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
+			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
 
-            HttpPost request = new HttpPost(ourCdsBase + "/unicode");
-            request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
-            request.addHeader("Content-Type", "application/json");
+			HttpPost request = new HttpPost(ourCdsBase + "/unicode");
+			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
 
-            CloseableHttpResponse response = httpClient.execute(request);
-            String result = EntityUtils.toString(response.getEntity());
+			CloseableHttpResponse response = httpClient.execute(request);
+			String result = EntityUtils.toString(response.getEntity());
 
-            String expected = "{\n" +
-                    "  \"cards\": [\n" +
-                    "    {\n" +
-                    "      \"summary\": \"This character is not handled: ≥\",\n" +
-                    "      \"detail\": \"None\",\n" +
-                    "      \"indicator\": \"info\",\n" +
-                    "      \"links\": []\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}\n";
+			String expected = "{\n" +
+					"  \"cards\": [\n" +
+					"    {\n" +
+					"      \"summary\": \"This character is not handled: ≥\",\n" +
+					"      \"detail\": \"None\",\n" +
+					"      \"indicator\": \"info\",\n" +
+					"      \"links\": []\n" +
+					"    }\n" +
+					"  ]\n" +
+					"}\n";
 
-            assertEquals(expected, result);
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
-        }
-    }
+			assertEquals(expected, result);
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
+	}
 
-    @Test
-    void testHtmlResponse() {
-        loadResource("library-html.json");
-        loadResource("plandefinition-html.json");
+	@Test
+	void testHtmlResponse() {
+		loadResource("library-html.json");
+		loadResource("plandefinition-html.json");
 
-        ResourceChangeEvent rce = new ResourceChangeEvent();
-        rce.setUpdatedResourceIds(Collections.singletonList(new IdType("html")));
-        cdsServicesCache.handleChange(rce);
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setUpdatedResourceIds(Collections.singletonList(new IdType("html")));
+		cdsServicesCache.handleChange(rce);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            String cdsHooksRequestString = stringFromResource("html-request.json");
-            Gson jsonParser = new Gson();
-            JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
-            cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			String cdsHooksRequestString = stringFromResource("html-request.json");
+			Gson jsonParser = new Gson();
+			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
+			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
 
-            HttpPost request = new HttpPost(ourCdsBase + "/html");
-            request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
-            request.addHeader("Content-Type", "application/json");
+			HttpPost request = new HttpPost(ourCdsBase + "/html");
+			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
 
-            CloseableHttpResponse response = httpClient.execute(request);
-            String result = EntityUtils.toString(response.getEntity());
+			CloseableHttpResponse response = httpClient.execute(request);
+			String result = EntityUtils.toString(response.getEntity());
 
-            String expected = "{\n" +
-                    "  \"cards\": [\n" +
-                    "    {\n" +
-                    "      \"summary\": \"This character is not handled: <br />\",\n" +
-                    "      \"detail\": \"None\",\n" +
-                    "      \"indicator\": \"info\",\n" +
-                    "      \"links\": []\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}\n";
+			String expected = "{\n" +
+					"  \"cards\": [\n" +
+					"    {\n" +
+					"      \"summary\": \"This character is not handled: <br />\",\n" +
+					"      \"detail\": \"None\",\n" +
+					"      \"indicator\": \"info\",\n" +
+					"      \"links\": []\n" +
+					"    }\n" +
+					"  ]\n" +
+					"}\n";
 
-            assertEquals(expected, result);
-        } catch (IOException ioe) {
-            fail(ioe.getMessage());
-        }
-    }
+			assertEquals(expected, result);
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
+	}
 }

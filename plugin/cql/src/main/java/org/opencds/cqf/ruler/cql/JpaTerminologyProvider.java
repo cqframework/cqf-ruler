@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
@@ -30,7 +30,6 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
 	private final ITermReadSvc myTerminologySvc;
 	private final IValidationSupport myValidationSupport;
-	private final RequestDetails myRequestDetails;
 	private final Map<VersionedIdentifier, List<Code>> myGlobalCodeCache;
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
@@ -39,12 +38,10 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 	}
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
-			Map<VersionedIdentifier, List<Code>> theGlobalCodeCache,
-			RequestDetails theRequestDetails) {
+			Map<VersionedIdentifier, List<Code>> theGlobalCodeCache, RequestDetails theRequestDetails) {
 		myTerminologySvc = theTerminologySvc;
 		myValidationSupport = theValidationSupport;
 		myGlobalCodeCache = theGlobalCodeCache;
-		myRequestDetails = theRequestDetails;
 	}
 
 	@Override
@@ -59,32 +56,13 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		return false;
 	}
 
-	protected boolean hasUrlId(ValueSetInfo valueSet) {
-		return valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://");
-	}
-
-	protected boolean hasVersion(ValueSetInfo valueSet) {
-		return valueSet.getVersion() != null;
-	}
-
-	protected boolean hasVersionedCodeSystem(ValueSetInfo valueSet) {
-		return valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 1
-				|| valueSet.getCodeSystems() != null
-						&& valueSet.getCodeSystems().stream().anyMatch(x -> x.getVersion() != null);
-	}
-
 	@Override
 	public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
 		// This could possibly be refactored into a single call to the underlying HAPI
 		// Terminology service. Need to think through that..,
-		IBaseResource vs;
-		if (hasUrlId(valueSet) && (hasVersion(valueSet) || hasVersionedCodeSystem(valueSet))) {
-			throw new UnsupportedOperationException(String.format(
-					"Could not expand value set %s; version and code system bindings are not supported at this time.",
-					valueSet.getId()));
-		}
 
-		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId()).withVersion(valueSet.getVersion());
+		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId())
+				.withVersion(valueSet.getVersion());
 
 		if (this.myGlobalCodeCache.containsKey(vsId)) {
 			return this.myGlobalCodeCache.get(vsId);
@@ -94,19 +72,26 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		valueSetExpansionOptions.setFailOnMissingCodeSystem(false);
 		valueSetExpansionOptions.setCount(Integer.MAX_VALUE);
 
-		vs = myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());
+		if (valueSet.getVersion() != null && Canonicals.getUrl(valueSet.getId()) != null
+				&& Canonicals.getVersion(valueSet.getId()) == null) {
+			valueSet.setId(valueSet.getId() + "|" + valueSet.getVersion());
+		}
 
-		List<Code> codes = getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
+		org.hl7.fhir.r4.model.ValueSet vs = myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());
+
+		List<Code> codes = getCodes(vs);
 		this.myGlobalCodeCache.put(vsId, codes);
 		return codes;
 	}
 
 	@Override
 	public Code lookup(Code code, CodeSystemInfo codeSystem) throws ResourceNotFoundException {
-		LookupCodeResult cs = myTerminologySvc.lookupCode(new ValidationSupportContext(myValidationSupport),
-				codeSystem.getId(), code.getCode());
+		LookupCodeResult cs = myTerminologySvc.lookupCode(
+				new ValidationSupportContext(myValidationSupport), codeSystem.getId(), code.getCode());
 
-		code.setDisplay(cs.getCodeDisplay());
+		if (cs != null) {
+			code.setDisplay(cs.getCodeDisplay());
+		}
 		code.setSystem(codeSystem.getId());
 
 		return code;
@@ -114,7 +99,8 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
 	protected List<Code> getCodes(org.hl7.fhir.r4.model.ValueSet theValueSet) {
 		checkState(theValueSet.hasExpansion(),
-				"ValueSet {} did not have an expansion. Unable to get codes unexpanded ValueSet.", theValueSet.getUrl());
+				"ValueSet {} did not have an expansion. Unable to get codes unexpanded ValueSet.",
+				theValueSet.getUrl());
 		List<Code> codes = new ArrayList<>();
 
 		for (org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()

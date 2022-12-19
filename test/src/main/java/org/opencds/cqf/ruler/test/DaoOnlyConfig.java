@@ -1,11 +1,11 @@
 package org.opencds.cqf.ruler.test;
 
+import org.opencds.cqf.ruler.config.RulerConfig;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
-@ComponentScan("org.opencds.cqf.ruler.external")
+@Import(RulerConfig.class)
 public class DaoOnlyConfig {
-
 	@Bean
 	public TestDbService testDbService() {
 		return new TestDbService();

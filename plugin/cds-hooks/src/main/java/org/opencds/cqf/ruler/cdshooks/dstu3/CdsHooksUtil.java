@@ -1,34 +1,37 @@
 package org.opencds.cqf.ruler.cdshooks.dstu3;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.JsonParser;
-import ca.uhn.fhir.parser.LenientErrorHandler;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import org.hl7.fhir.dstu3.model.Parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.part;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.ParameterDefinition;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.JsonParser;
+import ca.uhn.fhir.parser.LenientErrorHandler;
 
 public class CdsHooksUtil {
 
     private CdsHooksUtil() {
     }
 
-    // NOTE: Making an assumption here that the parameter in the CQL will be named "ContextPrescriptions"
+    // NOTE: Making an assumption here that the parameter in the CQL will be named
+    // "ContextPrescriptions"
     public static Parameters getParameters(JsonObject contextResources) {
         Parameters parameters = parameters();
         Bundle contextBundle = new JsonParser(FhirContext.forDstu3Cached(), new LenientErrorHandler())
@@ -69,8 +72,8 @@ public class CdsHooksUtil {
                     }
                 }
             }
-        }
-        else return null;
+        } else
+            return null;
         resourceMap.forEach((key, value) -> prefetchResources.addEntry().setResource(value));
         return prefetchResources;
     }
@@ -79,7 +82,8 @@ public class CdsHooksUtil {
         return getExpressionsFromActions(planDefinition.getAction());
     }
 
-    // Assumption that expressions are using CQL and will be references (text/cql.identifier introduced in FHIR R4)
+    // Assumption that expressions are using CQL and will be references
+    // (text/cql.identifier introduced in FHIR R4)
     private static List<String> getExpressionsFromActions(List<PlanDefinition.PlanDefinitionActionComponent> actions) {
         Set<String> expressions = new HashSet<>();
         if (actions != null) {
@@ -90,8 +94,7 @@ public class CdsHooksUtil {
                                 if (x.hasExpression()) {
                                     expressions.add(x.getExpression());
                                 }
-                            }
-                    );
+                            });
                 }
                 if (action.hasDynamicValue()) {
                     action.getDynamicValue().forEach(
@@ -99,8 +102,7 @@ public class CdsHooksUtil {
                                 if (x.hasExpression()) {
                                     expressions.add(x.getExpression());
                                 }
-                            }
-                    );
+                            });
                 }
                 if (action.hasAction()) {
                     expressions.addAll(getExpressionsFromActions(action.getAction()));

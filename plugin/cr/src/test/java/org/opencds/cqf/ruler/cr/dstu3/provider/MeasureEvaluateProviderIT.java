@@ -1,9 +1,9 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.stringPart;
 
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
@@ -16,9 +16,8 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { MeasureEvaluateProviderIT.class, CrConfig.class, CqlConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { MeasureEvaluateProviderIT.class,
+		CrConfig.class, CqlConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
@@ -30,8 +29,7 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				stringPart("periodEnd", "2020-01-01"),
 				stringPart("reportType", "individual"),
 				stringPart("subject", "Patient/denom-EXM105-FHIR3"),
-				stringPart("lastReceivedOn", "2019-12-12")
-		);
+				stringPart("lastReceivedOn", "2019-12-12"));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM105-FHIR3-8.0.000"))
@@ -56,8 +54,7 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				stringPart("reportType", "individual"),
 				stringPart("subject", "Patient/denom-EXM105-FHIR3"),
 				stringPart("lastReceivedOn", "2019-12-12"),
-				part("terminologyEndpoint", terminologyEndpoint)
-		);
+				part("terminologyEndpoint", terminologyEndpoint));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM105-FHIR3-8.0.000"))
@@ -80,8 +77,7 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				stringPart("reportType", "individual"),
 				stringPart("subject", "Patient/denom-EXM105-FHIR3"),
 				stringPart("lastReceivedOn", "2019-12-12"),
-				part("additionalData", additionalData)
-		);
+				part("additionalData", additionalData));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM105-FHIR3-8.0.000"))

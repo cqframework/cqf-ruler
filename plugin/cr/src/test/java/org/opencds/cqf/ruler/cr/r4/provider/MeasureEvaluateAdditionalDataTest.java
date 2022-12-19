@@ -1,9 +1,9 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
@@ -74,8 +74,7 @@ class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 				stringPart("reportType", "subject"),
 				stringPart("subject", "Patient/numer-EXM104"),
 				stringPart("lastReceivedOn", "2019-12-12"),
-				part("additionalData", additionalData)
-		);
+				part("additionalData", additionalData));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))

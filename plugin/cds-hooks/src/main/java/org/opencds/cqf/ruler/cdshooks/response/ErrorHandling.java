@@ -1,18 +1,20 @@
 package org.opencds.cqf.ruler.cdshooks.response;
 
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import org.opencds.cqf.ruler.external.AppProperties;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.opencds.cqf.external.AppProperties;
+
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+
 public class ErrorHandling {
 
     public static void handleError(HttpServletResponse response, String message,
-                                   Exception e, AppProperties myAppProperties)
+            Exception e, AppProperties myAppProperties)
             throws IOException {
         setAccessControlHeaders(response, myAppProperties);
         response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
@@ -20,8 +22,7 @@ public class ErrorHandling {
         printMessageAndCause(e, response);
         if (e instanceof BaseServerResponseException) {
             handleServerResponseException((BaseServerResponseException) e, response);
-        }
-        else if (e.getCause() instanceof BaseServerResponseException) {
+        } else if (e.getCause() instanceof BaseServerResponseException) {
             handleServerResponseException((BaseServerResponseException) e.getCause(), response);
         }
         printStackTrack(e, response);
@@ -71,8 +72,9 @@ public class ErrorHandling {
                         myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
                 resp.setHeader("Access-Control-Allow-Methods",
                         String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
-                resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-                        "Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
+                resp.setHeader("Access-Control-Allow-Headers",
+                        String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
+                                "Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
                 resp.setHeader("Access-Control-Expose-Headers",
                         String.join(", ", Arrays.asList("Location", "Content-Location")));
                 resp.setHeader("Access-Control-Max-Age", "86400");
