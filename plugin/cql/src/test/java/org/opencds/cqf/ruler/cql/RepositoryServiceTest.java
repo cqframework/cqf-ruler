@@ -9,15 +9,14 @@ import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.opencds.cqf.ruler.utility.Canonicals;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = { RepositoryServiceTest.class, CqlConfig.class },
