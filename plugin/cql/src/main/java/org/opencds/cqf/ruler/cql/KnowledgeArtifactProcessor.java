@@ -135,7 +135,7 @@ public class KnowledgeArtifactProcessor {
 
 	private void getAdditionReleaseData(List<RelatedArtifact> finalRelatedArtifactList, FhirDal fhirDal, RelatedArtifact ra, boolean release, List<Bundle.BundleEntryComponent> bundleEntryComponentList) {
 		// update root artifact with relatedArtifacts that reflect all of its direct and transitive references.
-		// This bit should be it's own method so that we can call it recursively:
+		// This bit should be its own method so that we can call it recursively:
 
 			if (ra.hasResource()) {
 				if(release) {
