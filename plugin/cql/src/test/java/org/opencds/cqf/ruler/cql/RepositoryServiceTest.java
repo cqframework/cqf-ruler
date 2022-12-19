@@ -16,6 +16,9 @@ import java.util.List;
 
 import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+
 import org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -82,7 +85,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		specLibrary.setName("NewSpecificationLibrary");
 		specLibrary.setId((String) null);
 
-		Parameters params = parameters( part("resource", (MetadataResource)specLibrary) );
+		Parameters params = parameters(part("resource", (MetadataResource)specLibrary) );
 
 		Library returnResource = getClient().operation()
 			.onServer()
