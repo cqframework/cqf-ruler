@@ -1,6 +1,7 @@
 
 package org.opencds.cqf.ruler.cql;
 
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -140,56 +141,34 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void packageOperation_active_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
-		Parameters params = parameters( part("resource", specLibrary) );
 
-		Library returnResource = getClient().operation()
-			.onServer()
+		Resource returnBundle = getClient().operation()
+			.onInstance("Library/SpecificationLibrary")
 			.named("$package")
-			.withParameters(params)
-			.returnResourceType(Library.class)
+			.withNoParameters(Parameters.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 
-		assertNotNull(returnResource);
-<<<<<<< Updated upstream
-		assertTrue(isActive("Library/SpecificationLibrary"));
-		assertTrue(isActive("PlanDefinition/plandefinition-ersd-instance-example"));
-		assertTrue(isActive("Library/library-rctc-example"));
-		assertTrue(isActive("ValueSet/dxtc"));
-		assertTrue(isActive("ValueSet/lotc"));
-		assertTrue(isActive("ValueSet/lrtc"));
-		assertTrue(isActive("ValueSet/mrtc"));
-		assertTrue(isActive("ValueSet/ostc"));
-		assertTrue(isActive("ValueSet/sdtc"));
-=======
->>>>>>> Stashed changes
+		assertNotNull(returnBundle);
 	}
 
 	@Test
 	void packageOperation_draft_test() {
-<<<<<<< Updated upstream
-		boolean thrown = false;
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
-=======
-		loadResource("ersd-draft-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
->>>>>>> Stashed changes
+
 		String actualMessage = "";
-		Parameters params = parameters( part("resource", specLibrary) );
 		try {
-			Library returnResource = getClient().operation()
-				.onServer()
+			Resource returnBundle = getClient().operation()
+				.onInstance("Library/DraftSpecificationLibrary")
 				.named("$package")
-				.withParameters(params)
-				.returnResourceType(Library.class)
+				.withNoParameters(Parameters.class)
+				.returnResourceType(Bundle.class)
 				.execute();
 		} catch ( Exception e) {
 			actualMessage = e.getMessage();
-			assertTrue(actualMessage.contains("Only resources with status of 'active' can be packaged."));
 		}
+
+		assertTrue(actualMessage.contains("Only resources with status of 'active' can be packaged."));
 	}
 
 	@Test
@@ -203,7 +182,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters params = parameters( part("resource", specLibrary) );
 		try {
 			Library returnResource = getClient().operation()
-				.onServer()
+				.onInstance("Library/SpecificationLibrary")
 				.named("$package")
 				.withParameters(params)
 				.returnResourceType(Library.class)
