@@ -25,8 +25,8 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaFhirDal;
-import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
+import org.opencds.cqf.ruler.cr.JpaCRFhirDal;
+import org.opencds.cqf.ruler.cr.JpaCRFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
@@ -47,7 +47,7 @@ public class ExpressionEvaluation {
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	@Autowired
-	private JpaFhirDalFactory jpaFhirDalFactory;
+	private JpaCRFhirDalFactory jpaCRFhirDalFactory;
 	@Autowired
 	private CqlProperties cqlProperties;
 	@Autowired
@@ -60,8 +60,8 @@ public class ExpressionEvaluation {
 	 */
 	public Object evaluateInContext(DomainResource instance, String cql, Boolean aliasedExpression, String patientId,
 			RequestDetails theRequest) {
-		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequest);
-		List<Reference> libraries = getLibraryReferences(instance, jpaFhirDal, theRequest);
+		JpaCRFhirDal jpaCRFhirDal = jpaCRFhirDalFactory.create(theRequest);
+		List<Reference> libraries = getLibraryReferences(instance, jpaCRFhirDal, theRequest);
 		// String fhirVersion =
 		// this.context.getVersion().getVersion().getFhirVersionString();
 		String fhirVersion = "3.0.0";
@@ -90,7 +90,7 @@ public class ExpressionEvaluation {
 				// log error
 			}
 			if (executionLibrary == null) {
-				Library library = (Library) jpaFhirDal.read(new IdType("Library", vi.getId()));
+				Library library = (Library) jpaCRFhirDal.read(new IdType("Library", vi.getId()));
 				vi.setId(library.getName());
 				if (library.getVersion() != null) {
 					vi.setVersion(library.getVersion());
@@ -104,7 +104,7 @@ public class ExpressionEvaluation {
 					"library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"
 							+ fhirVersion
 							+ "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-					buildIncludes(tempLibraryLoader, jpaFhirDal, libraries), instance.fhirType(), instance.fhirType(),
+					buildIncludes(tempLibraryLoader, jpaCRFhirDal, libraries), instance.fhirType(), instance.fhirType(),
 					instance.fhirType(), vi.getId() + ".\"" + cql + "\"");
 			// String source = String.format("library LocalLibrary using FHIR version '1.8'
 			// include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s
@@ -120,7 +120,7 @@ public class ExpressionEvaluation {
 					"library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"
 							+ fhirVersion
 							+ "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-					buildIncludes(tempLibraryLoader, jpaFhirDal, libraries), instance.fhirType(), instance.fhirType(),
+					buildIncludes(tempLibraryLoader, jpaCRFhirDal, libraries), instance.fhirType(), instance.fhirType(),
 					instance.fhirType(), cql);
 		}
 
@@ -149,7 +149,7 @@ public class ExpressionEvaluation {
 		return context.resolveExpressionRef("Expression").evaluate(context);
 	}
 
-	private List<Reference> getLibraryReferences(DomainResource instance, JpaFhirDal jpaFhirDal,
+	private List<Reference> getLibraryReferences(DomainResource instance, JpaCRFhirDal jpaCRFhirDal,
 			RequestDetails theRequest) {
 		List<Reference> references = new ArrayList<>();
 
@@ -157,7 +157,7 @@ public class ExpressionEvaluation {
 			for (Resource resource : instance.getContained()) {
 				if (resource instanceof Library) {
 					resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-					jpaFhirDal.update((Library) resource);
+					jpaCRFhirDal.update((Library) resource);
 					// getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
 					// getLibraryLoader().toElmLibrary((Library) resource));
 				}
@@ -192,7 +192,7 @@ public class ExpressionEvaluation {
 		return cleanReferences(references);
 	}
 
-	private String buildIncludes(LibraryLoader libraryLoader, JpaFhirDal jpaFhirDal, Iterable<Reference> references) {
+	private String buildIncludes(LibraryLoader libraryLoader, JpaCRFhirDal jpaCRFhirDal, Iterable<Reference> references) {
 		StringBuilder builder = new StringBuilder();
 		for (Reference reference : references) {
 			VersionedIdentifier vi = getVersionedIdentifierFromReference(reference);
@@ -212,7 +212,7 @@ public class ExpressionEvaluation {
 			}
 			// else check local data for Library to get name and version from
 			else {
-				Library library = (Library) jpaFhirDal.read(reference.getReferenceElement());
+				Library library = (Library) jpaCRFhirDal.read(reference.getReferenceElement());
 				builder.append(buildLibraryIncludeString(reference, library.getName(), library.getVersion()));
 			}
 		}
