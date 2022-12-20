@@ -10,10 +10,10 @@ import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.instance.model.api.IBaseBackboneElement;
 import org.hl7.fhir.instance.model.api.IBaseExtension;
-import org.opencds.cqf.ruler.utility.FhirVersions;
-import org.opencds.cqf.ruler.utility.Resources;
+import org.opencds.cqf.cql.evaluator.fhir.util.FhirVersions;
+import org.opencds.cqf.cql.evaluator.fhir.util.Resources;
 
-public abstract class BackboneElementBuilder<SELF, T extends IBaseBackboneElement> {
+public abstract class BackboneElementBuilder<SELF extends BackboneElementBuilder<SELF, T>, T extends IBaseBackboneElement> {
 
 	private final Class<T> myResourceClass;
 

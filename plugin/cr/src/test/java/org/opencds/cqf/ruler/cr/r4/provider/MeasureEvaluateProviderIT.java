@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 import java.util.Optional;
 
@@ -24,9 +24,9 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-		classes = { MeasureEvaluateProviderIT.class, CrConfig.class, CqlConfig.class },
-		properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { MeasureEvaluateProviderIT.class,
+		CrConfig.class,
+		CqlConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
@@ -153,7 +153,8 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				enrolledDuringParticipationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode());
 
 		assertNotNull(participationPeriodObs);
-		assertEquals(participationPeriod, participationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode());
+		assertEquals(participationPeriod,
+				participationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode());
 	}
 
 	@Test
@@ -204,7 +205,8 @@ class MeasureEvaluateProviderIT extends RestIntegrationTest {
 						&& x.getCode().getCoding().get(0).getCode().equals(populationName))
 				.findFirst();
 
-		assertTrue(population.isPresent(), String.format("Unable to locate a population with id \"%s\"", populationName));
+		assertTrue(population.isPresent(),
+				String.format("Unable to locate a population with id \"%s\"", populationName));
 		assertEquals(population.get().getCount(), expectedCount,
 				String.format("expected count for population \"%s\" did not match", populationName));
 	}

@@ -1,12 +1,16 @@
 {
 	"java.configuration.updateBuildConfiguration": "automatic",
+	"java.debug.settings.stepping.skipClasses": [
+		"$JDK",
+		"java.lang.ClassLoader",
+		"org.springframework.aop.*"
+	],
 	"java.errors.incompleteClasspath.severity": "ignore",
 	"java.test.config": [
 		{
 			"name": "test-config",
 			"vmArgs": [
-				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true"
+				"-XX:TieredStopAtLevel=1"
 			]
 		},
 	],
@@ -32,8 +36,10 @@
 		"Alphora",
 		"autoconfiguration",
 		"autoconfigure",
+		"Awaitility",
 		"BCSEHEDISMY",
 		"CAREGAP",
+		"cdshooks",
 		"Checkstyle",
 		"classpath",
 		"Codeable",
@@ -45,8 +51,10 @@
 		"FHIR",
 		"Fulltext",
 		"Gson",
+		"h2",
 		"Inclusivity",
 		"Javadoc",
+		"jdbc",
 		"jpaserver",
 		"loinc",
 		"mgsc",
@@ -77,5 +85,5 @@
 	"files.eol": "\r\n",
 	"editor.formatOnSave": true,
 	"thunder-client.saveToWorkspace": true,
-	"java.jdt.ls.vmargs": "-noverify -Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication"
+	"java.jdt.ls.vmargs": "-Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication"
 }

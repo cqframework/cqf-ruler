@@ -11,7 +11,7 @@ import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.cql2elm.fhir.r4.FhirLibrarySourceProvider;
+import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.ICompositeType;
@@ -36,15 +36,15 @@ import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
+import org.opencds.cqf.external.annotations.OnDSTU2Condition;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.annotations.OnR5Condition;
 import org.opencds.cqf.ruler.cql.dstu2.PreExpandedTermReadSvcDstu2;
 import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
 import org.opencds.cqf.ruler.cql.interceptor.CqlExceptionHandlingInterceptor;
 import org.opencds.cqf.ruler.cql.r4.PreExpandedTermReadSvcR4;
 import org.opencds.cqf.ruler.cql.r5.PreExpandedTermReadSvcR5;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR5Condition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -151,6 +151,7 @@ public class CqlConfig {
 				provider.setTerminologyProvider(t);
 				provider.setExpandValueSets(true);
 				provider.setMaxCodesPerQuery(2048);
+				provider.setQueryBatchThreshold(5);
 				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);
@@ -212,7 +213,7 @@ public class CqlConfig {
 			}
 
 			return new CacheAwareLibraryLoaderDecorator(
-					new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions), globalLibraryCache) {
+					new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions, null), globalLibraryCache) {
 				// TODO: This is due to a bug with the ELM annotations which prevent options
 				// from matching the way they should
 				@Override

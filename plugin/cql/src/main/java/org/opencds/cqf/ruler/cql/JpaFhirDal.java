@@ -1,19 +1,19 @@
 package org.opencds.cqf.ruler.cql;
 
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.cqframework.fhir.api.FhirDal;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.ruler.builder.BundleBuilder;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirDal implements FhirDal {
@@ -65,23 +65,23 @@ public class JpaFhirDal implements FhirDal {
 		}
 
 		List<IBaseResource> searchResults = this.daoRegistry.getResourceDao(theResourceType).search(searchParameterMap).getAllResources();
-		Bundle searchResultsBundle = new BundleBuilder<>(Bundle.class)
-			.withType(Bundle.BundleType.COLLECTION.toString())
-			.build();
-		searchResults.forEach(result -> searchResultsBundle.addEntry(new Bundle.BundleEntryComponent().setResource((Resource)result)));
-		return searchResultsBundle;
+
+		ca.uhn.fhir.util.BundleBuilder builder = new ca.uhn.fhir.util.BundleBuilder(daoRegistry.getSystemDao().getContext());
+		builder
+			.setBundleField("type", "searchset")
+			.setBundleField("id", UUID.randomUUID().toString())
+			.setMetaField("lastUpdated", builder.newPrimitive("instant", new java.util.Date()));
+
+		for (var resource : searchResults) {
+			IBase entry = builder.addEntry();
+			builder.addToEntry(entry, "resource", resource);
+
+			// Add search results
+			IBase search = builder.addSearch(entry);
+			builder.setSearchField(search, "mode", "match");
+			builder.setSearchField(search, "score", builder.newPrimitive("decimal", BigDecimal.ONE));
+		}
+
+		return builder.getBundle();
 	}
-
-	// TODO: the search interfaces need some work
-	//@Override
-	//public Iterable<IBaseResource> search(String theResourceType) {
-	//	return this.daoRegistry.getResourceDao(theResourceType).search(SearchParameterMap.newSynchronous())
-	//			.getAllResources();
-	//}
-
-	//@Override
-	//public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
-	//	return this.daoRegistry.getResourceDao(theResourceType)
-	//			.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
-	//}
 }

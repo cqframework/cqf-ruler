@@ -10,7 +10,7 @@ import org.hl7.fhir.dstu3.model.ConceptMap;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.utility.Clients;
+import org.opencds.cqf.cql.evaluator.fhir.util.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -41,8 +41,8 @@ public class TransformProvider implements OperationProvider {
         }
 
         String replaceCode = mySdcProperties.getTransform().getReplaceCode();
-      //   String username = mySdcProperties.getTransform().getUsername();
-      //   String password = mySdcProperties.getTransform().getPassword();
+        // String username = mySdcProperties.getTransform().getUsername();
+        // String password = mySdcProperties.getTransform().getPassword();
         String endpoint = mySdcProperties.getTransform().getEndpoint();
 
         IGenericClient client = Clients.forUrl(fhirContext, endpoint);

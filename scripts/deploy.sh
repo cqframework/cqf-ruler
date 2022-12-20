@@ -36,7 +36,7 @@ then
     CMD="$CMD -P release"
 else
    echo "Publishing Maven Central snapshot / pre-release for branch: $TRAVIS_BRANCH"
-fi 
+fi
 
 eval $CMD
 
@@ -58,6 +58,6 @@ fi
 
 # Push image to registry
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker build --pull . -t "$DOCKER_IMAGE:$DOCKER_TAG" -t "$DOCKER_IMAGE_A:$DOCKER_TAG"
+docker build --pull . -t "$DOCKER_IMAGE:$DOCKER_TAG" -t "$DOCKER_IMAGE_A:$DOCKER_TAG" --build-arg COMMIT_HASH="$TRAVIS_COMMIT"
 docker push "$DOCKER_IMAGE:$DOCKER_TAG"
 docker push "$DOCKER_IMAGE_A:$DOCKER_TAG"

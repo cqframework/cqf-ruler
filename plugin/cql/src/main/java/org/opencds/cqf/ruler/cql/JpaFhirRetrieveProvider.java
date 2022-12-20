@@ -23,8 +23,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 /**
  * This class provides an implementation of the cql-engine's RetrieveProvider
- * interface which is used for loading
- * data during CQL evaluation.
+ * interface which is used for loading data during CQL evaluation.
  */
 public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider implements DaoRegistryUser {
 

@@ -1,32 +1,31 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.booleanPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+
 import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.booleanPart;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { LibraryEvaluationProviderIT.class, CpgConfig.class },
-		properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		LibraryEvaluationProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
@@ -39,11 +38,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "AsthmaTest"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "AsthmaTest"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Has Asthma Diagnosis"));
@@ -58,11 +57,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "SimpleR4Library"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "SimpleR4Library"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Initial Population"));
@@ -83,11 +82,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 				booleanPart("useServerData", false));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "SimpleR4Library"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "SimpleR4Library"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Initial Population"));
@@ -106,11 +105,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(stringPart("subject", "Patient/example-rec-10-no-screenings"));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "OpioidCDSREC10PatientView"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "OpioidCDSREC10PatientView"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertEquals(10, result.getParameter().size());
@@ -163,6 +162,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameterFirstRep().hasResource());
 		assertTrue(results.getParameterFirstRep().getResource() instanceof OperationOutcome);
 		assertEquals("Unsupported interval point type for FHIR conversion java.lang.Integer",
-				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails().getText());
+				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails()
+						.getText());
 	}
 }

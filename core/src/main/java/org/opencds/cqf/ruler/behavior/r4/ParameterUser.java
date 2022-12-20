@@ -40,7 +40,8 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 
 		if (hasMeasureIds) {
 			measureList
-					.addAll(search(Measure.class, Searches.byIds(measureIds), theRequestDetails).getAllResourcesTyped());
+					.addAll(search(Measure.class, Searches.byIds(measureIds), theRequestDetails)
+							.getAllResourcesTyped());
 		}
 
 		// TODO: implement searching by measure identifiers

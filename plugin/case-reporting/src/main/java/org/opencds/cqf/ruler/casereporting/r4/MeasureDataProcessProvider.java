@@ -97,8 +97,7 @@ public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 		}
 		if (report != null) {
 			gatherPatientsFromReport(report, populationSubjectListReferenceMap);
-		}
-		else {
+		} else {
 			for (String subject : subjectList) {
 				populationSubjectListReferenceMap.putIfAbsent(subject, new Reference(subject));
 			}
@@ -117,9 +116,9 @@ public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 						populationSubjectListReferenceMap.putIfAbsent(subject.getReference(), subject);
 					}
 					if (subject.fhirType().equals("Group")) {
-						getPatientListFromGroup(subject.getReference()).forEach(patient ->
-							populationSubjectListReferenceMap.putIfAbsent(patient.getReference(), patient)
-						);
+						getPatientListFromGroup(subject.getReference())
+								.forEach(patient -> populationSubjectListReferenceMap
+										.putIfAbsent(patient.getReference(), patient));
 					}
 				}
 			}
@@ -136,7 +135,7 @@ public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 			} else if (reference.getReferenceElement().getResourceType().equals("Group")) {
 				patientList.addAll(getPatientListFromGroup(reference.getReference()));
 			} else {
-				logger.info("Group member was not a Patient or a Group, so skipping. \n{}",reference.getReference());
+				logger.info("Group member was not a Patient or a Group, so skipping. \n{}", reference.getReference());
 			}
 		});
 		return patientList;
@@ -158,7 +157,8 @@ public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 
 		ListResource list = (ListResource) baseList;
 		list.getEntry().forEach(entry -> {
-			if (entry.getItemTarget().getResourceType() == ResourceType.Patient || entry.getItemTarget().getResourceType() == ResourceType.Group) {
+			if (entry.getItemTarget().getResourceType() == ResourceType.Patient
+					|| entry.getItemTarget().getResourceType() == ResourceType.Group) {
 				results.add(entry.getItem());
 			}
 		});
