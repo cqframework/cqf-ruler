@@ -10,8 +10,8 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.client.ResourceAccessException;
 
