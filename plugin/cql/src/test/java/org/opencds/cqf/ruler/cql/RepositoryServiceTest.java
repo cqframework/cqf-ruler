@@ -152,6 +152,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
+<<<<<<< Updated upstream
 		assertTrue(isActive("Library/SpecificationLibrary"));
 		assertTrue(isActive("PlanDefinition/plandefinition-ersd-instance-example"));
 		assertTrue(isActive("Library/library-rctc-example"));
@@ -161,13 +162,21 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(isActive("ValueSet/mrtc"));
 		assertTrue(isActive("ValueSet/ostc"));
 		assertTrue(isActive("ValueSet/sdtc"));
+=======
+>>>>>>> Stashed changes
 	}
 
 	@Test
 	void packageOperation_draft_test() {
+<<<<<<< Updated upstream
 		boolean thrown = false;
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
+=======
+		loadResource("ersd-draft-library-example.json");
+		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
+		specLibrary.setName("NewSpecificationLibrary");
+>>>>>>> Stashed changes
 		String actualMessage = "";
 		Parameters params = parameters( part("resource", specLibrary) );
 		try {
