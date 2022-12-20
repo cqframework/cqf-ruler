@@ -53,7 +53,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return (Library)this.artifactProcessor.revise(fhirDal, resource);
 	}
 
-	@Operation(name = "$package", idempotent = true, type = MetadataResource.class)
+	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$package", value = "Package and existing bundle for release")
 	public Library packageOperation(RequestDetails requestDetails, @IdParam IdType theId)
 		throws FHIRException {
