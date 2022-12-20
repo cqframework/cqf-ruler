@@ -1,34 +1,37 @@
 package org.opencds.cqf.ruler.cdshooks.r4;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.JsonParser;
-import ca.uhn.fhir.parser.LenientErrorHandler;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import org.hl7.fhir.r4.model.Parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.ParameterDefinition;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.JsonParser;
+import ca.uhn.fhir.parser.LenientErrorHandler;
 
 public class CdsHooksUtil {
 
     private CdsHooksUtil() {
     }
 
-    // NOTE: Making an assumption here that the parameter in the CQL will be named "ContextPrescriptions"
+    // NOTE: Making an assumption here that the parameter in the CQL will be named
+    // "ContextPrescriptions"
     public static Parameters getParameters(JsonObject contextResources) {
         Parameters parameters = parameters();
         Bundle contextBundle = new JsonParser(FhirContext.forR4Cached(), new LenientErrorHandler())
@@ -69,8 +72,8 @@ public class CdsHooksUtil {
                     }
                 }
             }
-        }
-        else return null;
+        } else
+            return null;
         resourceMap.forEach((key, value) -> prefetchResources.addEntry().setResource(value));
         return prefetchResources;
     }
@@ -90,8 +93,7 @@ public class CdsHooksUtil {
                                         && x.getExpression().getLanguage().equals("text/cql.identifier")) {
                                     expressions.add(x.getExpression().getExpression());
                                 }
-                            }
-                    );
+                            });
                 }
                 if (action.hasDynamicValue()) {
                     action.getDynamicValue().forEach(
@@ -100,8 +102,7 @@ public class CdsHooksUtil {
                                         && x.getExpression().getLanguage().equals("text/cql.identifier")) {
                                     expressions.add(x.getExpression().getExpression());
                                 }
-                            }
-                    );
+                            });
                 }
                 if (action.hasAction()) {
                     expressions.addAll(getExpressionsFromActions(action.getAction()));

@@ -18,8 +18,8 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.Ids;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoCodeSystem;
@@ -95,7 +95,8 @@ public class CodeSystemUpdateProvider implements OperationProvider {
 				return buildIssue(response, "error", "not-found", "Unable to find Resource: " + theId.getIdPart());
 			}
 		} catch (Exception e) {
-			return buildIssue(response, "error", "not-found", "Unable to find Resource: " + theId.getIdPart() + "\n" + e);
+			return buildIssue(response, "error", "not-found",
+					"Unable to find Resource: " + theId.getIdPart() + "\n" + e);
 		}
 
 		return performCodeSystemUpdate(Collections.singletonList(vs));

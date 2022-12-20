@@ -1,28 +1,14 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import java.util.Map;
+import java.util.function.Function;
 
-import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
-import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.opencds.cqf.cql.engine.data.DataProvider;
-import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.CqlOptions;
-import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
-import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
-import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
-import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaEvalFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Clients;
+import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.cr.dstu3.service.MeasureService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -30,32 +16,11 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
-	@Autowired
-	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
+public class MeasureEvaluateProvider implements OperationProvider {
 
 	@Autowired
-	private JpaDataProviderFactory jpaDataProviderFactory;
-
-	@Autowired
-	private DataProviderFactory dataProviderFactory;
-
-	@Autowired
-	private JpaLibrarySourceProviderFactory libraryContentProviderFactory;
-
-	@Autowired
-	private JpaEvalFhirDalFactory fhirEvalDalFactory;
-
-	@Autowired
-	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
-
-	@Autowired
-	private CqlOptions cqlOptions;
-
-	@Autowired
-	private MeasureEvaluationOptions measureEvaluationOptions;
+	Function<RequestDetails, MeasureService> dstu3MeasureServiceFactory;
 
 	/**
 	 * Implements the <a href=
@@ -94,36 +59,19 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "additionalData") Bundle additionalData,
 			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Measure measure = read(theId);
-
-		TerminologyProvider terminologyProvider;
-
-		if (terminologyEndpoint != null) {
-			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
-			terminologyProvider = new Dstu3FhirTerminologyProvider(client);
-		} else {
-			terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
-		}
-
-		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
-		LibrarySourceProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
-		FhirDal fhirDal = this.fhirEvalDalFactory.create(requestDetails);
-
-		org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor(
-				null, dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
-				fhirDal, measureEvaluationOptions, cqlOptions, globalLibraryCache);
-
-		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-				patient, null, lastReceivedOn, null, null, null, additionalData);
-
-		if (productLine != null) {
-			Extension ext = new Extension();
-			ext.setUrl("http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine");
-			ext.setValue(new StringType(productLine));
-			report.addExtension(ext);
-		}
-
-		return report;
+		return this.dstu3MeasureServiceFactory
+				.apply(requestDetails)
+				.evaluateMeasure(
+						theId,
+						periodStart,
+						periodEnd,
+						reportType,
+						patient,
+						practitioner,
+						lastReceivedOn,
+						productLine,
+						additionalData,
+						terminologyEndpoint);
 	}
 
 }

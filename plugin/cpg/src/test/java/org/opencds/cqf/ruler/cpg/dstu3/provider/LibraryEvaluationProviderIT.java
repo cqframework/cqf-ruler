@@ -1,27 +1,26 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.stringPart;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.Parameters;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { LibraryEvaluationProviderIT.class, CpgConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		LibraryEvaluationProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
@@ -35,17 +34,16 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 				stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "AsthmaTest"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "AsthmaTest"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter());
-		List<Parameters.ParametersParameterComponent> asthmaDiagnosis =
-				result.getParameter().stream().filter(
-						param -> param.getName().equals("Has Asthma Diagnosis")).collect(Collectors.toList());
+		List<Parameters.ParametersParameterComponent> asthmaDiagnosis = result.getParameter().stream().filter(
+				param -> param.getName().equals("Has Asthma Diagnosis")).collect(Collectors.toList());
 		assertFalse(asthmaDiagnosis.isEmpty());
 		assertTrue(((BooleanType) asthmaDiagnosis.get(0).getValue()).booleanValue());
 	}
@@ -59,11 +57,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 				stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
-			.onInstance(new IdType("Library", "SimpleDstu3Library"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Parameters.class)
-			.execute();
+				.onInstance(new IdType("Library", "SimpleDstu3Library"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter());
@@ -97,6 +95,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameterFirstRep().hasResource());
 		assertTrue(results.getParameterFirstRep().getResource() instanceof OperationOutcome);
 		assertEquals("Unsupported interval point type for FHIR conversion java.lang.Integer",
-				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails().getText());
+				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails()
+						.getText());
 	}
 }

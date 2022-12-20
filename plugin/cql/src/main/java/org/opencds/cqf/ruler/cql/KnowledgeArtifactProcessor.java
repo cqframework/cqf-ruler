@@ -9,7 +9,7 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.opencds.cqf.ruler.utility.Canonicals;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -135,7 +135,7 @@ public class KnowledgeArtifactProcessor {
 
 	private void getAdditionReleaseData(List<RelatedArtifact> finalRelatedArtifactList, FhirDal fhirDal, RelatedArtifact ra, boolean release, List<Bundle.BundleEntryComponent> bundleEntryComponentList) {
 		// update root artifact with relatedArtifacts that reflect all of its direct and transitive references.
-		// This bit should be it's own method so that we can call it recursively:
+		// This bit should be its own method so that we can call it recursively:
 
 			if (ra.hasResource()) {
 				if(release) {

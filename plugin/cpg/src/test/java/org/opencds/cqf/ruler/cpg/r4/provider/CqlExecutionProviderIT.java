@@ -1,32 +1,31 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.booleanPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.canonicalPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.datePart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.OperationOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.booleanPart;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.canonicalPart;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.datePart;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { CqlExecutionProviderIT.class, CpgConfig.class },
-		properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 
@@ -81,7 +80,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
 		Parameters params = parameters(
 				part("library", libraryParameter),
-				stringPart("expression","SimpleR4Library.\"observationRetrieve\""),
+				stringPart("expression", "SimpleR4Library.\"observationRetrieve\""),
 				part("data", data),
 				booleanPart("useServerData", false));
 		Parameters results = getClient().operation().onServer().named("$cql")
@@ -124,24 +123,24 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 				stringPart("subject", "SimplePatient"),
 				stringPart("content", "library SimpleR4Library\n" +
-								"\n" +
-								"using FHIR version '4.0.1'\n" +
-								"\n" +
-								"include FHIRHelpers version '4.0.1' called FHIRHelpers\n" +
-								"\n" +
-								"context Patient\n" +
-								"\n" +
-								"define simpleBooleanExpression: true\n" +
-								"\n" +
-								"define observationRetrieve: [Observation]\n" +
-								"\n" +
-								"define observationHasCode: not IsNull(([Observation]).code)\n" +
-								"\n" +
-								"define \"Initial Population\": observationHasCode\n" +
-								"\n" +
-								"define \"Denominator\": \"Initial Population\"\n" +
-								"\n" +
-								"define \"Numerator\": \"Denominator\""));
+						"\n" +
+						"using FHIR version '4.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '4.0.1' called FHIRHelpers\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define simpleBooleanExpression: true\n" +
+						"\n" +
+						"define observationRetrieve: [Observation]\n" +
+						"\n" +
+						"define observationHasCode: not IsNull(([Observation]).code)\n" +
+						"\n" +
+						"define \"Initial Population\": observationHasCode\n" +
+						"\n" +
+						"define \"Denominator\": \"Initial Population\"\n" +
+						"\n" +
+						"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -176,25 +175,25 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 				stringPart("subject", "SimplePatient"),
 				stringPart("expression", "Numerator"),
-				stringPart("content","library SimpleR4Library\n" +
-								"\n" +
-								"using FHIR version '4.0.1'\n" +
-								"\n" +
-								"include FHIRHelpers version '4.0.1' called FHIRHelpers\n" +
-								"\n" +
-								"context Patient\n" +
-								"\n" +
-								"define simpleBooleanExpression: true\n" +
-								"\n" +
-								"define observationRetrieve: [Observation]\n" +
-								"\n" +
-								"define observationHasCode: not IsNull(([Observation]).code)\n" +
-								"\n" +
-								"define \"Initial Population\": observationHasCode\n" +
-								"\n" +
-								"define \"Denominator\": \"Initial Population\"\n" +
-								"\n" +
-								"define \"Numerator\": \"Denominator\""));
+				stringPart("content", "library SimpleR4Library\n" +
+						"\n" +
+						"using FHIR version '4.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '4.0.1' called FHIRHelpers\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define simpleBooleanExpression: true\n" +
+						"\n" +
+						"define observationRetrieve: [Observation]\n" +
+						"\n" +
+						"define observationHasCode: not IsNull(([Observation]).code)\n" +
+						"\n" +
+						"define \"Initial Population\": observationHasCode\n" +
+						"\n" +
+						"define \"Denominator\": \"Initial Population\"\n" +
+						"\n" +
+						"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -210,22 +209,22 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 				stringPart("subject", "SimplePatient"),
 				stringPart("content", "library AsthmaTest version '1.0.0'\n" +
-								"\n" +
-								"using FHIR version '4.0.1'\n" +
-								"\n" +
-								"include FHIRHelpers version '4.0.1'\n" +
-								"\n" +
-								"codesystem \"SNOMED\": 'http://snomed.info/sct'\n" +
-								"\n" +
-								"code \"Asthma\": '195967001' from \"SNOMED\"\n" +
-								"\n" +
-								"context Patient\n" +
-								"\n" +
-								"define \"Asthma Diagnosis\":\n" +
-								"    [Condition: \"Asthma\"]\n" +
-								"\n" +
-								"define \"Has Asthma Diagnosis\":\n" +
-								"    exists(\"Asthma Diagnosis\")\n"));
+						"\n" +
+						"using FHIR version '4.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '4.0.1'\n" +
+						"\n" +
+						"codesystem \"SNOMED\": 'http://snomed.info/sct'\n" +
+						"\n" +
+						"code \"Asthma\": '195967001' from \"SNOMED\"\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define \"Asthma Diagnosis\":\n" +
+						"    [Condition: \"Asthma\"]\n" +
+						"\n" +
+						"define \"Has Asthma Diagnosis\":\n" +
+						"    exists(\"Asthma Diagnosis\")\n"));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -251,6 +250,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameterFirstRep().hasResource());
 		assertTrue(results.getParameterFirstRep().getResource() instanceof OperationOutcome);
 		assertEquals("Unsupported interval point type for FHIR conversion java.lang.Integer",
-				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails().getText());
+				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails()
+						.getText());
 	}
 }

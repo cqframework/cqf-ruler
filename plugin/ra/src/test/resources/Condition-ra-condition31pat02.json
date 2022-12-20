@@ -1,0 +1,55 @@
+{
+	"resourceType": "Condition",
+	"id": "ra-condition31pat02",
+	"meta": {
+		"profile": [
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+		]
+	},
+	"clinicalStatus": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+				"code": "active",
+				"display": "Active"
+			}
+		],
+		"text": "Active"
+	},
+	"verificationStatus": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+				"code": "confirmed",
+				"display": "Confirmed"
+			}
+		],
+		"text": "Confirmed"
+	},
+	"category": [
+		{
+			"coding": [
+				{
+					"system": "http://terminology.hl7.org/CodeSystem/condition-category",
+					"code": "encounter-diagnosis",
+					"display": "Encounter Diagnosis"
+				}
+			],
+			"text": "Encounter Diagnosis"
+		}
+	],
+	"code": {
+		"coding": [
+			{
+				"system": "http://hl7.org/fhir/sid/icd-10-cm",
+				"code": "I48.3",
+				"display": "Typical atrial flutter"
+			}
+		],
+		"text": "Typical atrial flutter"
+	},
+	"subject": {
+		"reference": "Patient/ra-patient02"
+	},
+	"onsetDateTime": "2021-08-06"
+}

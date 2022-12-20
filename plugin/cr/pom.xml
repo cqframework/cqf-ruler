@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler-plugin</artifactId>
-		<version>0.7.0-SNAPSHOT</version>
+		<version>0.11.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cqf-ruler-cr</artifactId>
 	<dependencies>
@@ -18,12 +18,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.fhir</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.measure-hapi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cql</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.11.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

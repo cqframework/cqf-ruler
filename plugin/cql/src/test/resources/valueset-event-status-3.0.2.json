@@ -1,0 +1,68 @@
+{
+	"resourceType" : "ValueSet",
+	"id" : "event-status-3.0.2",
+	"meta" : {
+		"profile" : ["http://hl7.org/fhir/StructureDefinition/shareablevalueset"]
+	},
+	"url" : "http://example.org/fhir/ValueSet/event-status",
+	"version" : "3.0.2",
+	"name" : "EventStatus",
+	"title" : "EventStatus",
+	"status" : "draft",
+	"experimental" : false,
+	"date" : "2021-03-11T17:06:20+11:00",
+	"publisher" : "HL7 (FHIR Project)",
+	"contact" : [
+		{
+			"telecom" : [
+				{
+					"system" : "url",
+					"value" : "http://hl7.org/fhir"
+				},
+				{
+					"system" : "email",
+					"value" : "fhir@lists.hl7.org"
+				}
+			]
+		}
+	],
+	"description" : "Codes identifying the lifecycle stage of an event.",
+	"immutable" : true,
+	"compose" : {
+		"include" : [
+			{
+				"system": "http://example.org/fhir/event-status",
+				"concept": [
+					{
+						"code" : "preparation",
+						"display" : "Preparation"
+					},
+					{
+						"code" : "in-progress",
+						"display" : "In Progress"
+					},
+					{
+						"code" : "on-hold",
+						"display" : "On Hold"
+					},
+					{
+						"code" : "stopped",
+						"display" : "Stopped"
+					},
+					{
+						"code" : "completed",
+						"display" : "Completed"
+					},
+					{
+						"code" : "entered-in-error",
+						"display" : "Entered in Error"
+					},
+					{
+						"code" : "unknown",
+						"display" : "Unknown"
+					}
+				]
+			}
+		]
+	}
+}

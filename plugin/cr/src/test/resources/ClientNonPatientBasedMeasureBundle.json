@@ -1057,8 +1057,10 @@
 				],
 				"group": [
 					{
+						"id": "group-1",
 						"population": [
 							{
+								"id": "initial-population",
 								"code": {
 									"coding": [
 										{
@@ -1079,102 +1081,119 @@
 				],
 				"supplementalData": [
 					{
+						"id": "sde-chief-complaint",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Chief Complaint"
 						}
 					},
 					{
+						"id": "sde-chief-condition",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Condition"
 						}
 					},
 					{
+						"id": "sde-encounter-discharge",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Encounter Discharge Dispositions"
 						}
 					},
 					{
+						"id": "sde-encounter-location",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Encounter Locations"
 						}
 					},
 					{
+						"id": "sde-ethnicity",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Ethnicity"
 						}
 					},
 					{
+						"id": "sde-gender-identify",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Gender Identity"
 						}
 					},
 					{
+						"id": "sde-locations",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Locations"
 						}
 					},
 					{
+						"id": "sde-medication-admin",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Medication Administration"
 						}
 					},
 					{
+						"id": "sde-medication-request",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Medication Request"
 						}
 					},
 					{
+						"id": "sde-observation",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Observation"
 						}
 					},
 					{
+						"id": "sde-patient-death",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Patient Death Date"
 						}
 					},
 					{
+						"id": "sde-patient-id",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Patient ID"
 						}
 					},
 					{
+						"id": "sde-payer",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Payer"
 						}
 					},
 					{
+						"id": "sde-race",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Race"
 						}
 					},
 					{
+						"id": "sde-service-request",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Service Request"
 						}
 					},
 					{
+						"id": "sde-sex",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Sex"
 						}
 					},
 					{
+						"id": "sde-zipcode",
 						"criteria": {
 							"language": "text/cql.identifier",
 							"expression": "SDE Zip Code"

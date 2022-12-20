@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -12,9 +12,8 @@ import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { MeasureDataProcessProviderIT.class, CaseReportingConfig.class },
-		properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		MeasureDataProcessProviderIT.class, CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class MeasureDataProcessProviderIT extends RestIntegrationTest {
 	@Test
 	void testMeasureReportExtractLineListData() {

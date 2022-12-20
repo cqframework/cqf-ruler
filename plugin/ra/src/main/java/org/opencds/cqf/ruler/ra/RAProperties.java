@@ -29,6 +29,16 @@ public class RAProperties {
 		this.report = report;
 	}
 
+	private CompositionConfiguration compositionConfiguration;
+
+	public CompositionConfiguration getComposition() {
+		return compositionConfiguration;
+	}
+
+	public void setComposition(CompositionConfiguration compositionConfiguration) {
+		this.compositionConfiguration = compositionConfiguration;
+	}
+
 	public static class Report {
 
 		private String endpoint;
@@ -39,6 +49,18 @@ public class RAProperties {
 
 		public void setEndpoint(String endpoint) {
 			this.endpoint = endpoint;
+		}
+	}
+
+	public static class CompositionConfiguration {
+		private String ra_composition_section_author;
+
+		public String getCompositionSectionAuthor() {
+			return ra_composition_section_author;
+		}
+
+		public void setRaCompositionSectionAuthor(String raCompositionSectionAuthor) {
+			this.ra_composition_section_author = raCompositionSectionAuthor;
 		}
 	}
 }
