@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -34,22 +33,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Library releaseOperation(RequestDetails requestDetails, @IdParam IdType theId)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.releaseVersion(theId, fhirDal);
-	}
-
-	@Operation(name = "$publish")
-	@Description(shortDefinition = "$publish", value = "Post a new artifact with active status")
-	public Library publishOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
-		throws FHIRException {
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.publish(fhirDal, resource);
-	}
-
-	@Operation(name = "$revise", idempotent = true, global = true)
-	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
-	public Library reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
-		throws FHIRException {
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library)this.artifactProcessor.revise(fhirDal, resource);
+		return (Library) this.artifactProcessor.release(theId, fhirDal);
 	}
 }

@@ -11,7 +11,6 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,7 +111,7 @@ public class KnowledgeArtifactProcessor {
 		return searchResultsBundle;
 	}
 
-	public MetadataResource releaseVersion(IdType iIdType, FhirDal fhirDal) {
+	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 
@@ -182,44 +181,5 @@ public class KnowledgeArtifactProcessor {
 					}
 				}
 			}
-	}
-
-	public MetadataResource publish(FhirDal fhirDal, MetadataResource resource) {
-		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("The posted resource must have status of 'active'. The proposed resource has status: %s", resource.getStatus().toString()));
-		}
-
-		if (resource.getId() == null || resource.getId().isEmpty()) {
-			fhirDal.create(resource);
-		} else {
-			MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
-			if (existingResource != null) {
-				fhirDal.update(resource);
-			}
-		}
-
-		//TODO: This is wrong. Once the FhirDal implementation supports returning the resource
-		// (or at least ID so it can be retrieved) that resource should be returned rather than the proposed resource.
-		return resource;
-	}
-
-	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
-		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
-		if (existingResource == null) {
-			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
-		}
-
-		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
-			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getStatus().toString()));
-		}
-
-		if (!resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
-			throw new ResourceAccessException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
-		}
-
-		fhirDal.update(resource);
-		//TODO: This is a short-term and incorrect solution. Once the FhirDal supports returning the
-		// resource from the update method, the updated resource should be returned (i.e., not the proposed resource).
-		return resource;
 	}
 }
