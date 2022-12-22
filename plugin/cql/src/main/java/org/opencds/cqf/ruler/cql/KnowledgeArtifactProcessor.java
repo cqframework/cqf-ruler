@@ -4,12 +4,14 @@ import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
+import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -224,27 +226,30 @@ public class KnowledgeArtifactProcessor {
 	}
 
 
-	public MetadataResource packageResource(FhirDal fhirDal, MetadataResource resource) {
-		if (resource.getId() == null || resource.getId().isEmpty()) {
-			throw new ResourceAccessException(String.format("The resource must have a valid id to be packaged."));
+	public IBaseBundle packageOperation(FhirDal fhirDal, IdType idType) {
+		if (idType.getId() == null ||  idType.getId().isEmpty()) {
+			throw new ResourceAccessException(String.format("A valid resource ID is required."));
 		}
-		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+
+		MetadataResource existingResource = (MetadataResource) fhirDal.read(idType);
 		if (existingResource == null) {
-			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getId()));
 		}
 
 		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", resource.getUrl()));
+			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", existingResource.getUrl()));
 		}
 
-		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("The resource status must be 'active' and cannot be packaged. The proposed resource has status: %s", resource.getStatus().toString()));
-		}
+		Bundle packageBundle = new BundleBuilder<>(Bundle.class)
+			.withType(Bundle.BundleType.COLLECTION.toString())
+			.build();
+//		searchResults.forEach(result -> searchResultsBundle.addEntry(new Bundle.BundleEntryComponent().setResource((Resource)result)));
+//		return searchResultsBundle;
 
-		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
+		KnowledgeArtifactAdapter<MetadataResource> existingResourceAdapter = new KnowledgeArtifactAdapter<>(existingResource);
 
-		finalRelatedArtifactList = adapter.getRelatedArtifact();
-		int listCounter=0;
+		finalRelatedArtifactList = existingResourceAdapter.getRelatedArtifact();
+		int listCounter = 0;
 		int listSize = finalRelatedArtifactList.size();
 		for (RelatedArtifact ra : finalRelatedArtifactList) {
 			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, false, bundleEntryComponentList);
@@ -254,10 +259,10 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 
-		adapter.setRelatedArtifact(finalRelatedArtifactList);
+		existingResourceAdapter.setRelatedArtifact(finalRelatedArtifactList);
 
-		fhirDal.update(resource);
+		fhirDal.update(existingResource);
 
-		return resource;
+		return packageBundle;
 	}
 }
