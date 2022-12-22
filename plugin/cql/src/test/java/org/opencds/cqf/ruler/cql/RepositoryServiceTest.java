@@ -69,7 +69,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void releaseResource_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Library returnResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance("Library/DraftSpecificationLibrary")
 			.named("$release")
 			.withNoParameters(Parameters.class)
 			.useHttpGet()
@@ -77,63 +77,5 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-	}
-
-	@Test
-	void publishResource_test() {
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		specLibrary.setId((String) null);
-
-		Parameters params = parameters(part("resource", (MetadataResource)specLibrary) );
-
-		Library returnResource = getClient().operation()
-			.onServer()
-			.named("$publish")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResource);
-		assertTrue(returnResource.getName().equals("NewSpecificationLibrary"));
-	}
-
-	@Test
-	void reviseOperation_draft_test() {
-		loadResource("ersd-draft-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-
-		Parameters params = parameters( part("resource", specLibrary) );
-		Library returnResource = getClient().operation()
-			.onServer()
-			.named("$revise")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResource);
-		assertTrue(returnResource.getName().equals("NewSpecificationLibrary"));
-	}
-
-	@Test
-	void reviseOperation_active_test() {
-		loadResource("ersd-active-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		String actualMessage = "";
-		Parameters params = parameters( part("resource", specLibrary) );
-		try {
-			Library returnResource = getClient().operation()
-				.onServer()
-				.named("$revise")
-				.withParameters(params)
-				.returnResourceType(Library.class)
-				.execute();
-		} catch ( Exception e) {
-			actualMessage = e.getMessage();
-		}
-
-		assertTrue(actualMessage.contains("Only resources with status of 'draft' can be revised."));
 	}
 }

@@ -33,8 +33,17 @@ public class KnowledgeArtifactProcessor {
 		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
 		// performed here to facilitate that different treatment for the root artifact and those referenced by it.
 		if (resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-			throw new IllegalArgumentException(
+			throw new IllegalStateException(
 				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", resource.getUrl(), resource.getStatus().toString()));
+		}
+
+		Bundle existingArtifactsForUrl = searchResourceByUrl(resource.getUrl(), fhirDal);
+		Optional<Bundle.BundleEntryComponent> existingDrafts = existingArtifactsForUrl.getEntry().stream().filter(
+			e -> ((MetadataResource) e.getResource()).getStatus() == Enumerations.PublicationStatus.DRAFT).findFirst();
+
+		if (existingDrafts.isPresent()) {
+			throw new IllegalStateException(
+				String.format("A draft of Program '%s' already exists with ID: '%s'. Only one draft of a program can exist at a time.", resource.getUrl(), ((MetadataResource) existingDrafts.get().getResource()).getId()));
 		}
 
 		return internalDraft(resource, fhirDal);
@@ -116,12 +125,12 @@ public class KnowledgeArtifactProcessor {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 
 		finalRelatedArtifactList = adapter.getRelatedArtifact();
-		int listCounter=0;
+		int listCounter = 0;
 		int listSize = finalRelatedArtifactList.size();
 		for (RelatedArtifact ra : finalRelatedArtifactList) {
 			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, true, bundleEntryComponentList);
 			listCounter++;
-			if(listCounter == listSize) {
+			if (listCounter == listSize) {
 				break;
 			}
 		}
@@ -136,50 +145,50 @@ public class KnowledgeArtifactProcessor {
 		// update root artifact with relatedArtifacts that reflect all of its direct and transitive references.
 		// This bit should be its own method so that we can call it recursively:
 
-			if (ra.hasResource()) {
-				if(release) {
-					ra.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		if (ra.hasResource()) {
+			if(release) {
+				ra.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+			}
+			String resourceData = ra.getResource();
+			if(Canonicals.getUrl(resourceData) != null) {
+				List < IQueryParameterType > list = new ArrayList<>();
+				if(Canonicals.getVersion(resourceData) != null) {
+					list.add(new UriParam(resourceData));
+				} else {
+					list.add(new UriParam(Canonicals.getUrl(resourceData)));
 				}
-				String resourceData = ra.getResource();
-				if(Canonicals.getUrl(resourceData) != null) {
-					List < IQueryParameterType > list = new ArrayList<>();
-					if(Canonicals.getVersion(resourceData) != null) {
-						list.add(new UriParam(resourceData));
-					} else {
-						list.add(new UriParam(Canonicals.getUrl(resourceData)));
-					}
-					Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
-					searchParams.put("url", List.of(list));
+				Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+				searchParams.put("url", List.of(list));
 
-					Bundle referencedResourceBundle = (Bundle) fhirDal.search(Canonicals.getResourceType(Canonicals.getUrl(resourceData)), searchParams);
-					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
-						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
+				Bundle referencedResourceBundle = (Bundle) fhirDal.search(Canonicals.getResourceType(Canonicals.getUrl(resourceData)), searchParams);
+				if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
+					Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 
-						if (referencedResourceEntry.hasResource()) {
-							MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
-							if(release) {
-								KnowledgeArtifactAdapter<MetadataResource> adapterNew = new KnowledgeArtifactAdapter<>(referencedResource);
-								List<RelatedArtifact> newRelatedArtifactList = adapterNew.getRelatedArtifact();
-								boolean found = false;
-								for(RelatedArtifact newOne : newRelatedArtifactList) {
-									for (RelatedArtifact nextOne : finalRelatedArtifactList) {
-										if (newOne.getResource().equals(nextOne.getResource())) {
-											found = true;
-											break;
-										}
-									}
-									if (!found) {
-										finalRelatedArtifactList.add(newOne);
-										getAdditionReleaseData(finalRelatedArtifactList, fhirDal, newOne, release, bundleEntryComponentList);
+					if (referencedResourceEntry.hasResource()) {
+						MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
+						if(release) {
+							KnowledgeArtifactAdapter<MetadataResource> adapterNew = new KnowledgeArtifactAdapter<>(referencedResource);
+							List<RelatedArtifact> newRelatedArtifactList = adapterNew.getRelatedArtifact();
+							boolean found = false;
+							for(RelatedArtifact newOne : newRelatedArtifactList) {
+								for (RelatedArtifact nextOne : finalRelatedArtifactList) {
+									if (newOne.getResource().equals(nextOne.getResource())) {
+										found = true;
+										break;
 									}
 								}
-							} else {
-								bundleEntryComponentList.add(referencedResourceEntry);
-								referencedResourceBundle.setEntry(bundleEntryComponentList);
+								if (!found) {
+									finalRelatedArtifactList.add(newOne);
+									getAdditionReleaseData(finalRelatedArtifactList, fhirDal, newOne, release, bundleEntryComponentList);
+								}
 							}
+						} else {
+							bundleEntryComponentList.add(referencedResourceEntry);
+							referencedResourceBundle.setEntry(bundleEntryComponentList);
 						}
 					}
 				}
 			}
+		}
 	}
 }
