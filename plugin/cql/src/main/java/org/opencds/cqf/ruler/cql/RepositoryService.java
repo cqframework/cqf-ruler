@@ -3,9 +3,11 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -34,5 +36,13 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.release(theId, fhirDal);
+	}
+
+	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
+	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
+		throws FHIRException {
+		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
+		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
 	}
 }

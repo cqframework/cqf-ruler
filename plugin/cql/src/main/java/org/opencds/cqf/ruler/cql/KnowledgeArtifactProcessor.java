@@ -119,7 +119,7 @@ public class KnowledgeArtifactProcessor {
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
-	
+
 	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
@@ -190,5 +190,24 @@ public class KnowledgeArtifactProcessor {
 				}
 			}
 		}
+	}
+
+	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
+		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+		if (existingResource == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
+		}
+
+		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
+			throw new IllegalStateException(String.format("Current resource status is '%s'. Only resources with status of 'draft' can be revised.", resource.getStatus().toString()));
+		}
+
+		if (!resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
+			throw new IllegalStateException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
+		}
+
+		fhirDal.update(resource);
+
+		return resource;
 	}
 }
