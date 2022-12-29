@@ -79,10 +79,10 @@ public class KnowledgeArtifactProcessor {
 				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 					if (ra.hasUrl()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle, ra);
+						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra);
 					} else if (ra.hasResource()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle, ra);
+						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra);
 					}
 				}
 			}
@@ -91,7 +91,7 @@ public class KnowledgeArtifactProcessor {
 		return newResource;
 	}
 
-	private void processReferencedResource(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra) {
+	private void processReferencedResourceForDraft(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
@@ -119,7 +119,7 @@ public class KnowledgeArtifactProcessor {
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
-
+	
 	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
