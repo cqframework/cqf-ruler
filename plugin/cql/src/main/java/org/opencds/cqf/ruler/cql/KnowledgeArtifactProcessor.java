@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class KnowledgeArtifactProcessor {
 
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
+	private List<RelatedArtifact> finalRelatedArtifactListUpdated = new ArrayList<>();
 	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
 
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
@@ -125,17 +127,18 @@ public class KnowledgeArtifactProcessor {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 
 		finalRelatedArtifactList = adapter.getRelatedArtifact();
+		finalRelatedArtifactListUpdated = adapter.getRelatedArtifact();
 		int listCounter = 0;
 		int listSize = finalRelatedArtifactList.size();
 		for (RelatedArtifact ra : finalRelatedArtifactList) {
-			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, true, bundleEntryComponentList);
+			getAdditionReleaseData(finalRelatedArtifactListUpdated, fhirDal, ra, true, bundleEntryComponentList);
 			listCounter++;
 			if (listCounter == listSize) {
 				break;
 			}
 		}
 
-		adapter.setRelatedArtifact(finalRelatedArtifactList);
+		adapter.setRelatedArtifact(finalRelatedArtifactListUpdated);
 
 		fhirDal.update(resource);
 		return resource;
@@ -205,6 +208,43 @@ public class KnowledgeArtifactProcessor {
 		if (!resource.getStatus().equals(Enumerations.PublicationStatus.DRAFT)) {
 			throw new IllegalStateException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
+
+		fhirDal.update(resource);
+
+		return resource;
+	}
+
+	public MetadataResource packageResource(FhirDal fhirDal, MetadataResource resource) {
+		if (resource.getId() == null || resource.getId().isEmpty()) {
+			throw new ResourceAccessException(String.format("The resource must have a valid id to be packaged."));
+		}
+		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+		if (existingResource == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
+		}
+
+		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
+			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", resource.getUrl()));
+		}
+
+		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
+			throw new ResourceAccessException(String.format("The resource status must be 'active' and cannot be packaged. The proposed resource has status: %s", resource.getStatus().toString()));
+		}
+
+		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
+
+		finalRelatedArtifactList = adapter.getRelatedArtifact();
+		int listCounter=0;
+		int listSize = finalRelatedArtifactList.size();
+		for (RelatedArtifact ra : finalRelatedArtifactList) {
+			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, false, bundleEntryComponentList);
+			listCounter++;
+			if(listCounter == listSize) {
+				break;
+			}
+		}
+
+		adapter.setRelatedArtifact(finalRelatedArtifactList);
 
 		fhirDal.update(resource);
 
