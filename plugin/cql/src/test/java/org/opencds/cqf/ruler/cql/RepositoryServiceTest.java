@@ -1,10 +1,8 @@
 
 package org.opencds.cqf.ruler.cql;
 
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -61,14 +59,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			actualMessage = e.getMessage();
 		}
 
-		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'."));
+		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'. Resource 'http://ersd.aimsplatform.org/fhir/Library/DraftSpecificationLibrary' has a status of: DRAFT"));
 	}
 
 	@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Library returnResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance("Library/DraftSpecificationLibrary")
 			.named("$release")
 			.withNoParameters(Parameters.class)
 			.useHttpGet()
@@ -79,49 +77,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void publishResource_test() {
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		specLibrary.setId((String) null);
-
-		Parameters params = parameters(part("resource", (MetadataResource)specLibrary) );
-
-		Library returnResource = getClient().operation()
-			.onServer()
-			.named("$publish")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResource);
-		assertTrue(returnResource.getName().equals("NewSpecificationLibrary"));
-	}
-
-	@Test
-	void reviseOperation_draft_test() {
-		loadResource("ersd-draft-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-draft-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-
-		Parameters params = parameters( part("resource", specLibrary) );
-		Library returnResource = getClient().operation()
-			.onServer()
-			.named("$revise")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResource);
-		assertTrue(returnResource.getName().equals("NewSpecificationLibrary"));
-	}
-
-	@Test
 	void reviseOperation_active_test() {
-		loadResource("ersd-active-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		String actualMessage = "";
-		Parameters params = parameters( part("resource", specLibrary) );
+		Library library = (Library)loadResource("ersd-active-library-example.json");
+		library.setName("NewSpecificationLibrary");
+		String actualErrorMessage = "";
+		Parameters params = parameters( part("resource", library) );
 		try {
 			Library returnResource = getClient().operation()
 				.onServer()
@@ -130,89 +90,34 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				.returnResourceType(Library.class)
 				.execute();
 		} catch ( Exception e) {
-			actualMessage = e.getMessage();
+			actualErrorMessage = e.getMessage();
 		}
 
-		assertTrue(actualMessage.contains("Only resources with status of 'draft' can be revised."));
-	}
-
-//	@Test
-//	void packageOperation_active_test() {
-//		loadTransaction("ersd-active-transaction-bundle-example.json");
-//
-//		Resource returnBundle = getClient().operation()
-//			.onInstance("Library/SpecificationLibrary")
-//			.named("$package")
-//			.withNoParameters(Parameters.class)
-//			.returnResourceType(Bundle.class)
-//			.execute();
-//
-//		assertNotNull(returnBundle);
-//	}
-
-	@Test
-	void packageOperation_draft_test() {
-		loadTransaction("ersd-draft-transaction-bundle-example.json");
-
-		String actualMessage = "";
-		try {
-			Resource returnBundle = getClient().operation()
-				.onInstance("Library/DraftSpecificationLibrary")
-				.named("$package")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch ( Exception e) {
-			actualMessage = e.getMessage();
-		}
-
-		//assertTrue(actualMessage.contains("Only resources with status of 'active' can be packaged."));
+		assertTrue(actualErrorMessage.contains("Only resources with status of 'draft' can be revised."));
 	}
 
 	@Test
-	void packageOperation_active_id_test() {
-		loadResource("ersd-active-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
-		specLibrary.setId("");
-		String actualMessage = "";
-		Parameters params = parameters( part("resource", specLibrary) );
+	void reviseOperation_draft_test() {
+		String newResourceName = "NewSpecificationLibrary";
+		Library library = (Library)loadResource("ersd-draft-library-example.json");
+		library.setName(newResourceName);
+		String errorMessage = "";
+		Parameters params = parameters(part("resource", library) );
+		Library returnResource = null;
 		try {
-			Library returnResource = getClient().operation()
-				.onInstance("Library/SpecificationLibrary")
-				.named("$package")
+			returnResource = getClient().operation()
+				.onServer()
+				.named("$revise")
 				.withParameters(params)
 				.returnResourceType(Library.class)
 				.execute();
 		} catch ( Exception e) {
-			actualMessage = e.getMessage();
-			//assertTrue(actualMessage.contains("The resource must have a valid id to be packaged."));
+			errorMessage = e.getMessage();
 		}
-	}
 
-	@Test
-	void draftOperation_active_release() {
-		loadTransaction("ersd-active-transaction-bundle-example.json");
-
-		Resource returnResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
-			.named("$draft")
-			.withNoParameters(Parameters.class)
-			.returnResourceType(Library.class)
-			.execute();
-
-		Library returnedLibrary = (Library) returnResource;
-
-		Parameters params = parameters( part("resource", returnedLibrary) );
-		Library returnResourceLibrary = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
-			.named("$release")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResourceLibrary);
+		assertTrue(errorMessage.isEmpty());
+		assertTrue(returnResource != null);
+		assertTrue(returnResource.getName().equals(newResourceName));
+		assertTrue(returnResource.getName().equals(newResourceName));
 	}
 }
