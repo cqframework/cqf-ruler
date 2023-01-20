@@ -45,7 +45,11 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return (Library) this.artifactProcessor.publish(fhirDal, resource);
 	}
 
+<<<<<<< Updated upstream
 	@Operation(name = "$revise", idempotent = true, global = true)
+=======
+	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
+>>>>>>> Stashed changes
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public Library reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
 		throws FHIRException {

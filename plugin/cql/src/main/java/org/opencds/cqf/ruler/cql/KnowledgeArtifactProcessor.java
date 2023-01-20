@@ -205,6 +205,25 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
+	public MetadataResource publish(FhirDal fhirDal, MetadataResource resource) {
+		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
+			throw new ResourceAccessException(String.format("The posted resource must have status of 'active'. The proposed resource has status: %s", resource.getStatus().toString()));
+		}
+
+		if (resource.getId() == null || resource.getId().isEmpty()) {
+			fhirDal.create(resource);
+		} else {
+			MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+			if (existingResource != null) {
+				fhirDal.update(resource);
+			}
+		}
+
+		//TODO: This is wrong. Once the FhirDal implementation supports returning the resource
+		// (or at least ID so it can be retrieved) that resource should be returned rather than the proposed resource.
+		return resource;
+	}
+
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
 		if (existingResource == null) {
