@@ -7,6 +7,9 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -45,11 +48,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return (Library) this.artifactProcessor.publish(fhirDal, resource);
 	}
 
-<<<<<<< Updated upstream
 	@Operation(name = "$revise", idempotent = true, global = true)
-=======
-	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
->>>>>>> Stashed changes
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public Library reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") Library resource)
 		throws FHIRException {
@@ -59,9 +58,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$package", value = "Package and existing bundle for release")
-	public Library packageOperation(RequestDetails requestDetails, @IdParam IdType theId)
+	public IBaseBundle packageOperation(RequestDetails requestDetails, @IdParam IdType theId)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (Library)this.artifactProcessor.packageOperation(fhirDal, theId);
+		return (IBaseBundle) this.artifactProcessor.packageOperation(fhirDal, theId);
 	}
 }
