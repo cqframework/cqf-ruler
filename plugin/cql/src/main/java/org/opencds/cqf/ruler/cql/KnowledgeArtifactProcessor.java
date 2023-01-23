@@ -375,42 +375,4 @@ public class KnowledgeArtifactProcessor {
 
 		return resource;
 	}
-
-	/* $package */
-	public MetadataResource packageResource(FhirDal fhirDal, MetadataResource resource) {
-		if (resource.getId() == null || resource.getId().isEmpty()) {
-			throw new ResourceAccessException(String.format("The resource must have a valid id to be packaged."));
-		}
-		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
-		if (existingResource == null) {
-			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
-		}
-
-		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", resource.getUrl()));
-		}
-
-		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("The resource status must be 'active' and cannot be packaged. The proposed resource has status: %s", resource.getStatus().toString()));
-		}
-
-		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
-
-		finalRelatedArtifactList = adapter.getRelatedArtifact();
-		int listCounter=0;
-		int listSize = finalRelatedArtifactList.size();
-		for (RelatedArtifact ra : finalRelatedArtifactList) {
-			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, false, bundleEntryComponentList);
-			listCounter++;
-			if(listCounter == listSize) {
-				break;
-			}
-		}
-
-		adapter.setRelatedArtifact(finalRelatedArtifactList);
-
-		fhirDal.update(resource);
-
-		return resource;
-	}
 }
