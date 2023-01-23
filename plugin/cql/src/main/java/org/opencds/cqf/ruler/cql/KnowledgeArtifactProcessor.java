@@ -205,25 +205,6 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
-	public MetadataResource publish(FhirDal fhirDal, MetadataResource resource) {
-		if (!resource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-			throw new ResourceAccessException(String.format("The posted resource must have status of 'active'. The proposed resource has status: %s", resource.getStatus().toString()));
-		}
-
-		if (resource.getId() == null || resource.getId().isEmpty()) {
-			fhirDal.create(resource);
-		} else {
-			MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
-			if (existingResource != null) {
-				fhirDal.update(resource);
-			}
-		}
-
-		//TODO: This is wrong. Once the FhirDal implementation supports returning the resource
-		// (or at least ID so it can be retrieved) that resource should be returned rather than the proposed resource.
-		return resource;
-	}
-
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
 		if (existingResource == null) {
@@ -251,6 +232,11 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(idType);
+
+		if (existingResource.getId() == null ||  existingResource.getId().isEmpty()) {
+			throw new ResourceAccessException(String.format("A valid resource ID is required."));
+		}
+
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getId()));
 		}
@@ -262,26 +248,8 @@ public class KnowledgeArtifactProcessor {
 		Bundle packageBundle = new BundleBuilder<>(Bundle.class)
 			.withType(Bundle.BundleType.COLLECTION.toString())
 			.build();
-//		searchResults.forEach(result -> searchResultsBundle.addEntry(new Bundle.BundleEntryComponent().setResource((Resource)result)));
-//		return searchResultsBundle;
 
-		KnowledgeArtifactAdapter<MetadataResource> existingResourceAdapter = new KnowledgeArtifactAdapter<>(existingResource);
-
-		finalRelatedArtifactList = existingResourceAdapter.getRelatedArtifact();
-		int listCounter = 0;
-		int listSize = finalRelatedArtifactList.size();
-		for (RelatedArtifact ra : finalRelatedArtifactList) {
-			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, false, bundleEntryComponentList);
-			listCounter++;
-			if(listCounter == listSize) {
-				break;
-			}
-		}
-
-		existingResourceAdapter.setRelatedArtifact(finalRelatedArtifactList);
-
-		fhirDal.update(existingResource);
-
-		return packageBundle;
+		IBaseBundle ibaseBundle = (IBaseBundle) packageBundle;
+		return ibaseBundle;
 	}
 }
