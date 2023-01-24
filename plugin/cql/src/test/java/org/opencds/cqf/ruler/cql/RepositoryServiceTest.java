@@ -1,6 +1,7 @@
 
 package org.opencds.cqf.ruler.cql;
 
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
@@ -8,17 +9,18 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
-import org.junit.jupiter.api.MethodOrderer;
+//import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+//import org.junit.jupiter.api.TestMethodOrder;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.Order;
+//import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
 import static graphql.Assert.assertNotNull;
+//import static graphql.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
@@ -26,11 +28,10 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = { RepositoryServiceTest.class, CqlConfig.class },
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
-@TestMethodOrder(MethodOrderer.MethodName.class)
+//@TestMethodOrder(MethodOrderer.MethodName.class)
 class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
-	@Order(1)
 	void draftOperation_active_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 
@@ -51,7 +52,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(2)
 	void draftOperation_draft_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 
@@ -67,11 +67,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			actualMessage = e.getMessage();
 		}
 
-		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'. Resource 'http://ersd.aimsplatform.org/fhir/Library/DraftSpecificationLibrary' has a status of: DRAFT"));
+		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'. Resource 'http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary' has a status of: DRAFT"));
 	}
 
 	@Test
-	@Order(3)
 	void releaseResource_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Library returnResource = getClient().operation()
@@ -86,7 +85,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(4)
 	void publishResource_test() {
 		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
 		specLibrary.setName("NewSpecificationLibrary");
@@ -106,7 +104,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(5)
 	void reviseOperation_draft_test() {
 		String newResourceName = "NewSpecificationLibrary";
 		Library library = (Library)loadResource("ersd-draft-library-example.json");
@@ -131,7 +128,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	@Order(6)
 	void reviseOperation_active_test() {
 		loadResource("ersd-active-library-example.json");
 		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
@@ -152,63 +148,47 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(actualMessage.contains("Only resources with status of 'draft' can be revised."));
 	}
 
-<<<<<<< Updated upstream
 	@Test
-	void packageOperation_active_test() {
+	void packageOperation_no_id_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
-
-		Resource returnBundle = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
-			.named("$package")
-			.withNoParameters(Parameters.class)
-			.returnResourceType(Bundle.class)
-			.execute();
-
-		assertNotNull(returnBundle);
-	}
-
-=======
->>>>>>> Stashed changes
-	@Test
-	@Order(7)
-	void packageOperation_draft_test() {
-		loadTransaction("ersd-draft-transaction-bundle-example.json");
-
+		Bundle specLibrary = (Bundle) readResource("ersd-active-transaction-bundle-example.json");
+		specLibrary.setId("");
 		String actualMessage = "";
+		IBaseBundle returnBundle = null;
 		try {
-			Resource returnBundle = getClient().operation()
-				.onInstance("Library/DraftSpecificationLibrary")
+			returnBundle = getClient().operation()
+				.onInstance("Library/SpecificationLibrary")
 				.named("$package")
 				.withNoParameters(Parameters.class)
 				.returnResourceType(Bundle.class)
 				.execute();
 		} catch ( Exception e) {
 			actualMessage = e.getMessage();
+			assertTrue(actualMessage.contains("The resource must have a valid id to be packaged."));
 		}
 
-		assertTrue(actualMessage.contains("Only resources with status of 'active' can be packaged."));
+		assertNotNull(returnBundle);
 	}
 
 	@Test
-	@Order(8)
-	void packageOperation_active_id_test() {
-		loadResource("ersd-active-library-example.json");
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
-		specLibrary.setId("");
+	void packageOperation_id_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Bundle specLibrary = (Bundle) readResource("ersd-active-transaction-bundle-example.json");
+		specLibrary.setId("NewSpecificationLibrary");
 		String actualMessage = "";
-		Parameters params = parameters( part("resource", specLibrary) );
+		IBaseBundle returnBundle = null;
 		try {
-			Library returnResource = getClient().operation()
+			returnBundle = getClient().operation()
 				.onInstance("Library/SpecificationLibrary")
 				.named("$package")
-				.withParameters(params)
-				.returnResourceType(Library.class)
+				.withNoParameters(Parameters.class)
+				.returnResourceType(Bundle.class)
 				.execute();
 		} catch ( Exception e) {
 			actualMessage = e.getMessage();
 			assertTrue(actualMessage.contains("The resource must have a valid id to be packaged."));
 		}
+
+		assertNotNull(returnBundle);
 	}
 }
