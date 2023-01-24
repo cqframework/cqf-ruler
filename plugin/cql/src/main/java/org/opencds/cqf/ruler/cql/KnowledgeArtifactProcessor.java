@@ -227,23 +227,23 @@ public class KnowledgeArtifactProcessor {
 
 
 	public IBaseBundle packageOperation(FhirDal fhirDal, IdType idType) {
-		//if (idType.getId() == null ||  idType.getId().isEmpty()) {
-		//	throw new ResourceAccessException(String.format("A valid resource ID is required."));
-		//}
+		if (idType.getId() == null ||  idType.getId().isEmpty()) {
+			throw new ResourceAccessException(String.format("A valid resource ID is required."));
+		}
 
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(idType);
 
-		//if (existingResource.getId() == null ||  existingResource.getId().isEmpty()) {
-		//	throw new ResourceAccessException(String.format("A valid resource ID is required."));
-		//}
+		if (existingResource.getId() == null ||  existingResource.getId().isEmpty()) {
+			throw new ResourceAccessException(String.format("A valid resource ID is required."));
+		}
 
-		//if (existingResource == null) {
-		//	throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getId()));
-		//}
+		if (existingResource == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getId()));
+		}
 
-		//if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
-		//	throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", existingResource.getUrl()));
-		//}
+		if (!existingResource.getStatus().equals(Enumerations.PublicationStatus.ACTIVE)) {
+		throw new ResourceAccessException(String.format("Current resource status is '%s'. Only resources with status of 'active' can be packaged.", existingResource.getUrl()));
+		}
 
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
