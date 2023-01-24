@@ -3,8 +3,10 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,47 @@ public class KnowledgeArtifactProcessor {
 	private List<RelatedArtifact> finalRelatedArtifactListUpdated = new ArrayList<>();
 	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
 
+	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
+		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+
+		List<IQueryParameterType> urlList = new ArrayList<>();
+		urlList.add(new UriParam(Canonicals.getUrl(url)));
+		searchParams.put("url", List.of(urlList));
+
+		List<IQueryParameterType> versionList = new ArrayList<>();
+		String version = Canonicals.getVersion(url);
+		if (version != null && !version.isEmpty()) {
+			versionList.add(new TokenParam(Canonicals.getVersion((url))));
+			searchParams.put("version", List.of(versionList));
+		}
+
+		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		return searchResultsBundle;
+	}
+
+	private Bundle searchResourceByUrlAndStatus(String url, String status, FhirDal fhirDal) {
+		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+
+		List<IQueryParameterType> urlList = new ArrayList<>();
+		urlList.add(new UriParam(Canonicals.getUrl(url)));
+		searchParams.put("url", List.of(urlList));
+
+		List<IQueryParameterType> versionList = new ArrayList<>();
+		String version = Canonicals.getVersion(url);
+		if (version != null && !version.isEmpty()) {
+			versionList.add(new TokenParam(Canonicals.getVersion((url))));
+			searchParams.put("version", List.of(versionList));
+		}
+
+		List<IQueryParameterType> statusList = new ArrayList<>();
+		statusList.add(new TokenParam(status));
+		searchParams.put("status", List.of(statusList));
+
+		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		return searchResultsBundle;
+	}
+
+	/* $draft */
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
 		//TODO: Needs to be transactional
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
@@ -104,24 +148,141 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
-
-		List<IQueryParameterType> urlList = new ArrayList<>();
-		urlList.add(new UriParam(Canonicals.getUrl(url)));
-		searchParams.put("url", List.of(urlList));
-
-		List<IQueryParameterType> versionList = new ArrayList<>();
-		String version = Canonicals.getVersion(url);
-		if (version != null && !version.isEmpty()) {
-			versionList.add(new TokenParam(Canonicals.getVersion((url))));
-			searchParams.put("version", List.of(versionList));
+	/* $release2 */
+	public MetadataResource release2(IdType idType, String version, boolean latestFromTxServer, FhirDal fhirDal) {
+		// TODO: This needs to be transactional!
+		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
+		if (rootArtifact == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
 		}
 
-		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
-		return searchResultsBundle;
+		String releaseVersion = version;
+		if (releaseVersion == null || releaseVersion.isEmpty()) {
+			releaseVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion() : null;
+		}
+
+		if (releaseVersion == null || releaseVersion.isEmpty()) {
+			throw new IllegalStateException(String.format("No version found. Either the resource targeted for release must have a version or a version must be provided as an argument to the $release operation."));
+		}
+
+		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
+
+		List<RelatedArtifact> resolvedRelatedArtifacts = internalRelease(rootArtifactAdapter, releaseVersion, latestFromTxServer, fhirDal);
+
+		// once iteration is complete, delete all depends-on RAs in the root artifact
+		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		rootArtifactAdapter.getRelatedArtifact().addAll(resolvedRelatedArtifacts);
+		fhirDal.update(rootArtifact);
+
+		return rootArtifact;
 	}
 
+	private List<RelatedArtifact> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter,
+																 String version, boolean latestFromTxServer, FhirDal fhirDal) {
+		List<RelatedArtifact> resolvedRelatedArtifacts = new ArrayList<RelatedArtifact>();
+
+		artifactAdapter.resource.setDate(new Date());
+		artifactAdapter.resource.setVersion(version);
+
+		fhirDal.update(artifactAdapter.resource);
+
+		for (RelatedArtifact ra : artifactAdapter.getRelatedArtifact()) {
+			if (ra.hasResource()
+					&& (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF
+						|| ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
+
+				// TODO: This is likely the wrong characteristic to use for distinguishing between those things that are
+				// part of the spec library and the leaf valuesets. Likely needs be a profile. For now though, relatedArtifact.Type
+				String reference;
+				Bundle searchBundle;
+				CanonicalType resourceReference = ra.getResourceElement();
+				String currentlyPinnedVersion = Canonicals.getVersion(resourceReference);
+				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
+					// For composition references, if a version is not specified in the reference then the "draft" version
+					// of the referenced artifact should be used.
+					if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
+						reference = resourceReference.getValueAsString().concat("|").concat(version);
+						searchBundle = searchResourceByUrlAndStatus(resourceReference.getValueAsString(), "draft", fhirDal);
+					} else {
+						reference = resourceReference.getValueAsString();
+						searchBundle = searchResourceByUrl(reference, fhirDal);
+					}
+
+					resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
+					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = processSearchBundle(searchBundle);
+					resolvedRelatedArtifacts.addAll(internalRelease(searchResultAdapter, version, latestFromTxServer, fhirDal));
+				} else if (ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON) {
+					// For dependencies, if a specific version is referenced, use it,
+					// else if the check tx server is checked then lookup latest version from tx server,
+					//   else get latest version from our cache.
+					if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
+						if (latestFromTxServer) {
+							throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+							// TODO: Will need to query the configured (will need to know the configured TxServer from client) TxServer
+							// to get the latest version of the ValueSet, download it into the cache - will need to augment the same way
+							// as client.
+						} else {
+							// TODO: Lookup the latest from our cache.
+							// In this case, all we need to do is determine the version so that we can add the version-specific refernece to the list.
+							reference = resourceReference.getValueAsString();
+							searchBundle = searchResourceByUrl(reference, fhirDal);
+							// TODO: How to find latest?
+							// search with sort descending by version
+							// String latestVersion = latestResource.getVersion()
+							// reference = resourceReference.getValueAsString().concat("|").concat(latest);
+							// TODO: validate that status is "draft" and throw if not.
+						}
+					} else {
+						reference = resourceReference.getValueAsString();
+						searchBundle = searchResourceByUrl(reference, fhirDal);
+						KnowledgeArtifactAdapter<MetadataResource> referencedResource = processSearchBundle(searchBundle);
+						if (referencedResource.resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
+							throw new IllegalStateException(String.format("Resource '%s' is not in active status and cannot be reference in this release.", reference));
+						}
+					}
+
+					resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
+				}
+			}
+		}
+
+		return resolvedRelatedArtifacts;
+	}
+
+//	private List<RelatedArtifact> processReferencedResourceForRelease(FhirDal fhirDal, String version, boolean latestFromTxServer, Bundle referencedResourceBundle) {
+//		List<RelatedArtifact> resolvedRelatedArtifacts = new ArrayList<RelatedArtifact>();
+//
+//		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
+//			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
+//			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
+//				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
+//				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(referencedResource);
+//				resolvedRelatedArtifacts = internalRelease(adapter, version, latestFromTxServer, fhirDal);
+//			}
+//		}
+//
+//		return resolvedRelatedArtifacts;
+//	}
+
+	private KnowledgeArtifactAdapter<MetadataResource> processSearchBundle(Bundle searchBundle) {
+		KnowledgeArtifactAdapter<MetadataResource> adapter = null;
+
+		if (!searchBundle.getEntryFirstRep().isEmpty()) {
+			Bundle.BundleEntryComponent referencedResourceEntry = searchBundle.getEntry().get(0);
+			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
+				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
+				adapter = new KnowledgeArtifactAdapter<>(referencedResource);
+			}
+		}
+
+		return adapter;
+	}
+
+	private String getLatestVersionOfResource(CanonicalType canonicalUrl) {
+		return "Not Implemented";
+	}
+
+	/* $release */
 	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
@@ -149,13 +310,13 @@ public class KnowledgeArtifactProcessor {
 		// This bit should be its own method so that we can call it recursively:
 
 		if (ra.hasResource()) {
-			if(release) {
+			if (release) {
 				ra.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
 			}
 			String resourceData = ra.getResource();
-			if(Canonicals.getUrl(resourceData) != null) {
+			if (Canonicals.getUrl(resourceData) != null) {
 				List < IQueryParameterType > list = new ArrayList<>();
-				if(Canonicals.getVersion(resourceData) != null) {
+				if (Canonicals.getVersion(resourceData) != null) {
 					list.add(new UriParam(resourceData));
 				} else {
 					list.add(new UriParam(Canonicals.getUrl(resourceData)));
@@ -195,6 +356,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
+	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
 		if (existingResource == null) {
@@ -214,6 +376,7 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
+	/* $package */
 	public MetadataResource packageResource(FhirDal fhirDal, MetadataResource resource) {
 		if (resource.getId() == null || resource.getId().isEmpty()) {
 			throw new ResourceAccessException(String.format("The resource must have a valid id to be packaged."));
