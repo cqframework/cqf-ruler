@@ -91,7 +91,7 @@
 
 		<!-- CQL Support -->
 		<cqframework.version>2.5.0</cqframework.version>
-		<cql-engine.version>2.4.0</cql-engine.version>
+		<cql-engine.version>2.5.0</cql-engine.version>
 		<cql-evaluator.version>2.5.0</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
@@ -343,14 +343,14 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
+				<groupId>info.cqframework</groupId>
 				<artifactId>engine</artifactId>
 				<version>${cql-engine.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>engine.fhir</artifactId>
+				<groupId>info.cqframework</groupId>
+				<artifactId>engine-fhir</artifactId>
 				<version>${cql-engine.version}</version>
 			</dependency>
 
