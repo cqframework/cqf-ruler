@@ -1,18 +1,22 @@
 package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -80,11 +84,8 @@ public class KnowledgeArtifactProcessor {
 		and is otherwise only allowed to add artifactComment elements to the artifact
 		and to add or update an endorser.
 	*/
-	public MetadataResource approve(IdType idType, FhirDal fhirDal) {
-		return approve(idType, new Date(), fhirDal);
-	}
-
-	public MetadataResource approve(IdType idType, Date approvalDate, FhirDal fhirDal) {
+	public MetadataResource approve(IdType idType, Date approvalDate, Parameters artifactComment,
+											  ContactDetail endorser, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 		if (resource == null) {
 			throw new ResourceNotFoundException(idType);
@@ -101,12 +102,7 @@ public class KnowledgeArtifactProcessor {
 
 		// 3. Add artifactComment
 		// Extension: http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment
-		List<Extension> artifactComments = targetResourceAdapter.resource.getExtensionsByUrl(ARTIFACT_COMMENT_URL);
-//		if (artifactComments != null) {
-//			if (extensions == null) {
-//				extensions = new List<Extension>()
-//			}
-//		}
+		// ARTIFACT_COMMENT_URL
 
 		// 4. add/update endorser
 

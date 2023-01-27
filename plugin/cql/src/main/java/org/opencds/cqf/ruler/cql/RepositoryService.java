@@ -10,6 +10,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.ContactDetail;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -27,17 +28,35 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Autowired
 	private KnowledgeArtifactProcessor artifactProcessor;
 
+	/**
+	 * Applies an approval to an existing artifact, regardless of status.
+	 *
+	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param approvalDate        Optional Date parameter for indicating the date of approval
+	 *                            for an approval submission. If approvedDate is not
+	 *                         	provided, the current date will be used.
+	 * @param artifactComment     A Parameters argument represents a comment to be
+	 *                            included as part of the approval. The artifactComment
+	 *                            is a cqfm-artifactComment as defined here:
+	 *                            http://hl7.org/fhir/us/cqfmeasures/STU3/StructureDefinition-cqfm-artifactComment.html
+	 *                            A Parameters resource with a parameter for each element
+	 *                            of the artifactComment Extension definition is
+	 *                            used to represent the proper structure.
+	 * @param endorser            A ContactDetail resource that represents the
+	 *                            person that is providing the approval and comment.
+	 * @return An IBaseResource that is the targeted resource, updated with the approval
+	 */
 	@Operation(name = "$approve", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$approve", value = "Apply an approval to an existing artifact, regardless of status.")
 	public IBaseResource approveOperation(
 		RequestDetails requestDetails,
 		@IdParam IdType theId,
-		@OperationParam(name = "approvalDate", typeName = "date") IPrimitiveType<Date> approvalDate,
+		@OperationParam(name = "approvalDate", typeName = "date") Date approvalDate,
 		@OperationParam(name = "artifactComment", typeName = "Parameters") Parameters artifactComment,
 		@OperationParam(name = "endorser") ContactDetail endorser)
 	{
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (IBaseResource) this.artifactProcessor.approve(theId, fhirDal);
+		return (IBaseResource) this.artifactProcessor.approve(theId, approvalDate, artifactComment, endorser, fhirDal);
 	}
 
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
