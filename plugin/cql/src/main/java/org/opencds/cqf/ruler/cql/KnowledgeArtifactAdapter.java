@@ -1,6 +1,8 @@
 package org.opencds.cqf.ruler.cql;
 
+import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -16,10 +18,14 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		this.resource = resource;
 	}
 
-	public java.util.List<RelatedArtifact> getRelatedArtifact() {
+	public List<RelatedArtifact> getRelatedArtifact() {
 		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+				return ((ActivityDefinition) resource).getRelatedArtifact();
 			case "Library":
 				return ((Library) resource).getRelatedArtifact();
+			case "Measure":
+				return ((Measure) resource).getRelatedArtifact();
 			case "PlanDefinition":
 				return ((PlanDefinition) resource).getRelatedArtifact();
 			default:
@@ -30,65 +36,106 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	public MetadataResource setRelatedArtifact(List<RelatedArtifact> theRelatedArtifact) {
 		System.out.println("getName: " + resource.getName());
 		switch (resource.getName()) {
+			case "ActivityDefinition":
+				((ActivityDefinition) resource).setRelatedArtifact(theRelatedArtifact);
 			case "Library":
 				((Library) resource).setRelatedArtifact(theRelatedArtifact);
+			case "Measure":
+				((Measure) resource).setRelatedArtifact(theRelatedArtifact);
 			case "PlanDefinition":
 				((PlanDefinition) resource).setRelatedArtifact(theRelatedArtifact);
 		}
 		return resource;
 	}
 
+	public List<RelatedArtifact> getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType relatedArtifactType) {
+		List<RelatedArtifact> relatedArtifacts = getRelatedArtifact().stream()
+			.filter(ra -> ra.getType() == relatedArtifactType)
+			.collect(Collectors.toList());
+
+		return relatedArtifacts;
+	}
+
 	public List<RelatedArtifact> getComponents() {
 		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
 			case "Library":
-				return getComponentsOfLibrary((Library)resource);
+			case "Measure":
 			case "PlanDefinition":
-				return getComponentsOfPlanDefinition((PlanDefinition)resource);
+				return getComponentsOfKnowledgeArtifact();
 			default :
 				return new ArrayList<>();
 		}
 	}
 
-	private List<RelatedArtifact> getComponentsOfLibrary(Library library) {
-		List<RelatedArtifact> components = library.getRelatedArtifact().stream()
-			.filter(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF)
-			.collect(Collectors.toList());
-
-		return components;
-	}
-
-	private List<RelatedArtifact> getComponentsOfPlanDefinition(PlanDefinition planDefinition) {
-		List<RelatedArtifact> components = planDefinition.getRelatedArtifact().stream()
-			.filter(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF)
-			.collect(Collectors.toList());
-
+	private List<RelatedArtifact> getComponentsOfKnowledgeArtifact() {
+		List<RelatedArtifact> components = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.COMPOSEDOF);
 		return components;
 	}
 
 	public List<RelatedArtifact> getDependencies() {
 		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+				return getDependenciesOfActivityDefinition();
 			case "Library":
-				return getDependenciesOfLibrary((Library)resource);
+				return getDependenciesOfKnowledgeArtifact();
+			case "Measure":
+				return getDependenciesOfMeasure();
 			case "PlanDefinition":
-				return getDependenciesOfPlanDefinition((PlanDefinition)resource);
+				return getDependenciesOfPlanDefinition();
 			default :
 				return new ArrayList<>();
 		}
 	}
 
-	private List<RelatedArtifact> getDependenciesOfLibrary(Library library) {
-		List<RelatedArtifact> dependencies = library.getRelatedArtifact().stream()
-			.filter(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)
-			.collect(Collectors.toList());
+	private List<RelatedArtifact> getDependenciesOfKnowledgeArtifact() {
+		List<RelatedArtifact> components = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		return components;
+	}
+
+	private List<RelatedArtifact> getDependenciesOfActivityDefinition() {
+		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+
+		ActivityDefinition activityDefinition = (ActivityDefinition)resource;
+		if (activityDefinition.hasLibrary()) {
+			for (var library : activityDefinition.getLibrary()) {
+				dependencies.add(
+					new RelatedArtifact()
+						.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
+						.setResource(library.getValueAsString())
+				);
+			}
+		}
 
 		return dependencies;
 	}
 
-	private List<RelatedArtifact> getDependenciesOfPlanDefinition(PlanDefinition planDefinition) {
-		List<RelatedArtifact> dependencies = planDefinition.getRelatedArtifact().stream()
-			.filter(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)
-			.collect(Collectors.toList());
+	private List<RelatedArtifact> getDependenciesOfLibrary() {
+		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		return dependencies;
+	}
 
+	private List<RelatedArtifact> getDependenciesOfMeasure() {
+		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+
+		Measure measure = (Measure)resource;
+		if (measure.hasLibrary()) {
+			for (var library : measure.getLibrary()) {
+				dependencies.add(
+					new RelatedArtifact()
+						.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
+						.setResource(library.getValueAsString())
+				);
+			}
+		}
+
+		return dependencies;
+	}
+
+	private List<RelatedArtifact> getDependenciesOfPlanDefinition() {
+		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+
+		PlanDefinition planDefinition = (PlanDefinition)resource;
 		if (planDefinition.hasLibrary()) {
 			for (var library : planDefinition.getLibrary()) {
 				dependencies.add(
@@ -104,8 +151,12 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 
 	public MetadataResource copy() {
 		switch (resource.getClass().getName()) {
+			case "ActivityDefinition":
+				return ((ActivityDefinition) resource).copy();
 			case "Library":
 				return ((Library) resource).copy();
+			case "Measure":
+				return ((Measure) resource).copy();
 			case "PlanDefinition":
 				return ((PlanDefinition) resource).copy();
 			default: return resource.copy();

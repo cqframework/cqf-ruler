@@ -85,12 +85,21 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void publishResource_test() {
-		Library specLibrary = (Library) readResource("ersd-active-library-example.json");
-		specLibrary.setName("NewSpecificationLibrary");
-		specLibrary.setId((String) null);
-
-		Parameters params = parameters(part("resource", (MetadataResource)specLibrary) );
+	void reviseOperation_active_test() {
+		Library library = (Library)loadResource("ersd-active-library-example.json");
+		library.setName("NewSpecificationLibrary");
+		String actualErrorMessage = "";
+		Parameters params = parameters(part("resource", library) );
+		try {
+			Library returnResource = getClient().operation()
+				.onServer()
+				.named("$revise")
+				.withParameters(params)
+				.returnResourceType(Library.class)
+				.execute();
+		} catch ( Exception e) {
+			actualErrorMessage = e.getMessage();
+		}
 
 		Library returnResource = getClient().operation()
 			.onServer()

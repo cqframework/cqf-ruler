@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.r4.model.Bundle;
@@ -70,10 +71,13 @@ public class KnowledgeArtifactProcessor {
 		return searchResultsBundle;
 	}
 
-	/* $draft */
+	/* draft */
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
 		//TODO: Needs to be transactional
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
+		if (resource == null) {
+			throw new ResourceNotFoundException(idType);
+		}
 
 		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
 		// performed here to facilitate that different treatment for the root artifact and those referenced by it.

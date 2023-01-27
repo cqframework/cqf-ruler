@@ -22,13 +22,14 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Autowired
 	private KnowledgeArtifactProcessor artifactProcessor;
 
-	 @Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
-	 @Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
-	 public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId)
-		 throws FHIRException {
-		 FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		 return (Library) this.artifactProcessor.draft(theId, fhirDal);
-	 }
+	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
+	public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId)
+		throws FHIRException {
+
+		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		return (Library) this.artifactProcessor.draft(theId, fhirDal);
+	}
 
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
@@ -37,6 +38,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 											  @OperationParam(name = "version") String version,
 											  @OperationParam(name = "latestFromTxServer") boolean latestFromTxServer)
 		throws FHIRException {
+
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.release2(theId, version, latestFromTxServer, fhirDal);
 	}
@@ -45,6 +47,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
+
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
 		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
 	}
