@@ -3,11 +3,14 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	public static final String ARTIFACT_COMMENT_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
 
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
 	private List<RelatedArtifact> finalRelatedArtifactListUpdated = new ArrayList<>();
@@ -68,6 +72,45 @@ public class KnowledgeArtifactProcessor {
 
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
+	}
+
+	/* approve */
+	/*
+		The operation sets the date and approvalDate elements of the approved artifact,
+		and is otherwise only allowed to add artifactComment elements to the artifact
+		and to add or update an endorser.
+	*/
+	public MetadataResource approve(IdType idType, FhirDal fhirDal) {
+		return approve(idType, new Date(), fhirDal);
+	}
+
+	public MetadataResource approve(IdType idType, Date approvalDate, FhirDal fhirDal) {
+		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
+		if (resource == null) {
+			throw new ResourceNotFoundException(idType);
+		}
+
+		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<>(resource);
+
+		// 1. Set approvalDate
+		targetResourceAdapter.setApprovalDate(approvalDate);
+
+		// 2. Set date
+		DateTimeType theDate = new DateTimeType(new Date());
+		resource.setDateElement(theDate);
+
+		// 3. Add artifactComment
+		// Extension: http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment
+		List<Extension> artifactComments = targetResourceAdapter.resource.getExtensionsByUrl(ARTIFACT_COMMENT_URL);
+//		if (artifactComments != null) {
+//			if (extensions == null) {
+//				extensions = new List<Extension>()
+//			}
+//		}
+
+		// 4. add/update endorser
+
+		return resource;
 	}
 
 	/* $draft */

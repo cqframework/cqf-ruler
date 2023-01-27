@@ -1,11 +1,14 @@
 package org.opencds.cqf.ruler.cql;
 
+import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,35 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 
 	public KnowledgeArtifactAdapter(T resource) {
 		this.resource = resource;
+	}
+
+	public Date getApprovalDate() {
+		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+				return ((ActivityDefinition) resource).getApprovalDate();
+			case "Library":
+				return ((Library) resource).getApprovalDate();
+			case "Measure":
+				return ((Measure) resource).getApprovalDate();
+			case "PlanDefinition":
+				return ((PlanDefinition) resource).getApprovalDate();
+			default: return null;
+		}
+	}
+
+	public MetadataResource setApprovalDate(Date theApprovalDate) {
+		System.out.println("getName: " + resource.getName());
+		switch (resource.getName()) {
+			case "ActivityDefinition":
+				((ActivityDefinition) resource).setApprovalDate(theApprovalDate);
+			case "Library":
+				((Library) resource).setApprovalDate(theApprovalDate);
+			case "Measure":
+				((Measure) resource).setApprovalDate(theApprovalDate);
+			case "PlanDefinition":
+				((PlanDefinition) resource).setApprovalDate(theApprovalDate);
+		}
+		return resource;
 	}
 
 	public java.util.List<RelatedArtifact> getRelatedArtifact() {
