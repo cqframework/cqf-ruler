@@ -13,7 +13,6 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -186,83 +185,73 @@ public class KnowledgeArtifactProcessor {
 
 		fhirDal.update(artifactAdapter.resource);
 
-		for (RelatedArtifact ra : artifactAdapter.getRelatedArtifact()) {
-			if (ra.hasResource()
-					&& (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF
-						|| ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
-
+		for (RelatedArtifact ra : artifactAdapter.getComponents()) {
+			if (ra.hasResource()) {
 				// TODO: This is likely the wrong characteristic to use for distinguishing between those things that are
 				// part of the spec library and the leaf valuesets. Likely needs be a profile. For now though, relatedArtifact.Type
 				String reference;
 				Bundle searchBundle;
 				CanonicalType resourceReference = ra.getResourceElement();
 				String currentlyPinnedVersion = Canonicals.getVersion(resourceReference);
-				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
-					// For composition references, if a version is not specified in the reference then the "draft" version
-					// of the referenced artifact should be used.
-					if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
-						reference = resourceReference.getValueAsString().concat("|").concat(version);
-						searchBundle = searchResourceByUrlAndStatus(resourceReference.getValueAsString(), "draft", fhirDal);
-					} else {
-						reference = resourceReference.getValueAsString();
-						searchBundle = searchResourceByUrl(reference, fhirDal);
-					}
 
-					resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
-					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = processSearchBundle(searchBundle);
-					resolvedRelatedArtifacts.addAll(internalRelease(searchResultAdapter, version, latestFromTxServer, fhirDal));
-				} else if (ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON) {
-					// For dependencies, if a specific version is referenced, use it,
-					// else if the check tx server is checked then lookup latest version from tx server,
-					//   else get latest version from our cache.
-					if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
-						if (latestFromTxServer) {
-							throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
-							// TODO: Will need to query the configured (will need to know the configured TxServer from client) TxServer
-							// to get the latest version of the ValueSet, download it into the cache - will need to augment the same way
-							// as client.
-						} else {
-							// TODO: Lookup the latest from our cache.
-							// In this case, all we need to do is determine the version so that we can add the version-specific refernece to the list.
-							reference = resourceReference.getValueAsString();
-							searchBundle = searchResourceByUrl(reference, fhirDal);
-							// TODO: How to find latest?
-							// search with sort descending by version
-							// String latestVersion = latestResource.getVersion()
-							// reference = resourceReference.getValueAsString().concat("|").concat(latest);
-							// TODO: validate that status is "draft" and throw if not.
-						}
-					} else {
-						reference = resourceReference.getValueAsString();
-						searchBundle = searchResourceByUrl(reference, fhirDal);
-						KnowledgeArtifactAdapter<MetadataResource> referencedResource = processSearchBundle(searchBundle);
-						if (referencedResource.resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-							throw new IllegalStateException(String.format("Resource '%s' is not in active status and cannot be reference in this release.", reference));
-						}
-					}
-
-					resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
+				// For composition references, if a version is not specified in the reference then the "draft" version
+				// of the referenced artifact should be used.
+				if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
+					reference = resourceReference.getValueAsString().concat("|").concat(version);
+					searchBundle = searchResourceByUrlAndStatus(resourceReference.getValueAsString(), "draft", fhirDal);
+				} else {
+					reference = resourceReference.getValueAsString();
+					searchBundle = searchResourceByUrl(reference, fhirDal);
 				}
+
+				resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
+				KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = processSearchBundle(searchBundle);
+				resolvedRelatedArtifacts.addAll(internalRelease(searchResultAdapter, version, latestFromTxServer, fhirDal));
+			}
+		}
+
+		for (RelatedArtifact ra : artifactAdapter.getDependencies()) {
+			if (ra.hasResource()) {
+				String reference;
+				Bundle searchBundle;
+				CanonicalType resourceReference = ra.getResourceElement();
+				String currentlyPinnedVersion = Canonicals.getVersion(resourceReference);
+
+				// For dependencies, if a specific version is referenced, use it,
+				// else if the check tx server is checked then lookup latest version from tx server,
+				//   else get latest version from our cache.
+				if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
+					if (latestFromTxServer) {
+						throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+						// TODO: Will need to query the configured (will need to know the configured TxServer from client) TxServer
+						// to get the latest version of the ValueSet, download it into the cache - will need to augment the same way
+						// as client.
+					} else {
+						// TODO: Lookup the latest from our cache.
+						// In this case, all we need to do is determine the version so that we can add the version-specific refernece to the list.
+						reference = resourceReference.getValueAsString();
+						searchBundle = searchResourceByUrl(reference, fhirDal);
+						// TODO: How to find latest?
+						// search with sort descending by version
+						// String latestVersion = latestResource.getVersion()
+						// reference = resourceReference.getValueAsString().concat("|").concat(latest);
+						// TODO: validate that status is "draft" and throw if not.
+					}
+				} else {
+					reference = resourceReference.getValueAsString();
+					searchBundle = searchResourceByUrl(reference, fhirDal);
+					KnowledgeArtifactAdapter<MetadataResource> referencedResource = processSearchBundle(searchBundle);
+					if (referencedResource.resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
+						throw new IllegalStateException(String.format("Resource '%s' is not in active status and cannot be reference in this release.", reference));
+					}
+				}
+
+				resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
 			}
 		}
 
 		return resolvedRelatedArtifacts;
 	}
-
-//	private List<RelatedArtifact> processReferencedResourceForRelease(FhirDal fhirDal, String version, boolean latestFromTxServer, Bundle referencedResourceBundle) {
-//		List<RelatedArtifact> resolvedRelatedArtifacts = new ArrayList<RelatedArtifact>();
-//
-//		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
-//			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
-//			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
-//				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
-//				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(referencedResource);
-//				resolvedRelatedArtifacts = internalRelease(adapter, version, latestFromTxServer, fhirDal);
-//			}
-//		}
-//
-//		return resolvedRelatedArtifacts;
-//	}
 
 	private KnowledgeArtifactAdapter<MetadataResource> processSearchBundle(Bundle searchBundle) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = null;
