@@ -41,7 +41,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.release2(theId, version, latestFromTxServer, fhirDal);
+		return (Library) this.artifactProcessor.release2(theId, version,
+			latestFromTxServer== null || latestFromTxServer.booleanValue(), fhirDal);
 	}
 
 //	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
