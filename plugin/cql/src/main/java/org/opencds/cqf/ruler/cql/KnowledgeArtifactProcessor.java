@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Enumerations;
@@ -152,8 +153,10 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $release2 */
-	public MetadataResource release2(IdType idType, String version, boolean latestFromTxServer, FhirDal fhirDal) {
+	public MetadataResource release2(IdType idType, String version, BooleanType latestFromTxServer, FhirDal fhirDal) {
 		// TODO: This needs to be transactional!
+		version = "1234";
+		//latestFromTxServer = true;
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
 		if (rootArtifact == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
@@ -181,7 +184,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	private List<RelatedArtifact> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter,
-																 String version, boolean latestFromTxServer, FhirDal fhirDal) {
+																 String version, BooleanType latestFromTxServer, FhirDal fhirDal) {
 		List<RelatedArtifact> resolvedRelatedArtifacts = new ArrayList<RelatedArtifact>();
 
 		artifactAdapter.resource.setDate(new Date());
@@ -225,7 +228,8 @@ public class KnowledgeArtifactProcessor {
 				// else if the check tx server is checked then lookup latest version from tx server,
 				//   else get latest version from our cache.
 				if (currentlyPinnedVersion == null || currentlyPinnedVersion.isEmpty()) {
-					if (latestFromTxServer) {
+					//if (latestFromTxServer.equals("true")) {
+					if(latestFromTxServer.booleanValue()) {
 						throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
 						// TODO: Will need to query the configured (will need to know the configured TxServer from client) TxServer
 						// to get the latest version of the ValueSet, download it into the cache - will need to augment the same way
@@ -276,7 +280,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $release */
-	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
+	public MetadataResource releaseVersion(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 

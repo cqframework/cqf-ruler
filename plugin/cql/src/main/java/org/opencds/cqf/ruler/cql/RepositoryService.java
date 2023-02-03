@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -36,12 +37,20 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Library releaseOperation(RequestDetails requestDetails,
 											  @IdParam IdType theId,
 											  @OperationParam(name = "version") String version,
-											  @OperationParam(name = "latestFromTxServer") boolean latestFromTxServer)
+											  @OperationParam(name = "latestFromTxServer") BooleanType latestFromTxServer)
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.release2(theId, version, latestFromTxServer, fhirDal);
 	}
+
+//	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
+//	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
+//	public Library releaseOperation(RequestDetails requestDetails, @IdParam IdType theId)
+//		throws FHIRException {
+//		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+//		return (Library) this.artifactProcessor.releaseVersion(theId, fhirDal);
+//	}
 
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
