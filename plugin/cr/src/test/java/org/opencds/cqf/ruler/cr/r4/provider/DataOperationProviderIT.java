@@ -1,11 +1,5 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
-
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.IdType;
@@ -15,6 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
 		CrConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
@@ -140,6 +146,54 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							query);
 				}
 					break;
+			}
+		}
+	}
+
+	@Test
+	void testR4LibraryFhirQueryPatternWithDateFilter() throws ParseException {
+		loadTransaction("DataReqLibraryDateFilterQueryTransactionBundleR4.json");
+
+		Parameters params = parameters(stringPart("target", "dummy"));
+
+		Library returnLibrary = getClient().operation()
+			.onInstance(new IdType("Library", "DateFilterQuery"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary);
+
+		for (DataRequirement dr : returnLibrary.getDataRequirement()) {
+			switch (dr.getType()) {
+				case "Patient": {
+					String query = dr.getExtensionByUrl(
+							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
+						.getValueAsPrimitive().getValueAsString();
+					assertEquals("Patient?_id={{context.patientId}}", query);
+				}
+				break;
+
+				case "Condition": {
+					String query = dr.getExtensionByUrl(
+							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
+						.getValueAsPrimitive().getValueAsString();
+
+					LocalDateTime dt = LocalDateTime.now();
+					ZonedDateTime currentDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
+					ZonedDateTime expectedLowDate = currentDate.minusDays(90);
+					ZonedDateTime expectedHighDate = currentDate.minusNanos(1000000);
+
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+					String lowDateString = expectedLowDate.format(formatter);
+					String highDataString = expectedHighDate.format(formatter);
+
+					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDataString);
+
+					assertEquals(expectedQuery, query);
+				}
+				break;
 			}
 		}
 	}
