@@ -1,23 +1,23 @@
 package org.opencds.cqf.ruler.cql;
 
+import java.util.Date;
+
+import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.ContactDetail;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.MetadataResource;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.cqframework.fhir.api.FhirDal;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.ContactDetail;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.MetadataResource;
-import org.hl7.fhir.r4.model.Parameters;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
 
@@ -47,15 +47,19 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 */
 	@Operation(name = "$approve", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$approve", value = "Apply an approval to an existing artifact, regardless of status.")
-	public IBaseResource approveOperation(
-		RequestDetails requestDetails,
-		@IdParam IdType theId,
-		@OperationParam(name = "approvalDate", typeName = "date") Date approvalDate,
-		@OperationParam(name = "artifactComment", typeName = "Parameters") Parameters artifactComment,
-		@OperationParam(name = "endorser") ContactDetail endorser)
-	{
+	public MetadataResource approveOperation(
+			RequestDetails requestDetails,
+			@IdParam IdType theId,
+			@OperationParam(name = "approvalDate") IPrimitiveType<Date> approvalDate,
+			@OperationParam(name = "artifactCommentType") String artifactCommentType,
+			@OperationParam(name = "artifactCommentText") String artifactCommentText,
+			@OperationParam(name = "artifactCommentTarget") String artifactCommentTarget,
+			@OperationParam(name = "artifactCommentReference") String artifactCommentReference,
+			@OperationParam(name = "artifactCommentUser") String artifactCommentUser,
+			@OperationParam(name = "endorser") ContactDetail endorser) {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (IBaseResource) this.artifactProcessor.approve(theId, approvalDate, artifactComment, endorser, fhirDal);
+		return this.artifactProcessor.approve(theId, approvalDate.getValue(), artifactCommentType,
+				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser, endorser, fhirDal);
 	}
 
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
@@ -72,12 +76,12 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Library releaseOperation(RequestDetails requestDetails,
 											  @IdParam IdType theId,
 											  @OperationParam(name = "version") String version,
-											  @OperationParam(name = "latestFromTxServer") BooleanType latestFromTxServer)
+											  @OperationParam(name = "latestFromTxServer", typeName = "boolean") IPrimitiveType<Boolean> latestFromTxServer)
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.release2(theId, version,
-			latestFromTxServer== null || latestFromTxServer.booleanValue(), fhirDal);
+			latestFromTxServer== null || latestFromTxServer.getValue(), fhirDal);
 	}
 
 //	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)

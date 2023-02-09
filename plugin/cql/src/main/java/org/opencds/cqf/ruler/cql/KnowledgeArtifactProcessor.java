@@ -1,9 +1,13 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.model.api.IQueryParameterType;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.r4.model.Bundle;
@@ -13,21 +17,19 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
+import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 @Configurable
-// TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
+// TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
+// shorter cycle.
 public class KnowledgeArtifactProcessor {
 	public static final String ARTIFACT_COMMENT_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
 
@@ -71,18 +73,21 @@ public class KnowledgeArtifactProcessor {
 		statusList.add(new TokenParam(status));
 		searchParams.put("status", List.of(statusList));
 
-		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		Bundle searchResultsBundle = (Bundle) fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
 
 	/* approve */
 	/*
-		The operation sets the date and approvalDate elements of the approved artifact,
-		and is otherwise only allowed to add artifactComment elements to the artifact
-		and to add or update an endorser.
-	*/
-	public MetadataResource approve(IdType idType, Date approvalDate, Parameters artifactComment,
-											  ContactDetail endorser, FhirDal fhirDal) {
+	 * The operation sets the date and approvalDate elements of the approved
+	 * artifact,
+	 * and is otherwise only allowed to add artifactComment elements to the artifact
+	 * and to add or update an endorser.
+	 */
+	public MetadataResource approve(IdType idType, Date approvalDate, String artifactCommentType,
+			String artifactCommentText, String artifactCommentTarget, String artifactCommentReference,
+			String artifactCommentUser,
+			ContactDetail endorser, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 		if (resource == null) {
 			throw new ResourceNotFoundException(idType);
@@ -98,10 +103,18 @@ public class KnowledgeArtifactProcessor {
 		resource.setDateElement(theDate);
 
 		// 3. Add artifactComment
-		// Extension: http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment
-		// ARTIFACT_COMMENT_URL
+		ArtifactCommentExtension artifactCommentExtension = new ArtifactCommentExtension();
+		artifactCommentExtension.setTypeExtension(artifactCommentType);
+		artifactCommentExtension.setTextExtension(artifactCommentText);
+		artifactCommentExtension.setTargetExtension(artifactCommentTarget);
+		artifactCommentExtension.setReferenceExtension(artifactCommentReference);
+		artifactCommentExtension.setUserExtension(artifactCommentUser);
+		resource.addExtension(artifactCommentExtension);
 
 		// 4. add/update endorser
+		if (endorser != null) {
+			targetResourceAdapter.updateEndorser(endorser);
+		}
 
 		return resource;
 	}
