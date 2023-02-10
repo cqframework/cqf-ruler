@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -241,6 +242,10 @@ public class KnowledgeArtifactProcessor {
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 
+		Bundle packageBundle = new BundleBuilder<>(Bundle.class)
+			.withType(Bundle.BundleType.COLLECTION.toString())
+			.build();
+
 		finalRelatedArtifactList = adapter.getRelatedArtifact();
 		int listCounter=0;
 		int listSize = finalRelatedArtifactList.size();
@@ -255,10 +260,7 @@ public class KnowledgeArtifactProcessor {
 		adapter.setRelatedArtifact(finalRelatedArtifactList);
 
 		fhirDal.update(resource);
-
-		Bundle packageBundle = new BundleBuilder<>(Bundle.class)
-			.withType(Bundle.BundleType.COLLECTION.toString())
-			.build();
+		packageBundle.addEntry().setResource(resource);
 
 		return (IBaseBundle) packageBundle;
 	}
