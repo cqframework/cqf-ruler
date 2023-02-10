@@ -1,16 +1,21 @@
 package org.opencds.cqf.ruler.cql.r4;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Base;
 import org.hl7.fhir.r4.model.Configuration;
 import org.hl7.fhir.r4.model.EnumFactory;
 import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UriType;
 
+import ca.uhn.fhir.model.api.annotation.DatatypeDef;
+
+@DatatypeDef(name="ArtifactCommentExtension", isSpecialization = true, profileOf = Extension.class)
 public class ArtifactCommentExtension extends Extension {
 	public enum ArtifactCommentType {
 		/**
@@ -155,88 +160,133 @@ public class ArtifactCommentExtension extends Extension {
 		}
 	}
 
-	public ArtifactCommentExtension() {
+	private String typeUrl = "type";
+	private String textUrl = "text";
+	private String targetUrl = "target";
+	private String referenceUrl = "reference";
+	private String userUrl = "user";
+
+	public ArtifactCommentExtension(String type, String text, String target, String reference, String user) throws FHIRException {
 		super("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment");
+		setTypeExtension(type);
+		setTextExtension(text);
+		setTargetExtension(target);
+		setReferenceExtension(reference);
+		setUserExtension(user);
 	}
 
-	public ArtifactCommentExtension setTypeExtension(String type) {
+	public ArtifactCommentExtension setTypeExtension(String type) throws FHIRException {
 		if (type != null) {
-			this.typeExtension = new ArtifactCommentTypeExtension(type);
+			int index = findIndex(typeUrl, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactCommentTypeExtension(type));
+			} else {
+				this.addExtension(new ArtifactCommentTypeExtension(type));
+			}
 		}
 		return this;
 	}
 
-	public ArtifactCommentExtension setTextExtension(String type) {
-		if (type != null) {
-			this.textExtension = new ArtifactCommentTextExtension();
-			this.textExtension.setValue(new MarkdownType(type));
+	public ArtifactCommentExtension setTextExtension(String text) {
+		if (text != null) {
+			int index = findIndex(textUrl, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactCommentTextExtension(text));
+			} else {
+				this.addExtension(new ArtifactCommentTextExtension(text));
+			}
 		}
 		return this;
 	}
 
-	public ArtifactCommentExtension setTargetExtension(String type) {
-		if (type != null) {
-			this.targetExtension = new ArtifactCommentTargetExtension();
-			this.targetExtension.setValue(new UriType(type));
+	public ArtifactCommentExtension setTargetExtension(String target) {
+		if (target != null) {
+			int index = findIndex(targetUrl, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactCommentTargetExtension(target));
+			} else {
+				this.addExtension(new ArtifactCommentTargetExtension(target));
+			}
 		}
 		return this;
 	}
 
-	public ArtifactCommentExtension setReferenceExtension(String type) {
-		if (type != null) {
-			this.referenceExtension = new ArtifactCommentReferenceExtension();
-			this.referenceExtension.setValue(new UriType(type));
+	public ArtifactCommentExtension setReferenceExtension(String reference) {
+		if (reference != null) {
+			int index = findIndex(referenceUrl, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactCommentReferenceExtension(reference));
+			} else {
+				this.addExtension(new ArtifactCommentReferenceExtension(reference));
+			}
 		}
 		return this;
 	}
 
-	public ArtifactCommentExtension setUserExtension(String type) {
-		if (type != null) {
-			this.userExtension = new ArtifactCommentUserExtension();
-			this.userExtension.setValue(new StringType(type));
+	public ArtifactCommentExtension setUserExtension(String user) {
+		if (user != null) {
+			int index = findIndex(userUrl, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactCommentUserExtension(user));
+			} else {
+				this.addExtension(new ArtifactCommentUserExtension(user));
+			}
 		}
 		return this;
 	}
 
-	protected ArtifactCommentTypeExtension typeExtension;
-	protected ArtifactCommentTextExtension textExtension;
-	protected ArtifactCommentTargetExtension targetExtension;
-	protected ArtifactCommentReferenceExtension referenceExtension;
-	protected ArtifactCommentUserExtension userExtension;
+	private int findIndex(String url, List<Extension> extensions){
+		Optional<Extension> existingExtension =  extensions.stream()
+			.filter(e -> e.getUrl().equals(url)).findAny();
+			if(existingExtension.isPresent()){
+				return extensions.indexOf(existingExtension.get());
+			} else {
+				return -1;
+			}
+	}
 
+	@DatatypeDef(name="ArtifactCommentTypeExtension", isSpecialization = true, profileOf = Extension.class)
+	
 	private class ArtifactCommentTypeExtension extends Extension {
 		Enumeration<ArtifactCommentType> typeCode = new Enumeration<ArtifactCommentType>(
 				new ArtifactCommentTypeEnumFactory());
 
 		public ArtifactCommentTypeExtension(String type) throws FHIRException {
-			super("type");
+			super(typeUrl);
 			typeCode.setValue(ArtifactCommentType.fromCode(type));
 			this.setValue(typeCode);
 		}
 
 	}
 
+	@DatatypeDef(name="ArtifactCommentTextExtension", isSpecialization = true, profileOf = Extension.class)
+
 	private class ArtifactCommentTextExtension extends Extension {
-		public ArtifactCommentTextExtension() {
-			super("text");
+		public ArtifactCommentTextExtension(String text) {
+			super(textUrl, new StringType(text));
 		}
 	}
+
+	@DatatypeDef(name="ArtifactCommentTargetExtension", isSpecialization = true, profileOf = Extension.class)
 
 	private class ArtifactCommentTargetExtension extends Extension {
-		public ArtifactCommentTargetExtension() {
-			super("target");
+		public ArtifactCommentTargetExtension(String target) {
+			super(targetUrl, new StringType(target));
 		}
 	}
+
+	@DatatypeDef(name="ArtifactCommentReferenceExtension", isSpecialization = true, profileOf = Extension.class)
 
 	private class ArtifactCommentReferenceExtension extends Extension {
-		public ArtifactCommentReferenceExtension() {
-			super("reference");
+		public ArtifactCommentReferenceExtension(String reference) {
+			super(referenceUrl, new UriType(reference));
 		}
 	}
+	@DatatypeDef(name="ArtifactCommentUserExtension", isSpecialization = true, profileOf = Extension.class)
 
 	private class ArtifactCommentUserExtension extends Extension {
-		public ArtifactCommentUserExtension() {
-			super("user");
+		public ArtifactCommentUserExtension(String user) {
+			super(userUrl, new StringType(user));
 		}
 	}
 }

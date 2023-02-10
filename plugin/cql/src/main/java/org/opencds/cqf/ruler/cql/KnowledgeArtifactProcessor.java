@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.ContactDetail;
@@ -20,17 +21,22 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
 // shorter cycle.
 public class KnowledgeArtifactProcessor {
+	Logger ourLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
+
 	public static final String ARTIFACT_COMMENT_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
 
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
@@ -93,7 +99,7 @@ public class KnowledgeArtifactProcessor {
 			throw new ResourceNotFoundException(idType);
 		}
 
-		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<>(resource);
+		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 
 		// 1. Set approvalDate
 		targetResourceAdapter.setApprovalDate(approvalDate);
@@ -101,21 +107,22 @@ public class KnowledgeArtifactProcessor {
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(new Date());
 		resource.setDateElement(theDate);
-
+		
 		// 3. Add artifactComment
-		ArtifactCommentExtension artifactCommentExtension = new ArtifactCommentExtension();
-		artifactCommentExtension.setTypeExtension(artifactCommentType);
-		artifactCommentExtension.setTextExtension(artifactCommentText);
-		artifactCommentExtension.setTargetExtension(artifactCommentTarget);
-		artifactCommentExtension.setReferenceExtension(artifactCommentReference);
-		artifactCommentExtension.setUserExtension(artifactCommentUser);
-		resource.addExtension(artifactCommentExtension);
-
+		// TODO: check for existing matching comment?
+		try {
+			ArtifactCommentExtension artifactCommentExtension = new ArtifactCommentExtension(artifactCommentType,artifactCommentText,artifactCommentTarget,artifactCommentReference,artifactCommentUser);
+			if(!artifactCommentExtension.getExtension().isEmpty()){
+				resource.addExtension(artifactCommentExtension);
+			}
+		} catch (FHIRException e) {
+			throw new UnprocessableEntityException(e.getMessage());
+		}
 		// 4. add/update endorser
 		if (endorser != null) {
 			targetResourceAdapter.updateEndorser(endorser);
 		}
-
+		fhirDal.update(resource);
 		return resource;
 	}
 

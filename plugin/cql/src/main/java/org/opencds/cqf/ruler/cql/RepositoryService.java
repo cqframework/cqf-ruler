@@ -18,6 +18,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
 
@@ -50,14 +51,17 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public MetadataResource approveOperation(
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
-			@OperationParam(name = "approvalDate") IPrimitiveType<Date> approvalDate,
+			@OperationParam(name = "approvalDate", typeName = "Date") IPrimitiveType<Date> approvalDate,
 			@OperationParam(name = "artifactCommentType") String artifactCommentType,
 			@OperationParam(name = "artifactCommentText") String artifactCommentText,
 			@OperationParam(name = "artifactCommentTarget") String artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") String artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") String artifactCommentUser,
-			@OperationParam(name = "endorser") ContactDetail endorser) {
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+			@OperationParam(name = "endorser") ContactDetail endorser) throws FHIRException {
+				if(approvalDate == null){
+					throw new UnprocessableEntityException("The approvalDate parameter is required for this operation");
+				}
+				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return this.artifactProcessor.approve(theId, approvalDate.getValue(), artifactCommentType,
 				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser, endorser, fhirDal);
 	}

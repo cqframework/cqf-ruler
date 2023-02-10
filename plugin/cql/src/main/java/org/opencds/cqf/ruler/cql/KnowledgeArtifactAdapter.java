@@ -36,16 +36,19 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 
 	public MetadataResource setApprovalDate(Date theApprovalDate) {
-		System.out.println("getName: " + resource.getName());
-		switch (resource.getName()) {
+		switch (resource.getClass().getSimpleName()) {
 			case "ActivityDefinition":
 				((ActivityDefinition) resource).setApprovalDate(theApprovalDate);
+				break;
 			case "Library":
 				((Library) resource).setApprovalDate(theApprovalDate);
+				break;
 			case "Measure":
 				((Measure) resource).setApprovalDate(theApprovalDate);
+				break;
 			case "PlanDefinition":
 				((PlanDefinition) resource).setApprovalDate(theApprovalDate);
+				break;
 		}
 		return resource;
 	}
@@ -62,8 +65,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 
 	public MetadataResource setRelatedArtifact(List<RelatedArtifact> theRelatedArtifact) {
-		System.out.println("getName: " + resource.getName());
-		switch (resource.getName()) {
+		switch (resource.getClass().getSimpleName()) {
 			case "Library":
 				((Library) resource).setRelatedArtifact(theRelatedArtifact);
 			case "PlanDefinition":
@@ -167,7 +169,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		List<ContactDetail> existingEndorsers = getEndorser();
 		if (existingEndorsers != null) {
 			Optional<ContactDetail> existingEndorser = existingEndorsers.stream()
-					.filter(e -> e.getName().equals(endorser.getName())).findFirst();
+					.filter(e -> e.getName().equals(endorser.getName())).findAny();
 			if (existingEndorser.isPresent()) {
 				int index = existingEndorsers.indexOf(existingEndorser.get());
 				existingEndorsers.set(index, endorser);
@@ -178,7 +180,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 
 	public MetadataResource copy() {
-		switch (resource.getClass().getName()) {
+		switch (resource.getClass().getSimpleName()) {
 			case "Library":
 				return ((Library) resource).copy();
 			case "PlanDefinition":

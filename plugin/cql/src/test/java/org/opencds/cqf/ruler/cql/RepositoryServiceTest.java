@@ -191,5 +191,22 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		assertNotNull(returnBundle);
 	}
+
+	@Test
+	void approveOperation_no_date_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		String actualMessage = "";
+		try {
+			getClient().operation()
+				.onInstance("Library/SpecificationLibrary")
+				.named("$approve")
+				.withNoParameters(Parameters.class)
+				.returnResourceType(MetadataResource.class)
+				.execute();
+		} catch ( Exception e) {
+			actualMessage = e.getMessage();
+			assertTrue(actualMessage.contains("approvalDate parameter is required"));
+		}
+	}
 }
 
