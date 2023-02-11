@@ -34,8 +34,6 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 // shorter cycle.
 public class KnowledgeArtifactProcessor {
 
-	public static final String ARTIFACT_COMMENT_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
-
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
 	private List<RelatedArtifact> finalRelatedArtifactListUpdated = new ArrayList<>();
 	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();

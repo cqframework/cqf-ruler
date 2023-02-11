@@ -32,19 +32,16 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.core.annotation.Order;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { RepositoryServiceTest.class, CqlConfig.class },
+	classes = {RepositoryServiceTest.class, CqlConfig.class},
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 //@TestMethodOrder(MethodOrderer.MethodName.class)
 class RepositoryServiceTest extends RestIntegrationTest {
-	Logger ourLog = LoggerFactory.getLogger(RepositoryServiceTest.class);
 
 	@Test
 	void draftOperation_active_test() {
