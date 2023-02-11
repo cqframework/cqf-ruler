@@ -21,8 +21,6 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -35,7 +33,6 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
 // shorter cycle.
 public class KnowledgeArtifactProcessor {
-	Logger ourLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 
 	public static final String ARTIFACT_COMMENT_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
 
