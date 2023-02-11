@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cql.r4;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Base;
@@ -86,7 +87,7 @@ public class ArtifactCommentExtension extends Extension {
 				case DOCUMENTATION:
 					return "The comment is providing additional documentation from an authoring perspective.";
 				case REVIEW:
-					return "The comment is providing usage guidance to an artifact consumer.";
+					return "The comment is providing feedback from a reviewer and requires resolution.";
 				case GUIDANCE:
 					return "The comment is providing usage guidance to an artifact consumer.";
 				case NULL:
@@ -159,15 +160,16 @@ public class ArtifactCommentExtension extends Extension {
 			return code.getSystem();
 		}
 	}
-
-	private String typeUrl = "type";
-	private String textUrl = "text";
-	private String targetUrl = "target";
-	private String referenceUrl = "reference";
-	private String userUrl = "user";
+	
+	public static final String ARTIFACT_COMMENT_EXTENSION_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
+	public static final String TYPE = "type";
+	public static final String TEXT = "text";
+	public static final String TARGET = "target";
+	public static final String REFERENCE = "reference";
+	public static final String USER = "user";
 
 	public ArtifactCommentExtension(String type, String text, String target, String reference, String user) throws FHIRException {
-		super("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment");
+		super(ARTIFACT_COMMENT_EXTENSION_URL);
 		setTypeExtension(type);
 		setTextExtension(text);
 		setTargetExtension(target);
@@ -177,7 +179,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	public ArtifactCommentExtension setTypeExtension(String type) throws FHIRException {
 		if (type != null) {
-			int index = findIndex(typeUrl, this.getExtension());
+			int index = findIndex(TYPE, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactCommentTypeExtension(type));
 			} else {
@@ -189,7 +191,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	public ArtifactCommentExtension setTextExtension(String text) {
 		if (text != null) {
-			int index = findIndex(textUrl, this.getExtension());
+			int index = findIndex(TEXT, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactCommentTextExtension(text));
 			} else {
@@ -201,7 +203,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	public ArtifactCommentExtension setTargetExtension(String target) {
 		if (target != null) {
-			int index = findIndex(targetUrl, this.getExtension());
+			int index = findIndex(TARGET, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactCommentTargetExtension(target));
 			} else {
@@ -213,7 +215,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	public ArtifactCommentExtension setReferenceExtension(String reference) {
 		if (reference != null) {
-			int index = findIndex(referenceUrl, this.getExtension());
+			int index = findIndex(REFERENCE, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactCommentReferenceExtension(reference));
 			} else {
@@ -225,7 +227,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	public ArtifactCommentExtension setUserExtension(String user) {
 		if (user != null) {
-			int index = findIndex(userUrl, this.getExtension());
+			int index = findIndex(USER, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactCommentUserExtension(user));
 			} else {
@@ -252,7 +254,7 @@ public class ArtifactCommentExtension extends Extension {
 				new ArtifactCommentTypeEnumFactory());
 
 		public ArtifactCommentTypeExtension(String type) throws FHIRException {
-			super(typeUrl);
+			super(TYPE);
 			typeCode.setValue(ArtifactCommentType.fromCode(type));
 			this.setValue(typeCode);
 		}
@@ -263,7 +265,7 @@ public class ArtifactCommentExtension extends Extension {
 
 	private class ArtifactCommentTextExtension extends Extension {
 		public ArtifactCommentTextExtension(String text) {
-			super(textUrl, new StringType(text));
+			super(TEXT, new StringType(text));
 		}
 	}
 
@@ -271,22 +273,28 @@ public class ArtifactCommentExtension extends Extension {
 
 	private class ArtifactCommentTargetExtension extends Extension {
 		public ArtifactCommentTargetExtension(String target) {
-			super(targetUrl, new StringType(target));
+			super(TARGET, new StringType(target));
 		}
 	}
 
 	@DatatypeDef(name="ArtifactCommentReferenceExtension", isSpecialization = true, profileOf = Extension.class)
 
 	private class ArtifactCommentReferenceExtension extends Extension {
-		public ArtifactCommentReferenceExtension(String reference) {
-			super(referenceUrl, new UriType(reference));
+		public ArtifactCommentReferenceExtension(String reference) throws FHIRException {
+			super(REFERENCE);
+			// https://hl7.org/fhir/R4/datatypes.html#uri
+			Pattern uriPattern = Pattern.compile("\\S*");
+			if(!uriPattern.matcher(reference).matches()){
+				throw new FHIRException("artifactCommentReference is not a valid URI type");
+			}
+			this.setValue(new UriType(reference));
 		}
 	}
 	@DatatypeDef(name="ArtifactCommentUserExtension", isSpecialization = true, profileOf = Extension.class)
 
 	private class ArtifactCommentUserExtension extends Extension {
 		public ArtifactCommentUserExtension(String user) {
-			super(userUrl, new StringType(user));
+			super(USER, new StringType(user));
 		}
 	}
 }

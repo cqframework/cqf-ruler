@@ -100,12 +100,16 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-
+		Date currentDate = new Date();
 		// 1. Set approvalDate
-		targetResourceAdapter.setApprovalDate(approvalDate);
+		if(approvalDate == null){
+			targetResourceAdapter.setApprovalDate(currentDate);
+		} else {
+			targetResourceAdapter.setApprovalDate(approvalDate);
+		}
 
 		// 2. Set date
-		DateTimeType theDate = new DateTimeType(new Date());
+		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
 		
 		// 3. Add artifactComment

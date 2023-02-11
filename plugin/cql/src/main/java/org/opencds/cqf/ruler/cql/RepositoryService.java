@@ -32,12 +32,17 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * Applies an approval to an existing artifact, regardless of status.
 	 *
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
 	 * @param approvalDate        Optional Date parameter for indicating the date of approval
-	 *                            for an approval submission. If approvedDate is not
-	 *                         	provided, the current date will be used.
-	 * @param artifactComment     A Parameters argument represents a comment to be
-	 *                            included as part of the approval. The artifactComment
-	 *                            is a cqfm-artifactComment as defined here:
+	 *                            for an approval submission. If approvalDate is not
+	 *                           	provided, the current date will be used.
+	 * @param artifactCommentType
+	 * @param artifactCommentText
+	 * @param artifactCommentTarget
+	 * @param artifactCommentReference
+	 * @param artifactCommentUser Optional ArtifactComment* arguments represent parts of a 
+	 *                            comment to beincluded as part of the approval. The 
+	 *                            artifactComment is a cqfm-artifactComment as defined here:
 	 *                            http://hl7.org/fhir/us/cqfmeasures/STU3/StructureDefinition-cqfm-artifactComment.html
 	 *                            A Parameters resource with a parameter for each element
 	 *                            of the artifactComment Extension definition is
@@ -57,10 +62,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			@OperationParam(name = "artifactCommentTarget") String artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") String artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") String artifactCommentUser,
-			@OperationParam(name = "endorser") ContactDetail endorser) throws FHIRException {
-				if(approvalDate == null){
-					throw new UnprocessableEntityException("The approvalDate parameter is required for this operation");
-				}
+			@OperationParam(name = "endorser") ContactDetail endorser) throws UnprocessableEntityException {
 				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return this.artifactProcessor.approve(theId, approvalDate.getValue(), artifactCommentType,
 				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser, endorser, fhirDal);
