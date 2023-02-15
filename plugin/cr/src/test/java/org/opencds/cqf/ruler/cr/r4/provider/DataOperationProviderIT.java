@@ -186,8 +186,8 @@ class DataOperationProviderIT extends RestIntegrationTest {
 					ZonedDateTime expectedHighDate = currentDate.minusNanos(1000000);
 
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-					String lowDateString = expectedLowDate.format(formatter);
-					String highDateString = expectedHighDate.format(formatter);
+					String lowDateString = expectedLowDate.format(formatter).replace("Z", "+00:00");
+					String highDateString = expectedHighDate.format(formatter).replace("Z", "+00:00");
 
 					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDateString);
 
