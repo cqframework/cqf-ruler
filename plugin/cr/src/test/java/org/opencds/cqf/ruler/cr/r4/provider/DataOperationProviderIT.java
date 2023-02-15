@@ -11,7 +11,6 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +22,9 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
-		CrConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CrConfig.class }, properties = {
+	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.cql.translator.analyze_data_requirements=true"})
 class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
@@ -129,7 +130,7 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							.getValueAsPrimitive().getValueAsString();
 					if (dr.hasCodeFilter()) {
 						assertEquals(
-								"Encounter?subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292",
+								"Encounter?status=finished&subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292",
 								query);
 					} else {
 						assertEquals("Encounter?subject=Patient/{{context.patientId}}", query);
@@ -180,16 +181,15 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
 						.getValueAsPrimitive().getValueAsString();
 
-					LocalDateTime dt = LocalDateTime.now();
 					ZonedDateTime currentDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
 					ZonedDateTime expectedLowDate = currentDate.minusDays(90);
 					ZonedDateTime expectedHighDate = currentDate.minusNanos(1000000);
 
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 					String lowDateString = expectedLowDate.format(formatter);
-					String highDataString = expectedHighDate.format(formatter);
+					String highDateString = expectedHighDate.format(formatter);
 
-					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDataString);
+					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDateString);
 
 					assertEquals(expectedQuery, query);
 				}
