@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -32,4 +34,4 @@ jobs:
         uses: docker/build-push-action@v4
          with:
            push: true
-           tags: user/app:latest
+           tags: cqframework/cqf-ruler:latest, alphora/cqf-ruler:latest
