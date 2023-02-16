@@ -35,3 +35,4 @@ jobs:
          with:
            push: true
            tags: cqframework/cqf-ruler:latest, alphora/cqf-ruler:latest
+           build-args: COMMIT_HASH=${{COMMIT_HASH}}
