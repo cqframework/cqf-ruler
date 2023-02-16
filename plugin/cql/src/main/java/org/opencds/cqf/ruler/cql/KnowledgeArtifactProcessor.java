@@ -106,6 +106,7 @@ public class KnowledgeArtifactProcessor {
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
+
 		// 3. Add artifactComment
 		// TODO: check for existing matching comment?
 		try {
@@ -116,6 +117,7 @@ public class KnowledgeArtifactProcessor {
 		} catch (FHIRException e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
+
 		// 4. add/update endorser
 		if (endorser != null) {
 			targetResourceAdapter.updateEndorser(endorser);
