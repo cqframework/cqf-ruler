@@ -40,8 +40,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @param artifactCommentText
 	 * @param artifactCommentTarget
 	 * @param artifactCommentReference
-	 * @param artifactCommentUser Optional ArtifactComment* arguments represent parts of a 
-	 *                            comment to beincluded as part of the approval. The 
+	 * @param artifactCommentUser Optional ArtifactComment* arguments represent parts of a
+	 *                            comment to beincluded as part of the approval. The
 	 *                            artifactComment is a cqfm-artifactComment as defined here:
 	 *                            http://hl7.org/fhir/us/cqfmeasures/STU3/StructureDefinition-cqfm-artifactComment.html
 	 *                            A Parameters resource with a parameter for each element

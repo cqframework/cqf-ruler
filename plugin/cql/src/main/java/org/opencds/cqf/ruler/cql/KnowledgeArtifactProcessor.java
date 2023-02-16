@@ -106,7 +106,6 @@ public class KnowledgeArtifactProcessor {
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
-		
 		// 3. Add artifactComment
 		// TODO: check for existing matching comment?
 		try {
