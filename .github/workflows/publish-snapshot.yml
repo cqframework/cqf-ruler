@@ -41,4 +41,6 @@ jobs:
           tags: |
               contentgroup/cqf-ruler:latest
               alphora/cqf-ruler:latest
-          build-args: COMMIT_HASH=${SHORT_SHA}
+          build-args: COMMIT_HASH=${{SHORT_SHA}}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
