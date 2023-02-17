@@ -130,6 +130,9 @@ public class KnowledgeArtifactProcessor {
 	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
 		//TODO: Needs to be transactional
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
+		if (resource == null) {
+			throw new ResourceNotFoundException(idType);
+		}
 
 		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
 		// performed here to facilitate that different treatment for the root artifact and those referenced by it.
@@ -328,7 +331,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $release */
-	public MetadataResource release(IdType iIdType, FhirDal fhirDal) {
+	public MetadataResource releaseVersion(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 
