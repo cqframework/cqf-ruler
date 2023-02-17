@@ -292,7 +292,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertNotNull(returnedResource);
 
-		// Endorser was appended	
+		// Endorser was updated	
 		assertTrue(returnedResource.getEndorser().size() == 1);
 		assertTrue(returnedResource.getEndorser().get(0).getTelecom().get(0).getValue().equals(testContactValue));
 	}
