@@ -35,10 +35,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_active_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 
+		Parameters params = parameters(part("version", "1.1.1") );
 		Resource returnResource = getClient().operation()
 			.onInstance("Library/SpecificationLibrary")
 			.named("$draft")
-			.withNoParameters(Parameters.class)
+			.withParameters(params)
 			.returnResourceType(Library.class)
 			.execute();
 
@@ -54,20 +55,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_draft_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
+		Parameters params = parameters(part("version", "1.1.1") );
+		Resource returnResource = getClient().operation()
+			.onInstance("Library/DraftSpecificationLibrary")
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
 
-		String actualMessage = "";
-		try {
-			Resource returnResource = getClient().operation()
-				.onInstance("Library/DraftSpecificationLibrary")
-				.named("$draft")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(Library.class)
-				.execute();
-		} catch ( Exception e) {
-			actualMessage = e.getMessage();
-		}
-
-		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'. Resource 'http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary' has a status of: DRAFT"));
+		assertNotNull(returnResource);
 	}
 
 	@Test

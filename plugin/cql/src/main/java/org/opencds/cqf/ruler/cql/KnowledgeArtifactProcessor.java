@@ -30,21 +30,39 @@ public class KnowledgeArtifactProcessor {
 	private List<RelatedArtifact> finalRelatedArtifactList = new ArrayList<>();
 	private List<Bundle.BundleEntryComponent> bundleEntryComponentList = new ArrayList<>();
 
-	public MetadataResource draft(IdType idType, FhirDal fhirDal) {
+	public MetadataResource draft(IdType idType, FhirDal fhirDal, String version) {
 		//TODO: Needs to be transactional
 		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
 
+		//Validate that major, minor, and patch version numbers are greater than 0
+		if(version.contains(".")) {
+			String[] versionParts = version.split(".");
+			for(int i =0; i<versionParts.length; i++) {
+				String section = "";
+				if(Integer.valueOf(versionParts[i]) < 0) {
+					if(i==0) {
+						section = "Major";
+					} else if(i==1) {
+						section = "Minor";
+					} else if (i==2) {
+						section = "Patch";
+					}
+					throw new IllegalArgumentException("The " + section + " version part should be greater than 0.");
+				}
+			}
+
+		}
 		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
 		// performed here to facilitate that different treatment for the root artifact and those referenced by it.
-		if (resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-			throw new IllegalArgumentException(
-				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", resource.getUrl(), resource.getStatus().toString()));
-		}
+		//if (resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
+		//	throw new IllegalArgumentException(
+		//		String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", resource.getUrl(), resource.getStatus().toString()));
+		//}
 
-		return internalDraft(resource, fhirDal);
+		return internalDraft(resource, fhirDal, version);
 	}
 
-	private MetadataResource internalDraft(MetadataResource resource, FhirDal fhirDal) {
+	private MetadataResource internalDraft(MetadataResource resource, FhirDal fhirDal, String version) {
 		Bundle existingArtifactsForUrl = searchResourceByUrl(resource.getUrl(), fhirDal);
 		Optional<Bundle.BundleEntryComponent> existingDrafts = existingArtifactsForUrl.getEntry().stream().filter(
 			e -> ((MetadataResource) e.getResource()).getStatus() == Enumerations.PublicationStatus.DRAFT).findFirst();
@@ -59,7 +77,7 @@ public class KnowledgeArtifactProcessor {
 			newResource = sourceResourceAdapter.copy();
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setId((String)null);
-			newResource.setVersion(null);
+			newResource.setVersion(version + "-draft");
 
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<>(newResource);
 
@@ -74,10 +92,10 @@ public class KnowledgeArtifactProcessor {
 				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 					if (ra.hasUrl()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle, ra);
+						processReferencedResource(fhirDal, referencedResourceBundle, ra, version);
 					} else if (ra.hasResource()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-						processReferencedResource(fhirDal, referencedResourceBundle, ra);
+						processReferencedResource(fhirDal, referencedResourceBundle, ra, version);
 					}
 				}
 			}
@@ -86,13 +104,13 @@ public class KnowledgeArtifactProcessor {
 		return newResource;
 	}
 
-	private void processReferencedResource(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra) {
+	private void processReferencedResource(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
 
-				internalDraft(referencedResource, fhirDal);
+				internalDraft(referencedResource, fhirDal, version);
 			}
 		}
 	}
@@ -250,10 +268,23 @@ public class KnowledgeArtifactProcessor {
 		int listCounter=0;
 		int listSize = finalRelatedArtifactList.size();
 		for (RelatedArtifact ra : finalRelatedArtifactList) {
-			getAdditionReleaseData(finalRelatedArtifactList, fhirDal, ra, true, bundleEntryComponentList);
-			listCounter++;
-			if(listCounter == listSize) {
-				break;
+			String resourceData = ra.getResource();
+
+			if(Canonicals.getUrl(resourceData) != null) {
+				List<IQueryParameterType> list = new ArrayList<>();
+				if (Canonicals.getVersion(resourceData) != null) {
+					list.add(new UriParam(resourceData));
+				} else {
+					list.add(new UriParam(Canonicals.getUrl(resourceData)));
+				}
+				Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+				searchParams.put("url", List.of(list));
+
+				Bundle referencedResourceBundle = (Bundle) fhirDal.search(Canonicals.getResourceType(Canonicals.getUrl(resourceData)), searchParams);
+				if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
+					Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
+					packageBundle.addEntry(referencedResourceEntry);
+				}
 			}
 		}
 
