@@ -137,16 +137,16 @@ public class KnowledgeArtifactProcessor {
 			throw new ResourceNotFoundException(idType);
 		}
 
-		if(version.contains(".")) {
-			String[] versionParts = version.split(".");
-			for(int i =0; i<versionParts.length; i++) {
+		if (version.contains(".")) {
+			String[] versionParts = version.split("\\.");
+			for(int i = 0; i < versionParts.length; i++) {
 				String section = "";
-				if(Integer.valueOf(versionParts[i]) < 0) {
-					if(i==0) {
+				if(Integer.parseInt(versionParts[i]) < 0) {
+					if(i == 0) {
 						section = "Major";
-					} else if(i==1) {
+					} else if(i == 1) {
 						section = "Minor";
-					} else if (i==2) {
+					} else if (i == 2) {
 						section = "Patch";
 					}
 					throw new IllegalArgumentException("The " + section + " version part should be greater than 0.");
