@@ -258,7 +258,6 @@ public class ArtifactCommentExtension extends Extension {
 			typeCode.setValue(ArtifactCommentType.fromCode(type));
 			this.setValue(typeCode);
 		}
-
 	}
 
 	@DatatypeDef(name="ArtifactCommentTextExtension", isSpecialization = true, profileOf = Extension.class)

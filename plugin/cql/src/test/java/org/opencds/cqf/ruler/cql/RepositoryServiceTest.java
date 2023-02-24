@@ -1,18 +1,7 @@
 
 package org.opencds.cqf.ruler.cql;
 
-import static graphql.Assert.assertNotNull;
-//import static graphql.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import javax.xml.bind.DatatypeConverter;
-
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateType;
@@ -23,20 +12,25 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
-//import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.TestMethodOrder;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.core.annotation.Order;
 
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import javax.xml.bind.DatatypeConverter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static graphql.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = {RepositoryServiceTest.class, CqlConfig.class},
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
-//@TestMethodOrder(MethodOrderer.MethodName.class)
+
 class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
@@ -78,26 +72,77 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(actualMessage.contains("Drafts can only be created from artifacts with status of 'active'. Resource 'http://ersd.aimsplatform.org/fhir/Library/DraftSpecificationLibrary' has a status of: DRAFT"));
 	}
 
-//	@Test
-//	void releaseResource_test() {
-//		loadTransaction("ersd-draft-transaction-bundle-example.json");
-//		String versionData = "1234";
-//
-//		Parameters params1 = parameters(
-//			stringPart("version", "1234")//,
-////			booleanPart("latestFromTxServer", true)
-//		);
-//
-//		Library returnResource = getClient().operation()
-//			.onInstance("Library/DraftSpecificationLibrary")
-//			.named("$release")
-//			.withParameters(params1)
-//			.useHttpGet()
-//			.returnResourceType(Library.class)
-//			.execute();
-//
-//		assertNotNull(returnResource);
-//	}
+	@Test
+	void releaseResource_test() {
+		loadTransaction("ersd-release-bundle.json");
+		String versionData = "1234";
+
+		Parameters params1 = parameters(
+			stringPart("version", "1234"),
+			codePart("versionBehavior", "default")
+		);
+
+		Library returnResource = getClient().operation()
+			.onInstance("Library/ReleaseSpecificationLibrary")
+			.named("$release")
+			.withParameters(params1)
+			.useHttpGet()
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnResource);
+	}
+
+	@Test
+	void releaseResource_latestFromTx_NotSupported_test() {
+		loadTransaction("ersd-release-bundle.json");
+		String actualErrorMessage = "";
+
+		Parameters params1 = parameters(
+			stringPart("version", "1234"),
+			codePart("versionBehavior", "default"),
+			booleanPart("latestFromTxServer", true)
+		);
+
+		try {
+			Library returnResource = getClient().operation()
+				.onInstance("Library/ReleaseSpecificationLibrary")
+				.named("$release")
+				.withParameters(params1)
+				.useHttpGet()
+				.returnResourceType(Library.class)
+				.execute();
+		} catch (Exception e) {
+			actualErrorMessage = e.getMessage();
+			assertTrue(actualErrorMessage.contains("Support for 'latestFromTxServer' is not yet implemented."));
+		}
+	}
+
+	@Test
+	void release_missing_approvalDate_validation_test() {
+		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
+		String versionData = "1234";
+		String actualErrorMessage = "";
+
+		Parameters params1 = parameters(
+			stringPart("version", "1234"),
+			codePart("versionBehavior", "default"),
+			booleanPart("latestFromTxServer", true)
+		);
+
+		try {
+			Library returnResource = getClient().operation()
+				.onInstance("Library/ReleaseSpecificationLibrary")
+				.named("$release")
+				.withParameters(params1)
+				.useHttpGet()
+				.returnResourceType(Library.class)
+				.execute();
+		} catch (Exception e) {
+			actualErrorMessage = e.getMessage();
+			assertTrue(actualErrorMessage.contains("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
+		}
+	}
 
 	@Test
 	void reviseOperation_active_test() {

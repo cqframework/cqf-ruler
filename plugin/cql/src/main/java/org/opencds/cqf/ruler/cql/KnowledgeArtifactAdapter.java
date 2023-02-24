@@ -112,7 +112,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 			case "ActivityDefinition":
 				return getDependenciesOfActivityDefinition();
 			case "Library":
-				return getDependenciesOfKnowledgeArtifact();
+				return getDependenciesOfLibrary();
 			case "Measure":
 				return getDependenciesOfMeasure();
 			case "PlanDefinition":
@@ -123,8 +123,8 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 
 	private List<RelatedArtifact> getDependenciesOfKnowledgeArtifact() {
-		List<RelatedArtifact> components = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
-		return components;
+		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		return dependencies;
 	}
 
 	private List<RelatedArtifact> getDependenciesOfActivityDefinition() {
@@ -145,7 +145,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 
 	private List<RelatedArtifact> getDependenciesOfLibrary() {
-		List<RelatedArtifact> dependencies = getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType.DEPENDSON);
+		List<RelatedArtifact> dependencies = getDependenciesOfKnowledgeArtifact();
 		return dependencies;
 	}
 
