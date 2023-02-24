@@ -70,11 +70,10 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
-	public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId)
+	public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
-
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.draft(theId, fhirDal);
+		return (Library) this.artifactProcessor.draft(theId, fhirDal, version);
 	}
 
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
