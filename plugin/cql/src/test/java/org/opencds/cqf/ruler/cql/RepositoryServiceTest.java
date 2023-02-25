@@ -9,18 +9,14 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
-//import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.TestMethodOrder;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
 import static graphql.Assert.assertNotNull;
-//import static graphql.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
