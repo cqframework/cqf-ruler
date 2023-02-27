@@ -81,21 +81,13 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Library releaseOperation(RequestDetails requestDetails,
 											  @IdParam IdType theId,
 											  @OperationParam(name = "version") String version,
-											  @OperationParam(name = "versionBehavior") CodeType versionBehavior,
-											  @OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
+											  @OperationParam(name = "version-behavior") CodeType versionBehavior,
+											  @OperationParam(name = "latest-from-tx-server", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.releaseVersion(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal);
 	}
-
-//	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
-//	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
-//	public Library releaseOperation(RequestDetails requestDetails, @IdParam IdType theId)
-//		throws FHIRException {
-//		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-//		return (Library) this.artifactProcessor.releaseVersionOld(theId, fhirDal);
-//	}
 
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")

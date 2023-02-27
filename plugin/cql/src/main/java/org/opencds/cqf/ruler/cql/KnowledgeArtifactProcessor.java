@@ -354,9 +354,8 @@ public class KnowledgeArtifactProcessor {
 				CanonicalType resourceReference = ra.getResourceElement();
 				String reference = resourceReference.getValueAsString();
 
-				// For dependencies, if a specific version is referenced, use it,
-				// else if the check tx server is checked then lookup the latest version from tx server,
-				//   else get the latest version from our cache.
+				// For dependencies, if a specific version is referenced, use it. Otherwise, if latest-from-tx-server is true
+				// then lookup the latest version from tx server else get the latest version from our cache.
 				if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
 					if (latestFromTxServer) {
 						throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
