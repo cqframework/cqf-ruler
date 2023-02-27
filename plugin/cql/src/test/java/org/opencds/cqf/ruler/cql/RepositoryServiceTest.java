@@ -72,7 +72,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			stringPart("version", "1234"),
-			codePart("versionBehavior", "default")
+			codePart("version-behavior", "default")
 		);
 
 		Library returnResource = getClient().operation()
@@ -93,8 +93,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			stringPart("version", "1234"),
-			codePart("versionBehavior", "default"),
-			booleanPart("latestFromTxServer", true)
+			codePart("version-behavior", "default"),
+			booleanPart("latest-from-tx-server", true)
 		);
 
 		try {
@@ -119,8 +119,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			stringPart("version", "1234"),
-			codePart("versionBehavior", "default"),
-			booleanPart("latestFromTxServer", true)
+			codePart("version-behavior", "default"),
+			booleanPart("latest-from-tx-server", true)
 		);
 
 		try {
