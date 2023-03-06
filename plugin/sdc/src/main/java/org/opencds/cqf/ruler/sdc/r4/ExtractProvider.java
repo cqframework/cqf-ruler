@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -69,7 +70,7 @@ public class ExtractProvider implements OperationProvider {
           "Unable to perform operation $extract.  The QuestionnaireResponse was null");
     }
     Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
-    return sendObservationBundle(observationsFromQuestionnaireResponse);
+	 return sendObservationBundle(observationsFromQuestionnaireResponse);
   }
 
   private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse) {
@@ -100,12 +101,22 @@ public class ExtractProvider implements OperationProvider {
       Date authored, QuestionnaireResponse questionnaireResponse,
       Bundle newBundle, Map<String, Coding> questionnaireCodeMap) {
     if (item.hasAnswer()) {
-      item.getAnswer().forEach(answer -> {
+		 AtomicInteger answerNumber = new AtomicInteger(0);
+		 if(item.getAnswer().size() > 1){
+			 answerNumber.getAndIncrement();
+		 }
+		 item.getAnswer().forEach(answer -> {
         Bundle.BundleEntryComponent newBundleEntryComponent = createObservationFromItemAnswer(answer, item.getLinkId(),
             authored,
             questionnaireResponse,
             questionnaireCodeMap);
         if (null != newBundleEntryComponent) {
+			  if(answerNumber.get() > 0){
+				String newBundleEntryComponentID = newBundleEntryComponent.getResource().getId();
+				newBundleEntryComponent.getResource().setId(newBundleEntryComponentID + "." + answerNumber.get());
+				String newBundleEntryComponentRequestURL = newBundleEntryComponent.getRequest().getUrl();
+				  newBundleEntryComponent.getRequest().setUrl(newBundleEntryComponentRequestURL + "." + answerNumber.getAndIncrement());
+			  }
           newBundle.addEntry(newBundleEntryComponent);
         }
         if (answer.hasItem()) {
@@ -191,7 +202,14 @@ public class ExtractProvider implements OperationProvider {
 
     IGenericClient client = Clients.forUrl(myFhirContext, url);
     Clients.registerBasicAuth(client, user, password);
-    return client.transaction().withBundle(observationsBundle).execute();
+	 Bundle responseBundle = null;
+	  try {
+		  responseBundle = client.transaction().withBundle(observationsBundle).execute();
+	  }catch (Exception ex){
+		  ex.printStackTrace();
+		  System.out.println(ex.getMessage());
+	  }
+	  return responseBundle;
   }
 
   private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl) {
