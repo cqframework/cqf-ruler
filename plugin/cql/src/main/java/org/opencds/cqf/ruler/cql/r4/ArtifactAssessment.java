@@ -653,7 +653,7 @@ public class ArtifactAssessment extends Basic {
 	public ArtifactAssessment() {
 		super();
 	}
-	public ArtifactAssessment createArtifactComment(Enumeration<ArtifactAssessmentContentInformationType> type, MarkdownType text, CanonicalType target, CanonicalType reference, Reference user)  throws FHIRException {
+	public ArtifactAssessment createArtifactComment(ArtifactAssessmentContentInformationType type, MarkdownType text, CanonicalType target, CanonicalType reference, Reference user)  throws FHIRException {
 		setInfoTypeExtension(type);
 		setSummaryExtension(text);
 		setArtifactExtension(target);
@@ -661,10 +661,10 @@ public class ArtifactAssessment extends Basic {
 		setAuthorExtension(user);
 		return this;
 	}
-
-	public ArtifactAssessment setInfoTypeExtension(Enumeration<ArtifactAssessmentContentInformationType> type) throws FHIRException {
-		Enumeration<ArtifactAssessmentContentInformationType> typeCode = new Enumeration<ArtifactAssessmentContentInformationType>(
-			new ArtifactAssessmentContentInformationTypeEnumFactory());
+	public boolean isValidArtifactComment(){
+		return true;
+	}
+	public ArtifactAssessment setInfoTypeExtension(ArtifactAssessmentContentInformationType type) {
 		if (type != null) {
 			ArtifactAssessmentContentExtension ext;
 			int contentIndex = findIndex(CONTENT, this.getExtension());
@@ -760,7 +760,7 @@ public class ArtifactAssessment extends Basic {
 		public ArtifactAssessmentContentExtension() throws FHIRException {
 			super(CONTENT);
 		}
-		ArtifactAssessmentContentExtension setInfoType(Enumeration<ArtifactAssessmentContentInformationType> infoType) throws FHIRException {
+		ArtifactAssessmentContentExtension setInfoType(ArtifactAssessmentContentInformationType infoType) throws FHIRException {
 			if (infoType != null) {
 				int index = findIndex(INFOTYPE, this.getExtension());
 				if(index != -1){
@@ -769,7 +769,7 @@ public class ArtifactAssessment extends Basic {
 					this.addExtension(new ArtifactAssessmentContentInformationTypeExtension(infoType));
 				}
 			}
-			return this;			
+			return this;
 		}
 		ArtifactAssessmentContentExtension setSummary(MarkdownType summary) {
 			if (summary != null) {
@@ -780,7 +780,7 @@ public class ArtifactAssessment extends Basic {
 					this.addExtension(new ArtifactAssessmentContentSummaryExtension(summary));
 				}
 			}
-			return this;			
+			return this;
 		}
 		ArtifactAssessmentContentExtension setRelatedArtifact(CanonicalType reference){
 			if (reference != null) {
@@ -809,18 +809,21 @@ public class ArtifactAssessment extends Basic {
 		}
 		@DatatypeDef(name="ArtifactAssessmentContentInformationTypeExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentInformationTypeExtension extends Extension {
-				public ArtifactAssessmentContentInformationTypeExtension(Enumeration<ArtifactAssessmentContentInformationType> informationType) {
-					super(INFOTYPE, informationType);
+				public ArtifactAssessmentContentInformationTypeExtension(ArtifactAssessmentContentInformationType informationTypeCode) {
+					super(INFOTYPE);
+					Enumeration<ArtifactAssessmentContentInformationType> informationType = new Enumeration<ArtifactAssessmentContentInformationType>(new ArtifactAssessmentContentInformationTypeEnumFactory());
+					informationType.setValue(informationTypeCode);
+					this.setValue(informationType);
 				}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentSummaryExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentSummaryExtension extends Extension {
 			public ArtifactAssessmentContentSummaryExtension(MarkdownType summary) {
 				super(SUMMARY, summary);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentTypeExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentTypeExtension extends Extension {
 			public ArtifactAssessmentContentTypeExtension(Enumeration<ArtifactAssessmentContentType> contentType) {
@@ -834,7 +837,7 @@ public class ArtifactAssessment extends Basic {
 				this.setValue(typeConcept);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentClassifierExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentClassifierExtension extends Extension {
 			public ArtifactAssessmentContentClassifierExtension(Enumeration<ArtifactAssessmentContentClassifier> classifier) {
@@ -848,35 +851,35 @@ public class ArtifactAssessment extends Basic {
 				this.setValue(typeConcept);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentQuantityExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentQuantityExtension extends Extension {
 			public ArtifactAssessmentContentQuantityExtension(Quantity quantity) {
 				super(QUANTITY, quantity);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentAuthorExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentAuthorExtension extends Extension {
 			public ArtifactAssessmentContentAuthorExtension(Reference author) {
 				super(AUTHOR, author);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentPathExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentPathExtension extends Extension {
 			public ArtifactAssessmentContentPathExtension(UriType path) {
 				super(PATH, path);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentRelatedArtifactExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentRelatedArtifactExtension extends Extension {
 			public ArtifactAssessmentContentRelatedArtifactExtension(RelatedArtifact relatedArtifact) {
 				super(RELATEDARTIFACT,relatedArtifact);
 			}
 		}
-		
+
 		@DatatypeDef(name="ArtifactAssessmentContentFreeToShareExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentFreeToShareExtension extends Extension {
 			public ArtifactAssessmentContentFreeToShareExtension(BooleanType freeToShare) {
@@ -884,7 +887,7 @@ public class ArtifactAssessment extends Basic {
 			}
 		}
 	}
-	
+
 	@DatatypeDef(name="ArtifactAssessmentArtifactExtension", isSpecialization = true, profileOf = Extension.class)
 	private class ArtifactAssessmentArtifactExtension extends Extension {
 		public ArtifactAssessmentArtifactExtension(CanonicalType target) {
