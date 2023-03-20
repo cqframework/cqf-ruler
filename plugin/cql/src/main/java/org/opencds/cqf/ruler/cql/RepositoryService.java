@@ -92,7 +92,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		Bundle transactionBundle = new Bundle()
 		.setType(Bundle.BundleType.TRANSACTION)
 		.addEntry(createEntry(approvedResource));
-		if(newAssessment.isValidArtifactComment()){
+		if(newAssessment != null && newAssessment.isValidArtifactComment()){
 			transactionBundle.addEntry(createEntry(newAssessment));
 		}
 		return transaction(transactionBundle, requestDetails);
