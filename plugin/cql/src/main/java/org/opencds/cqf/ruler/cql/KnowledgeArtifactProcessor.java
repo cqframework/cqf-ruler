@@ -121,11 +121,10 @@ public class KnowledgeArtifactProcessor {
 	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
 		try {
-			ArtifactAssessment artifactAssessment = new ArtifactAssessment();
+			ArtifactAssessment artifactAssessment = new ArtifactAssessment(artifactCommentTarget);
 			artifactAssessment.createArtifactComment(
 				ArtifactAssessmentContentInformationType.fromCode(artifactCommentType),
 				new MarkdownType(artifactCommentText),
-				artifactCommentTarget,
 				artifactCommentReference,
 				artifactCommentUser
 				);

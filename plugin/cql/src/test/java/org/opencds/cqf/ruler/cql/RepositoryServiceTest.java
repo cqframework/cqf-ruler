@@ -343,14 +343,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		lib.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.SECOND);
 		// date is correct
 		assertTrue(lib.getDateElement().asStringValue().equals(lib.getMeta().getLastUpdatedElement().asStringValue()));
-		System.out.println(returnedResource.getEntry().get(0).getResponse().getLocation());
-		System.out.println(returnedResource.getEntry().get(1).getResponse().getLocation());
-		System.out.println(returnedResource.getEntry().get(0));
-		System.out.println(returnedResource.getEntry().get(1));
+		// ArtifactAssessment is saved as type Basic, update when we change to OperationOutcome
+		// Get the reference from BundleEntry.response.location
 		Optional<BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
 		assertTrue(maybeArtifactAssessment.isPresent());
 		ArtifactAssessment artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
-		assertTrue(artifactAssessment.hasCorrectArtifactCommentParams(
+		assertNotNull(artifactAssessment);
+		assertTrue(artifactAssessment.isValidArtifactComment());
+		assertTrue(artifactAssessment.checkArtifactCommentParams(
 			artifactCommentType,
 			artifactCommentText,
 			artifactCommentTarget,
