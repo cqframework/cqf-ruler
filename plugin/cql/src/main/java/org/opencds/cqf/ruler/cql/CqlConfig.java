@@ -43,6 +43,7 @@ import org.opencds.cqf.external.annotations.OnR5Condition;
 import org.opencds.cqf.ruler.cql.dstu2.PreExpandedTermReadSvcDstu2;
 import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
 import org.opencds.cqf.ruler.cql.interceptor.CqlExceptionHandlingInterceptor;
+import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cql.r4.PreExpandedTermReadSvcR4;
 import org.opencds.cqf.ruler.cql.r5.PreExpandedTermReadSvcR5;
 import org.slf4j.Logger;
@@ -336,6 +337,11 @@ public class CqlConfig {
 		return new PreExpandedTermReadSvcR4();
 	}
 
+	@Bean({ "artifactAssessment", "r4ArtifactAssessment", "r4ArtifactAssessment" })
+	@Conditional(OnR4Condition.class)
+	public ArtifactAssessment ArtifactAssessment() {
+		return new ArtifactAssessment();
+	}
 	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
 	@Conditional(OnR5Condition.class)
 	public ITermReadSvcR5 termReadSvcR5() {

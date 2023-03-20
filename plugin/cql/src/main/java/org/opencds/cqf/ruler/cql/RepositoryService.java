@@ -15,7 +15,9 @@ import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,23 +71,28 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			@OperationParam(name = "artifactCommentText") String artifactCommentText,
 			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
-			@OperationParam(name = "artifactCommentUser") IdType artifactCommentUser,
+			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser,
 			@OperationParam(name = "endorser") ContactDetail endorser) throws UnprocessableEntityException {
 				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 				MetadataResource resource = (MetadataResource) fhirDal.read(theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
-		// if(artifactCommentTarget != null && !artifactCommentTarget.getId().equals(theId.getIdPart())){
-		// 	throw new UnprocessableEntityException("ArtifactCommentTarget does not match ID of resource being approved.");
-		// }
+		if(artifactCommentTarget != null
+		&& Canonicals.getIdPart(artifactCommentTarget) != null
+		&& !Canonicals.getIdPart(artifactCommentTarget).equals(theId.getIdPart())){
+			throw new UnprocessableEntityException("ArtifactCommentTarget ID does not match ID of resource being approved.");
+		}
+		if(artifactCommentTarget == null){
+			artifactCommentTarget = new CanonicalType(theId.getValue());
+		}
 		ArtifactAssessment newAssessment = this.artifactProcessor.createApprovalAssessment(artifactCommentType,
 				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser);
-		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate.getValue(), endorser, newAssessment);
+		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, endorser, newAssessment);
 		Bundle transactionBundle = new Bundle()
 		.setType(Bundle.BundleType.TRANSACTION)
 		.addEntry(createEntry(approvedResource));
-		if(newAssessment != null){
+		if(newAssessment.isValidArtifactComment()){
 			transactionBundle.addEntry(createEntry(newAssessment));
 		}
 		return transaction(transactionBundle, requestDetails);

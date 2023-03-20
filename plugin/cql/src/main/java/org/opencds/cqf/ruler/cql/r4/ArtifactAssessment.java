@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cql.r4;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +10,6 @@ import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Configuration;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
@@ -29,7 +29,7 @@ import ca.uhn.fhir.model.api.annotation.DatatypeDef;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 
 
-@ResourceDef(name="ArtifactAssessment", id="ArtifactAssessment", profile = "http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessment")
+@ResourceDef(id="ArtifactAssessment", profile = "http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessment")
 public class ArtifactAssessment extends Basic {
 	public enum ArtifactAssessmentContentInformationType {
 		/**
@@ -635,10 +635,271 @@ public class ArtifactAssessment extends Basic {
 	
 	public enum ArtifactAssessmentContentType {}
 
-	public enum ArtifactAssessmentWorkflowStatus {}
+	public enum ArtifactAssessmentWorkflowStatus {
+		/**
+		 * The comment has been submitted, but the responsible party has not yet been determined, or the responsible party has not yet determined the next steps to be taken.
+		 */
+		SUBMITTED, 
+		/**
+		 * The comment has been triaged, meaning the responsible party has been determined and next steps have been identified to address the comment.
+		 */
+		TRIAGED, 
+		/**
+		 * The comment is waiting for input from a specific party before next steps can be taken.
+		 */
+		WAITINGFORINPUT, 
+		/**
+		 * The comment has been resolved and no changes resulted from the resolution
+		 */
+		RESOLVEDNOCHANGE, 
+		/**
+		 * The comment has been resolved and changes are required to address the comment
+		 */
+		RESOLVEDCHANGEREQUIRED, 
+		/**
+		 * The comment is acceptable, but resolution of the comment and application of any associated changes have been deferred
+		 */
+		DEFERRED, 
+		/**
+		 * The comment is a duplicate of another comment already received
+		 */
+		DUPLICATE, 
+		/**
+		 * The comment is resolved and any necessary changes have been applied
+		 */
+		APPLIED, 
+		/**
+		 * The necessary changes to the artifact have been published in a new version of the artifact
+		 */
+		PUBLISHED, 
+		/**
+		 * added to help the parsers with the generic types
+		 */
+		NULL;
+		public static ArtifactAssessmentWorkflowStatus fromCode(String codeString) throws FHIRException {
+				if (codeString == null || "".equals(codeString))
+						return null;
+		if ("submitted".equals(codeString))
+			return SUBMITTED;
+		if ("triaged".equals(codeString))
+			return TRIAGED;
+		if ("waiting-for-input".equals(codeString))
+			return WAITINGFORINPUT;
+		if ("resolved-no-change".equals(codeString))
+			return RESOLVEDNOCHANGE;
+		if ("resolved-change-required".equals(codeString))
+			return RESOLVEDCHANGEREQUIRED;
+		if ("deferred".equals(codeString))
+			return DEFERRED;
+		if ("duplicate".equals(codeString))
+			return DUPLICATE;
+		if ("applied".equals(codeString))
+			return APPLIED;
+		if ("published".equals(codeString))
+			return PUBLISHED;
+		if (Configuration.isAcceptInvalidEnums())
+			return null;
+		else
+			throw new FHIRException("Unknown ArtifactAssessmentWorkflowStatus code '"+codeString+"'");
+		}
+		public String toCode() {
+			switch (this) {
+				case SUBMITTED: return "submitted";
+				case TRIAGED: return "triaged";
+				case WAITINGFORINPUT: return "waiting-for-input";
+				case RESOLVEDNOCHANGE: return "resolved-no-change";
+				case RESOLVEDCHANGEREQUIRED: return "resolved-change-required";
+				case DEFERRED: return "deferred";
+				case DUPLICATE: return "duplicate";
+				case APPLIED: return "applied";
+				case PUBLISHED: return "published";
+				default: return "?";
+			}
+		}
+		public String getSystem() {
+			switch (this) {
+				case SUBMITTED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case TRIAGED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case WAITINGFORINPUT: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case RESOLVEDNOCHANGE: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case RESOLVEDCHANGEREQUIRED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case DEFERRED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case DUPLICATE: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case APPLIED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				case PUBLISHED: return "http://hl7.org/fhir/artifactassessment-workflow-status";
+				default: return "?";
+			}
+		}
+		public String getDefinition() {
+			switch (this) {
+				case SUBMITTED: return "The comment has been submitted, but the responsible party has not yet been determined, or the responsible party has not yet determined the next steps to be taken.";
+				case TRIAGED: return "The comment has been triaged, meaning the responsible party has been determined and next steps have been identified to address the comment.";
+				case WAITINGFORINPUT: return "The comment is waiting for input from a specific party before next steps can be taken.";
+				case RESOLVEDNOCHANGE: return "The comment has been resolved and no changes resulted from the resolution";
+				case RESOLVEDCHANGEREQUIRED: return "The comment has been resolved and changes are required to address the comment";
+				case DEFERRED: return "The comment is acceptable, but resolution of the comment and application of any associated changes have been deferred";
+				case DUPLICATE: return "The comment is a duplicate of another comment already received";
+				case APPLIED: return "The comment is resolved and any necessary changes have been applied";
+				case PUBLISHED: return "The necessary changes to the artifact have been published in a new version of the artifact";
+				default: return "?";
+			}
+		}
+		public String getDisplay() {
+			switch (this) {
+				case SUBMITTED: return "Submitted";
+				case TRIAGED: return "Triaged";
+				case WAITINGFORINPUT: return "Waiting for Input";
+				case RESOLVEDNOCHANGE: return "Resolved - No Change";
+				case RESOLVEDCHANGEREQUIRED: return "Resolved - Change Required";
+				case DEFERRED: return "Deferred";
+				case DUPLICATE: return "Duplicate";
+				case APPLIED: return "Applied";
+				case PUBLISHED: return "Published";
+				default: return "?";
+			}
+		}
+}
 
-	public enum ArtifactAssessmentDisposition {}
-	
+	public enum ArtifactAssessmentDisposition {
+		/**
+		 * The comment is unresolved
+		 */
+		UNRESOLVED, 
+		/**
+		 * The comment is not persuasive (rejected in full)
+		 */
+		NOTPERSUASIVE, 
+		/**
+		 * The comment is persuasive (accepted in full)
+		 */
+		PERSUASIVE, 
+		/**
+		 * The comment is persuasive with modification (partially accepted)
+		 */
+		PERSUASIVEWITHMODIFICATION, 
+		/**
+		 * The comment is not persuasive with modification (partially rejected)
+		 */
+		NOTPERSUASIVEWITHMODIFICATION, 
+		/**
+		 * added to help the parsers with the generic types
+		 */
+		NULL;
+		public static ArtifactAssessmentDisposition fromCode(String codeString) throws FHIRException {
+				if (codeString == null || "".equals(codeString))
+						return null;
+		if ("unresolved".equals(codeString))
+			return UNRESOLVED;
+		if ("not-persuasive".equals(codeString))
+			return NOTPERSUASIVE;
+		if ("persuasive".equals(codeString))
+			return PERSUASIVE;
+		if ("persuasive-with-modification".equals(codeString))
+			return PERSUASIVEWITHMODIFICATION;
+		if ("not-persuasive-with-modification".equals(codeString))
+			return NOTPERSUASIVEWITHMODIFICATION;
+		if (Configuration.isAcceptInvalidEnums())
+			return null;
+		else
+			throw new FHIRException("Unknown ArtifactAssessmentDisposition code '"+codeString+"'");
+		}
+		public String toCode() {
+			switch (this) {
+				case UNRESOLVED: return "unresolved";
+				case NOTPERSUASIVE: return "not-persuasive";
+				case PERSUASIVE: return "persuasive";
+				case PERSUASIVEWITHMODIFICATION: return "persuasive-with-modification";
+				case NOTPERSUASIVEWITHMODIFICATION: return "not-persuasive-with-modification";
+				default: return "?";
+			}
+		}
+		public String getSystem() {
+			switch (this) {
+				case UNRESOLVED: return "http://hl7.org/fhir/artifactassessment-disposition";
+				case NOTPERSUASIVE: return "http://hl7.org/fhir/artifactassessment-disposition";
+				case PERSUASIVE: return "http://hl7.org/fhir/artifactassessment-disposition";
+				case PERSUASIVEWITHMODIFICATION: return "http://hl7.org/fhir/artifactassessment-disposition";
+				case NOTPERSUASIVEWITHMODIFICATION: return "http://hl7.org/fhir/artifactassessment-disposition";
+				default: return "?";
+			}
+		}
+		public String getDefinition() {
+			switch (this) {
+				case UNRESOLVED: return "The comment is unresolved";
+				case NOTPERSUASIVE: return "The comment is not persuasive (rejected in full)";
+				case PERSUASIVE: return "The comment is persuasive (accepted in full)";
+				case PERSUASIVEWITHMODIFICATION: return "The comment is persuasive with modification (partially accepted)";
+				case NOTPERSUASIVEWITHMODIFICATION: return "The comment is not persuasive with modification (partially rejected)";
+				default: return "?";
+			}
+		}
+		public String getDisplay() {
+			switch (this) {
+				case UNRESOLVED: return "Unresolved";
+				case NOTPERSUASIVE: return "Not Persuasive";
+				case PERSUASIVE: return "Persuasive";
+				case PERSUASIVEWITHMODIFICATION: return "Persuasive with Modification";
+				case NOTPERSUASIVEWITHMODIFICATION: return "Not Persuasive with Modification";
+				default: return "?";
+			}
+		}
+}
+
+public static class ArtifactAssessmentDispositionEnumFactory implements EnumFactory<ArtifactAssessmentDisposition> {
+public ArtifactAssessmentDisposition fromCode(String codeString) throws IllegalArgumentException {
+	if (codeString == null || "".equals(codeString))
+				if (codeString == null || "".equals(codeString))
+						return null;
+		if ("unresolved".equals(codeString))
+			return ArtifactAssessmentDisposition.UNRESOLVED;
+		if ("not-persuasive".equals(codeString))
+			return ArtifactAssessmentDisposition.NOTPERSUASIVE;
+		if ("persuasive".equals(codeString))
+			return ArtifactAssessmentDisposition.PERSUASIVE;
+		if ("persuasive-with-modification".equals(codeString))
+			return ArtifactAssessmentDisposition.PERSUASIVEWITHMODIFICATION;
+		if ("not-persuasive-with-modification".equals(codeString))
+			return ArtifactAssessmentDisposition.NOTPERSUASIVEWITHMODIFICATION;
+		throw new IllegalArgumentException("Unknown ArtifactAssessmentDisposition code '"+codeString+"'");
+		}
+		public Enumeration<ArtifactAssessmentDisposition> fromType(Base code) throws FHIRException {
+			if (code == null)
+				return null;
+			if (code.isEmpty())
+				return new Enumeration<ArtifactAssessmentDisposition>(this);
+			String codeString = ((PrimitiveType) code).asStringValue();
+			if (codeString == null || "".equals(codeString))
+				return null;
+		if ("unresolved".equals(codeString))
+			return new Enumeration<ArtifactAssessmentDisposition>(this, ArtifactAssessmentDisposition.UNRESOLVED);
+		if ("not-persuasive".equals(codeString))
+			return new Enumeration<ArtifactAssessmentDisposition>(this, ArtifactAssessmentDisposition.NOTPERSUASIVE);
+		if ("persuasive".equals(codeString))
+			return new Enumeration<ArtifactAssessmentDisposition>(this, ArtifactAssessmentDisposition.PERSUASIVE);
+		if ("persuasive-with-modification".equals(codeString))
+			return new Enumeration<ArtifactAssessmentDisposition>(this, ArtifactAssessmentDisposition.PERSUASIVEWITHMODIFICATION);
+		if ("not-persuasive-with-modification".equals(codeString))
+			return new Enumeration<ArtifactAssessmentDisposition>(this, ArtifactAssessmentDisposition.NOTPERSUASIVEWITHMODIFICATION);
+		throw new FHIRException("Unknown ArtifactAssessmentDisposition code '"+codeString+"'");
+		}
+public String toCode(ArtifactAssessmentDisposition code) {
+	if (code == ArtifactAssessmentDisposition.UNRESOLVED)
+		return "unresolved";
+	if (code == ArtifactAssessmentDisposition.NOTPERSUASIVE)
+		return "not-persuasive";
+	if (code == ArtifactAssessmentDisposition.PERSUASIVE)
+		return "persuasive";
+	if (code == ArtifactAssessmentDisposition.PERSUASIVEWITHMODIFICATION)
+		return "persuasive-with-modification";
+	if (code == ArtifactAssessmentDisposition.NOTPERSUASIVEWITHMODIFICATION)
+		return "not-persuasive-with-modification";
+	return "?";
+	}
+public String toSystem(ArtifactAssessmentDisposition code) {
+	return code.getSystem();
+	}
+}
+
 	public static final String ARTIFACT_COMMENT_EXTENSION_URL = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-artifactComment";
 	public static final String CONTENT = "http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessmentContent";
 	public static final String ARTIFACT = "http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessmentArtifact";
@@ -659,10 +920,27 @@ public class ArtifactAssessment extends Basic {
 		setArtifactExtension(target);
 		setRelatedArtifact(reference);
 		setAuthorExtension(user);
+		setDateExtension(new DateTimeType(new Date()));
 		return this;
 	}
+	public boolean hasCorrectArtifactCommentParams(String type, String text, String target, String reference, String user){
+		return false;
+	}
 	public boolean isValidArtifactComment(){
-		return true;
+		boolean infoTypeExists = false;
+		boolean summaryExists = false;
+		boolean relatedArtifactExists = false;
+		boolean authorExists = false;
+		int contentIndex = findIndex(CONTENT, this.getExtension()) ;
+		if(contentIndex != -1){
+			ArtifactAssessmentContentExtension content = (ArtifactAssessmentContentExtension) this.getExtension().get(contentIndex);
+			infoTypeExists = findIndex(ArtifactAssessmentContentExtension.INFOTYPE, content.getExtension()) != -1;
+			summaryExists = findIndex(ArtifactAssessmentContentExtension.SUMMARY, content.getExtension()) != -1;
+			relatedArtifactExists = findIndex(ArtifactAssessmentContentExtension.RELATEDARTIFACT, content.getExtension()) != -1;
+			authorExists = findIndex(ArtifactAssessmentContentExtension.AUTHOR, content.getExtension()) != -1;
+		}
+		boolean artifactExists = findIndex(ARTIFACT, this.getExtension()) != -1;
+		return infoTypeExists || summaryExists || relatedArtifactExists || authorExists || artifactExists;
 	}
 	public ArtifactAssessment setInfoTypeExtension(ArtifactAssessmentContentInformationType type) {
 		if (type != null) {
@@ -680,7 +958,7 @@ public class ArtifactAssessment extends Basic {
 	}
 
 	public ArtifactAssessment setSummaryExtension(MarkdownType text) {
-		if (text != null) {
+		if (text != null && text.getValue() != null) {
 			ArtifactAssessmentContentExtension ext;
 			int contentIndex = findIndex(CONTENT, this.getExtension());
 			if(contentIndex != -1){
@@ -695,7 +973,29 @@ public class ArtifactAssessment extends Basic {
 	}
 
 	public ArtifactAssessment setArtifactExtension(CanonicalType target) {
-		if (target != null) {
+		if (target != null && target.getValue() != null) {
+			int index = findIndex(ARTIFACT, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactAssessmentArtifactExtension(target));
+			} else {
+				this.addExtension(new ArtifactAssessmentArtifactExtension(target));
+			}
+		}
+		return this;
+	}
+	public ArtifactAssessment setArtifactExtension(Reference target) {
+		if (target != null && target.getReference() != null) {
+			int index = findIndex(ARTIFACT, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactAssessmentArtifactExtension(target));
+			} else {
+				this.addExtension(new ArtifactAssessmentArtifactExtension(target));
+			}
+		}
+		return this;
+	}
+	public ArtifactAssessment setArtifactExtension(UriType target) {
+		if (target != null && target.getValue() != null) {
 			int index = findIndex(ARTIFACT, this.getExtension());
 			if(index != -1){
 				this.extension.set(index, new ArtifactAssessmentArtifactExtension(target));
@@ -707,7 +1007,7 @@ public class ArtifactAssessment extends Basic {
 	}
 
 	public ArtifactAssessment setRelatedArtifact(CanonicalType reference) {
-		if (reference != null) {
+		if (reference != null && reference.getValue() != null) {
 			ArtifactAssessmentContentExtension ext;
 			int contentIndex = findIndex(CONTENT, this.getExtension());
 			if(contentIndex != -1){
@@ -721,7 +1021,7 @@ public class ArtifactAssessment extends Basic {
 		return this;
 	}
 	public ArtifactAssessment setAuthorExtension(Reference reference) {
-		if (reference != null) {
+		if (reference != null && reference.getReference() != null) {
 			ArtifactAssessmentContentExtension ext;
 			int contentIndex = findIndex(CONTENT, this.getExtension());
 			if(contentIndex != -1){
@@ -735,6 +1035,17 @@ public class ArtifactAssessment extends Basic {
 		return this;
 	}
 
+	public ArtifactAssessment setDateExtension(DateTimeType date) {
+		if (date != null) {
+			int index = findIndex(DATE, this.getExtension());
+			if(index != -1){
+				this.extension.set(index, new ArtifactAssessmentDateExtension(date));
+			} else {
+				this.addExtension(new ArtifactAssessmentDateExtension(date));
+			}
+		}
+		return this;
+	}
 
 	private int findIndex(String url, List<Extension> extensions){
 		Optional<Extension> existingExtension =  extensions.stream()
@@ -826,29 +1137,32 @@ public class ArtifactAssessment extends Basic {
 
 		@DatatypeDef(name="ArtifactAssessmentContentTypeExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentTypeExtension extends Extension {
-			public ArtifactAssessmentContentTypeExtension(Enumeration<ArtifactAssessmentContentType> contentType) {
+			@ca.uhn.fhir.model.api.annotation.Binding(valueSet="http://hl7.org/fhir/ValueSet/certainty-type")
+			protected CodeableConcept value;
+
+			private Extension setValue(CodeableConcept theValue) {
+				this.value = theValue;
+				return this;
+			};
+			
+			public ArtifactAssessmentContentTypeExtension(CodeableConcept typeConcept) {
 				super(TYPE);
-				CodeableConcept typeConcept = new CodeableConcept();
-				typeConcept.addCoding(new Coding(
-					contentType.getSystem(),
-					contentType.getCode(),
-					contentType.getDisplay()
-				));
 				this.setValue(typeConcept);
 			}
 		}
 
 		@DatatypeDef(name="ArtifactAssessmentContentClassifierExtension", isSpecialization = true, profileOf = Extension.class)
 		private class ArtifactAssessmentContentClassifierExtension extends Extension {
-			public ArtifactAssessmentContentClassifierExtension(Enumeration<ArtifactAssessmentContentClassifier> classifier) {
+			@ca.uhn.fhir.model.api.annotation.Binding(valueSet="http://hl7.org/fhir/ValueSet/certainty-rating")
+			protected CodeableConcept value;
+
+			private Extension setValue(CodeableConcept theValue) {
+				this.value = theValue;
+				return this;
+			};
+			public ArtifactAssessmentContentClassifierExtension(CodeableConcept classifierConcept) {
 				super(CLASSIFIER);
-				CodeableConcept typeConcept = new CodeableConcept();
-				typeConcept.addCoding(new Coding(
-					classifier.getSystem(),
-					classifier.getCode(),
-					classifier.getDisplay()
-				));
-				this.setValue(typeConcept);
+				this.setValue(classifierConcept);
 			}
 		}
 

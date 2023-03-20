@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
@@ -92,7 +93,7 @@ public class KnowledgeArtifactProcessor {
 	 * artifact, and is otherwise only allowed to add artifactComment elements
 	 * to the artifact and to add or update an endorser.
 	 */
-	public MetadataResource approve(MetadataResource resource, Date approvalDate,
+	public MetadataResource approve(MetadataResource resource, IPrimitiveType<Date> approvalDate,
 			ContactDetail endorser, ArtifactAssessment assessment) {
 
 		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
@@ -102,7 +103,7 @@ public class KnowledgeArtifactProcessor {
 		if (approvalDate == null){
 			targetResourceAdapter.setApprovalDate(currentDate);
 		} else {
-			targetResourceAdapter.setApprovalDate(approvalDate);
+			targetResourceAdapter.setApprovalDate(approvalDate.getValue());
 		}
 
 		// 2. Set date
@@ -117,7 +118,7 @@ public class KnowledgeArtifactProcessor {
 	}
 	ArtifactAssessment createApprovalAssessment(String artifactCommentType,
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
-	IdType artifactCommentUser){
+	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
 		try {
 			ArtifactAssessment artifactAssessment = new ArtifactAssessment();
@@ -126,7 +127,7 @@ public class KnowledgeArtifactProcessor {
 				new MarkdownType(artifactCommentText),
 				artifactCommentTarget,
 				artifactCommentReference,
-				new Reference(artifactCommentUser)
+				artifactCommentUser
 				);
 			if (artifactAssessment.isValidArtifactComment()) {
 				return artifactAssessment;

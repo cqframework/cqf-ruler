@@ -1,45 +1,54 @@
 
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
-import org.hl7.fhir.r4.model.ContactDetail;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.DateType;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.UriType;
-import org.junit.jupiter.api.Test;
-import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
-import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import static graphql.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.booleanPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.codePart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
-import javax.xml.bind.DatatypeConverter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static graphql.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
+import javax.xml.bind.DatatypeConverter;
+
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.ContactDetail;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.DateType;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.junit.jupiter.api.Test;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
+import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = {RepositoryServiceTest.class, CqlConfig.class},
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 
 class RepositoryServiceTest extends RestIntegrationTest {
-
+	private final String specificationLibReference = "Library/SpecificationLibrary";
 	@Test
 	void draftOperation_active_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 
 		Parameters params = parameters(part("version", "1.1.1") );
 		Resource returnResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$draft")
 			.withParameters(params)
 			.returnResourceType(Library.class)
@@ -181,34 +190,41 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void approveOperation_twice_appends_artifactComment_test() {
+	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
-		DateType approvalDate = new DateType(DatatypeConverter.parseDate("2022-12-12").getTime());
+		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist";
 		Parameters params = parameters( 
-			part("approvalDate", approvalDate),
-			part("artifactCommentType", "documentation")
+			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);	
-		Library returnedResource = null;
-		//once
-		getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
-			// twice
-			returnedResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
-			.named("$approve")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-		assertNotNull(returnedResource);
-
-		// Artifact Comment Extension was appended	
-		assertTrue(returnedResource.getExtension().size() == 2);
+		} catch (UnprocessableEntityException e) {
+			assertNotNull(e);
+		}
 	}
-
+	@Test
+	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
+		loadResource("ersd-active-library-example.json");
+		String artifactCommentType = "this-type-does-not-exist";
+		Parameters params = parameters( 
+			part("artifactCommentType", artifactCommentType)
+		);	
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$approve")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			assertNotNull(e);
+		}
+	}
 	@Test
 	void approveOperation_twice_appends_endorser_test() {
 		loadResource("ersd-active-library-example.json");
@@ -227,25 +243,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("approvalDate", approvalDate),
 			part("endorser", endorser2)
 		);	
-		Library returnedResource = null;
 		//once
 		getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params1)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 			// twice
-			returnedResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			getClient().operation()
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params2)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
-		assertNotNull(returnedResource);
 
 		// Endorser was appended	
-		assertTrue(returnedResource.getEndorser().size() == 2);
+		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
+		assertTrue(lib.getEndorser().size() == 2);
 	}
 
 	@Test
@@ -262,13 +277,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("approvalDate", approvalDate),
 			part("endorser", endorser)
 		);	
-		Library returnedResource = null;
 		//once
 		getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params1)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 			endorser.setTelecom((List<ContactPoint>) Arrays.asList(newContact));
 			Parameters params2 = parameters( 
@@ -276,29 +290,30 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("endorser", endorser)
 		);	
 			// twice
-			returnedResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			getClient().operation()
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params2)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
-		assertNotNull(returnedResource);
 
 		// Endorser was updated	
-		assertTrue(returnedResource.getEndorser().size() == 1);
-		assertTrue(returnedResource.getEndorser().get(0).getTelecom().get(0).getValue().equals(testContactValue));
+		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
+		assertTrue(lib.getEndorser().size() == 1);
+		assertTrue(lib.getEndorser().get(0).getTelecom().get(0).getValue().equals(testContactValue));
 	}
 
 	@Test
 	void approveOperation_test() {
 		loadResource("ersd-active-library-example.json");
+		loadResource("practitioner-example-for-refs.json");
 		String approvalDateString = "2022-12-12";
 		DateType approvalDate = new DateType(DatatypeConverter.parseDate(approvalDateString).getTime());
-		String artifactCommentType = "documentation";
+		String artifactCommentType = "comment";
 		String artifactCommentText = "comment text";
-		String artifactCommentTarget= "target";
+		String artifactCommentTarget= specificationLibReference;
 		String artifactCommentReference="reference-valid-no-spaces";
-		String artifactCommentUser="user";
+		String artifactCommentUser= "Practitioner/sample-practitioner";
 		String endorserName = "EndorserName";
 		ContactDetail endorser = new ContactDetail();
 		endorser.setName(endorserName);
@@ -306,39 +321,44 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("approvalDate", approvalDate),
 			part("artifactCommentType", artifactCommentType),
 			part("artifactCommentText", artifactCommentText),
-			part("artifactCommentTarget", artifactCommentTarget),
-			part("artifactCommentReference", artifactCommentReference),
-			part("artifactCommentUser", artifactCommentUser),
+			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget)),
+			part("artifactCommentReference", new CanonicalType(artifactCommentReference)),
+			part("artifactCommentUser", new Reference(artifactCommentUser)),
 			part("endorser", endorser)
 		);	
-		Library returnedResource = null;
+		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$approve")
 			.withParameters(params)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 
 		assertNotNull(returnedResource);
-				
+		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
+		assertNotNull(lib);
 		// Approval date is correct
-		assertTrue(returnedResource.getApprovalDateElement().asStringValue().equals(approvalDateString));
+		assertTrue(lib.getApprovalDateElement().asStringValue().equals(approvalDateString));
 		// match Libray.date to Library.meta.lastUpdated precision before comparing
-		returnedResource.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.SECOND);
+		lib.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.SECOND);
 		// date is correct
-		assertTrue(returnedResource.getDateElement().asStringValue().equals(returnedResource.getMeta().getLastUpdatedElement().asStringValue()));
-		
-		// Artifact Comment Extension is correct	
-		Optional<Extension> artifactCommentExtension = returnedResource.getExtension().stream().filter(e -> e.getUrl().equals(ArtifactCommentExtension.ARTIFACT_COMMENT_EXTENSION_URL)).findFirst();
-		assertTrue(artifactCommentExtension.isPresent());
-		assertTrue(artifactCommentExtension.get().getExtensionByUrl(ArtifactCommentExtension.TYPE).getValue().toString().equals(artifactCommentType));
-		assertTrue(artifactCommentExtension.get().getExtensionByUrl(ArtifactCommentExtension.TEXT).getValue().toString().equals(artifactCommentText));
-		assertTrue(artifactCommentExtension.get().getExtensionByUrl(ArtifactCommentExtension.TARGET).getValue().toString().equals( artifactCommentTarget));
-		assertTrue(((UriType) artifactCommentExtension.get().getExtensionByUrl(ArtifactCommentExtension.REFERENCE).getValue()).asStringValue().equals(artifactCommentReference));
-		assertTrue(artifactCommentExtension.get().getExtensionByUrl(ArtifactCommentExtension.USER).getValue().toString().equals(artifactCommentUser));
-		
+		assertTrue(lib.getDateElement().asStringValue().equals(lib.getMeta().getLastUpdatedElement().asStringValue()));
+		System.out.println(returnedResource.getEntry().get(0).getResponse().getLocation());
+		System.out.println(returnedResource.getEntry().get(1).getResponse().getLocation());
+		System.out.println(returnedResource.getEntry().get(0));
+		System.out.println(returnedResource.getEntry().get(1));
+		Optional<BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+		assertTrue(maybeArtifactAssessment.isPresent());
+		ArtifactAssessment artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
+		assertTrue(artifactAssessment.hasCorrectArtifactCommentParams(
+			artifactCommentType,
+			artifactCommentText,
+			artifactCommentTarget,
+			artifactCommentReference,
+			artifactCommentUser
+		));
 		// Endorser is correct
-		assertTrue(returnedResource.getEndorser().get(0).getName().equals(endorserName));
+		assertTrue(lib.getEndorser().get(0).getName().equals(endorserName));
 		
 	}
 
