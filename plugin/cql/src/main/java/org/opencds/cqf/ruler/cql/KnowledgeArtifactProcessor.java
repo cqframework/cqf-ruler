@@ -126,7 +126,8 @@ public class KnowledgeArtifactProcessor {
 				ArtifactAssessmentContentInformationType.fromCode(artifactCommentType),
 				new MarkdownType(artifactCommentText),
 				artifactCommentReference,
-				artifactCommentUser
+				artifactCommentUser,
+				null
 				);
 			if (artifactAssessment.isValidArtifactComment()) {
 				return artifactAssessment;
