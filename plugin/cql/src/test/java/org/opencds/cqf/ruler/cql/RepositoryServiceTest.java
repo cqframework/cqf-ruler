@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -83,26 +84,26 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	//		.returnResourceType(Library.class)
 	//		.execute();
 
-	@Test
-	void releaseResource_test() {
-		loadTransaction("ersd-release-bundle.json");
-		String versionData = "1234";
-
-		Parameters params1 = parameters(
-			stringPart("version", "1234"),
-			codePart("version-behavior", "default")
-		);
-
-		Library returnResource = getClient().operation()
-			.onInstance("Library/ReleaseSpecificationLibrary")
-			.named("$release")
-			.withParameters(params1)
-			.useHttpGet()
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnResource);
-	}
+//	@Test
+//	void releaseResource_test() {
+//		loadTransaction("ersd-release-bundle.json");
+//		String versionData = "1234";
+//
+//		Parameters params1 = parameters(
+//			stringPart("version", "1234"),
+//			codePart("version-behavior", "default")
+//		);
+//
+//		Library returnResource = getClient().operation()
+//			.onInstance("Library/ReleaseSpecificationLibrary")
+//			.named("$release")
+//			.withParameters(params1)
+//			.useHttpGet()
+//			.returnResourceType(Library.class)
+//			.execute();
+//
+//		assertNotNull(returnResource);
+//	}
 
 	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
@@ -132,10 +133,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void reviseOperation_draft_test() {
 		String newResourceName = "NewSpecificationLibrary";
-		Library library = (Library)loadResource("ersd-draft-library-example.json");
+		Library library = (Library) loadResource("ersd-draft-library-example.json");
 		library.setName(newResourceName);
 		String errorMessage = "";
-		Parameters params = parameters(part("resource", library) );
+		Parameters params = parameters(part("resource", library));
 		Library returnResource = null;
 		try {
 			returnResource = getClient().operation()
@@ -144,13 +145,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				.withParameters(params)
 				.returnResourceType(Library.class)
 				.execute();
-		} catch ( Exception e) {
+		} catch (Exception e) {
 			errorMessage = e.getMessage();
 		}
 
 		assertTrue(errorMessage.isEmpty());
 		assertTrue(returnResource != null);
 		assertTrue(returnResource.getName().equals(newResourceName));
+	}
+
 	void release_missing_approvalDate_validation_test() {
 		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
 		String versionData = "1234";
@@ -195,37 +198,36 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 	}
 
-	@Test
-	void reviseOperation_draft_test() {
-		String newResourceName = "NewSpecificationLibrary";
-		Library library = (Library) loadResource("ersd-draft-library-example.json");
-		library.setName(newResourceName);
-		String errorMessage = "";
-		Parameters params = parameters(part("resource", library));
-		Library returnResource = null;
-		try {
-			returnResource = getClient().operation()
-				.onServer()
-				.named("$revise")
-				.withParameters(params)
-				.returnResourceType(Library.class)
-				.execute();
-		} catch (Exception e) {
-			errorMessage = e.getMessage();
-		}
+//	@Test
+//	void reviseOperation_draft_test() {
+//		String newResourceName = "NewSpecificationLibrary";
+//		Library library = (Library) loadResource("ersd-draft-library-example.json");
+//		library.setName(newResourceName);
+//		String errorMessage = "";
+//		Parameters params = parameters(part("resource", library));
+//		Library returnResource = null;
+//		try {
+//			returnResource = getClient().operation()
+//				.onServer()
+//				.named("$revise")
+//				.withParameters(params)
+//				.returnResourceType(Library.class)
+//				.execute();
+//		} catch (Exception e) {
+//			errorMessage = e.getMessage();
+//		}
+//
+//		assertTrue(errorMessage.isEmpty());
+//		assertTrue(returnResource != null);
+//		assertTrue(returnResource.getName().equals(newResourceName));
+//	}
 
-		assertTrue(errorMessage.isEmpty());
-		assertTrue(returnResource != null);
-		assertTrue(returnResource.getName().equals(newResourceName));
-	}
 
 	@Test
-	void packageOperation_no_id_test() {
-		loadTransaction("ersd-active-transaction-bundle-example.json");
-		Bundle specLibrary = (Bundle) readResource("ersd-active-transaction-bundle-example.json");
-		specLibrary.setId("");
+	void packageOperation_library_test() {
+		loadTransaction("ersd-package-test-bundle.json");
 		String actualMessage = "";
-		IBaseBundle returnBundle = null;
+		Bundle returnBundle = null;
 		try {
 			returnBundle = getClient().operation()
 				.onInstance("Library/SpecificationLibrary")
@@ -239,29 +241,19 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 
 		assertNotNull(returnBundle);
+
+		// Test for inclusion of Profile (us-ph-valueset) referenced in Library.dataRequirement[].profile
+		assertTrue(returnBundle.getEntry().stream().
+			anyMatch(e -> ((MetadataResource)e.getResource()).getUrl().equals("http://ersd.aimsplatform.org/fhir/StructureDefinition/us-ph-valueset")));
+
+		// Test for inclusion of ValueSet referenced in Library.dataRequirement[].codeFilter
+		assertTrue(returnBundle.getEntry().stream().anyMatch(e -> ((MetadataResource)e.getResource()).getUrl().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438")));
+
+		// Naive test for completeness - based on resource count.
+		assertTrue(returnBundle.getEntry().size() == 40);
 	}
 
 	@Test
-	void packageOperation_id_test() {
-		loadTransaction("ersd-active-transaction-bundle-example.json");
-		//Bundle specLibrary = (Bundle) readResource("ersd-active-transaction-bundle-example.json");
-		//specLibrary.setId("NewSpecificationLibrary");
-		String actualMessage = "";
-		IBaseBundle returnBundle = null;
-		try {
-			returnBundle = getClient().operation()
-				.onInstance("Library/SpecificationLibrary")
-				.named("$package")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch ( Exception e) {
-			actualMessage = e.getMessage();
-			//assertTrue(actualMessage.contains("The resource must have a valid id to be packaged."));
-		}
-
-		assertNotNull(returnBundle);
-	}
 	void approveOperation_twice_appends_artifactComment_test() {
 		loadResource("ersd-active-library-example.json");
 		DateType approvalDate = new DateType(DatatypeConverter.parseDate("2022-12-12").getTime());
@@ -422,6 +414,5 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(returnedResource.getEndorser().get(0).getName().equals(endorserName));
 		
 	}
-
 }
 

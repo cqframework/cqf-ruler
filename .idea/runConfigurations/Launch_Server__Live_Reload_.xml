@@ -1,7 +1,15 @@
 <component name="ProjectRunConfigurationManager">
 	<configuration default="false" name="Launch Server (Live Reload)" type="Application" factoryName="Application">
-		<option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-1.8" />
+		<!--    <option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-1.8" />-->
 		<option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+		<envs>
+			<env name="hapi.fhir.cql.engine.max_codes_per_query" value="10" />
+			<env name="hapi.fhir.cql.engine.query_batch_threshold" value="10" />
+			<env name="hapi.fhir.cql.engine.should_expand_value_sets" value="true" />
+			<env name="hapi.fhir.cql.engine.debug_logging_enabled" value="true" />
+			<env name="hapi.fhir.cql.translator.analyze_data_requirements" value="true" />
+			<env name="hapi.fhir.cql.translator.collapse_data_requirements" value="true" />
+		</envs>
 		<option name="INCLUDE_PROVIDED_SCOPE" value="true" />
 		<option name="MAIN_CLASS_NAME" value="org.opencds.cqf.ruler.Application" />
 		<module name="cqf-ruler-server" />

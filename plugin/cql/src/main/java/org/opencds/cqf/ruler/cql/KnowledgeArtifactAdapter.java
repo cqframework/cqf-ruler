@@ -1,18 +1,22 @@
 package org.opencds.cqf.ruler.cql;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.ruler.utility.SemanticVersion;
 
 public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	protected T resource;
@@ -238,4 +242,36 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 			//TODO: Is calling MetadataResource.copy() the right default behavior?
 		}
 	}
+
+	public static MetadataResource findLatestVersion(List<MetadataResource> resources) {
+		Comparator<String> versionComparator = SemanticVersion.getVersionComparator();
+		MetadataResource latestResource = null;
+
+		for (MetadataResource resource : resources) {
+			String version = resource.getVersion();
+			if (latestResource == null || versionComparator.compare(version, latestResource.getVersion()) > 0) {
+				latestResource = resource;
+			}
+		}
+
+		return latestResource;
+	}
+
+	public static MetadataResource findLatestVersion(Bundle bundle) {
+		List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
+		List<MetadataResource> metadataResources = new ArrayList<>();
+
+		for (Bundle.BundleEntryComponent entry : entries) {
+			Resource resource = entry.getResource();
+			if (resource instanceof MetadataResource) {
+				MetadataResource metadataResource = (MetadataResource) resource;
+				metadataResources.add(metadataResource);
+			}
+		}
+
+		MetadataResource metadataResource = findLatestVersion(metadataResources);
+		return metadataResource;
+	}
 }
+
+
