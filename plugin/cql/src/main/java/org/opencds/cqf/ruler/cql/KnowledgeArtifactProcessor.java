@@ -230,6 +230,11 @@ public class KnowledgeArtifactProcessor {
 	
 	/* $release */
 	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
+		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
+		if (latestFromTxServer) {
+			throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+		}
+
 		if (version == null || version.isEmpty()) {
 			throw new InvalidOperatorArgument("version must be provided as an argument to the $release operation.");
 		}
@@ -260,6 +265,7 @@ public class KnowledgeArtifactProcessor {
 				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", currentApprovalDate, rootArtifact.getDate()));
 		}
 
+		// Determine which version should be used.
 		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion() : null;
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion);
 
