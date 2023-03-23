@@ -227,13 +227,35 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
-	
+
+	@Nullable
+	private String getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) {
+		String releaseVersion = null;
+
+		// If no version exists use the version argument provided
+		if (existingVersion == null || existingVersion.isEmpty() || existingVersion.isBlank()) {
+			return version;
+		}
+
+		if (versionBehavior.getCode().equals("default")) {
+			releaseVersion = existingVersion != null && !existingVersion.isEmpty() ? existingVersion : version;
+		} else if (versionBehavior.getCode().equals("check")) {
+			if (existingVersion.equals(version)) {
+				throw new IllegalStateException(String.format("versionBehavior specified is 'check and the version provided ('%s') does not match the version currently specified on the root artifact ('%s')."));
+			}
+		} else if (versionBehavior.getCode().equals("force")) {
+			releaseVersion = version;
+		}
+		return releaseVersion;
+	}
+
 	/* $release */
 	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
 		if (latestFromTxServer) {
 			throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
+		// TODO: This needs to be transactional!
 
 		if (version == null || version.isEmpty()) {
 			throw new InvalidOperatorArgument("version must be provided as an argument to the $release operation.");
@@ -247,13 +269,11 @@ public class KnowledgeArtifactProcessor {
 			throw new InvalidOperatorArgument(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
 		}
 
-		// TODO: This needs to be transactional!
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
 		if (rootArtifact == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
 		}
 
-		//TODO: Validate that the artifact is eligible for release - a current approval (approvalDate > date)
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		if (currentApprovalDate == null) {
@@ -285,27 +305,6 @@ public class KnowledgeArtifactProcessor {
 		fhirDal.update(rootArtifact);
 
 		return rootArtifact;
-	}
-
-	@Nullable
-	private String getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) {
-		String releaseVersion = null;
-
-		// If no version exists use the version argument provided
-		if (existingVersion == null || existingVersion.isEmpty() || existingVersion.isBlank()) {
-			return version;
-		}
-
-		if (versionBehavior.getCode().equals("default")) {
-			releaseVersion = existingVersion != null && !existingVersion.isEmpty() ? existingVersion : version;
-		} else if (versionBehavior.getCode().equals("check")) {
-			if (existingVersion.equals(version)) {
-				throw new IllegalStateException(String.format("versionBehavior specified is 'check and the version provided ('%s') does not match the version currently specified on the root artifact ('%s')."));
-			}
-		} else if (versionBehavior.getCode().equals("force")) {
-			releaseVersion = version;
-		}
-		return releaseVersion;
 	}
 
 	private List<RelatedArtifact> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
