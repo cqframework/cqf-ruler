@@ -13,6 +13,7 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.ValueSet;
 
 public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	protected T resource;
@@ -117,6 +118,8 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 				return getDependenciesOfMeasure();
 			case "PlanDefinition":
 				return getDependenciesOfPlanDefinition();
+			case "ValueSet":
+				return getDependenciesOfValueSet();
 			default :
 				return new ArrayList<>();
 		}
@@ -177,6 +180,27 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 						.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
 						.setResource(library.getValueAsString())
 				);
+			}
+		}
+
+		return dependencies;
+	}
+
+	private List<RelatedArtifact> getDependenciesOfValueSet() {
+		List<RelatedArtifact> dependencies = new ArrayList<>();
+		ValueSet valueSet = (ValueSet)resource;
+
+		if (valueSet.hasCompose() && valueSet.getCompose().hasInclude()) {
+			for (var conceptSet : valueSet.getCompose().getInclude()) {
+				if (conceptSet.hasValueSet()) {
+					for (var valueSetRef : conceptSet.getValueSet()) {
+						dependencies.add(
+							new RelatedArtifact()
+								.setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
+								.setResource(valueSetRef.getValue())
+						);
+					}
+				}
 			}
 		}
 

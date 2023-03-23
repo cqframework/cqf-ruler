@@ -120,7 +120,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters params1 = parameters(
 			stringPart("version", "1234"),
 			codePart("version-behavior", "default"),
-			booleanPart("latest-from-tx-server", true)
+			booleanPart("latest-from-tx-server", false)
 		);
 
 		try {
