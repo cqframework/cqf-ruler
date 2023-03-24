@@ -34,6 +34,10 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 
 @ResourceDef(id="ArtifactAssessment", profile = "http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessment")
 public class ArtifactAssessment extends Basic {
+	public String fhirType() {
+		return "ArtifactAssessment";
+	}
+
 	public enum ArtifactAssessmentContentInformationType {
 		/**
 		 * A comment on the artifact

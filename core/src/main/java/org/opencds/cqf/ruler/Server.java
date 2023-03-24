@@ -13,6 +13,7 @@ import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.BaseJpaRestfulServer;
 import org.opencds.cqf.external.mdm.MdmConfig;
+import org.opencds.cqf.ruler.api.CustomResourceRegisterer;
 import org.opencds.cqf.ruler.api.Interceptor;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -87,6 +88,16 @@ public class Server extends BaseJpaRestfulServer {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void initialize() throws ServletException {
 		super.initialize();
+
+		log.info("Registering custom resources");
+		Map<String, CustomResourceRegisterer> customerResourceRegisterer = applicationContext.getBeansOfType(CustomResourceRegisterer.class);
+		for (CustomResourceRegisterer r : customerResourceRegisterer.values()) {
+			log.info("Registering {}", r.getClass().getName());
+			r.register(myFhirSystemDao.getContext());
+			registerProvider(r.getResourceProviders(myFhirSystemDao.getContext()));
+//			Collection<ResourceBinding> col = getResourceBindings();
+//			log.info(getResourceBindings().stream().anyMatch(rb -> rb.getResourceName().equalsIgnoreCase("ArtifactAssessment"))? "true": "false");
+		}
 
 		log.info("Loading operation providers from plugins");
 		Map<String, OperationProvider> providers = applicationContext.getBeansOfType(OperationProvider.class);
