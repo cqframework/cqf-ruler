@@ -94,7 +94,8 @@ public class Server extends BaseJpaRestfulServer {
 		for (CustomResourceRegisterer r : customerResourceRegisterer.values()) {
 			log.info("Registering {}", r.getClass().getName());
 			r.register(myFhirSystemDao.getContext());
-			registerProvider(r.getResourceProviders(myFhirSystemDao.getContext()));
+			r.getResourceProviders(myFhirSystemDao.getContext()).forEach(provider ->
+				registerProvider(provider));
 //			Collection<ResourceBinding> col = getResourceBindings();
 //			log.info(getResourceBindings().stream().anyMatch(rb -> rb.getResourceName().equalsIgnoreCase("ArtifactAssessment"))? "true": "false");
 		}
