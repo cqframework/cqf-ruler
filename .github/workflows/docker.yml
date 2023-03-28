@@ -1,0 +1,24 @@
+name: create release docker image
+on:
+  release:
+    types: [created]
+jobs:
+  publish-docker-develop-image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: olegtarasov/get-tag@v2.1
+      id: tagName
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build the cql ruller Docker image
+      run: |
+         LABEL=develop
+         docker build . --tag ghcr.io/cqframework/cqf-ruler:latest --tag ghcr.io/cqframework/cqf-ruler:$GIT_TAG_NAME
+         docker push ghcr.io/cqframework/cqf-ruler:${GIT_TAG_NAME}
