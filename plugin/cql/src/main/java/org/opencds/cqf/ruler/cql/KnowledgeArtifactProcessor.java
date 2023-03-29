@@ -116,17 +116,18 @@ public class KnowledgeArtifactProcessor {
 		}
 		return resource;
 	}
-	ArtifactAssessment createApprovalAssessment(String artifactCommentType,
+	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
 	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
 		try {
-			ArtifactAssessment artifactAssessment = new ArtifactAssessment(artifactCommentTarget);
+			ArtifactAssessment artifactAssessment = new ArtifactAssessment(new Reference(id));
 			artifactAssessment.createArtifactComment(
 				ArtifactAssessmentContentInformationType.fromCode(artifactCommentType),
 				new MarkdownType(artifactCommentText),
 				artifactCommentReference,
 				artifactCommentUser,
+				artifactCommentTarget,
 				null
 				);
 			if (artifactAssessment.isValidArtifactComment()) {

@@ -929,7 +929,7 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 		super();
 		this.setArtifactExtension(artifact);
 	}
-	public ArtifactAssessment createArtifactComment(ArtifactAssessmentContentInformationType type, MarkdownType text, CanonicalType reference, Reference user, CanonicalType target)  throws FHIRException {
+	public ArtifactAssessment createArtifactComment(ArtifactAssessmentContentInformationType type, MarkdownType text, CanonicalType reference, Reference user, CanonicalType targetUri, Reference targetReference)  throws FHIRException {
 		ArtifactAssessmentContentExtension content = new ArtifactAssessmentContentExtension();
 		if (type != null) {
 			content.setInfoType(type);
@@ -938,54 +938,66 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 			content.setSummary(text);
 		}
 		if (reference != null && reference.getValue() != null) {
-			content.addRelatedArtifact(reference);
+			content.addRelatedArtifact(reference, RelatedArtifactType.CITATION);
 		}
 		if (user != null && user.getReference() != null) {
 			content.setAuthorExtension(user);
 		}
+		if(targetUri != null){
+			content.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+		}
 		this.addExtension(content);
 		setDateExtension(new DateTimeType(new Date()));
-		if(target != null){
-			this.setArtifactExtension(target);
+		if (targetReference != null && targetReference.getReference() != null) {
+			this.setArtifactExtension(targetReference);
 		}
 		return this;
 	}
-	public boolean checkArtifactCommentParams(String infoType, String summary, String artifactUrl, String relatedArtifactUrl, String authorReference){
+	public boolean checkArtifactCommentParams(String infoType, String summary, String artifactReference, String citationRelatedArtifactUrl, String derivedFromRelatedArtifactUrl, String authorReference){
 		boolean infoTypeCorrect = false;
 		boolean summaryCorrect = false;
-		boolean relatedArtifactCorrect = false;
+		boolean citationRelatedArtifactCorrect = false;
+		boolean derivedFromRelatedArtifactCorrect = false;
 		boolean authorCorrect = false;
 		boolean artifactCorrect = false;
 		int contentIndex = findIndex(CONTENT, null, this.getExtension()) ;
 		if(contentIndex != -1){
-			Extension contentExtension = this.getExtension().get(contentIndex);
-			int infoTypeIndex = findIndex(ArtifactAssessmentContentExtension.INFOTYPE, null, contentExtension.getExtension());
+			Extension contentExt = this.getExtension().get(contentIndex);
+			int infoTypeIndex = findIndex(ArtifactAssessmentContentExtension.INFOTYPE, null, contentExt.getExtension());
 			if(infoTypeIndex != -1){
-				Extension infoTypeExtension = contentExtension.getExtension().get(infoTypeIndex);
-				infoTypeCorrect = ((CodeType) infoTypeExtension.getValue()).getValue().equals(infoType);
+				Extension infoTypeExt = contentExt.getExtension().get(infoTypeIndex);
+				infoTypeCorrect = ((CodeType) infoTypeExt.getValue()).getValue().equals(infoType);
 			}
-			int summaryIndex = findIndex(ArtifactAssessmentContentExtension.SUMMARY, null, contentExtension.getExtension());
+			int summaryIndex = findIndex(ArtifactAssessmentContentExtension.SUMMARY, null, contentExt.getExtension());
 			if(summaryIndex != -1){
-				Extension summaryExtension = contentExtension.getExtension().get(summaryIndex);
-				summaryCorrect = ((StringType) summaryExtension.getValue()).getValue().equals(summary);
+				Extension summaryExt = contentExt.getExtension().get(summaryIndex);
+				summaryCorrect = ((StringType) summaryExt.getValue()).getValue().equals(summary);
 			}
-			int relatedArtifactIndex = findIndex(ArtifactAssessmentContentExtension.RELATEDARTIFACT, null, contentExtension.getExtension());
-			if(relatedArtifactIndex != -1){
-				Extension relatedArtifactExtension = contentExtension.getExtension().get(relatedArtifactIndex);
-				relatedArtifactCorrect = ((RelatedArtifact) relatedArtifactExtension.getValue()).getResource().equals(relatedArtifactUrl);
+			List<Extension> relatedArtifactList = contentExt.getExtension().stream().filter(e -> e.getUrl().equals(ArtifactAssessmentContentExtension.RELATEDARTIFACT)).collect(Collectors.toList());
+			if(relatedArtifactList.size() > 0){
+				Optional<Extension> maybeCitation = relatedArtifactList.stream().filter(ext -> ((RelatedArtifact) ext.getValue()).getType().equals(RelatedArtifactType.CITATION)).findAny();
+				Optional<Extension> maybeDerivedFrom = relatedArtifactList.stream().filter(ext -> ((RelatedArtifact) ext.getValue()).getType().equals(RelatedArtifactType.DERIVEDFROM)).findAny();
+				if(maybeCitation.isPresent()){
+					Extension citation = maybeCitation.get();
+          citationRelatedArtifactCorrect = ((RelatedArtifact) citation.getValue()).getResource().equals(citationRelatedArtifactUrl);
+				}
+				if(maybeDerivedFrom.isPresent()){
+          Extension derivedFrom = maybeDerivedFrom.get();
+          derivedFromRelatedArtifactCorrect = ((RelatedArtifact) derivedFrom.getValue()).getResource().equals(derivedFromRelatedArtifactUrl);
+        }
 			}
-			int authorIndex = findIndex(ArtifactAssessmentContentExtension.AUTHOR, null, contentExtension.getExtension());
+			int authorIndex = findIndex(ArtifactAssessmentContentExtension.AUTHOR, null, contentExt.getExtension());
 			if(authorIndex != -1){
-				Extension authorExtension = contentExtension.getExtension().get(authorIndex);
-				authorCorrect = ((Reference) authorExtension.getValue()).getReference().equals(authorReference);
+				Extension authorExt = contentExt.getExtension().get(authorIndex);
+				authorCorrect = ((Reference) authorExt.getValue()).getReference().equals(authorReference);
 			}
 		}
 		int artifactIndex = findIndex(ARTIFACT, null, this.getExtension());
 		if(artifactIndex != -1){
-			Extension artifactExtension = this.getExtension().get(artifactIndex);
-			artifactCorrect = ((CanonicalType) artifactExtension.getValue()).getValue().equals(artifactUrl);
+			Extension artifactExt = this.getExtension().get(artifactIndex);
+			artifactCorrect = ((Reference) artifactExt.getValue()).getReference().equals(artifactReference);
 		}
-		return artifactCorrect && infoTypeCorrect && summaryCorrect && relatedArtifactCorrect && authorCorrect;
+		return artifactCorrect && infoTypeCorrect && summaryCorrect && citationRelatedArtifactCorrect && derivedFromRelatedArtifactCorrect && authorCorrect;
 	}
 	public boolean isValidArtifactComment(){
 		boolean infoTypeExists = false;
@@ -1190,10 +1202,10 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 			}
 			return this;
 		}
-		ArtifactAssessmentContentExtension addRelatedArtifact(CanonicalType reference){
+		ArtifactAssessmentContentExtension addRelatedArtifact(CanonicalType reference, RelatedArtifactType type){
 			if (reference != null) {
 				RelatedArtifact newRelatedArtifact = new RelatedArtifact();
-				newRelatedArtifact.setType(RelatedArtifactType.CITATION);
+				newRelatedArtifact.setType(type);
 				newRelatedArtifact.setResourceElement(reference);
 				int index = findIndex(RELATEDARTIFACT, newRelatedArtifact, this.getExtension());
 				if(index == -1){

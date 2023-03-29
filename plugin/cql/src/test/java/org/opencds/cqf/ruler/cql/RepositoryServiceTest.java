@@ -311,7 +311,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		DateType approvalDate = new DateType(DatatypeConverter.parseDate(approvalDateString).getTime());
 		String artifactCommentType = "comment";
 		String artifactCommentText = "comment text";
-		String artifactCommentTarget= specificationLibReference;
+		String artifactCommentTarget= "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary" + "|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
 		String endorserName = "EndorserName";
@@ -353,8 +353,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(artifactAssessment.checkArtifactCommentParams(
 			artifactCommentType,
 			artifactCommentText,
-			artifactCommentTarget,
+      specificationLibReference,
 			artifactCommentReference,
+			artifactCommentTarget,
 			artifactCommentUser
 		));
 		// Endorser is correct
