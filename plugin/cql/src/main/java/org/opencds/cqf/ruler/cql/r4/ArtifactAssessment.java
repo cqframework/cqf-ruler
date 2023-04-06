@@ -1005,7 +1005,8 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 		boolean relatedArtifactExists = false;
 		boolean authorExists = false;
 		boolean dateExists = findIndex(DATE, null, this.getExtension()) != -1;
-		int contentIndex = findIndex(CONTENT, null, this.getExtension()) ;
+		boolean artifactExists = findIndex(ARTIFACT, null, this.getExtension()) != -1;
+		int contentIndex = findIndex(CONTENT, null, this.getExtension());
 		if(contentIndex != -1){
 			Extension content = this.getExtension().get(contentIndex);
 			infoTypeExists = findIndex(ArtifactAssessmentContentExtension.INFOTYPE, null, content.getExtension()) != -1;
@@ -1013,7 +1014,7 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 			relatedArtifactExists = findIndex(ArtifactAssessmentContentExtension.RELATEDARTIFACT, null, content.getExtension()) != -1;
 			authorExists = findIndex(ArtifactAssessmentContentExtension.AUTHOR, null, content.getExtension()) != -1;
 		}
-		return (infoTypeExists || summaryExists || relatedArtifactExists || authorExists) && dateExists;
+		return (infoTypeExists || summaryExists || relatedArtifactExists || authorExists) && dateExists && artifactExists;
 	}
 	List<ArtifactAssessmentContentExtension> getContent(){
 		return this.getExtension().stream().filter(ext -> ext.getUrl().equals(CONTENT)).map(ext -> (ArtifactAssessmentContentExtension) ext).collect(Collectors.toList());

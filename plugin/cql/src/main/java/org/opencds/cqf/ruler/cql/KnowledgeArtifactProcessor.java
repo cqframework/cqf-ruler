@@ -120,8 +120,9 @@ public class KnowledgeArtifactProcessor {
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
 	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
+		ArtifactAssessment artifactAssessment;
 		try {
-			ArtifactAssessment artifactAssessment = new ArtifactAssessment(new Reference(id));
+			artifactAssessment = new ArtifactAssessment(new Reference(id));
 			artifactAssessment.createArtifactComment(
 				ArtifactAssessmentContentInformationType.fromCode(artifactCommentType),
 				new MarkdownType(artifactCommentText),
@@ -130,13 +131,10 @@ public class KnowledgeArtifactProcessor {
 				artifactCommentTarget,
 				null
 				);
-			if (artifactAssessment.isValidArtifactComment()) {
-				return artifactAssessment;
-			}
 		} catch (FHIRException e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
-		return null;
+		return artifactAssessment;
 	}
 
 	/* $draft */

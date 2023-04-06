@@ -86,8 +86,13 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if(artifactCommentTarget == null){
 			artifactCommentTarget = new CanonicalType(theId.getValue());
 		}
-		ArtifactAssessment newAssessment = this.artifactProcessor.createApprovalAssessment(theId,artifactCommentType,
-				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser);
+		ArtifactAssessment newAssessment = this.artifactProcessor.createApprovalAssessment(
+			theId,
+			artifactCommentType,
+			artifactCommentText,
+			artifactCommentTarget,
+			artifactCommentReference,
+			artifactCommentUser);
 		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, endorser, newAssessment);
 		Bundle transactionBundle = new Bundle()
 		.setType(Bundle.BundleType.TRANSACTION)
