@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
@@ -19,11 +20,14 @@ import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.cql.evaluator.fhir.util.Libraries;
+import org.opencds.cqf.cql.evaluator.measure.helper.DateHelper;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
@@ -67,13 +71,16 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Library library = read(theId, theRequestDetails);
-		return processDataRequirements(library, theRequestDetails);
+		// Passing an empty parameters here forces the DataReq gather to evaluate expression which allows for
+		// date-related where clause to be pushed into the DataRequirements and therefore FHIR Query Patterns.
+		Map<String, Object> parameters = new HashMap<>();
+		return processDataRequirements(library, theRequestDetails, parameters);
 	}
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
 	public Library dataRequirements(@IdParam IdType theId,
-			@OperationParam(name = "startPeriod") String startPeriod,
-			@OperationParam(name = "endPeriod") String endPeriod,
+			@OperationParam(name = "startPeriod") String periodStart,
+			@OperationParam(name = "endPeriod") String periodEnd,
 			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Measure measure = read(theId, theRequestDetails);
@@ -82,9 +89,16 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		if (library == null) {
 			throw new ResourceNotFoundException(measure.getLibrary().get(0).getReference());
 		}
-		// TODO: Pass startPeriod and endPeriod as parameters to the data requirements
-		// operation
-		return processDataRequirements(measure, library, theRequestDetails);
+
+		Map<String, Object> parameters = new HashMap<>();
+
+		Interval measurementPeriod = null;
+		if (StringUtils.isNotBlank(periodStart) && StringUtils.isNotBlank(periodEnd)) {
+			measurementPeriod = new Interval(DateTime.fromJavaDate(DateHelper.resolveRequestDate(periodStart, true)), true,
+				DateTime.fromJavaDate(DateHelper.resolveRequestDate(periodEnd, false)), true);
+			parameters.put("MeasurementPeriod", measurementPeriod);
+		}
+		return processDataRequirements(measure, library, theRequestDetails, parameters);
 	}
 
 	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
@@ -148,20 +162,20 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		return translator;
 	}
 
-	private Library processDataRequirements(Measure measure, Library library, RequestDetails theRequestDetails) {
+	private Library processDataRequirements(Measure measure, Library library, RequestDetails theRequestDetails, Map<String, Object> parameters) {
 		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
-				translator.getTranslatedLibrary(), cqlTranslatorOptions);
+				translator.getTranslatedLibrary(), cqlTranslatorOptions, parameters);
 	}
 
-	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
+	private Library processDataRequirements(Library library, RequestDetails theRequestDetails, Map<String, Object> parameters) {
 		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-				translator.getTranslatedLibrary(), cqlTranslatorOptions);
+				translator.getTranslatedLibrary(), cqlTranslatorOptions, parameters);
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
