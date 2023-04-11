@@ -382,13 +382,13 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 										report.getGroup().forEach(
 												group -> {
 													if (group.hasId() && group.getId().equals(extension.getValue().toString())) {
-														section.addEntry(new Reference(issue.getIdElement()));
+														section.addEntry(new Reference(issue.getIdElement().toUnqualifiedVersionless()));
 														if (group.hasCode()) {
 															section.setCode(group.getCode());
 														}
 													}
 												});
-										section.setFocus(new Reference(report.getIdElement().getValue()));
+										section.setFocus(new Reference(report.getIdElement().toUnqualifiedVersionless()));
 									}
 								});
 						composition.addSection(section);

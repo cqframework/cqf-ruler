@@ -235,59 +235,6 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
-	
-	/* $release */
-	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
-		if (version == null || version.isEmpty()) {
-			throw new InvalidOperatorArgument("version must be provided as an argument to the $release operation.");
-		}
-
-		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
-			throw new InvalidOperatorArgument("versionBehavior must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
-		}
-
-		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
-			throw new InvalidOperatorArgument(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
-		}
-
-		// TODO: This needs to be transactional!
-		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
-		if (rootArtifact == null) {
-			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
-		}
-
-		//TODO: Validate that the artifact is eligible for release - a current approval (approvalDate > date)
-		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
-		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
-		if (currentApprovalDate == null) {
-			throw new InvalidOperatorArgument(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
-		}
-
-		if (currentApprovalDate.before(rootArtifact.getDate())) {
-			throw new InvalidOperatorArgument(
-				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", currentApprovalDate, rootArtifact.getDate()));
-		}
-
-		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion() : null;
-		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion);
-
-		List<RelatedArtifact> resolvedRelatedArtifacts = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
-
-		// once iteration is complete, delete all depends-on RAs in the root artifact
-		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
-
-		// removed duplicates and add
-		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
-		for (RelatedArtifact ra: resolvedRelatedArtifacts) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()))) {
-				distinctResolvedRelatedArtifacts.add(ra);
-			}
-		}
-		rootArtifactAdapter.getRelatedArtifact().addAll(distinctResolvedRelatedArtifacts);
-		fhirDal.update(rootArtifact);
-
-		return rootArtifact;
-	}
 
 	@Nullable
 	private String getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) {
@@ -308,6 +255,64 @@ public class KnowledgeArtifactProcessor {
 			releaseVersion = version;
 		}
 		return releaseVersion;
+	}
+
+	/* $release */
+	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
+		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
+		if (latestFromTxServer) {
+			throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+		}
+		// TODO: This needs to be transactional!
+
+		if (version == null || version.isEmpty()) {
+			throw new InvalidOperatorArgument("version must be provided as an argument to the $release operation.");
+		}
+
+		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
+			throw new InvalidOperatorArgument("versionBehavior must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
+		}
+
+		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
+			throw new InvalidOperatorArgument(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
+		}
+
+		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
+		if (rootArtifact == null) {
+			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
+		}
+
+		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
+		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
+		if (currentApprovalDate == null) {
+			throw new InvalidOperatorArgument(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
+		}
+
+		if (currentApprovalDate.before(rootArtifact.getDate())) {
+			throw new InvalidOperatorArgument(
+				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", currentApprovalDate, rootArtifact.getDate()));
+		}
+
+		// Determine which version should be used.
+		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion() : null;
+		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion);
+
+		List<RelatedArtifact> resolvedRelatedArtifacts = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
+
+		// once iteration is complete, delete all depends-on RAs in the root artifact
+		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
+
+		// removed duplicates and add
+		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
+		for (RelatedArtifact ra: resolvedRelatedArtifacts) {
+			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()))) {
+				distinctResolvedRelatedArtifacts.add(ra);
+			}
+		}
+		rootArtifactAdapter.getRelatedArtifact().addAll(distinctResolvedRelatedArtifacts);
+		fhirDal.update(rootArtifact);
+
+		return rootArtifact;
 	}
 
 	private List<RelatedArtifact> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
