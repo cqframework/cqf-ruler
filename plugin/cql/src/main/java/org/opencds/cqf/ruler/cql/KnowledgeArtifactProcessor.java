@@ -1,27 +1,6 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.model.api.IQueryParameterType;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import org.apache.commons.lang3.NotImplementedException;
-import org.cqframework.fhir.api.FhirDal;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.ContactDetail;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.MetadataResource;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.jetbrains.annotations.Nullable;
-import org.opencds.cqf.cql.engine.exception.InvalidOperatorArgument;
-import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
-import org.springframework.beans.factory.annotation.Configurable;
+import static java.util.Comparator.comparing;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +10,33 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
+import org.apache.commons.lang3.NotImplementedException;
+import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.ContactDetail;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.MarkdownType;
+import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.jetbrains.annotations.Nullable;
+import org.opencds.cqf.cql.engine.exception.InvalidOperatorArgument;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
+import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
+import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
@@ -88,45 +93,48 @@ public class KnowledgeArtifactProcessor {
 	 * artifact, and is otherwise only allowed to add artifactComment elements
 	 * to the artifact and to add or update an endorser.
 	 */
-	public MetadataResource approve(IdType idType, Date approvalDate, String artifactCommentType,
-			String artifactCommentText, String artifactCommentTarget, String artifactCommentReference,
-			String artifactCommentUser,
-			ContactDetail endorser, FhirDal fhirDal) {
-		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
-		if (resource == null) {
-			throw new ResourceNotFoundException(idType);
-		}
+	public MetadataResource approve(MetadataResource resource, IPrimitiveType<Date> approvalDate,
+			ContactDetail endorser, ArtifactAssessment assessment) {
 
 		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		Date currentDate = new Date();
+
 		// 1. Set approvalDate
 		if (approvalDate == null){
 			targetResourceAdapter.setApprovalDate(currentDate);
 		} else {
-			targetResourceAdapter.setApprovalDate(approvalDate);
+			targetResourceAdapter.setApprovalDate(approvalDate.getValue());
 		}
 
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
 
-		// 3. Add artifactComment
-		// TODO: check for existing matching comment?
-		try {
-			ArtifactCommentExtension artifactCommentExtension = new ArtifactCommentExtension(artifactCommentType, artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser);
-			if (!artifactCommentExtension.getExtension().isEmpty()) {
-				resource.addExtension(artifactCommentExtension);
-			}
-		} catch (FHIRException e) {
-			throw new UnprocessableEntityException(e.getMessage());
-		}
-
-		// 4. add/update endorser
+		// 3. add/update endorser
 		if (endorser != null) {
 			targetResourceAdapter.updateEndorser(endorser);
 		}
-		fhirDal.update(resource);
 		return resource;
+	}
+	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
+	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
+	Reference artifactCommentUser) throws UnprocessableEntityException {
+		// TODO: check for existing matching comment?
+		ArtifactAssessment artifactAssessment;
+		try {
+			artifactAssessment = new ArtifactAssessment(new Reference(id));
+			artifactAssessment.createArtifactComment(
+				ArtifactAssessmentContentInformationType.fromCode(artifactCommentType),
+				new MarkdownType(artifactCommentText),
+				artifactCommentReference,
+				artifactCommentUser,
+				artifactCommentTarget,
+				null
+				);
+		} catch (FHIRException e) {
+			throw new UnprocessableEntityException(e.getMessage());
+		}
+		return artifactAssessment;
 	}
 
 	/* $draft */
@@ -447,4 +455,5 @@ public class KnowledgeArtifactProcessor {
 
 		return resource;
 	}
+	
 }

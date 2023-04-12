@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.IdType;
@@ -11,9 +12,15 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Collections;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -181,13 +188,13 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
 						.getValueAsPrimitive().getValueAsString();
 
-					ZonedDateTime currentDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
-					ZonedDateTime expectedLowDate = currentDate.minusDays(90);
-					ZonedDateTime expectedHighDate = currentDate.minusNanos(1000000);
+					OffsetDateTime evaluationOffsetDateTime = OffsetDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-					String lowDateString = expectedLowDate.format(formatter).replace("Z", "+00:00");
-					String highDateString = expectedHighDate.format(formatter).replace("Z", "+00:00");
+					Date expectedLowDate = Date.from(evaluationOffsetDateTime.minusDays(90).toInstant());
+					Date expectedHighDate = Date.from(evaluationOffsetDateTime.minusNanos(1000000).toInstant());
+					SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+					String lowDateString = simpleDateFormatter.format(expectedLowDate).replace("Z", "+00:00");
+					String highDateString = simpleDateFormatter.format(expectedHighDate).replace("Z", "+00:00");
 
 					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDateString);
 
