@@ -1,15 +1,24 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.model.api.IQueryParameterType;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import static java.util.Comparator.comparing;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.ContactDetail;
@@ -23,9 +32,12 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.jetbrains.annotations.Nullable;
 import org.opencds.cqf.cql.engine.exception.InvalidOperatorArgument;
@@ -35,15 +47,11 @@ import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.client.ResourceAccessException;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
+import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
@@ -52,6 +60,26 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
+	private BundleEntryComponent createEntry(IBaseResource theResource) {
+		return new Bundle.BundleEntryComponent()
+				.setResource((Resource) theResource)
+				.setRequest(createRequest(theResource));
+	}
+
+	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
+		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
+		if (theResource.getIdElement().hasValue() && !theResource.getIdElement().getValue().contains("urn:uuid")) {
+			request
+					.setMethod(Bundle.HTTPVerb.PUT)
+					.setUrl(theResource.getIdElement().getValue());
+		} else {
+			request
+					.setMethod(Bundle.HTTPVerb.POST)
+					.setUrl(theResource.fhirType());
+		}
+
+		return request;
+	}
 
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
@@ -109,18 +137,13 @@ public class KnowledgeArtifactProcessor {
 		return resourceList;
 	}
 
-	private MetadataResource retrieveResourcesByReference(String reference, FhirDal fhirDal) {
-		MetadataResource resource = null;
-
+	private MetadataResource retrieveResourcesByCanonical(String reference, FhirDal fhirDal) throws ResourceNotFoundException {
 		Bundle referencedResourceBundle = searchResourceByUrl(reference, fhirDal);
-		MetadataResource referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
-		if (referencedResource != null) {
-			resource = referencedResource;
-		} else {
+		Optional<MetadataResource> referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
+		if (referencedResource.isEmpty()) {
 			throw new ResourceNotFoundException(String.format("Resource for Canonical '%s' not found.", reference));
 		}
-
-		return resource;
+		return referencedResource.get();
 	}
 
 	/* approve */
@@ -171,15 +194,39 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $draft */
-	public MetadataResource draft(IdType idType, FhirDal fhirDal, String version) {
-		//TODO: Needs to be transactional
-		MetadataResource resource = (MetadataResource) fhirDal.read(idType);
-		if (resource == null) {
-			throw new ResourceNotFoundException(idType);
-		}
+	/*
+	 * The operation creates a draft of the Base Artifact and
+	 * related resources.
+	 * 
+	 * This method generates the transaction bundle for this operation.
+	 * 
+	 * This bundle consists of:
+	 *  1. A new version of the base artifact where status is changed to
+	 *     draft and version changed to a new version number + "-draft"
+	 * 
+	 *  2. New versions of related artifacts where status is changed to
+	 *     draft and version changed to a new version number + "-draft"
+	 * 
+	 * Links and references between Bundle resources are updated to point to
+	 * the new versions.
+	 */
+	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
+		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
 
-		if (version.contains(".")) {
+		if (baseArtifact == null) {
+			throw new ResourceNotFoundException(baseArtifactId);
+		}
+		// Check if version is valid
+		if(version.contains("/") || version.contains("\\") || version.contains("|")){
+			throw new UnprocessableEntityException("The version contains illegal characters");
+		}
+		if (!version.contains(".")) {
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+		} else {
 			String[] versionParts = version.split("\\.");
+			if(versionParts.length != 3){
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+			}
 			for(int i = 0; i < versionParts.length; i++) {
 				String section = "";
 				if(Integer.parseInt(versionParts[i]) < 0) {
@@ -190,81 +237,111 @@ public class KnowledgeArtifactProcessor {
 					} else if (i == 2) {
 						section = "Patch";
 					}
-					throw new IllegalArgumentException("The " + section + " version part should be greater than 0.");
+					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
 				}
 			}
-
 		}
 
-		// Root artifact must have status of 'Active'. Existing drafts of reference artifacts will be adopted. This check is
-		// performed here to facilitate that different treatment for the root artifact and those referenced by it.
-		if (resource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-			throw new IllegalStateException(
-				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", resource.getUrl(), resource.getStatus().toString()));
+		String draftVersion = version + "-draft";
+		String draftVersionUrl = Canonicals.getUrl(baseArtifact.getUrl()) + "|" + draftVersion;
+
+		// Root artifact must have status of 'Active'. Existing drafts of
+		// reference artifacts with the right verison number will be adopted.
+		// This check is performed here to facilitate that different treatment
+		// for the root artifact and those referenced by it.
+		if (baseArtifact.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
+			throw new UnprocessableEntityException(
+				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", baseArtifact.getUrl(), baseArtifact.getStatus().toString()));
 		}
-
-		Bundle existingArtifactsForUrl = searchResourceByUrl(resource.getUrl(), fhirDal);
-		Optional<Bundle.BundleEntryComponent> existingDrafts = existingArtifactsForUrl.getEntry().stream().filter(
-			e -> ((MetadataResource) e.getResource()).getStatus() == Enumerations.PublicationStatus.DRAFT).findFirst();
-
-		if (existingDrafts.isPresent()) {
-			throw new IllegalStateException(
-				String.format("A draft of Program '%s' already exists with ID: '%s'. Only one draft of a program can exist at a time.", resource.getUrl(), ((MetadataResource) existingDrafts.get().getResource()).getId()));
+		// Ensure only one resource exists with this URL
+		Bundle existingArtifactsForUrl = searchResourceByUrl(draftVersionUrl, fhirDal);
+		if(existingArtifactsForUrl.getEntry().size() != 0){
+			throw new UnprocessableEntityException(
+				String.format("A draft of Program '%s' already exists with version: '%s'. Only one draft of a program version can exist at a time.", baseArtifact.getUrl(), draftVersionUrl));
 		}
-
-		return internalDraft(resource, fhirDal, version);
+		List<MetadataResource> resourcesToCreate = createDraftsOfArtifactAndRelated(baseArtifact, fhirDal, version, new ArrayList<MetadataResource>());
+		Bundle transactionBundle = new Bundle()
+			.setType(Bundle.BundleType.TRANSACTION);
+		List<IdType> urnList = resourcesToCreate.stream().map(res -> new IdType("urn:uuid:" + UUID.randomUUID().toString())).collect(Collectors.toList());
+		for(int i = 0; i < resourcesToCreate.size(); i++){
+			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
+			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
+			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter, draftVersion);
+			MetadataResource updateIdForBundle = newResourceAdapter.copy();
+			updateIdForBundle.setId(urnList.get(i));
+			transactionBundle.addEntry(createEntry(updateIdForBundle));
+		}
+		return transactionBundle;
 	}
+	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
+		List<UsageContext> useContexts = newResource.getUseContext();
+		for(UsageContext useContext : useContexts){
+			if(useContext.hasValueReference()){
+				Reference useContextRef = useContext.getValueReference();
+				if(useContextRef != null){
+					resourceListWithOriginalIds.stream()
+						.filter(resource -> (resource.getClass().getSimpleName() + "/" + resource.getIdElement().getIdPart()).equals(useContextRef.getReference()))
+						.findAny()
+						.ifPresent(resource -> {
+							int indexOfDraftInIdList = resourceListWithOriginalIds.indexOf(resource);
+							useContext.setValue(new Reference(idListForTransactionBundle.get(indexOfDraftInIdList)));
+						});
+				}
+			}
+		}
+	}
+	private void updateRelatedArtifactUrlsWithNewVersions(KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter, String draftVersion){
+			// For each Resource relatedArtifact, update the version of the reference.
+			newResourceAdapter.getRelatedArtifact().stream()
+				.filter(ra -> ra.hasResource()).collect(Collectors.toList())
+				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + draftVersion));
+	}
+	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
+		String draftVersion = version + "-draft";
+		String draftVersionUrl = Canonicals.getUrl(resourceToDraft.getUrl()) + "|" + draftVersion;
 
-	private MetadataResource internalDraft(MetadataResource resource, FhirDal fhirDal, String version) {
-		Bundle existingArtifactsForUrl = searchResourceByUrl(resource.getUrl(), fhirDal);
-		Optional<Bundle.BundleEntryComponent> existingDrafts = existingArtifactsForUrl.getEntry().stream().filter(
-			e -> ((MetadataResource) e.getResource()).getStatus() == Enumerations.PublicationStatus.DRAFT).findFirst();
-
+		// TODO: Decide if we need both of these checks
+		Optional<MetadataResource> existingArtifactsWithMatchingUrl = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(draftVersionUrl, fhirDal));
+		Optional<MetadataResource> draftVersionAlreadyInBundle = resourcesToCreate.stream().filter(res -> res.getUrl().equals(Canonicals.getUrl(draftVersionUrl)) && res.getVersion().equals(draftVersion)).findAny();
 		MetadataResource newResource = null;
-		if (existingDrafts.isPresent()) {
-			newResource = (MetadataResource) existingDrafts.get().getResource();
+		if (existingArtifactsWithMatchingUrl.isPresent()) {
+			newResource = existingArtifactsWithMatchingUrl.get();
+		} else if(draftVersionAlreadyInBundle.isPresent()){
+			newResource = draftVersionAlreadyInBundle.get();
 		}
 
 		if (newResource == null) {
-			KnowledgeArtifactAdapter<MetadataResource> sourceResourceAdapter = new KnowledgeArtifactAdapter<>(resource);
+			KnowledgeArtifactAdapter<MetadataResource> sourceResourceAdapter = new KnowledgeArtifactAdapter<>(resourceToDraft);
 			newResource = sourceResourceAdapter.copy();
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
-			newResource.setId((String)null);
-			newResource.setVersion(null);
-			newResource.setVersion(version + "-draft");
-
-			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<>(newResource);
-
-			// For each Resource relatedArtifact, strip the version of the reference.
-			newResourceAdapter.getRelatedArtifact().stream().filter(ra -> ra.hasResource()).collect(Collectors.toList())
-				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource())));
-
-			fhirDal.create(newResource);
-
+			newResource.setVersion(draftVersion);
+			resourcesToCreate.add(newResource);
 			for (RelatedArtifact ra : sourceResourceAdapter.getRelatedArtifact()) {
-				// If it is a composed-of relation then do a deep copy, else shallow
+				// If it’s a compose-of then we want to copy it
+				// If it’s a depends-on, we just want to reference it, but not copy it
+				// (references are updated in createDraftBundle before adding to the bundle)
 				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 					if (ra.hasUrl()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version);
+						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
 					} else if (ra.hasResource()) {
 						Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version);
+						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
 					}
 				}
 			}
 		}
 
-		return newResource;
+		return resourcesToCreate;
 	}
-
-	private void processReferencedResourceForDraft(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version) {
+	
+	private void processReferencedResourceForDraft(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version, List<MetadataResource> transactionBundle) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntryFirstRep();
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
 
-				internalDraft(referencedResource, fhirDal, version);
+				createDraftsOfArtifactAndRelated(referencedResource, fhirDal, version, transactionBundle);
 			}
 		}
 	}
@@ -534,7 +611,7 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		for (String reference : references) {
-			MetadataResource referencedResource = retrieveResourcesByReference(reference, fhirDal);
+			MetadataResource referencedResource = retrieveResourcesByCanonical(reference, fhirDal);
 			resources.addAll(internalPackage(referencedResource, fhirDal));
 		}
 

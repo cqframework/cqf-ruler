@@ -267,7 +267,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		}
 	}
 
-	public static MetadataResource findLatestVersion(List<MetadataResource> resources) {
+	public static Optional<MetadataResource> findLatestVersion(List<MetadataResource> resources) {
 		Comparator<String> versionComparator = SemanticVersion.getVersionComparator();
 		MetadataResource latestResource = null;
 
@@ -278,10 +278,10 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 			}
 		}
 
-		return latestResource;
+		return Optional.ofNullable(latestResource);
 	}
 
-	public static MetadataResource findLatestVersion(Bundle bundle) {
+	public static Optional<MetadataResource> findLatestVersion(Bundle bundle) {
 		List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
 		List<MetadataResource> metadataResources = new ArrayList<>();
 
@@ -293,8 +293,7 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 			}
 		}
 
-		MetadataResource metadataResource = findLatestVersion(metadataResources);
-		return metadataResource;
+		return findLatestVersion(metadataResources);
 	}
 }
 

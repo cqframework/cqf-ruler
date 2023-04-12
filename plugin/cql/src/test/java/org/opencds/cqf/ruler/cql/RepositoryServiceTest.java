@@ -1,9 +1,22 @@
 
 package org.opencds.cqf.ruler.cql;
 
-import org.hl7.fhir.instance.model.api.IBaseBundle;
+import static graphql.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.booleanPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.codePart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.hl7.fhir.r4.model.Bundle;
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateType;
@@ -21,16 +34,9 @@ import org.opencds.cqf.ruler.cql.r4.ArtifactCommentExtension;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.xml.bind.DatatypeConverter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static graphql.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = {RepositoryServiceTest.class, CqlConfig.class},
@@ -38,40 +44,108 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.*;
 //@TestMethodOrder(MethodOrderer.MethodName.class)
 
 class RepositoryServiceTest extends RestIntegrationTest {
-
+	private final String specificationLibReference = "Library/SpecificationLibrary";
 	@Test
-	void draftOperation_active_test() {
+	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
-
-		Parameters params = parameters(part("version", "1.1.1") );
+		String version = "1.1.1";
+		String draftedVersion = version + "-draft";
+		Parameters params = parameters(part("version", version) );
 		Resource returnResource = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$draft")
 			.withParameters(params)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 
-		Library returnedLibrary = (Library) returnResource;
-		assertNotNull(returnedLibrary);
-		assertTrue(((Library) returnedLibrary).getStatus() == Enumerations.PublicationStatus.DRAFT);
-		List<RelatedArtifact> relatedArtifacts = returnedLibrary.getRelatedArtifact();
+		Bundle returnedBundle = (Bundle) returnResource;
+		assertNotNull(returnedBundle);
+		Optional<BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		assertTrue(maybeLib.isPresent());
+		Library lib = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		assertNotNull(lib);
+		assertTrue(lib.getStatus() == Enumerations.PublicationStatus.DRAFT);
+		assertTrue(lib.getVersion().equals(draftedVersion));
+		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()) == null);
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()) == null);
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()).equals(draftedVersion));
 	}
 
 	@Test
 	void draftOperation_draft_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
 		Parameters params = parameters(part("version", "1.1.1") );
-		Resource returnResource = getClient().operation()
+		try {
+			getClient().operation()
 			.onInstance("Library/DraftSpecificationLibrary")
 			.named("$draft")
 			.withParameters(params)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
-
-		assertNotNull(returnResource);
+		} catch (UnprocessableEntityException e) {
+			assertNotNull(e);
+			assertTrue(e.getMessage().contains("status of 'active'"));
+		}
+	}
+	@Test
+	void draftOperation_wrong_id_test() {
+		loadTransaction("ersd-draft-transaction-bundle-example.json");
+		Parameters params = parameters(part("version", "1.1.1") );
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			assertNotNull(e);
+		}
+	}
+	@Test
+	void draftOperation_version_conflict_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		loadResource("minimal-draft-to-test-version-conflict.json");
+		Parameters params = parameters(part("version", "1.1.1") );
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			assertNotNull(e);
+			assertTrue(e.getMessage().contains("already exists"));
+		}
+	}
+	@Test
+	void draftOperation_version_format_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		loadResource("minimal-draft-to-test-version-conflict.json");
+		List<String> testValues = Arrays.asList(new String[]{
+			"11asd1",
+			"1.1.3.1",
+			"1.|1.1",
+			"1/.1.1",
+			"-1.-1.2",
+			"1.-1.2",
+			"1.1.-2"
+		});
+		for(String version:testValues){
+			Parameters params = parameters(part("version", version) );
+			try {
+				getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$draft")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			} catch (UnprocessableEntityException e) {
+				assertNotNull(e);
+			}
+		}
 	}
 	//@Test
 	//void releaseResource_test() {

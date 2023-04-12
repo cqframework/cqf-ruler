@@ -1,16 +1,13 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.model.api.annotation.Description;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import java.util.Date;
+import java.util.List;
+
 import org.cqframework.fhir.api.FhirDal;
-import org.hl7.fhir.Uri;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.ContactDetail;
@@ -19,11 +16,14 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.openjdk.jmh.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.List;
+import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
 
@@ -72,13 +72,21 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return this.artifactProcessor.approve(theId, approvalDate.getValue(), artifactCommentType,
 				artifactCommentText, artifactCommentTarget, artifactCommentReference, artifactCommentUser, endorser, fhirDal);
 	}
-
+	/**
+	 * Creates a draft of an existing artifact if it has status Active.
+	 *
+	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param version             new version in the form MAJOR.MINOR.PATCH
+	 * TODO: should return OperationOutcome
+	 * @return A transaction bundle result of the newly created resources
+	 */
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
-	public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
+	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.draft(theId, fhirDal, version);
+		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
 	}
 
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
