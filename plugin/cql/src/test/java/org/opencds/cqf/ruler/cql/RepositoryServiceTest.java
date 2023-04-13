@@ -75,7 +75,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_draft_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-		Parameters params = parameters(part("version", "1.1.1") );
+		Parameters params = parameters(part("version", "1.2.1") );
 		try {
 			getClient().operation()
 			.onInstance("Library/DraftSpecificationLibrary")
@@ -91,7 +91,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_wrong_id_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-		Parameters params = parameters(part("version", "1.1.1") );
+		Parameters params = parameters(part("version", "1.3.1") );
 		try {
 			getClient().operation()
 			.onInstance("Library/there-is-no-such-id")
@@ -107,7 +107,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		Parameters params = parameters(part("version", "1.1.1") );
+		Parameters params = parameters(part("version", "1.4.1") );
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
