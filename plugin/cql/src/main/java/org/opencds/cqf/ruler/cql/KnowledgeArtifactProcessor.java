@@ -211,41 +211,12 @@ public class KnowledgeArtifactProcessor {
 	 * the new versions.
 	 */
 	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
-		if (version == null || version.isEmpty()) {
-			throw new InvalidOperatorArgument("The version argument is required");
-		}
-
+		checkIfVersionIsValid(version);
 		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
 
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
-		// Check if version is valid
-		if(version.contains("/") || version.contains("\\") || version.contains("|")){
-			throw new UnprocessableEntityException("The version contains illegal characters");
-		}
-		if (!version.contains(".")) {
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
-		} else {
-			String[] versionParts = version.split("\\.");
-			if(versionParts.length != 3){
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
-			}
-			for(int i = 0; i < versionParts.length; i++) {
-				String section = "";
-				if(Integer.parseInt(versionParts[i]) < 0) {
-					if(i == 0) {
-						section = "Major";
-					} else if(i == 1) {
-						section = "Minor";
-					} else if (i == 2) {
-						section = "Patch";
-					}
-					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
-				}
-			}
-		}
-
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(baseArtifact.getUrl()) + "|" + draftVersion;
 
@@ -255,7 +226,7 @@ public class KnowledgeArtifactProcessor {
 		// for the root artifact and those referenced by it.
 		if (baseArtifact.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
 			throw new UnprocessableEntityException(
-				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", baseArtifact.getUrl(), baseArtifact.getStatus().toString()));
+				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", baseArtifact.getUrl(), String.valueOf(baseArtifact.getStatus())));
 		}
 		// Ensure only one resource exists with this URL
 		Bundle existingArtifactsForUrl = searchResourceByUrl(draftVersionUrl, fhirDal);
@@ -299,6 +270,38 @@ public class KnowledgeArtifactProcessor {
 			newResourceAdapter.getRelatedArtifact().stream()
 				.filter(ra -> ra.hasResource()).collect(Collectors.toList())
 				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + draftVersion));
+	}
+	private void checkIfVersionIsValid(String version) throws UnprocessableEntityException{
+		if (version == null || version.isEmpty()) {
+			throw new UnprocessableEntityException("The version argument is required");
+		}
+		if(version.contains("draft")){
+			throw new UnprocessableEntityException("The version cannot contain 'draft'");
+		}
+		if(version.contains("/") || version.contains("\\") || version.contains("|")){
+			throw new UnprocessableEntityException("The version contains illegal characters");
+		}
+		if (!version.contains(".")) {
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+		} else {
+			String[] versionParts = version.split("\\.");
+			if(versionParts.length != 3){
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+			}
+			for(int i = 0; i < versionParts.length; i++) {
+				String section = "";
+				if(Integer.parseInt(versionParts[i]) < 0) {
+					if(i == 0) {
+						section = "Major";
+					} else if(i == 1) {
+						section = "Minor";
+					} else if (i == 2) {
+						section = "Patch";
+					}
+					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
+				}
+			}
+		}
 	}
 	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
 		String draftVersion = version + "-draft";
