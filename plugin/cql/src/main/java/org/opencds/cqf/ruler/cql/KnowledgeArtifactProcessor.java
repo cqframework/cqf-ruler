@@ -198,6 +198,10 @@ public class KnowledgeArtifactProcessor {
 	 * the new versions.
 	 */
 	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
+		if (version == null || version.isEmpty()) {
+			throw new InvalidOperatorArgument("The version argument is required");
+		}
+
 		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
 
 		if (baseArtifact == null) {
