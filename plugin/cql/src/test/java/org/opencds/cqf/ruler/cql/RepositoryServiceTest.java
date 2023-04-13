@@ -195,7 +195,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist";
 		Parameters params = parameters( 
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
-		);	
+		);
+		UnprocessableEntityException maybeException = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -204,8 +205,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		} catch (UnprocessableEntityException e) {
-			assertNotNull(e);
+			maybeException = e;
 		}
+		assertNotNull(maybeException);
 	}
 	@Test
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
@@ -213,7 +215,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String artifactCommentType = "this-type-does-not-exist";
 		Parameters params = parameters( 
 			part("artifactCommentType", artifactCommentType)
-		);	
+		);
+		UnprocessableEntityException maybeException = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -222,8 +225,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Library.class)
 			.execute();
 		} catch (UnprocessableEntityException e) {
-			assertNotNull(e);
+			maybeException = e;
 		}
+		assertNotNull(maybeException);
 	}
 	@Test
 	void approveOperation_twice_appends_endorser_test() {
