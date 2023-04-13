@@ -2,8 +2,8 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 import java.util.Map;
 

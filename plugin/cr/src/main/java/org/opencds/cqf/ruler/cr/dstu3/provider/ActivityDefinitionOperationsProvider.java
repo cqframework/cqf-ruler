@@ -36,7 +36,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvider implements ResourceCreator {
+public class ActivityDefinitionOperationsProvider extends DaoRegistryOperationProvider implements ResourceCreator {
 
 	@Autowired
 	private DataProviderFactory dataProviderFactory;
@@ -74,7 +74,9 @@ public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvide
 				librarySourceProviderFactory, this.dataProviderFactory, terminologyProviderFactory,
 				endpointConverter, fhirModelResolverFactory, () -> new CqlEvaluatorBuilder());
 
-		return new ActivityDefinitionProcessor(this.fhirContext, fhirDal, libraryProcessor);
+		// return new ActivityDefinitionProcessor(this.fhirContext, fhirDal,
+		// libraryProcessor);
+		return null;
 	}
 
 	@Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)
@@ -91,7 +93,10 @@ public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvide
 			throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 		var processor = createProcessor(theRequest);
 
-		return (Resource) processor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType,
-				userLanguage, userTaskContext, setting, settingContext, null, null, null, null);
+		// return (Resource) processor.apply(theId, patientId, encounterId,
+		// practitionerId, organizationId, userType,
+		// userLanguage, userTaskContext, setting, settingContext, null, null, null,
+		// null);
+		return null;
 	}
 }

@@ -19,14 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { ActivityDefinitionApplyProviderIT.class,
-				CrConfig.class, CqlConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		ActivityDefinitionApplyProviderIT.class,
+		CrConfig.class, CqlConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 
 	@Autowired
-	private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
+	private ActivityDefinitionOperationsProvider activityDefinitionApplyProvider;
 
 	private Map<String, IBaseResource> activityDefinitions;
 

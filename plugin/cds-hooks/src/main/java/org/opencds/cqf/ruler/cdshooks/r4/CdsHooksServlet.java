@@ -39,7 +39,7 @@ import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
+import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionOperationsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private LibraryEvaluationProvider libraryExecution;
 	@Autowired
-	private ActivityDefinitionApplyProvider applyEvaluator;
+	private ActivityDefinitionOperationsProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
@@ -283,11 +283,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							Type conditionResult;
 							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
 								conditionResult = evaluationResults.getParameter(
-										condition.getExpression().getExpression());
+										condition.getExpression().getExpression()).getValue();
 							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
 								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
 										patientId, condition.getExpression().getExpression())
-										.getParameter("return");
+										.getParameter("return").getValue();
 							} else
 								conditionResult = new BooleanType(false);
 							if (conditionResult != null) {

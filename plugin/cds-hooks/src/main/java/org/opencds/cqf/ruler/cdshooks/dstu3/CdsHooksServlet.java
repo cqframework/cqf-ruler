@@ -11,16 +11,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.smartcardio.Card;
 
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
@@ -31,14 +30,11 @@ import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
-import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -85,7 +81,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	// CORS Pre-flight
 	@Override
-	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		ErrorHandling.setAccessControlHeaders(resp, myAppProperties);
 		resp.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 		resp.setHeader("X-Content-Type-Options", "nosniff");
@@ -103,21 +100,25 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		}
 		ErrorHandling.setAccessControlHeaders(response, myAppProperties);
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-		response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
+		response.getWriter()
+				.println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
-				throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
-						request.getContentType()));
+			if (request.getContentType() == null
+					|| !request.getContentType().startsWith("application/json")) {
+				throw new ServletException(
+						String.format("Invalid content type %s. Please use application/json.",
+								request.getContentType()));
 			}
 			logger.info(request.getRequestURI());
 			String baseUrl = myAppProperties.getServer_address();
 			String service = request.getPathInfo().replace("/", "");
-			ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			ObjectMapper mapper =
+					new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
 			String requestJson = request.getReader().lines().collect(Collectors.joining());
 			CdsHooksRequest cdsHooksRequest = mapper.readValue(requestJson, CdsHooksRequest.class);
@@ -155,18 +156,21 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
-						cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
+							cdsHooksRequest.fhirAuthorization.tokenType,
+							cdsHooksRequest.fhirAuthorization.accessToken));
 					if (cdsHooksRequest.fhirAuthorization.subject != null) {
-						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
-							+ ": " + cdsHooksRequest.fhirAuthorization.subject);
+						remoteDataEndpoint
+								.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
+										+ ": " + cdsHooksRequest.fhirAuthorization.subject);
 					}
 				}
 			}
 			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 
 			requestDetails.setFhirServerBase(baseUrl);
-			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
-					expressions, parameters, useServerData, data, remoteDataEndpoint);
+			Parameters evaluationResult =
+					cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
+							expressions, parameters, useServerData, data, remoteDataEndpoint);
 
 			List<Card.Link> links = resolvePlanLinks(servicePlan);
 			List<Card> cards = new ArrayList<>();
@@ -184,13 +188,16 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			response.setContentType("text/json;charset=UTF-8");
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
-			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);
+			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e,
+					myAppProperties);
 			logger.error(e.toString());
 		} catch (DataProviderException e) {
-			ErrorHandling.handleError(response, "ERROR: Exception in DataProvider.", e, myAppProperties);
+			ErrorHandling.handleError(response, "ERROR: Exception in DataProvider.", e,
+					myAppProperties);
 			logger.error(e.toString());
 		} catch (CqlException e) {
-			ErrorHandling.handleError(response, "ERROR: Exception in CQL Execution.", e, myAppProperties);
+			ErrorHandling.handleError(response, "ERROR: Exception in CQL Execution.", e,
+					myAppProperties);
 			logger.error(e.toString());
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -201,14 +208,19 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private void logRequestInfo(CdsHooksRequest request, String jsonRequest) {
 		logger.info(jsonRequest);
 		logger.info("cds-hooks hook instance: {}", request.hookInstance);
-		logger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
-		logger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
-		logger.info("cds-hooks queryBatchThreshold: {}", this.getProviderConfiguration().getQueryBatchThreshold());
+		logger.info("cds-hooks maxCodesPerQuery: {}",
+				this.getProviderConfiguration().getMaxCodesPerQuery());
+		logger.info("cds-hooks expandValueSets: {}",
+				this.getProviderConfiguration().getExpandValueSets());
+		logger.info("cds-hooks queryBatchThreshold: {}",
+				this.getProviderConfiguration().getQueryBatchThreshold());
 		logger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
-		logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
+		logger.info("cds-hooks prefetch maxUriLength: {}",
+				this.getProviderConfiguration().getMaxUriLength());
 		logger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
 		logger.info("cds-hooks fhir server address: {}", request.fhirServer);
-		logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
+		logger.info("cds-hooks cql_logging_enabled: {}",
+				this.getProviderConfiguration().getCqlLoggingEnabled());
 	}
 
 	private List<Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
@@ -252,13 +264,15 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						}
 						if (action.hasSelectionBehavior()) {
 							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
-							card.setSuggestions(Collections.singletonList(resolveSuggestions(action, patientId)));
+							card.setSuggestions(
+									Collections.singletonList(resolveSuggestions(action, patientId)));
 						}
 						if (action.hasDynamicValue()) {
 							resolveDynamicActions(action, evaluationResults, patientId, card);
 						}
 						if (action.hasAction()) {
-							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
+							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards,
+									links);
 						}
 						cards.add(card);
 					}
@@ -304,7 +318,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		return source;
 	}
 
-	public Card.Suggestion resolveSuggestions(PlanDefinition.PlanDefinitionActionComponent action, String patientId) {
+	public Card.Suggestion resolveSuggestions(PlanDefinition.PlanDefinitionActionComponent action,
+			String patientId) {
 		Card.Suggestion suggestion = new Card.Suggestion();
 		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
 		suggAction.fhirContext = getFhirContext();
@@ -372,7 +387,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 								card.setIndicator(dynamicValueResult.toString());
 							} else if (card.getSuggestions() != null
 									&& card.getSuggestions().get(0).getActions() != null
-									&& card.getSuggestions().get((0)).getActions().get(0).getResource() != null) {
+									&& card.getSuggestions().get((0)).getActions().get(0)
+											.getResource() != null) {
 								new Dstu3FhirModelResolver().setValue(
 										card.getSuggestions().get((0)).getActions().get(0).getResource(),
 										dv.getPath(), dynamicValueResult);

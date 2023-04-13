@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.cr;
 
 import java.util.function.Function;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProviderFactory;
@@ -20,11 +19,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(CqlConfig.class)
+@Import({ CqlConfig.class, RepositoryConfig.class })
 public class CrConfig {
 	@Bean
 	public CrProperties crProperties() {
@@ -48,18 +48,6 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider dstu3ActivityDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider r4ActivityDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.cr.dstu3.ExpressionEvaluation dstu3ExpressionEvaluation() {
 		return new org.opencds.cqf.ruler.cr.dstu3.ExpressionEvaluation();
 	}
@@ -68,18 +56,6 @@ public class CrConfig {
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation r4ExpressionEvaluation() {
 		return new org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider dstu3PlanDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider r4PlanDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider();
 	}
 
 	@Bean
@@ -126,40 +102,6 @@ public class CrConfig {
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.service.MeasureService r4measureService() {
 		return new org.opencds.cqf.ruler.cr.r4.service.MeasureService();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public Function<RequestDetails, org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService> dstu3PlanDefinitionServiceFactory() {
-		return r -> {
-			var ps = dstu3PlanDefinitionService();
-			ps.setRequestDetails(r);
-			return ps;
-		};
-	}
-
-	@Bean
-	@Scope("prototype")
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService dstu3PlanDefinitionService() {
-		return new org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public Function<RequestDetails, org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService> r4PlanDefinitionServiceFactory() {
-		return r -> {
-			var ps = r4planDefinitionService();
-			ps.setRequestDetails(r);
-			return ps;
-		};
-	}
-
-	@Bean
-	@Scope("prototype")
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService r4planDefinitionService() {
-		return new org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService();
 	}
 
 	@Bean

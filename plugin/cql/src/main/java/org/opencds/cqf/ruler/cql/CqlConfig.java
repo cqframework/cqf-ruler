@@ -22,7 +22,6 @@ import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.evaluator.CqlOptions;
-import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderComponents;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
@@ -32,6 +31,7 @@ import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDec
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.fhir.Constants;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
 import org.opencds.cqf.external.annotations.OnDSTU2Condition;

@@ -27,7 +27,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 
 	@Autowired
-	private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
+	private ActivityDefinitionOperationsProvider activityDefinitionApplyProvider;
 
 	private Map<String, IBaseResource> activityDefinitions;
 

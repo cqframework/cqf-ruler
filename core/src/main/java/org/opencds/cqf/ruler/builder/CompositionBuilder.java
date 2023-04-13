@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -231,10 +232,11 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 
 		composition
 				.setDate(myDate)
-				.setIdentifier(new org.hl7.fhir.r5.model.Identifier().setSystem(getIdentifier().getKey())
-						.setValue(getIdentifier().getValue()))
+				.setIdentifier(
+						Collections.singletonList(new org.hl7.fhir.r5.model.Identifier().setSystem(getIdentifier().getKey())
+								.setValue(getIdentifier().getValue())))
 				.setStatus(CompositionStatus.valueOf(myStatus))
-				.setSubject(new org.hl7.fhir.r5.model.Reference(mySubject))
+				.setSubject(Collections.singletonList(new org.hl7.fhir.r5.model.Reference(mySubject)))
 				.setTitle(myTitle)
 				.setType(new org.hl7.fhir.r5.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.r5.model.Coding()
