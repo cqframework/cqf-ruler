@@ -17,6 +17,16 @@ public class CdsHooksProperties {
 		this.enabled = enabled;
 	}
 
+	private String clientIdHeaderName;
+
+	public String getClientIdHeaderName() {
+		return clientIdHeaderName;
+	}
+
+	public void setClientIdHeaderName(String clientIdHeaderName) {
+		this.clientIdHeaderName = clientIdHeaderName;
+	}
+
 	private FhirServer fhirServer = new FhirServer();
 
 	public FhirServer getFhirServer() {
@@ -27,7 +37,7 @@ public class CdsHooksProperties {
 		this.fhirServer = fhirServer;
 	}
 
-	public class FhirServer {
+	public static class FhirServer {
 		private Integer maxCodesPerQuery;
 
 		public Integer getMaxCodesPerQuery() {
@@ -79,7 +89,7 @@ public class CdsHooksProperties {
 		this.prefetch = prefetch;
 	}
 
-	public class Prefetch {
+	public static class Prefetch {
 		private Integer maxUriLength;
 
 		public Integer getMaxUriLength() {
