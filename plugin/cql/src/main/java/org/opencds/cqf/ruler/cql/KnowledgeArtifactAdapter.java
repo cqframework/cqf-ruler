@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.opencds.cqf.ruler.utility.SemanticVersion;
 
 public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	protected T resource;

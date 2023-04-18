@@ -14,37 +14,29 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.ContactDetail;
-import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.ElementDefinition;
 import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Expression;
-import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
-import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UsageContext;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.jetbrains.annotations.Nullable;
 import org.opencds.cqf.cql.engine.exception.InvalidOperatorArgument;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.client.ResourceAccessException;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -59,7 +51,25 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
+	private BundleEntryComponent createEntry(IBaseResource theResource) {
+		return new Bundle.BundleEntryComponent()
+				.setResource((Resource) theResource)
+				.setRequest(createRequest(theResource));
+	}
 
+	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
+		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
+		if (theResource.getIdElement().hasValue() && !theResource.getIdElement().getValue().contains("urn:uuid")) {
+			request
+					.setMethod(Bundle.HTTPVerb.PUT)
+					.setUrl(theResource.getIdElement().getValue());
+		} else {
+			request
+					.setMethod(Bundle.HTTPVerb.POST)
+					.setUrl(theResource.fhirType());
+		}
+		return request;
+	}
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 
@@ -100,34 +110,13 @@ public class KnowledgeArtifactProcessor {
 		return searchResultsBundle;
 	}
 
-	private List<MetadataResource> getResourcesFromBundle(Bundle bundle) {
-		List<MetadataResource> resourceList = new ArrayList<>();
-
-		if (!bundle.getEntryFirstRep().isEmpty()) {
-			List<Bundle.BundleEntryComponent> referencedResourceEntries = bundle.getEntry();
-			for (Bundle.BundleEntryComponent entry: referencedResourceEntries) {
-				if (entry.hasResource() && entry.getResource() instanceof MetadataResource) {
-					MetadataResource referencedResource = (MetadataResource) entry.getResource();
-					resourceList.add(referencedResource);
-				}
-			}
-		}
-
-		return resourceList;
-	}
-
-	private MetadataResource retrieveResourcesByReference(String reference, FhirDal fhirDal) {
-		MetadataResource resource = null;
-
+	private MetadataResource retrieveResourcesByCanonical(String reference, FhirDal fhirDal) throws ResourceNotFoundException {
 		Bundle referencedResourceBundle = searchResourceByUrl(reference, fhirDal);
-		MetadataResource referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
-		if (referencedResource != null) {
-			resource = referencedResource;
-		} else {
+		Optional<MetadataResource> referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
+		if (referencedResource.isEmpty()) {
 			throw new ResourceNotFoundException(String.format("Resource for Canonical '%s' not found.", reference));
 		}
-
-		return resource;
+		return referencedResource.get();
 	}
 
 	/* approve */
