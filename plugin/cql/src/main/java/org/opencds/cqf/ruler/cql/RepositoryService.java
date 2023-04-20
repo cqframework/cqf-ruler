@@ -102,13 +102,21 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		}
 		return transaction(transactionBundle, requestDetails);
 	}
-
+	/**
+	 * Creates a draft of an existing artifact if it has status Active.
+	 *
+	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param version             new version in the form MAJOR.MINOR.PATCH
+	 * TODO: should return OperationOutcome
+	 * @return A transaction bundle result of the newly created resources
+	 */
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
-	public Library draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
+	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.draft(theId, fhirDal, version);
+		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
 	}
 
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)

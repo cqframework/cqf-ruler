@@ -26,7 +26,7 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
@@ -34,6 +34,7 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -42,27 +43,118 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 class RepositoryServiceTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
+	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1";
 	@Test
-	void draftOperation_active_test() {
+	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
-
-		Parameters params = parameters(part("version", "1.1.1") );
-		Resource returnResource = getClient().operation()
+		String version = "1.0.1";
+		String draftedVersion = version + "-draft";
+		Parameters params = parameters(part("version", version) );
+		Bundle returnedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$draft")
 			.withParameters(params)
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 
-		Library returnedLibrary = (Library) returnResource;
-		assertNotNull(returnedLibrary);
-		assertTrue(((Library) returnedLibrary).getStatus() == Enumerations.PublicationStatus.DRAFT);
-		List<RelatedArtifact> relatedArtifacts = returnedLibrary.getRelatedArtifact();
+		assertNotNull(returnedBundle);
+		Optional<BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		assertTrue(maybeLib.isPresent());
+		Library lib = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		assertNotNull(lib);
+		assertTrue(lib.getStatus() == Enumerations.PublicationStatus.DRAFT);
+		assertTrue(lib.getVersion().equals(draftedVersion));
+		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()) == null);
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()) == null);
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));
+		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()).equals(draftedVersion));
 	}
-
+	@Test
+	void draftOperation_version_conflict_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		loadResource("minimal-draft-to-test-version-conflict.json");
+		Parameters params = parameters(part("version", "1.1.1") );
+		UnprocessableEntityException maybeException = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+		assertTrue(maybeException.getMessage().contains("already exists"));
+	}
+	
+	@Test
+	void draftOperation_draft_test() {
+		loadResource("minimal-draft-to-test-version-conflict.json");
+		Parameters params = parameters(part("version", "1.2.1") );
+		UnprocessableEntityException maybeException = null;
+		try {
+			getClient().operation()
+			.onInstance(minimalLibReference)
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+		assertTrue(maybeException.getMessage().contains("status of 'active'"));
+	}
+	@Test
+	void draftOperation_wrong_id_test() {
+		loadTransaction("ersd-draft-transaction-bundle-example.json");
+		Parameters params = parameters(part("version", "1.3.1") );
+		ResourceNotFoundException maybeException = null;
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+	}
+	@Test
+	void draftOperation_version_format_test() {
+		loadResource("minimal-draft-to-test-version-conflict.json");
+		List<String> testValues = Arrays.asList(new String[]{
+			"11asd1",
+			"1.1.3.1",
+			"1.|1.1",
+			"1/.1.1",
+			"-1.-1.2",
+			"1.-1.2",
+			"1.1.-2",
+			"1.2.3-draft",
+			"",
+			null
+		});
+		for(String version:testValues){
+			UnprocessableEntityException maybeException = null;
+			Parameters params = parameters(part("version", new StringType(version)) );
+			try {
+				getClient().operation()
+				.onInstance(minimalLibReference)
+				.named("$draft")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			} catch (UnprocessableEntityException e) {
+				maybeException = e;
+			}
+			assertNotNull(maybeException);
+		}
+	}
 	//@Test
 	//void releaseResource_test() {
 	//	loadTransaction("ersd-draft-transaction-bundle-example.json");
