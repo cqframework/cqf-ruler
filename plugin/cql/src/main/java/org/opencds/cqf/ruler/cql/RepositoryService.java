@@ -78,13 +78,31 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
-		if(artifactCommentTarget != null
-		&& Canonicals.getIdPart(artifactCommentTarget) != null
-		&& !Canonicals.getIdPart(artifactCommentTarget).equals(theId.getIdPart())){
-			throw new UnprocessableEntityException("ArtifactCommentTarget ID does not match ID of resource being approved.");
-		}
-		if(artifactCommentTarget == null){
-			artifactCommentTarget = new CanonicalType(theId.getValue());
+		if(artifactCommentTarget != null){
+			if(Canonicals.getUrl(artifactCommentTarget) != null
+			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())){
+				throw new UnprocessableEntityException("ArtifactCommentTarget URL does not match URL of resource being approved.");
+			}
+			if(Canonicals.getVersion(artifactCommentTarget) != null
+			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())){
+				throw new UnprocessableEntityException("ArtifactCommentTarget version does not match version of resource being approved.");
+			}
+		} else if(artifactCommentTarget == null){
+			String target = "";
+			String url = resource.getUrl();
+			String version = resource.getVersion();
+			if (url != null) {
+				target += url;
+			}
+			if (version!=null) {
+				if (url!=null) {
+					target += "|";
+				}
+				target += version;
+			}
+			if(target!=null){
+				artifactCommentTarget = new CanonicalType(target);
+			}
 		}
 		ArtifactAssessment newAssessment = this.artifactProcessor.createApprovalAssessment(
 			theId,

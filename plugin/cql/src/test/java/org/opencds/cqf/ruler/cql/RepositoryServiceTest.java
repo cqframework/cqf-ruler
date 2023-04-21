@@ -284,7 +284,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
-		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist";
+		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
 		Parameters params = parameters( 
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);
@@ -300,6 +300,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			maybeException = e;
 		}
 		assertNotNull(maybeException);
+		assertTrue(maybeException.getMessage().contains("URL"));
+		maybeException = null;
+		artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
+		params = parameters( 
+			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
+		);
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$approve")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+		assertTrue(maybeException.getMessage().contains("version"));
 	}
 	@Test
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
@@ -407,7 +425,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		DateType approvalDate = new DateType(DatatypeConverter.parseDate(approvalDateString).getTime());
 		String artifactCommentType = "comment";
 		String artifactCommentText = "comment text";
-		String artifactCommentTarget= "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary" + "|1.0.0";
+		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
 		String endorserName = "EndorserName";
