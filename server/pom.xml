@@ -16,6 +16,7 @@
             dependency for your database platform. -->
 		<dependency>
 			<groupId>com.h2database</groupId>
+			<version>2.1.214</version>
 			<artifactId>h2</artifactId>
 		</dependency>
 

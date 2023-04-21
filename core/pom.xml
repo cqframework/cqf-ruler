@@ -17,6 +17,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-storage</artifactId>
+			<version>${hapi_version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.fhir</artifactId>
 		</dependency>
@@ -112,10 +118,28 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.5.2</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.woodstox</groupId>
+					<artifactId>woodstox-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.woodstox</groupId>
+			<artifactId>woodstox-core</artifactId>
+			<version>6.4.0</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>2.1.214</version>
 			<scope>test</scope>
 		</dependency>
 
