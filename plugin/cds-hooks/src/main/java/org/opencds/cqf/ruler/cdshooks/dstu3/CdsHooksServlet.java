@@ -154,8 +154,12 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				useServerData = new BooleanType(false);
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
-					remoteDataEndpoint.addHeader(cdsHooksRequest.fhirAuthorization.tokenType + ": "
-							+ cdsHooksRequest.fhirAuthorization.accessToken);
+					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
+						cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
+					if (cdsHooksRequest.fhirAuthorization.subject != null) {
+						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
+							+ ": " + cdsHooksRequest.fhirAuthorization.subject);
+					}
 				}
 			}
 			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);

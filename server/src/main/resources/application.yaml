@@ -102,10 +102,11 @@ hapi:
       ## CDS Hook Settings
       cdshooks:
          enabled: true
+         clientIdHeaderName: client_id
          fhirserver:
-#            expandValueSets: true
-#            maxCodesPerQuery: 64
-#            queryBatchThreshold: 10
+            expandValueSets: true
+            maxCodesPerQuery: 64
+            queryBatchThreshold: 5
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
