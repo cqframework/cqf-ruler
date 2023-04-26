@@ -3,15 +3,12 @@ package org.opencds.cqf.ruler.cr;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Measure;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.UriParam;
-import org.opencds.cqf.ruler.utility.Searches;
 
 @SuppressWarnings("unchecked")
 public class JpaCRFhirDal implements FhirDal {
