@@ -170,20 +170,26 @@ public class CqlEvaluationHelper {
 		if (useServerData) {
 			JpaFhirRetrieveProvider jpaRetriever = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
 			jpaRetriever.setModelResolver(modelResolver);
+			if (!(terminologyProvider instanceof JpaTerminologyProvider)) {
+				this.queryGenerator.setExpandValueSets(true);
+			}
 			jpaRetriever.setFhirQueryGenerator(queryGenerator);
 			jpaRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null)
+			if (terminologyEndpoint != null) {
 				jpaRetriever.setExpandValueSets(true);
+			}
 			retrieveProviders.add(jpaRetriever);
 		}
 		if (dataEndpoint != null) {
 			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(
 					searchParameterResolver, resolveRemoteClient(dataEndpoint));
 			restRetriever.setModelResolver(modelResolver);
+			this.queryGenerator.setExpandValueSets(true);
 			restRetriever.setFhirQueryGenerator(queryGenerator);
 			restRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null)
+			if (terminologyEndpoint != null) {
 				restRetriever.setExpandValueSets(true);
+			}
 			retrieveProviders.add(restRetriever);
 		}
 		dataProvider = new CompositeDataProvider(modelResolver, new PriorityRetrieveProvider(retrieveProviders));
