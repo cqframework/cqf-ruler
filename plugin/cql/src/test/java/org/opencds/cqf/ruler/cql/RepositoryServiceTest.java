@@ -208,7 +208,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				.execute();
 		} catch (Exception e) {
 			actualErrorMessage = e.getMessage();
-			assertTrue(actualErrorMessage.contains("Support for 'latestFromTxServer' is not yet implemented."));
+			assertTrue(actualErrorMessage.contains("Support for 'latest-from-tx-server' is not yet implemented."));
 		}
 	}
 
