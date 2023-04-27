@@ -354,16 +354,16 @@ public class KnowledgeArtifactProcessor {
 	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
 		if (latestFromTxServer) {
-			throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+			throw new NotImplementedException("Support for 'latest-from-tx-server' is not yet implemented.");
 		}
 		// TODO: This needs to be transactional!
 
 		if (version == null || version.isEmpty()) {
-			throw new InvalidOperatorArgument("version must be provided as an argument to the $release operation.");
+			throw new InvalidOperatorArgument("'version' must be provided as an argument to the $release operation.");
 		}
 
 		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
-			throw new InvalidOperatorArgument("versionBehavior must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
+			throw new InvalidOperatorArgument("'version-behavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
 		}
 
 		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
