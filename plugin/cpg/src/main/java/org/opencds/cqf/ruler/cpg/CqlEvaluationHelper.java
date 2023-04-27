@@ -187,9 +187,7 @@ public class CqlEvaluationHelper {
 			this.queryGenerator.setExpandValueSets(true);
 			restRetriever.setFhirQueryGenerator(queryGenerator);
 			restRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null) {
-				restRetriever.setExpandValueSets(true);
-			}
+			restRetriever.setExpandValueSets(true);
 			retrieveProviders.add(restRetriever);
 		}
 		dataProvider = new CompositeDataProvider(modelResolver, new PriorityRetrieveProvider(retrieveProviders));
