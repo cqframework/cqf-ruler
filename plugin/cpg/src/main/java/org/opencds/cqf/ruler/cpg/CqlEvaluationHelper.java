@@ -170,6 +170,9 @@ public class CqlEvaluationHelper {
 		if (useServerData) {
 			JpaFhirRetrieveProvider jpaRetriever = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
 			jpaRetriever.setModelResolver(modelResolver);
+			if (!(terminologyProvider instanceof JpaTerminologyProvider)) {
+				this.queryGenerator.setExpandValueSets(true);
+			}
 			jpaRetriever.setFhirQueryGenerator(queryGenerator);
 			jpaRetriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint != null) {

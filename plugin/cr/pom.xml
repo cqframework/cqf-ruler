@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler-plugin</artifactId>
-		<version>0.13.0</version>
+		<version>0.14.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cqf-ruler-cr</artifactId>
 	<dependencies>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cql</artifactId>
-			<version>0.13.0</version>
+			<version>0.14.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
