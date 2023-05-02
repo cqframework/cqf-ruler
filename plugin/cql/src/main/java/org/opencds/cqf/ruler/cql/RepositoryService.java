@@ -143,8 +143,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		RequestDetails requestDetails,
 		@IdParam IdType theId,
 		@OperationParam(name = "version") String version,
-		@OperationParam(name = "version-behavior") CodeType versionBehavior,
-		@OperationParam(name = "latest-from-tx-server", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
+		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
+		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
