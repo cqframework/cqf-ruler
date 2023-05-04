@@ -18,8 +18,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.ContactDetail;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
@@ -339,83 +337,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertNotNull(maybeException);
 	}
-	@Test
-	void approveOperation_twice_appends_endorser_test() {
-		loadResource("ersd-active-library-example.json");
-		DateType approvalDate = new DateType(DatatypeConverter.parseDate("2022-12-12").getTime());
-		String endorserName1 = "EndorserName";
-		String endorserName2 = "EndorserName2";
-		ContactDetail endorser1 = new ContactDetail();
-		ContactDetail endorser2 = new ContactDetail();
-		endorser1.setName(endorserName1);
-		endorser2.setName(endorserName2);
-		Parameters params1 = parameters( 
-			part("approvalDate", approvalDate),
-			part("endorser", endorser1)
-		);	
-		Parameters params2 = parameters( 
-			part("approvalDate", approvalDate),
-			part("endorser", endorser2)
-		);	
-		//once
-		getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params1)
-			.returnResourceType(Bundle.class)
-			.execute();
-			// twice
-			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params2)
-			.returnResourceType(Bundle.class)
-			.execute();
-
-		// Endorser was appended	
-		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
-		assertTrue(lib.getEndorser().size() == 2);
-	}
-
-	@Test
-	void approveOperation_twice_updates_endorser_test() {
-		loadResource("ersd-active-library-example.json");
-		DateType approvalDate = new DateType(DatatypeConverter.parseDate("2022-12-12").getTime());
-		String endorserName = "EndorserName";
-		ContactDetail endorser = new ContactDetail();
-		endorser.setName(endorserName);
-		ContactPoint newContact = new ContactPoint();
-		String testContactValue = "test";
-		newContact.setValue(testContactValue);
-		Parameters params1 = parameters( 
-			part("approvalDate", approvalDate),
-			part("endorser", endorser)
-		);	
-		//once
-		getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params1)
-			.returnResourceType(Bundle.class)
-			.execute();
-			endorser.setTelecom((List<ContactPoint>) Arrays.asList(newContact));
-			Parameters params2 = parameters( 
-			part("approvalDate", approvalDate),
-			part("endorser", endorser)
-		);	
-			// twice
-			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params2)
-			.returnResourceType(Bundle.class)
-			.execute();
-
-		// Endorser was updated	
-		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
-		assertTrue(lib.getEndorser().size() == 1);
-		assertTrue(lib.getEndorser().get(0).getTelecom().get(0).getValue().equals(testContactValue));
-	}
 
 	@Test
 	void approveOperation_test() {
@@ -428,17 +349,13 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
-		String endorserName = "EndorserName";
-		ContactDetail endorser = new ContactDetail();
-		endorser.setName(endorserName);
 		Parameters params = parameters( 
 			part("approvalDate", approvalDate),
 			part("artifactCommentType", artifactCommentType),
 			part("artifactCommentText", artifactCommentText),
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget)),
 			part("artifactCommentReference", new CanonicalType(artifactCommentReference)),
-			part("artifactCommentUser", new Reference(artifactCommentUser)),
-			part("endorser", endorser)
+			part("artifactCommentUser", new Reference(artifactCommentUser))
 		);	
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
@@ -471,10 +388,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			artifactCommentReference,
 			artifactCommentTarget,
 			artifactCommentUser
-		));
-		// Endorser is correct
-		assertTrue(lib.getEndorser().get(0).getName().equals(endorserName));
-		
+		));		
 	}
 
 }

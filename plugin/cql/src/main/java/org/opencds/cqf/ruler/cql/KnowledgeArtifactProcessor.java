@@ -21,7 +21,6 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
@@ -125,8 +124,7 @@ public class KnowledgeArtifactProcessor {
 	 * artifact, and is otherwise only allowed to add artifactComment elements
 	 * to the artifact and to add or update an endorser.
 	 */
-	public MetadataResource approve(MetadataResource resource, IPrimitiveType<Date> approvalDate,
-			ContactDetail endorser, ArtifactAssessment assessment) {
+	public MetadataResource approve(MetadataResource resource, IPrimitiveType<Date> approvalDate, ArtifactAssessment assessment) {
 
 		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		Date currentDate = new Date();
@@ -141,11 +139,7 @@ public class KnowledgeArtifactProcessor {
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
-
-		// 3. add/update endorser
-		if (endorser != null) {
-			targetResourceAdapter.updateEndorser(endorser);
-		}
+		
 		return resource;
 	}
 	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
