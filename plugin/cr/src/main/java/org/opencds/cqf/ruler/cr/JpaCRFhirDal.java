@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr;
 
+import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
@@ -54,7 +55,27 @@ public class JpaCRFhirDal implements FhirDal {
 
 	@Override
 	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
-		return this.daoRegistry.getResourceDao(theResourceType)
-				.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
+		if (theUrl.contains("|")){
+			var urlSplit = theUrl.split("\\|");
+			var urlBase = urlSplit[0];
+			var urlVersion = urlSplit[1];
+
+			return this.daoRegistry.getResourceDao(theResourceType)
+				.search(
+					SearchParameterMap
+						.newSynchronous()
+						.add("url", new UriParam(urlBase))
+						.add("version", new TokenParam(urlVersion))
+				)
+				.getAllResources();
+		}
+		else {
+			return this.daoRegistry.getResourceDao(theResourceType)
+				.search(
+					SearchParameterMap
+						.newSynchronous()
+						.add("url", new UriParam(theUrl)))
+				.getAllResources();
+		}
 	}
 }

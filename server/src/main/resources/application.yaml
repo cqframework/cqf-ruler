@@ -26,6 +26,9 @@ hapi:
             refuse_to_fetch_third_party_urls: false
             fhir_version: R4
 
+      ## Include settings
+      max_includes_per_page: 1000
+
       ## CQL Settings
       cql:
          # enabled: true
@@ -99,10 +102,11 @@ hapi:
       ## CDS Hook Settings
       cdshooks:
          enabled: true
+         clientIdHeaderName: client_id
          fhirserver:
-#            expandValueSets: true
-#            maxCodesPerQuery: 64
-#            queryBatchThreshold: 10
+            expandValueSets: true
+            maxCodesPerQuery: 64
+            queryBatchThreshold: 5
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
