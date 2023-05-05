@@ -56,8 +56,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 *                            A Parameters resource with a parameter for each element
 	 *                            of the artifactComment Extension definition is
 	 *                            used to represent the proper structure.
-	 * @param endorser            A ContactDetail resource that represents the
-	 *                            person that is providing the approval and comment.
 	 * @return An IBaseResource that is the targeted resource, updated with the approval
 	 */
 	@Operation(name = "$approve", idempotent = true, global = true, type = MetadataResource.class)

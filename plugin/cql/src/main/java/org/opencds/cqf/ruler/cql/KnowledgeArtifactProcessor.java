@@ -139,7 +139,6 @@ public class KnowledgeArtifactProcessor {
 		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate);
 		resource.setDateElement(theDate);
-		
 		return resource;
 	}
 	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
