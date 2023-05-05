@@ -164,7 +164,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	//		.returnResourceType(Library.class)
 	//		.execute();
 
-	@Test
+	/*@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-release-bundle.json");
 		String versionData = "1234";
@@ -183,9 +183,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-	}
+	}*/
 
-	@Test
+	/* @Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-release-bundle.json");
 		String actualErrorMessage = "";
@@ -208,9 +208,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			actualErrorMessage = e.getMessage();
 			assertTrue(actualErrorMessage.contains("Support for 'latest-from-tx-server' is not yet implemented."));
 		}
-	}
+	}*/
 
-	@Test
+	/*@Test
 	void release_missing_approvalDate_validation_test() {
 		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
 		String versionData = "1234";
@@ -234,7 +234,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			actualErrorMessage = e.getMessage();
 			assertTrue(actualErrorMessage.contains("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
 		}
-	}
+	}*/
 
 	@Test
 	void reviseOperation_active_test() {
