@@ -11,7 +11,6 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -57,8 +56,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 *                            A Parameters resource with a parameter for each element
 	 *                            of the artifactComment Extension definition is
 	 *                            used to represent the proper structure.
-	 * @param endorser            A ContactDetail resource that represents the
-	 *                            person that is providing the approval and comment.
 	 * @return An IBaseResource that is the targeted resource, updated with the approval
 	 */
 	@Operation(name = "$approve", idempotent = true, global = true, type = MetadataResource.class)
@@ -71,8 +68,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			@OperationParam(name = "artifactCommentText") String artifactCommentText,
 			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
-			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser,
-			@OperationParam(name = "endorser") ContactDetail endorser) throws UnprocessableEntityException {
+			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
 				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 				MetadataResource resource = (MetadataResource) fhirDal.read(theId);
 		if (resource == null) {
@@ -111,7 +107,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			artifactCommentTarget,
 			artifactCommentReference,
 			artifactCommentUser);
-		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, endorser, newAssessment);
+		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, newAssessment);
 		Bundle transactionBundle = new Bundle()
 		.setType(Bundle.BundleType.TRANSACTION)
 		.addEntry(createEntry(approvedResource));
