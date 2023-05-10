@@ -34,7 +34,7 @@ class CdsHooksResponseIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
 	private String ourCdsBase;
-
+	
 	@BeforeEach
 	void beforeEach() {
 		ourCdsBase = "http://localhost:" + getPort() + "/cds-services";

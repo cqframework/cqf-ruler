@@ -45,6 +45,7 @@ import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
 import org.opencds.cqf.ruler.cql.interceptor.CqlExceptionHandlingInterceptor;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cql.r4.PreExpandedTermReadSvcR4;
+import org.opencds.cqf.ruler.cql.r4.R4CustomResourceRegisterer;
 import org.opencds.cqf.ruler.cql.r5.PreExpandedTermReadSvcR5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +94,11 @@ public class CqlConfig {
 	@Bean
 	public CqlExceptionHandlingInterceptor cqlExceptionHandlingInterceptor() {
 		return new CqlExceptionHandlingInterceptor();
+	}
+
+	@Bean
+	public R4CustomResourceRegisterer r4CustomResourceRegisterer() {
+		return new R4CustomResourceRegisterer();
 	}
 
 	@Bean
