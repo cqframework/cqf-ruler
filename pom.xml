@@ -102,7 +102,8 @@
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring_boot_version>2.6.7</spring_boot_version>
+
+		<spring_boot_version>2.7.10</spring_boot_version>
 		<spring_version>5.3.20</spring_version>
 	</properties>
 
@@ -476,7 +477,7 @@
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.33</version>
+				<version>2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>

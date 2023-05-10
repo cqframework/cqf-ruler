@@ -25,7 +25,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ResolveProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ResolveProviderIT extends RestIntegrationTest {
@@ -37,7 +39,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
-
+	@DirtiesContext
 	@Test
 	void closureTest() {
 		loadResource("Organization-ra-payer01.json");
@@ -93,6 +95,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		assertEquals(12, raBundle.getEntry().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void invalidationTest() {
 		loadResource("Organization-ra-payer01.json");
@@ -149,6 +152,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 
 	@SuppressWarnings("java:S5961")
+
 	@Test
 	void creationTest() {
 		loadResource("Organization-ra-payer01.json");

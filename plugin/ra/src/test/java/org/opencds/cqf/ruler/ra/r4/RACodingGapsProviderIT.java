@@ -28,7 +28,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RACodingGapsProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
 				"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author" })
