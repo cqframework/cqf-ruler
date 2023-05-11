@@ -2,18 +2,15 @@
 package org.opencds.cqf.ruler.cql;
 
 import static graphql.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.booleanPart;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.codePart;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -342,8 +339,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_test() {
 		loadResource("ersd-active-library-example.json");
 		loadResource("practitioner-example-for-refs.json");
-		String approvalDateString = "2022-12-12";
-		DateType approvalDate = new DateType(DatatypeConverter.parseDate(approvalDateString).getTime());
+		Date today = new Date();
+		// get today's date in the form "2023-05-11"
+ 		DateType approvalDate = new DateType(today, TemporalPrecisionEnum.DAY);
 		String artifactCommentType = "comment";
 		String artifactCommentText = "comment text";
 		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
@@ -368,12 +366,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertNotNull(returnedResource);
 		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
 		assertNotNull(lib);
-		// Approval date is correct
-		assertTrue(lib.getApprovalDateElement().asStringValue().equals(approvalDateString));
+		// Ensure Approval Date matches input parameter
+		assertTrue(lib.getApprovalDateElement().asStringValue().equals(approvalDate.asStringValue()));
 		// match Libray.date to Library.meta.lastUpdated precision before comparing
-		lib.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.SECOND);
-		// date is correct
+		lib.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.DAY);
+		// Library.date matches the meta.lastUpdated value
 		assertTrue(lib.getDateElement().asStringValue().equals(lib.getMeta().getLastUpdatedElement().asStringValue()));
+		// Ensure that approval date is NOT before Library.date (see $release)
+		assertFalse(lib.getApprovalDate().before(lib.getDate()));
 		// ArtifactAssessment is saved as type Basic, update when we change to OperationOutcome
 		// Get the reference from BundleEntry.response.location
 		Optional<BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();

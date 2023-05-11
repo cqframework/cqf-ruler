@@ -38,6 +38,7 @@ import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment.ArtifactAssessmentContent
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -137,7 +138,7 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		// 2. Set date
-		DateTimeType theDate = new DateTimeType(currentDate);
+		DateTimeType theDate = new DateTimeType(currentDate, TemporalPrecisionEnum.DAY);
 		resource.setDateElement(theDate);
 		return resource;
 	}
