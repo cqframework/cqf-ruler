@@ -29,7 +29,13 @@
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
-				"-Dspring.batch.job.enabled=false"
+				"-Dhapi.fhir.bulk_import_enabled=false",
+				"-Dhapi.fhir.mdm_enabled=false",
+				"-Dspring.batch.job.enabled=false",
+				"-Dspring.datasource.url=jdbc:h2:mem:test_mem",
+				"-Dspring.datasource.dataClassName=org.h2.Driver",
+				"-Dspring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect",
+				"-Dhapi.fhir.cdshooks.enabled=true"
 			],
 			"classPaths": [
 				"$Auto",
@@ -71,7 +77,12 @@
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.fhir_version=DSTU3",
 				"-Dhapi.fhir.bulk_export_enabled=false",
-				"-Dspring.batch.job.enabled=false"
+				"-Dhapi.fhir.bulk_import_enabled=false",
+				"-Dhapi.fhir.mdm_enabled=false",
+				"-Dspring.batch.job.enabled=false",
+				"-Dspring.datasource.url=jdbc:h2:mem:test_mem",
+				"-Dspring.datasource.dataClassName=org.h2.Driver",
+				"-Dspring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect"
 			],
 			"classPaths": [
 				"$Auto",

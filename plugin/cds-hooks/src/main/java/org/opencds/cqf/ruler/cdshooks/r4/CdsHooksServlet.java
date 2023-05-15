@@ -159,10 +159,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
-						cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
+							cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
 					if (cdsHooksRequest.fhirAuthorization.subject != null) {
 						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
-							+ ": " + cdsHooksRequest.fhirAuthorization.subject);
+								+ ": " + cdsHooksRequest.fhirAuthorization.subject);
 					}
 				}
 			}
@@ -281,10 +281,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (condition.hasExpression() && condition.getExpression().hasLanguage()
 								&& condition.getExpression().hasExpression()) {
 							Type conditionResult;
-							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
+							var lang = condition.getExpression().getLanguage();
+							if ("text/cql-identifier".equals(lang) || "text/cql.identifier".equals(lang)) {
 								conditionResult = evaluationResults.getParameter(
 										condition.getExpression().getExpression());
-							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
+							} else if ("text/cql".equals(lang)) {
 								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
 										patientId, condition.getExpression().getExpression())
 										.getParameter("return");
@@ -356,7 +357,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
 							&& dv.getExpression().hasExpression()) {
 						Object dynamicValueResult;
-						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
+						var lang = dv.getExpression().getLanguage();
+						if ("text/cql-identifier".equals(lang) || "text/cql.identifier".equals(lang)) {
 							dynamicValueResult = evaluationResults.getParameter(
 									dv.getExpression().getExpression());
 						} else {

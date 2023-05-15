@@ -134,6 +134,9 @@ public class DiscoveryResolutionR4 implements DaoRegistryUser {
 	}
 
 	public List<String> createRequestUrl(DataRequirement dataRequirement) {
+		if (dataRequirement.getType() == null) {
+			return null;
+		}
 		if (!isPatientCompartment(dataRequirement.getType()))
 			return null;
 		String patientRelatedResource = dataRequirement.getType() + "?"
