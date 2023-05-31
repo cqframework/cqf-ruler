@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
@@ -20,9 +20,8 @@ public class ExtensibleJpaConformanceProviderDstu2 extends JpaConformanceProvide
 
 	List<MetadataExtender<Conformance>> myExtenders;
 
-	public ExtensibleJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao,
-			DaoConfig theDaoConfig, List<MetadataExtender<Conformance>> theExtenders) {
-		super(theRestfulServer, theSystemDao, theDaoConfig);
+	public ExtensibleJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao, JpaStorageSettings theStorageSettings, List<MetadataExtender<Conformance>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theStorageSettings);
 		myExtenders = theExtenders;
 	}
 

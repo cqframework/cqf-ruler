@@ -1,12 +1,12 @@
 package org.opencds.cqf.ruler.cql.dstu2;
 
+import ca.uhn.fhir.jpa.term.TermReadSvcImpl;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
-import ca.uhn.fhir.jpa.term.TermReadSvcDstu2;
 
-public class PreExpandedTermReadSvcDstu2 extends TermReadSvcDstu2 {
+public class PreExpandedTermReadSvcDstu2 extends TermReadSvcImpl {
 	@Override
 	public IBaseResource expandValueSet(ValueSetExpansionOptions theExpansionOptions, IBaseResource theInput) {
 		ValueSet vs = (ValueSet) theInput;
@@ -14,6 +14,6 @@ public class PreExpandedTermReadSvcDstu2 extends TermReadSvcDstu2 {
 			return vs;
 		}
 
-		return super.expandValueSet(theExpansionOptions, theInput);
+		return expandValueSet(theExpansionOptions, theInput);
 	}
 }

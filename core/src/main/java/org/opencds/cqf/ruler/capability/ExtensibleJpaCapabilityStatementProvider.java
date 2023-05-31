@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
 import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.JpaCapabilityStatementProvider;
 import ca.uhn.fhir.rest.annotation.Metadata;
@@ -20,10 +20,9 @@ public class ExtensibleJpaCapabilityStatementProvider extends JpaCapabilityState
 
 	private List<MetadataExtender<IBaseConformance>> myExtenders;
 
-	public ExtensibleJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao,
-			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
-			IValidationSupport theValidationSupport, List<MetadataExtender<IBaseConformance>> theExtenders) {
-		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry, theValidationSupport);
+	public ExtensibleJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao, JpaStorageSettings theStorageSettings, ISearchParamRegistry theSearchParamRegistry,
+																	IValidationSupport theValidationSupport, List<MetadataExtender<IBaseConformance>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theStorageSettings, theSearchParamRegistry, theValidationSupport);
 		myExtenders = theExtenders;
 	}
 

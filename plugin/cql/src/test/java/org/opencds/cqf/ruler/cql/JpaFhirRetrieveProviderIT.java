@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
 
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Observation;
@@ -21,7 +22,7 @@ import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+
 import ca.uhn.fhir.jpa.provider.ValueSetOperationProvider;
 
 @SpringBootTest(classes = { JpaFhirRetrieveProviderIT.class }, properties = { "hapi.fhir.fhir_version=r4" })

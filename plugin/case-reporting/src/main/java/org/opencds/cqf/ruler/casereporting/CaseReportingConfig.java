@@ -1,6 +1,6 @@
 package org.opencds.cqf.ruler.casereporting;
 
-import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.jpa.starter.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.casereporting.r4.MeasureDataProcessProvider;
 import org.opencds.cqf.ruler.casereporting.r4.ProcessMessageProvider;

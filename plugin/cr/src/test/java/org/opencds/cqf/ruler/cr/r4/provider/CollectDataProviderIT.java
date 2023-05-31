@@ -23,7 +23,7 @@ import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 
 @SpringBootTest(classes = { CollectDataProviderIT.class, CrConfig.class }, properties = {
 		"hapi.fhir.fhir_version=r4", })

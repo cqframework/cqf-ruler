@@ -1,7 +1,8 @@
 package org.opencds.cqf.ruler.cql;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+
+import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class JpaTerminologyProviderIT extends RestIntegrationTest {
 
 	@Autowired
-	DaoConfig daoConfig;
+	JpaStorageSettings myStorageSettings;
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	private JpaTerminologyProvider terminologyProvider;
@@ -56,7 +57,7 @@ class JpaTerminologyProviderIT extends RestIntegrationTest {
 	*/
 	@Test
 	void testExpandUnitsOfMeasureCodeSystemMoreThan1000() {
-		daoConfig.setMaximumExpansionSize(Integer.MAX_VALUE);
+		myStorageSettings.setMaximumExpansionSize(Integer.MAX_VALUE);
 		Iterable<org.opencds.cqf.cql.engine.runtime.Code> expandResult = getExpansion(
 			"valueset-ucum-common.json", "http://hl7.org/fhir/ValueSet/ucum-common", "1.0.0");
 		assertEquals(1357, IterableUtils.size(expandResult));
@@ -64,7 +65,7 @@ class JpaTerminologyProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testPreExpandedRxNormCodeSystemMoreThan1000() {
-		daoConfig.setMaximumExpansionSize(Integer.MAX_VALUE);
+		myStorageSettings.setMaximumExpansionSize(Integer.MAX_VALUE);
 		Iterable<org.opencds.cqf.cql.engine.runtime.Code> expandResult = getExpansion(
 			"valueset-opioid-analgesics-with-ambulatory-misuse-potential.json",
 			"http://fhir.org/guides/cdc/opioid-cds/ValueSet/opioid-analgesics-with-ambulatory-misuse-potential",

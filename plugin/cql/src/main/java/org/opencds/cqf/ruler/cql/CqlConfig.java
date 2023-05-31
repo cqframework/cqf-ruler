@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
+import ca.uhn.fhir.cr.config.CrProviderFactory;
+import ca.uhn.fhir.cr.config.CrProviderLoader;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
@@ -13,7 +15,6 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.ICompositeType;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
@@ -34,10 +35,10 @@ import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
-import org.opencds.cqf.external.annotations.OnDSTU2Condition;
-import org.opencds.cqf.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.external.annotations.OnR4Condition;
-import org.opencds.cqf.external.annotations.OnR5Condition;
+import org.opencds.cqf.jpa.starter.annotations.OnDSTU2Condition;
+import org.opencds.cqf.jpa.starter.annotations.OnDSTU3Condition;
+import org.opencds.cqf.jpa.starter.annotations.OnR4Condition;
+import org.opencds.cqf.jpa.starter.annotations.OnR5Condition;
 import org.opencds.cqf.ruler.cql.dstu2.PreExpandedTermReadSvcDstu2;
 import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
 import org.opencds.cqf.ruler.cql.interceptor.CqlExceptionHandlingInterceptor;
@@ -58,16 +59,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.IValidationSupport;
-import ca.uhn.fhir.cql.common.provider.CqlProviderFactory;
-import ca.uhn.fhir.cql.common.provider.CqlProviderLoader;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
-import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
-import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
-import ca.uhn.fhir.jpa.term.api.ITermReadSvcR5;
 import ca.uhn.fhir.jpa.validation.JpaValidationSupportChain;
 
 @Configuration
@@ -177,8 +173,8 @@ public class CqlConfig {
 
 	@SuppressWarnings("unchecked")
 	@Bean
-	IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> valueSetDao(DaoRegistry daoRegistry) {
-		return (IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType>) daoRegistry
+	IFhirResourceDaoValueSet<IBaseResource> valueSetDao(DaoRegistry daoRegistry) {
+		return (IFhirResourceDaoValueSet<IBaseResource>) daoRegistry
 				.getResourceDao("ValueSet");
 	}
 
@@ -301,13 +297,13 @@ public class CqlConfig {
 	// This overrides the base HAPI cql provider.
 	@Bean
 	@Primary
-	public CqlProviderLoader cqlProviderLoader() {
+	public CrProviderLoader cqlProviderLoader() {
 		return null;
 	}
 
 	@Bean
 	@Primary
-	public CqlProviderFactory cqlProviderFactory() {
+	public CrProviderFactory cqlProviderFactory() {
 		return null;
 	}
 
@@ -319,19 +315,19 @@ public class CqlConfig {
 
 	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
 	@Conditional(OnDSTU3Condition.class)
-	public ITermReadSvcDstu3 termReadSvcDstu3() {
+	public ITermReadSvc termReadSvcDstu3() {
 		return new PreExpandedTermReadSvcDstu3();
 	}
 
 	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
 	@Conditional(OnR4Condition.class)
-	public ITermReadSvcR4 termReadSvcR4() {
+	public ITermReadSvc termReadSvcR4() {
 		return new PreExpandedTermReadSvcR4();
 	}
 
 	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
 	@Conditional(OnR5Condition.class)
-	public ITermReadSvcR5 termReadSvcR5() {
+	public ITermReadSvc termReadSvcR5() {
 		return new PreExpandedTermReadSvcR5();
 	}
 

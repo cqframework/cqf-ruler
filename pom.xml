@@ -97,7 +97,7 @@
 		<!-- Dependency Versions -->
 		<fhir_core_version>5.6.36</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.1.3</hapi_version>
+		<hapi_version>6.7.3-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -133,13 +133,22 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
 				<version>${junit_version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-storage</artifactId>
+				<version>${hapi_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-jpaserver-ips</artifactId>
+				<version>${hapi_version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jettison</groupId>
@@ -174,7 +183,7 @@
 
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-jpaserver-cql</artifactId>
+				<artifactId>hapi-fhir-storage-cr</artifactId>
 				<version>${hapi_version}</version>
 				<exclusions>
 					<exclusion>

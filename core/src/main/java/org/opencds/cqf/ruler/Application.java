@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler;
 
-import org.opencds.cqf.external.annotations.OnEitherVersion;
-import org.opencds.cqf.external.mdm.MdmConfig;
+
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
 import org.opencds.cqf.ruler.config.ServerProperties;
@@ -28,7 +27,7 @@ import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 		RulerConfig.class,
 		ServerProperties.class,
 		WebsocketDispatcherConfig.class,
-		MdmConfig.class,
+		org.opencds.cqf.jpa.starter.mdm.MdmConfig.class,
 		TesterUIConfig.class,
 		BeanFinderConfig.class, })
 public class Application extends SpringBootServletInitializer {
@@ -48,7 +47,7 @@ public class Application extends SpringBootServletInitializer {
 	AutowireCapableBeanFactory beanFactory;
 
 	@Bean
-	@Conditional(OnEitherVersion.class)
+	@Conditional(org.opencds.cqf.jpa.starter.annotations.OnEitherVersion.class)
 	public ServletRegistrationBean<Server> hapiServletRegistration() {
 		ServletRegistrationBean<Server> servletRegistrationBean = new ServletRegistrationBean<>();
 		Server server = new Server();

@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 
+import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
+import ca.uhn.fhir.rest.server.RestfulServer;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.instance.model.api.IBaseConformance;
-import org.opencds.cqf.external.AppProperties;
-import org.opencds.cqf.external.BaseJpaRestfulServer;
-import org.opencds.cqf.external.mdm.MdmConfig;
+
 import org.opencds.cqf.ruler.api.Interceptor;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Import;
 import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.IValidationSupport;
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
@@ -43,22 +42,24 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 @Import({
 		ServerProperties.class,
+	org.opencds.cqf.jpa.starter.common.FhirServerConfigCommon.class,
+	org.opencds.cqf.jpa.starter.common.StarterJpaConfig.class,
+	org.opencds.cqf.jpa.starter.mdm.MdmConfig.class,
 		SubscriptionSubmitterConfig.class,
 		SubscriptionProcessorConfig.class,
 		SubscriptionChannelConfig.class,
 		WebsocketDispatcherConfig.class,
-		MdmConfig.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
 		TesterUIConfig.class,
 		BeanFinderConfig.class })
-public class Server extends BaseJpaRestfulServer {
+public class Server extends RestfulServer {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger log = LoggerFactory.getLogger(Server.class);
 
 	@Autowired
-	DaoConfig myDaoConfig;
+	JpaStorageSettings theStorageSettings;
 
 	@Autowired
 	ISearchParamRegistry mySearchParamRegistry;
@@ -74,7 +75,7 @@ public class Server extends BaseJpaRestfulServer {
 	ApplicationContext applicationContext;
 
 	@Autowired
-	AppProperties myAppProperties;
+	org.opencds.cqf.jpa.starter.AppProperties myAppProperties;
 
 	@Autowired
 	ServerProperties myServerProperties;
@@ -116,7 +117,7 @@ public class Server extends BaseJpaRestfulServer {
 					.map(x -> (MetadataExtender<Conformance>) x).collect(Collectors.toList());
 			ExtensibleJpaConformanceProviderDstu2 confProvider = new ExtensibleJpaConformanceProviderDstu2(this,
 					myFhirSystemDao,
-					myDaoConfig, extenderList);
+					theStorageSettings, extenderList);
 			confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU2 Server"));
 			setServerConformanceProvider(confProvider);
 		} else {
@@ -124,7 +125,7 @@ public class Server extends BaseJpaRestfulServer {
 				List<MetadataExtender<CapabilityStatement>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<CapabilityStatement>) x).collect(Collectors.toList());
 				ExtensibleJpaConformanceProviderDstu3 confProvider = new ExtensibleJpaConformanceProviderDstu3(this,
-						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, extenderList);
+						myFhirSystemDao, theStorageSettings, mySearchParamRegistry, extenderList);
 				confProvider
 						.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU3 Server"));
 				setServerConformanceProvider(confProvider);
@@ -132,14 +133,14 @@ public class Server extends BaseJpaRestfulServer {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
-						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, myValidationSupport, extenderList);
+						myFhirSystemDao, theStorageSettings, mySearchParamRegistry, myValidationSupport, extenderList);
 				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R4 Server"));
 				setServerConformanceProvider(confProvider);
 			} else if (fhirVersion == FhirVersionEnum.R5) {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
-						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, myValidationSupport, extenderList);
+						myFhirSystemDao, theStorageSettings, mySearchParamRegistry, myValidationSupport, extenderList);
 				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R5 Server"));
 				setServerConformanceProvider(confProvider);
 			} else {

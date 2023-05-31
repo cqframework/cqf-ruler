@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.opencds.cqf.external.AppProperties;
+import org.opencds.cqf.jpa.starter.AppProperties;
 
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opencds.cqf.external.AppProperties;
+
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.opencds.cqf.jpa.starter.AppProperties;
 
 import ca.uhn.fhir.batch2.config.Batch2JobRegisterer;
 import ca.uhn.fhir.context.FhirContext;

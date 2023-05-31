@@ -39,9 +39,9 @@ import ca.uhn.fhir.rest.param.UriParam;
  */
 public class CodeSystemUpdateProvider implements OperationProvider {
 	@Autowired
-	private IFhirResourceDaoValueSet<ValueSet, Coding, CodeableConcept> myValueSetDaoR4;
+	private IFhirResourceDaoValueSet<ValueSet> myValueSetDaoR4;
 	@Autowired
-	private IFhirResourceDaoCodeSystem<CodeSystem, Coding, CodeableConcept> myCodeSystemDaoR4;
+	private IFhirResourceDaoCodeSystem<CodeSystem> myCodeSystemDaoR4;
 
 	/***
 	 * Update existing {@link CodeSystem CodeSystems} with the codes in all

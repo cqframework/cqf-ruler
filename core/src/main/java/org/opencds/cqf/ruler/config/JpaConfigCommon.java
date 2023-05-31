@@ -3,10 +3,10 @@ package org.opencds.cqf.ruler.config;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import ca.uhn.fhir.jpa.model.dao.JpaPid;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
-import org.opencds.cqf.external.AppProperties;
-import org.opencds.cqf.external.EnvironmentHelper;
-import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
+
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.IDaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.batch.config.NonPersistedBatchConfigurer;
+
 import ca.uhn.fhir.jpa.config.util.HapiEntityManagerFactoryUtil;
 import ca.uhn.fhir.jpa.config.util.ResourceCountCacheUtil;
 import ca.uhn.fhir.jpa.config.util.ValidationSupportConfigUtil;
@@ -57,10 +57,11 @@ public class JpaConfigCommon {
 		return ValidationSupportConfigUtil.newCachingValidationSupport(theJpaValidationSupportChain);
 	}
 
+	/*
 	@Bean
 	public BatchConfigurer batchConfigurer() {
 		return new NonPersistedBatchConfigurer();
-	}
+	}*/
 
 	/**
 	 * Customize the default/max page sizes for search results. You can set these
@@ -68,7 +69,7 @@ public class JpaConfigCommon {
 	 * you want, although very large page sizes will require a lot of RAM.
 	 */
 	@Bean
-	public DatabaseBackedPagingProvider databaseBackedPagingProvider(AppProperties appProperties) {
+	public DatabaseBackedPagingProvider databaseBackedPagingProvider(org.opencds.cqf.jpa.starter.AppProperties appProperties) {
 		DatabaseBackedPagingProvider pagingProvider = new DatabaseBackedPagingProvider();
 		pagingProvider.setDefaultPageSize(appProperties.getDefault_page_size());
 		pagingProvider.setMaximumPageSize(appProperties.getMax_page_size());
@@ -101,7 +102,7 @@ public class JpaConfigCommon {
 			throw new ConfigurationException("Could not set the data source due to a configuration issue", e);
 		}
 		retVal.setJpaProperties(
-				EnvironmentHelper.getHibernateProperties(configurableEnvironment, myConfigurableListableBeanFactory));
+				org.opencds.cqf.jpa.starter.util.EnvironmentHelper.getHibernateProperties(configurableEnvironment, myConfigurableListableBeanFactory));
 		return retVal;
 	}
 
@@ -119,7 +120,7 @@ public class JpaConfigCommon {
 	}
 
 	@Bean
-	public IMdmLinkDao<MdmLink> mdmLinkDao() {
+	public IMdmLinkDao<JpaPid, MdmLink> mdmLinkDao() {
 		return new MdmLinkDaoJpaImpl();
 	}
 }

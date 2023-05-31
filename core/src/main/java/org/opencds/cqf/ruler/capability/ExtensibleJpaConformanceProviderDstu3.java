@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.rest.annotation.Metadata;
@@ -22,9 +22,9 @@ public class ExtensibleJpaConformanceProviderDstu3 extends JpaConformanceProvide
 	List<MetadataExtender<CapabilityStatement>> myExtenders;
 
 	public ExtensibleJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao,
-			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
-			List<MetadataExtender<CapabilityStatement>> theExtenders) {
-		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
+																JpaStorageSettings theStorageSettings, ISearchParamRegistry theSearchParamRegistry,
+																List<MetadataExtender<CapabilityStatement>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theStorageSettings, theSearchParamRegistry);
 		myExtenders = theExtenders;
 	}
 
