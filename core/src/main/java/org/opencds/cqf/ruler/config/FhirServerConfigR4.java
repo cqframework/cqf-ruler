@@ -11,6 +11,11 @@ import ca.uhn.fhir.jpa.config.r4.JpaR4Config;
 @Conditional(org.opencds.cqf.jpa.starter.annotations.OnR4Condition.class)
 @Import({
 		JpaR4Config.class,
+	JpaR4Config.class,
+	org.opencds.cqf.jpa.starter.common.StarterJpaConfig.class,
+	org.opencds.cqf.jpa.starter.cr.StarterCrR4Config.class,
+	org.opencds.cqf.jpa.starter.common.ElasticsearchConfig.class,
+	org.opencds.cqf.jpa.starter.ips.StarterIpsConfig.class,
 		org.opencds.cqf.jpa.starter.common.ElasticsearchConfig.class
 })
 public class FhirServerConfigR4 {

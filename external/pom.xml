@@ -133,9 +133,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<doclint>none</doclint>
-					<additionalOptions>-Xdoclint:none</additionalOptions>
-					<additionalJOption>-Xdoclint:none</additionalJOption>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -1,12 +1,10 @@
 package org.opencds.cqf.ruler.config;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
 import ca.uhn.fhir.jpa.model.entity.StorageSettings;
 import org.hl7.fhir.dstu2.model.Subscription;
-//import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.jpa.starter.AppProperties;
 import org.opencds.cqf.ruler.provider.PatchedJpaHibernatePropertiesProvider;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -19,14 +17,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.common.base.Strings;
 
-//import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.binary.api.IBinaryStorageSvc;
 import ca.uhn.fhir.jpa.binstore.DatabaseBlobBinaryStorageSvcImpl;
 import ca.uhn.fhir.jpa.config.HibernatePropertiesProvider;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings.CrossPartitionReferenceMode;
-//import ca.uhn.fhir.jpa.model.entity.ModelConfig;
-import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionDeliveryHandlerFactory;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.EmailSenderImpl;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
 import ca.uhn.fhir.rest.server.mail.IMailSvc;
@@ -90,56 +85,62 @@ public class FhirServerConfigCommon {
 	 */
 	@Bean
 	public JpaStorageSettings jpaStorageSettings(AppProperties appProperties) {
-		JpaStorageSettings retVal = new JpaStorageSettings();
+		JpaStorageSettings jpaStorageSettings = new JpaStorageSettings();
 
-		retVal.setIndexMissingFields(appProperties.getEnable_index_missing_fields() ? JpaStorageSettings.IndexEnabledEnum.ENABLED
+		jpaStorageSettings.setIndexMissingFields(appProperties.getEnable_index_missing_fields() ? JpaStorageSettings.IndexEnabledEnum.ENABLED
 				: JpaStorageSettings.IndexEnabledEnum.DISABLED);
-		retVal.setAutoCreatePlaceholderReferenceTargets(appProperties.getAuto_create_placeholder_reference_targets());
-		retVal.setEnforceReferentialIntegrityOnWrite(appProperties.getEnforce_referential_integrity_on_write());
-		retVal.setEnforceReferentialIntegrityOnDelete(appProperties.getEnforce_referential_integrity_on_delete());
-		retVal.setAllowContainsSearches(appProperties.getAllow_contains_searches());
-		retVal.setAllowMultipleDelete(appProperties.getAllow_multiple_delete());
-		retVal.setAllowExternalReferences(appProperties.getAllow_external_references());
-		retVal.setSchedulingDisabled(!appProperties.getDao_scheduling_enabled());
-		retVal.setDeleteExpungeEnabled(appProperties.getDelete_expunge_enabled());
-		retVal.setExpungeEnabled(appProperties.getExpunge_enabled());
+		jpaStorageSettings.setAutoCreatePlaceholderReferenceTargets(appProperties.getAuto_create_placeholder_reference_targets());
+		jpaStorageSettings.setEnforceReferentialIntegrityOnWrite(appProperties.getEnforce_referential_integrity_on_write());
+		jpaStorageSettings.setEnforceReferentialIntegrityOnDelete(appProperties.getEnforce_referential_integrity_on_delete());
+		jpaStorageSettings.setAllowContainsSearches(appProperties.getAllow_contains_searches());
+		jpaStorageSettings.setAllowMultipleDelete(appProperties.getAllow_multiple_delete());
+		jpaStorageSettings.setAllowExternalReferences(appProperties.getAllow_external_references());
+		jpaStorageSettings.setSchedulingDisabled(!appProperties.getDao_scheduling_enabled());
+		jpaStorageSettings.setDeleteExpungeEnabled(appProperties.getDelete_expunge_enabled());
+		jpaStorageSettings.setExpungeEnabled(appProperties.getExpunge_enabled());
 		if (appProperties.getSubscription() != null && appProperties.getSubscription().getEmail() != null)
-			retVal.setEmailFromAddress(appProperties.getSubscription().getEmail().getFrom());
+			jpaStorageSettings.setEmailFromAddress(appProperties.getSubscription().getEmail().getFrom());
 
 		Integer maxFetchSize = appProperties.getMax_page_size();
-		retVal.setFetchSizeDefaultMaximum(maxFetchSize);
+		jpaStorageSettings.setFetchSizeDefaultMaximum(maxFetchSize);
 		ourLog.info("Server configured to have a maximum fetch size of "
 				+ (maxFetchSize == Integer.MAX_VALUE ? "'unlimited'" : maxFetchSize));
 
 		Long reuseCachedSearchResultsMillis = appProperties.getReuse_cached_search_results_millis();
-		retVal.setReuseCachedSearchResultsForMillis(reuseCachedSearchResultsMillis);
+		jpaStorageSettings.setReuseCachedSearchResultsForMillis(reuseCachedSearchResultsMillis);
 		ourLog.info("Server configured to cache search results for {} milliseconds", reuseCachedSearchResultsMillis);
 
 		Long retainCachedSearchesMinutes = appProperties.getRetain_cached_searches_mins();
-		retVal.setExpireSearchResultsAfterMillis(retainCachedSearchesMinutes * 60 * 1000);
+		jpaStorageSettings.setExpireSearchResultsAfterMillis(retainCachedSearchesMinutes * 60 * 1000);
 
 		if (appProperties.getSubscription() != null) {
 			// Subscriptions are enabled by channel type
 			if (appProperties.getSubscription().getResthook_enabled()) {
 				ourLog.info("Enabling REST-hook subscriptions");
-				retVal.addSupportedSubscriptionType(org.hl7.fhir.dstu2.model.Subscription.SubscriptionChannelType.RESTHOOK);
+				jpaStorageSettings.addSupportedSubscriptionType(org.hl7.fhir.dstu2.model.Subscription.SubscriptionChannelType.RESTHOOK);
 			}
 			if (appProperties.getSubscription().getEmail() != null) {
 				ourLog.info("Enabling email subscriptions");
-				retVal.addSupportedSubscriptionType(org.hl7.fhir.dstu2.model.Subscription.SubscriptionChannelType.EMAIL);
+				jpaStorageSettings.addSupportedSubscriptionType(org.hl7.fhir.dstu2.model.Subscription.SubscriptionChannelType.EMAIL);
 			}
 			if (appProperties.getSubscription().getWebsocket_enabled()) {
 				ourLog.info("Enabling websocket subscriptions");
-				retVal.addSupportedSubscriptionType(
+				jpaStorageSettings.addSupportedSubscriptionType(
 						org.hl7.fhir.dstu2.model.Subscription.SubscriptionChannelType.WEBSOCKET);
 			}
 		}
 
-		retVal.setFilterParameterEnabled(appProperties.getFilter_search_enabled());
-		retVal.setAdvancedHSearchIndexing(appProperties.getAdvanced_lucene_indexing());
-		retVal.setTreatBaseUrlsAsLocal(new HashSet<>(appProperties.getLocal_base_urls()));
+		jpaStorageSettings.setFilterParameterEnabled(appProperties.getFilter_search_enabled());
+		jpaStorageSettings.setAdvancedHSearchIndexing(appProperties.getAdvanced_lucene_indexing());
+		jpaStorageSettings.setTreatBaseUrlsAsLocal(new HashSet<>(appProperties.getLocal_base_urls()));
 
-		return retVal;
+		//Parallel Batch GET execution settings
+		jpaStorageSettings.setBundleBatchPoolSize(appProperties.getBundle_batch_pool_size());
+		jpaStorageSettings.setBundleBatchPoolSize(appProperties.getBundle_batch_pool_max_size());
+		
+		storageSettings(appProperties,
+			jpaStorageSettings);
+		return jpaStorageSettings;
 	}
 
 	@Bean
@@ -149,21 +150,21 @@ public class FhirServerConfigCommon {
 
 	@Bean
 	public PartitionSettings partitionSettings(AppProperties appProperties) {
-		PartitionSettings retVal = new PartitionSettings();
+		PartitionSettings jpaStorageSettings = new PartitionSettings();
 
 		// Partitioning
 		if (appProperties.getPartitioning() != null) {
-			retVal.setPartitioningEnabled(true);
-			retVal.setIncludePartitionInSearchHashes(
+			jpaStorageSettings.setPartitioningEnabled(true);
+			jpaStorageSettings.setIncludePartitionInSearchHashes(
 					appProperties.getPartitioning().getPartitioning_include_in_search_hashes());
 			if (appProperties.getPartitioning().getAllow_references_across_partitions()) {
-				retVal.setAllowReferencesAcrossPartitions(CrossPartitionReferenceMode.ALLOWED_UNQUALIFIED);
+				jpaStorageSettings.setAllowReferencesAcrossPartitions(CrossPartitionReferenceMode.ALLOWED_UNQUALIFIED);
 			} else {
-				retVal.setAllowReferencesAcrossPartitions(CrossPartitionReferenceMode.NOT_ALLOWED);
+				jpaStorageSettings.setAllowReferencesAcrossPartitions(CrossPartitionReferenceMode.NOT_ALLOWED);
 			}
 		}
 
-		return retVal;
+		return jpaStorageSettings;
 	}
 
 	@Primary
@@ -173,7 +174,6 @@ public class FhirServerConfigCommon {
 		return new PatchedJpaHibernatePropertiesProvider(myEntityManagerFactory);
 	}
 
-	@Bean
 	public StorageSettings storageSettings(AppProperties appProperties, JpaStorageSettings jpaStorageSettings) {
 		jpaStorageSettings.setAllowContainsSearches(appProperties.getAllow_contains_searches());
 		jpaStorageSettings.setAllowExternalReferences(appProperties.getAllow_external_references());
@@ -215,11 +215,11 @@ public class FhirServerConfigCommon {
 	 * Driver driver = (Driver)
 	 * Class.forName(HapiProperties.getDataSourceDriver()).getConstructor().
 	 * newInstance();
-	 * retVal.setDriver(driver);
-	 * retVal.setUrl(HapiProperties.getDataSourceUrl());
-	 * retVal.setUsername(HapiProperties.getDataSourceUsername());
-	 * retVal.setPassword(HapiProperties.getDataSourcePassword());
-	 * retVal.setMaxTotal(HapiProperties.getDataSourceMaxPoolSize());
+	 * jpaStorageSettings.setDriver(driver);
+	 * jpaStorageSettings.setUrl(HapiProperties.getDataSourceUrl());
+	 * jpaStorageSettings.setUsername(HapiProperties.getDataSourceUsername());
+	 * jpaStorageSettings.setPassword(HapiProperties.getDataSourcePassword());
+	 * jpaStorageSettings.setMaxTotal(HapiProperties.getDataSourceMaxPoolSize());
 	 * return retVal;
 	 * }
 	 */

@@ -1,9 +1,15 @@
 package org.opencds.cqf.ruler;
 
-
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
+import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
+import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
+import ca.uhn.fhir.rest.server.RestfulServer;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
 import org.opencds.cqf.ruler.config.ServerProperties;
+import org.opencds.cqf.ruler.config.StarterJpaConfig;
 import org.opencds.cqf.ruler.config.TesterUIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -18,18 +24,29 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
+import org.opencds.cqf.jpa.starter.annotations.OnEitherVersion;
+import org.opencds.cqf.jpa.starter.mdm.MdmConfig;
 
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 
-@ServletComponentScan(basePackageClasses = Application.class)
+@ServletComponentScan(basePackageClasses = {RestfulServer.class})
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, QuartzAutoConfiguration.class })
 @Import({
 		RulerConfig.class,
 		ServerProperties.class,
 		WebsocketDispatcherConfig.class,
-		org.opencds.cqf.jpa.starter.mdm.MdmConfig.class,
+		MdmConfig.class,
 		TesterUIConfig.class,
-		BeanFinderConfig.class, })
+		BeanFinderConfig.class,
+	SubscriptionSubmitterConfig.class,
+	SubscriptionProcessorConfig.class,
+	SubscriptionChannelConfig.class,
+	WebsocketDispatcherConfig.class,
+	StarterJpaConfig.class,
+	MdmConfig.class,
+	JpaBatch2Config.class,
+	Batch2JobsConfig.class
+})
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
@@ -47,13 +64,13 @@ public class Application extends SpringBootServletInitializer {
 	AutowireCapableBeanFactory beanFactory;
 
 	@Bean
-	@Conditional(org.opencds.cqf.jpa.starter.annotations.OnEitherVersion.class)
-	public ServletRegistrationBean<Server> hapiServletRegistration() {
-		ServletRegistrationBean<Server> servletRegistrationBean = new ServletRegistrationBean<>();
-		Server server = new Server();
-		beanFactory.autowireBean(server);
+	@Conditional(OnEitherVersion.class)
+	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
+		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+		//Server server = new Server();
+		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setName("fhir servlet");
-		servletRegistrationBean.setServlet(server);
+		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
 		servletRegistrationBean.setLoadOnStartup(1);
 

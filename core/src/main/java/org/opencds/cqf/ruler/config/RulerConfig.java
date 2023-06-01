@@ -12,7 +12,7 @@ import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 
 @Import({
 		AppProperties.class,
-		JpaConfigCommon.class,
+		StarterJpaConfig.class,
 		FhirServerConfigCommon.class,
 		FhirServerConfigDstu2.class,
 		FhirServerConfigDstu3.class,

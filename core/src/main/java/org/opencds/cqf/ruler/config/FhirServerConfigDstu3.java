@@ -10,7 +10,9 @@ import ca.uhn.fhir.jpa.config.dstu3.JpaDstu3Config;
 @Configuration
 @Conditional(org.opencds.cqf.jpa.starter.annotations.OnDSTU3Condition.class)
 @Import({
-		JpaDstu3Config.class,
-		org.opencds.cqf.jpa.starter.common.ElasticsearchConfig.class })
+	JpaDstu3Config.class,
+	org.opencds.cqf.jpa.starter.common.StarterJpaConfig.class,
+	org.opencds.cqf.jpa.starter.cr.StarterCrDstu3Config.class,
+	org.opencds.cqf.jpa.starter.common.ElasticsearchConfig.class})
 public class FhirServerConfigDstu3 {
 }
