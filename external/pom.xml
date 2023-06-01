@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -104,7 +105,7 @@
 						<configuration>
 							<target>
 								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/external">
-									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/org/opencds/cqf/jpa/starter">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter">
 										<include name="**/*.*"/>
 									</fileset>
 								</copy>
@@ -194,6 +195,10 @@
 						<replacement>
 							<token>^import ca.uhn.fhir.jpa.starter.</token>
 							<value>import org.opencds.cqf.external.</value>
+						</replacement>
+						<replacement>
+							<token>^import static ca.uhn.fhir.jpa.starter.</token>
+							<value>import static org.opencds.cqf.external.</value>
 						</replacement>
 						<replacement>
 							<token>^(@SuppressWarnings\(.*?\)\s+)?public class</token>

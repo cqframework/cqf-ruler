@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.devtools;
 
-import org.opencds.cqf.jpa.starter.annotations.OnDSTU3Condition;
-import org.opencds.cqf.jpa.starter.annotations.OnR4Condition;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -33,7 +33,7 @@ public class DevToolsConfig {
 	}
 
 	@Bean
-	@Conditional(org.opencds.cqf.jpa.starter.annotations.OnR4Condition.class)
+	@Conditional(org.opencds.cqf.external.annotations.OnR4Condition.class)
 	public org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider r4CodeSystemUpdateProvider() {
 		return new org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider();
 	}

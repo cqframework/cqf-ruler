@@ -1,6 +1,6 @@
 package org.opencds.cqf.ruler.config;
 
-import org.opencds.cqf.jpa.starter.common.FhirTesterConfig;
+import org.opencds.cqf.external.common.FhirTesterConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;

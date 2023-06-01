@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cdshooks;
 
-import org.opencds.cqf.jpa.starter.annotations.OnDSTU3Condition;
-import org.opencds.cqf.jpa.starter.annotations.OnR4Condition;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.cql.CqlProperties;

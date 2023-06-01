@@ -26,7 +26,7 @@ import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
-import org.opencds.cqf.jpa.starter.AppProperties;
+import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -155,10 +155,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
-						cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
+							cdsHooksRequest.fhirAuthorization.tokenType,
+							cdsHooksRequest.fhirAuthorization.accessToken));
 					if (cdsHooksRequest.fhirAuthorization.subject != null) {
 						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
-							+ ": " + cdsHooksRequest.fhirAuthorization.subject);
+								+ ": " + cdsHooksRequest.fhirAuthorization.subject);
 					}
 				}
 			}

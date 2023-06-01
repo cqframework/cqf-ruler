@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.sdc;
 
-import org.opencds.cqf.jpa.starter.annotations.OnDSTU3Condition;
-import org.opencds.cqf.jpa.starter.annotations.OnR4Condition;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

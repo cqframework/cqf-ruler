@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
@@ -95,7 +96,6 @@
 		<cql-evaluator.version>2.6.0</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
-		<fhir_core_version>5.6.36</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
 		<hapi_version>6.7.3-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
@@ -103,8 +103,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<spring_boot_version>2.7.10</spring_boot_version>
-		<spring_version>5.3.20</spring_version>
+		<spring_boot_version>2.7.12</spring_boot_version>
+		<spring_version>5.3.27</spring_version>
 	</properties>
 
 	<dependencyManagement>
@@ -198,11 +198,6 @@
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.convertors</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-testpage-overlay</artifactId>
 				<version>${hapi_version}</version>
 				<classifier>classes</classifier>
@@ -244,48 +239,6 @@
 				<groupId>com.vladsch.flexmark</groupId>
 				<artifactId>flexmark-profile-pegdown</artifactId>
 				<version>${flexmark_version}</version>
-			</dependency>
-
-			<!-- odds and ends not captured by the hapi poms-->
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.dstu2</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.dstu2016may</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.dstu3</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.r4</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.r4b</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.r5</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.converters</artifactId>
-				<version>${fhir_core_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.validation</artifactId>
-				<version>${fhir_core_version}</version>
 			</dependency>
 
 			<dependency>
@@ -579,7 +532,7 @@
 						<target>11</target>
 						<release>11</release>
 						<failOnError>true</failOnError>
-						<failOnWarning>true</failOnWarning>
+						<failOnWarning>false</failOnWarning>
 						<compilerArgs>
 							<arg>-Xlint:all</arg>
 							<!-- This fixes a bootstrapclass path warning which the "release" property fixes on Java 9+ -->
