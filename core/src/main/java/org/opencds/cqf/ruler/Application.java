@@ -2,27 +2,25 @@ package org.opencds.cqf.ruler;
 
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.annotations.OnEitherVersion;
-import org.opencds.cqf.external.common.StarterJpaConfig;
+import org.opencds.cqf.external.common.FhirTesterConfig;
 import org.opencds.cqf.external.mdm.MdmConfig;
+
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
+import org.opencds.cqf.ruler.config.JpaStarterConfig;
+import org.opencds.cqf.ruler.config.RulerConfig;
 import org.opencds.cqf.ruler.config.ServerProperties;
 import org.opencds.cqf.ruler.config.TesterUIConfig;
-// import org.opencds.cqf.ruler.config.BeanFinderConfig;
-// import org.opencds.cqf.ruler.config.RulerConfig;
-// import org.opencds.cqf.ruler.config.ServerProperties;
-// import org.opencds.cqf.ruler.config.StarterJpaConfig;
-// import org.opencds.cqf.ruler.config.TesterUIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 
@@ -33,23 +31,26 @@ import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
-@ComponentScan(basePackageClasses = StarterJpaConfig.class)
-@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, QuartzAutoConfiguration.class })
+@ServletComponentScan(basePackageClasses = RestfulServer.class)
+@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class})
 @Import({
-		AppProperties.class,
+	SubscriptionSubmitterConfig.class,
+	SubscriptionProcessorConfig.class,
+	SubscriptionChannelConfig.class,
+	WebsocketDispatcherConfig.class,
+	MdmConfig.class,
+	JpaBatch2Config.class,
+	Batch2JobsConfig.class,
+
+	RulerConfig.class,
+	AppProperties.class,
 		ServerProperties.class,
-		WebsocketDispatcherConfig.class,
-		MdmConfig.class,
 		TesterUIConfig.class,
 		BeanFinderConfig.class,
-		SubscriptionSubmitterConfig.class,
-		SubscriptionProcessorConfig.class,
-		SubscriptionChannelConfig.class,
-		WebsocketDispatcherConfig.class,
-		MdmConfig.class,
-		JpaBatch2Config.class,
-		Batch2JobsConfig.class
+	JpaStarterConfig.class
 })
 public class Application extends SpringBootServletInitializer {
 
@@ -69,14 +70,32 @@ public class Application extends SpringBootServletInitializer {
 
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean<?> hapiServletRegistration(RestfulServer restfulServer) {
-		var servletRegistrationBean = new ServletRegistrationBean<RestfulServer>();
+	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
+		var servletRegistrationBean = new ServletRegistrationBean();
 		beanFactory.autowireBean(restfulServer);
-		servletRegistrationBean.setName("fhir servlet");
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
 		servletRegistrationBean.setLoadOnStartup(1);
 
 		return servletRegistrationBean;
+	}
+
+	@Bean
+	public ServletRegistrationBean overlayRegistrationBean() {
+
+		AnnotationConfigWebApplicationContext annotationConfigWebApplicationContext = new AnnotationConfigWebApplicationContext();
+		annotationConfigWebApplicationContext.register(FhirTesterConfig.class);
+
+		DispatcherServlet dispatcherServlet = new DispatcherServlet(
+			annotationConfigWebApplicationContext);
+		dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
+		dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
+
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean();
+		registrationBean.setServlet(dispatcherServlet);
+		registrationBean.addUrlMappings("/*");
+		registrationBean.setLoadOnStartup(1);
+		return registrationBean;
+
 	}
 }
