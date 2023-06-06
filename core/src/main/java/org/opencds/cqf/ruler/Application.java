@@ -3,10 +3,9 @@ package org.opencds.cqf.ruler;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.annotations.OnEitherVersion;
 import org.opencds.cqf.external.common.FhirTesterConfig;
+import org.opencds.cqf.external.common.StarterJpaConfig;
 import org.opencds.cqf.external.mdm.MdmConfig;
-
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
-import org.opencds.cqf.ruler.config.JpaStarterConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
 import org.opencds.cqf.ruler.config.ServerProperties;
 import org.opencds.cqf.ruler.config.TesterUIConfig;
@@ -23,6 +22,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
@@ -31,26 +32,23 @@ import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
 
 @ServletComponentScan(basePackageClasses = RestfulServer.class)
-@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class})
+@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 @Import({
-	SubscriptionSubmitterConfig.class,
-	SubscriptionProcessorConfig.class,
-	SubscriptionChannelConfig.class,
-	WebsocketDispatcherConfig.class,
-	MdmConfig.class,
-	JpaBatch2Config.class,
-	Batch2JobsConfig.class,
-
-	RulerConfig.class,
-	AppProperties.class,
+		SubscriptionSubmitterConfig.class,
+		SubscriptionProcessorConfig.class,
+		SubscriptionChannelConfig.class,
+		WebsocketDispatcherConfig.class,
+		MdmConfig.class,
+		JpaBatch2Config.class,
+		Batch2JobsConfig.class,
+		RulerConfig.class,
+		StarterJpaConfig.class,
+		AppProperties.class,
 		ServerProperties.class,
 		TesterUIConfig.class,
-		BeanFinderConfig.class,
-	JpaStarterConfig.class
+		BeanFinderConfig.class
 })
 public class Application extends SpringBootServletInitializer {
 
@@ -87,7 +85,7 @@ public class Application extends SpringBootServletInitializer {
 		annotationConfigWebApplicationContext.register(FhirTesterConfig.class);
 
 		DispatcherServlet dispatcherServlet = new DispatcherServlet(
-			annotationConfigWebApplicationContext);
+				annotationConfigWebApplicationContext);
 		dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
 		dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
 
