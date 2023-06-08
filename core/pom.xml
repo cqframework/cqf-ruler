@@ -28,6 +28,21 @@
 		</dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-subscription</artifactId>
+			<version>${hapi_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>simple-java-mail</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.annotation</groupId>
+					<artifactId>jakarta.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>org.hl7.fhir.r5</artifactId>
 			<version>6.0.1</version>
 		</dependency>

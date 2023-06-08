@@ -62,7 +62,21 @@
 			<artifactId>hapi-fhir-testpage-overlay</artifactId>
 			<classifier>classes</classifier>
 		</dependency>
-
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-subscription</artifactId>
+			<version>${hapi_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>simple-java-mail</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.annotation</groupId>
+					<artifactId>jakarta.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!-- HAPI-FHIR uses Logback for logging support. The logback library is included automatically by Maven as a part of the hapi-fhir-base dependency, but you also need to include a logging library. Logback
             is used here, but log4j would also be fine. -->
 		<dependency>

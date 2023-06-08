@@ -1,5 +1,13 @@
 package org.opencds.cqf.ruler.config;
 
+import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionChannelRegistry;
+import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionDeliveryHandlerFactory;
+import ca.uhn.fhir.jpa.subscription.match.deliver.email.EmailSenderImpl;
+import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
+import ca.uhn.fhir.jpa.subscription.match.registry.SubscriptionRegistry;
+import ca.uhn.fhir.rest.server.mail.IMailSvc;
+import ca.uhn.fhir.rest.server.mail.MailConfig;
+import ca.uhn.fhir.rest.server.mail.MailSvc;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.common.FhirServerConfigCommon;
 import org.opencds.cqf.ruler.ServerConfig;
@@ -19,15 +27,17 @@ import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
+import org.springframework.context.annotation.Primary;
 
 @Import({
+		SubscriptionSubmitterConfig.class,
+		SubscriptionProcessorConfig.class,
+		SubscriptionChannelConfig.class,
 		AppProperties.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
-		FhirServerConfigCommon.class,
-		SubscriptionSubmitterConfig.class,
-		SubscriptionProcessorConfig.class,
-		SubscriptionChannelConfig.class })
+		FhirServerConfigCommon.class
+	 })
 public class RulerConfig {
 	private static Logger log = LoggerFactory.getLogger(RulerConfig.class);
 
@@ -51,4 +61,37 @@ public class RulerConfig {
 				myFhirSystemDao, myValidationSupport, myServerProperties);
 	}
 
+	/*@Bean
+	public SubscriptionChannelRegistry subscriptionChannelRegistry() {
+		return new SubscriptionChannelRegistry();
+	}
+
+	@Bean
+	public SubscriptionDeliveryHandlerFactory subscriptionDeliveryHandlerFactory(ApplicationContext theApplicationContext, IEmailSender theEmailSender) {
+		return new SubscriptionDeliveryHandlerFactory(theApplicationContext, theEmailSender);
+	}
+	@Bean
+	public SubscriptionRegistry subscriptionRegistry() {
+		return new SubscriptionRegistry();
+	}
+
+	@Primary
+	@Bean
+	public IEmailSender emailSender(AppProperties appProperties) {
+			MailConfig mailConfig = new MailConfig();
+
+			AppProperties.Subscription.Email email = appProperties.getSubscription().getEmail();
+			mailConfig.setSmtpHostname(email.getHost());
+			mailConfig.setSmtpPort(email.getPort());
+			mailConfig.setSmtpUsername(email.getUsername());
+			mailConfig.setSmtpPassword(email.getPassword());
+			mailConfig.setSmtpUseStartTLS(email.getStartTlsEnable());
+
+			IMailSvc mailSvc = new MailSvc(mailConfig);
+			IEmailSender emailSender = new EmailSenderImpl(mailSvc);
+
+			return emailSender;
+	}
+
+	 */
 }

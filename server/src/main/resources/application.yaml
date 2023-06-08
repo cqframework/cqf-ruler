@@ -13,6 +13,7 @@ hapi:
       allow_external_references: true
       enforce_referential_integrity_on_delete: false
       enforce_referential_integrity_on_write: false
+      cr_enabled: true
       cors:
          allow_Credentials: true
          allowed_origin:
