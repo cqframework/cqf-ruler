@@ -1,10 +1,10 @@
 package org.opencds.cqf.ruler.cdshooks;
 
+import ca.uhn.fhir.cr.config.CrProperties;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
-import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +20,8 @@ import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
-@Import(CpgConfig.class)
+@Import({CpgConfig.class,
+})
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CdsHooksConfig {
 
@@ -28,12 +29,24 @@ public class CdsHooksConfig {
 	AutowireCapableBeanFactory beanFactory;
 
 	@Bean
+	@Conditional(OnR4Condition.class)
+	public ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider r4PlanDefinitionApplyProvider() {
+		return new ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider();
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public ca.uhn.fhir.cr.dstu3.activitydefinition.ActivityDefinitionOperationsProvider dstu3PlanDefinitionApplyProvider() {
+		return new ca.uhn.fhir.cr.dstu3.activitydefinition.ActivityDefinitionOperationsProvider();
+	}
+
+	@Bean
 	public CdsHooksProperties cdsHooksProperties() {
 		return new CdsHooksProperties();
 	}
 
 	@Bean
-	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties) {
+	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, CrProperties.CqlProperties cqlProperties) {
 		return new ProviderConfiguration(cdsProperties, cqlProperties);
 	}
 

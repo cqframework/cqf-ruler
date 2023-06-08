@@ -3,9 +3,9 @@ package org.opencds.cqf.ruler.cr;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.builder.ResourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 @ConfigurationProperties(prefix = "hapi.fhir.cr")
 public class CrProperties {
+
 	private boolean enabled = true;
 	private boolean threaded_care_gaps_enabled = true;
 	private MeasureReportConfiguration measure_report;

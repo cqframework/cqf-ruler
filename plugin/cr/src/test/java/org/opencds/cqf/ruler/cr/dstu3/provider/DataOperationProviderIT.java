@@ -8,13 +8,12 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
-		CqlConfig.class, CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class
+	, CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test

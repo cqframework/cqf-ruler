@@ -1,10 +1,14 @@
 package org.opencds.cqf.ruler.cpg;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.cr.common.HapiFhirRetrieveProvider;
+import ca.uhn.fhir.cr.common.HapiLibrarySourceProvider;
+import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -55,21 +59,17 @@ import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
-import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProvider;
-import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.utility.Operations;
-
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class CqlEvaluationHelper {
 	private final FhirContext fhirContext;
+
 	private final ModelResolver modelResolver;
 	private final AdapterFactory adapterFactory;
 	private final boolean useServerData;
@@ -94,11 +94,11 @@ public class CqlEvaluationHelper {
 	private DataProvider dataProvider;
 
 	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory,
-			boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
-			EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
-			LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
-			LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
-			DaoRegistry daoRegistry) {
+										boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
+										EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
+										ILibraryLoaderFactory libraryLoaderFactory, HapiLibrarySourceProvider contentProvider,
+										LibrarySourceProvider restContentProvider, TerminologyProvider terminologyProvider,
+										DaoRegistry daoRegistry) {
 		this.fhirContext = fhirContext;
 		this.modelResolver = modelResolver;
 		this.adapterFactory = adapterFactory;
@@ -118,26 +118,26 @@ public class CqlEvaluationHelper {
 		this.retrieveProviders = new ArrayList<>();
 		this.libraryContentProviders = new ArrayList<>();
 
-		setup(libraryLoaderFactory, jpaContentProvider, restContentProvider, jpaTerminologyProvider, daoRegistry);
+		setup(libraryLoaderFactory, contentProvider, restContentProvider, terminologyProvider, daoRegistry);
 	}
 
-	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
-			LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+	private void setup(ILibraryLoaderFactory libraryLoaderFactory, HapiLibrarySourceProvider contentProvider,
+			LibrarySourceProvider restContentProvider, TerminologyProvider terminologyProvider,
 			DaoRegistry daoRegistry) {
-		setupLibraryLoader(libraryLoaderFactory, jpaContentProvider, restContentProvider);
-		setupTerminologyProvider(jpaTerminologyProvider);
+		setupLibraryLoader(libraryLoaderFactory, contentProvider, restContentProvider);
+		setupTerminologyProvider(terminologyProvider);
 		if (fhirContext.equals(FhirContext.forDstu3())) {
 			this.queryGenerator = new Dstu3FhirQueryGenerator(
-					searchParameterResolver, terminologyProvider, modelResolver);
+					searchParameterResolver, (TerminologyProvider) terminologyProvider, (ModelResolver) modelResolver);
 		} else {
 			this.queryGenerator = new R4FhirQueryGenerator(
-					searchParameterResolver, terminologyProvider, modelResolver);
+					searchParameterResolver, (TerminologyProvider) terminologyProvider, (ModelResolver) modelResolver);
 		}
 		setupDataProvider(daoRegistry);
 	}
 
-	private void setupLibraryLoader(LibraryLoaderFactory libraryLoaderFactory,
-			JpaLibrarySourceProvider jpaContentProvider,
+	private void setupLibraryLoader(ILibraryLoaderFactory libraryLoaderFactory,
+			HapiLibrarySourceProvider contentProvider,
 			LibrarySourceProvider restContentProvider) {
 		if (!StringUtils.isBlank(content)) {
 			libraryContentProviders.add(new InMemoryLibrarySourceProvider(Collections.singletonList(content)));
@@ -145,19 +145,19 @@ public class CqlEvaluationHelper {
 		if (contentEndpoint != null) {
 			libraryContentProviders.add(restContentProvider);
 		} else {
-			libraryContentProviders.add(jpaContentProvider);
+			libraryContentProviders.add(contentProvider);
 		}
 		libraryLoader = libraryLoaderFactory.create(libraryContentProviders);
 	}
 
-	private void setupTerminologyProvider(JpaTerminologyProvider jpaTerminologyProvider) {
+	private void setupTerminologyProvider(TerminologyProvider termProvider) {
 		if (terminologyEndpoint != null) {
 			IGenericClient remoteClient = resolveRemoteClient(terminologyEndpoint);
 			terminologyProvider = fhirContext.equals(FhirContext.forDstu3())
 					? new Dstu3FhirTerminologyProvider(remoteClient)
 					: new R4FhirTerminologyProvider(remoteClient);
 		} else {
-			terminologyProvider = jpaTerminologyProvider;
+			terminologyProvider = termProvider;
 		}
 	}
 
@@ -168,17 +168,17 @@ public class CqlEvaluationHelper {
 			retrieveProviders.add(bundleRetriever);
 		}
 		if (useServerData) {
-			JpaFhirRetrieveProvider jpaRetriever = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
-			jpaRetriever.setModelResolver(modelResolver);
-			if (!(terminologyProvider instanceof JpaTerminologyProvider)) {
+			HapiFhirRetrieveProvider retriever = new HapiFhirRetrieveProvider(daoRegistry, searchParameterResolver);
+			retriever.setModelResolver(modelResolver);
+			if (!(terminologyProvider instanceof TerminologyProvider)) {
 				this.queryGenerator.setExpandValueSets(true);
 			}
-			jpaRetriever.setFhirQueryGenerator(queryGenerator);
-			jpaRetriever.setTerminologyProvider(terminologyProvider);
+			retriever.setFhirQueryGenerator(queryGenerator);
+			retriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint != null) {
-				jpaRetriever.setExpandValueSets(true);
+				retriever.setExpandValueSets(true);
 			}
-			retrieveProviders.add(jpaRetriever);
+			retrieveProviders.add(retriever);
 		}
 		if (dataEndpoint != null) {
 			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(

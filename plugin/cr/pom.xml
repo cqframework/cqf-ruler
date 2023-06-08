@@ -25,9 +25,12 @@
 			<artifactId>evaluator.measure-hapi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cql</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-storage-cr</artifactId>
 		</dependency>
 	</dependencies>
 </project>

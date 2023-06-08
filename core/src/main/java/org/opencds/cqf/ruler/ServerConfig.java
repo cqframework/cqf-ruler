@@ -27,15 +27,15 @@ import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
-public class ServerConfigurator {
+public class ServerConfig {
 
-	private static Logger log = LoggerFactory.getLogger(ServerConfigurator.class);
+	private static Logger log = LoggerFactory.getLogger(ServerConfig.class);
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ServerConfigurator(RestfulServer server, ApplicationContext applicationContext,
-			JpaStorageSettings myJpaStorageSettings, ISearchParamRegistry mySearchParamRegistry,
-			IFhirSystemDao myFhirSystemDao, IValidationSupport myValidationSupport,
-			ServerProperties myServerProperties) {
+	public ServerConfig(RestfulServer server, ApplicationContext applicationContext,
+							  JpaStorageSettings myJpaStorageSettings, ISearchParamRegistry mySearchParamRegistry,
+							  IFhirSystemDao myFhirSystemDao, IValidationSupport myValidationSupport,
+							  ServerProperties myServerProperties) {
 
 		log.info("Loading operation providers from plugins");
 		Map<String, OperationProvider> providers = applicationContext.getBeansOfType(OperationProvider.class);

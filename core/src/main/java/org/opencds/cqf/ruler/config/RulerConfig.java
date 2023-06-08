@@ -1,7 +1,8 @@
 package org.opencds.cqf.ruler.config;
 
 import org.opencds.cqf.external.AppProperties;
-import org.opencds.cqf.ruler.ServerConfigurator;
+import org.opencds.cqf.external.common.FhirServerConfigCommon;
+import org.opencds.cqf.ruler.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +24,7 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		AppProperties.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
-		FhirServerCommonConfig.class,
+		FhirServerConfigCommon.class,
 		SubscriptionSubmitterConfig.class,
 		SubscriptionProcessorConfig.class,
 		SubscriptionChannelConfig.class })
@@ -42,11 +43,11 @@ public class RulerConfig {
 	}
 
 	@Bean
-	ServerConfigurator serverConfigurator(RestfulServer server, ApplicationContext applicationContext,
-			JpaStorageSettings myJpaStorageSettings, ISearchParamRegistry mySearchParamRegistry,
-			IFhirSystemDao myFhirSystemDao, IValidationSupport myValidationSupport,
-			ServerProperties myServerProperties) {
-		return new ServerConfigurator(server, applicationContext, myJpaStorageSettings, mySearchParamRegistry,
+	ServerConfig serverConfigurator(RestfulServer server, ApplicationContext applicationContext,
+											  JpaStorageSettings myJpaStorageSettings, ISearchParamRegistry mySearchParamRegistry,
+											  IFhirSystemDao myFhirSystemDao, IValidationSupport myValidationSupport,
+											  ServerProperties myServerProperties) {
+		return new ServerConfig(server, applicationContext, myJpaStorageSettings, mySearchParamRegistry,
 				myFhirSystemDao, myValidationSupport, myServerProperties);
 	}
 

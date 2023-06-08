@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.cr.config.CrProperties;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -38,8 +39,6 @@ import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
-import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private CqlProperties cqlProperties;
+	private CrProperties.CqlProperties cqlProperties;
 	@Autowired
 	private DaoRegistry daoRegistry;
 	@Autowired
@@ -71,7 +70,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private LibraryEvaluationProvider libraryExecution;
 	@Autowired
-	private ActivityDefinitionApplyProvider applyEvaluator;
+	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
@@ -284,11 +283,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							Type conditionResult;
 							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
 								conditionResult = evaluationResults.getParameter(
-										condition.getExpression().getExpression());
+										condition.getExpression().getExpression()
+								).getValue();
 							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
 								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
 										patientId, condition.getExpression().getExpression())
-										.getParameter("return");
+									.getParameterValue("return");
+
 							} else
 								conditionResult = new BooleanType(false);
 							if (conditionResult != null) {
@@ -340,9 +341,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			IdType definitionId = new IdType(
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
-			suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
+			suggAction.setResource(applyEvaluator.apply(definitionId,
 					patientId, null, null, null, null,
-					null, null, null, null));
+				null, null, null, null, null,
+				null, null, null, null, null, requestDetails));
 			hasAction = true;
 		}
 		if (hasAction)
@@ -397,7 +399,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
+		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()){
+			//getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

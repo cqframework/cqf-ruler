@@ -1,12 +1,13 @@
 package org.opencds.cqf.ruler.cpg;
 
+import ca.uhn.fhir.cr.config.CrDstu3Config;
+import ca.uhn.fhir.cr.config.CrR4Config;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -17,7 +18,7 @@ import ca.uhn.fhir.context.FhirContext;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(CqlConfig.class)
+@Import({CrDstu3Config.class, CrR4Config.class})
 public class CpgConfig {
 	@Bean
 	public CpgProperties cpgProperties() {

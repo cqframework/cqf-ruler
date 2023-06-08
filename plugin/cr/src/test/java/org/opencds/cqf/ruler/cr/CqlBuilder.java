@@ -9,7 +9,7 @@ import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 
 import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
-import org.opencds.cqf.ruler.cql.utility.Translators;
+import org.opencds.cqf.ruler.cr.utility.CqlTranslators;
 
 public class CqlBuilder {
 
@@ -91,7 +91,7 @@ public class CqlBuilder {
 		}
 
 		if (translator.getErrors().size() > 0) {
-			throw new CqlCompilerException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
+			throw new CqlCompilerException("Error validating cql: " + CqlTranslators.errorsToString(translator.getErrors()));
 		}
 	}
 

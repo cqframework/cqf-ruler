@@ -22,7 +22,6 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
-import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.utility.Operations;
@@ -38,7 +37,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
 
 	@Autowired
-	MeasureEvaluateProvider measureEvaluateProvider;
+	ca.uhn.fhir.cr.r4.measure.MeasureOperationsProvider measureEvaluateProvider;
 
 	private String visited;
 
@@ -61,9 +60,9 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 		ensureSupplementalDataElementSearchParameter(requestDetails);
 
-		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(requestDetails,
+		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(
 				theId, periodStart.getValueAsString(), periodEnd.getValueAsString(), null, subject,
-				null, null, null, null, null);
+				null, null, null, null, null, requestDetails);
 
 		Parameters riskAdjustmentParameters = new Parameters();
 

@@ -8,12 +8,5 @@
 	</parent>
 
 	<artifactId>cqf-ruler-case-reporting</artifactId>
-	<dependencies>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cql</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
-		</dependency>
-
-	</dependencies>
+	<dependencies/>
 </project>

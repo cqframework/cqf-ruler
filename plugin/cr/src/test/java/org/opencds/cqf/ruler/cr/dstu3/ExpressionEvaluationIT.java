@@ -9,7 +9,6 @@ import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { ExpressionEvaluationIT.class, CrConfig.class, CqlConfig.class },
+		classes = { ExpressionEvaluationIT.class, CrConfig.class},
 		properties = { "hapi.fhir.fhir_version=dstu3" })
 class ExpressionEvaluationIT extends RestIntegrationTest {
 

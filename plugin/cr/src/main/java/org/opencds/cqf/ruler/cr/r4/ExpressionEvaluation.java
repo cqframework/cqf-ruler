@@ -5,6 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.fhir.cr.common.IDataProviderFactory;
+import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
+import ca.uhn.fhir.cr.common.ILibrarySourceProviderFactory;
+import ca.uhn.fhir.cr.common.ITerminologyProviderFactory;
+import ca.uhn.fhir.cr.config.CrProperties;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -24,13 +29,8 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cr.JpaCRFhirDal;
 import org.opencds.cqf.ruler.cr.JpaCRFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -39,19 +39,19 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public class ExpressionEvaluation {
 
 	@Autowired
-	private LibraryLoaderFactory libraryLoaderFactory;
+	private ILibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
+	private ILibrarySourceProviderFactory librarySourceProviderFactory;
 	@Autowired
 	private FhirContext fhirContext;
 	@Autowired
-	private JpaDataProviderFactory jpaDataProviderFactory;
+	private IDataProviderFactory dataProviderFactory;
 	@Autowired
-	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
+	private ITerminologyProviderFactory terminologyProviderFactory;
 	@Autowired
 	private JpaCRFhirDalFactory jpaCRFhirDalFactory;
 	@Autowired
-	private CqlProperties cqlProperties;
+	private CrProperties.CqlProperties cqlProperties;
 	@Autowired
 	Map<VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
 
@@ -86,7 +86,7 @@ public class ExpressionEvaluation {
 		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
 				new ArrayList<LibrarySourceProvider>(
 						Arrays.asList(
-								jpaLibrarySourceProviderFactory.create(theRequest))));
+								librarySourceProviderFactory.create(theRequest))));
 		String source = "";
 		if (aliasedExpression) {
 			if (libraries.size() != 1) {
@@ -131,7 +131,7 @@ public class ExpressionEvaluation {
 		LibraryLoader libraryLoader = libraryLoaderFactory.create(
 				new ArrayList<LibrarySourceProvider>(
 						Arrays.asList(
-								jpaLibrarySourceProviderFactory.create(theRequest),
+								librarySourceProviderFactory.create(theRequest),
 								new InMemoryLibrarySourceProvider(Arrays.asList(source)))));
 		// resolve execution context
 		return setupContext(instance, patientId, libraryLoader, theRequest);
@@ -278,17 +278,17 @@ public class ExpressionEvaluation {
 		context.setExpressionCaching(true);
 		context.registerLibraryLoader(libraryLoader);
 		context.setContextValue("Patient", patientId);
-		TerminologyProvider terminologyProvider = jpaTerminologyProviderFactory.create(theRequest);
+		TerminologyProvider terminologyProvider = terminologyProviderFactory.create(theRequest);
 
 		context.registerTerminologyProvider(terminologyProvider);
-		DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, terminologyProvider);
+		DataProvider dataProvider = dataProviderFactory.create(theRequest, terminologyProvider);
 		context.registerDataProvider("http://hl7.org/fhir", dataProvider);
 		return context;
 	}
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
+		if (cqlProperties.getCqlOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

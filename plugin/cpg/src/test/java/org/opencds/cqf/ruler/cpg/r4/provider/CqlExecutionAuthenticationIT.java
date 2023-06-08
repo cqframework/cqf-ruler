@@ -37,8 +37,8 @@ class CqlExecutionAuthenticationIT extends RestIntegrationTest {
 				.withAdditionalHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
 				.execute();
 
-		assertTrue(results.getParameter("return") instanceof IntegerType);
-		assertEquals("25", ((IntegerType) results.getParameter("return")).asStringValue());
+		assertTrue(results.getParameter("return").getValue() instanceof IntegerType);
+		assertEquals("25", ((IntegerType) results.getParameter("return").getValue()).asStringValue());
 	}
 
 	@Test
