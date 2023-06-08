@@ -1,6 +1,10 @@
 package org.opencds.cqf.ruler.cdshooks;
 
 import ca.uhn.fhir.cr.config.CrProperties;
+import ca.uhn.fhir.cr.r4.IPlanDefinitionProcessorFactory;
+import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
+import org.opencds.cqf.cql.evaluator.library.EvaluationSettings;
+import org.opencds.cqf.cql.evaluator.plandefinition.r4.PlanDefinitionProcessor;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -27,6 +31,28 @@ public class CdsHooksConfig {
 
 	@Autowired
 	AutowireCapableBeanFactory beanFactory;
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public ca.uhn.fhir.cr.r4.IActivityDefinitionProcessorFactory r4ActivityDefinitionProcessorFactory(EvaluationSettings theEvaluationSettings) {
+		return r -> new org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor(r, theEvaluationSettings);
+	}
+	@Bean
+	@Conditional(OnR4Condition.class)
+	ca.uhn.fhir.cr.r4.IPlanDefinitionProcessorFactory r4PlanDefinitionProcessorFactory(EvaluationSettings theEvaluationSettings) {
+		return r -> new org.opencds.cqf.cql.evaluator.plandefinition.r4.PlanDefinitionProcessor(r, theEvaluationSettings);
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public ca.uhn.fhir.cr.dstu3.IActivityDefinitionProcessorFactory dstu3ActivityDefinitionProcessorFactory(EvaluationSettings theEvaluationSettings) {
+		return r -> new org.opencds.cqf.cql.evaluator.activitydefinition.dstu3.ActivityDefinitionProcessor(r, theEvaluationSettings);
+	}
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	ca.uhn.fhir.cr.dstu3.IPlanDefinitionProcessorFactory dstu3PlanDefinitionProcessorFactory(EvaluationSettings theEvaluationSettings) {
+		return r -> new org.opencds.cqf.cql.evaluator.plandefinition.dstu3.PlanDefinitionProcessor(r, theEvaluationSettings);
+	}
 
 	@Bean
 	@Conditional(OnR4Condition.class)

@@ -20,6 +20,9 @@ import ca.uhn.fhir.context.FhirContext;
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import({CrDstu3Config.class, CrR4Config.class})
 public class CpgConfig {
+
+	@Bean
+	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties(){return new ca.uhn.fhir.cr.config.CrProperties();}
 	@Bean
 	public CpgProperties cpgProperties() {
 		return new CpgProperties();

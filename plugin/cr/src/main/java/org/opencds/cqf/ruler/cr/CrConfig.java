@@ -27,6 +27,10 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import({CrR4Config.class, CrDstu3Config.class})
 public class CrConfig {
+
+	@Bean
+	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties(){return new ca.uhn.fhir.cr.config.CrProperties();}
+
 	@Bean
 	public CrProperties crProperties() {
 		return new CrProperties();
