@@ -203,14 +203,6 @@
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 		</dependency>
-
-		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-testpage-overlay</artifactId>
-			<type>war</type>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-jpaserver-subscription</artifactId>
@@ -225,6 +217,14 @@
 					<artifactId>jakarta.annotation-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<type>war</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<!--
