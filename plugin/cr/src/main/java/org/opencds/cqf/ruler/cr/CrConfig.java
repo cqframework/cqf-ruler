@@ -1,35 +1,33 @@
 package org.opencds.cqf.ruler.cr;
 
-import java.util.function.Function;
-
-import ca.uhn.fhir.cr.config.CrDstu3Config;
-import ca.uhn.fhir.cr.config.CrR4Config;
-import ca.uhn.fhir.cr.r4.measure.CareGapsService;
-import ca.uhn.fhir.cr.r4.measure.MeasureService;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
+import ca.uhn.fhir.cr.config.CrDstu3Config;
+import ca.uhn.fhir.cr.config.CrR4Config;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({CrR4Config.class, CrDstu3Config.class})
+@Import({ CrR4Config.class, CrDstu3Config.class })
 public class CrConfig {
 
 	@Bean
-	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties(){return new ca.uhn.fhir.cr.config.CrProperties();}
+	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties() {
+		return new ca.uhn.fhir.cr.config.CrProperties();
+	}
 
 	@Bean
 	public CrProperties crProperties() {
@@ -71,46 +69,6 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
-	public ca.uhn.fhir.cr.dstu3.measure.MeasureOperationsProvider dstu3MeasureEvaluateProvider() {
-		return new ca.uhn.fhir.cr.dstu3.measure.MeasureOperationsProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public ca.uhn.fhir.cr.r4.measure.MeasureOperationsProvider r4MeasureEvaluateProvider() {
-		return new ca.uhn.fhir.cr.r4.measure.MeasureOperationsProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public Function<RequestDetails, ca.uhn.fhir.cr.dstu3.measure.MeasureService> dstu3MeasureServiceFactory(ApplicationContext theApplicationContext) {
-		return r -> {
-			var ms = theApplicationContext.getBean(ca.uhn.fhir.cr.dstu3.measure.MeasureService.class);
-			ms.setRequestDetails(r);
-			return ms;
-		};
-	}
-
-	@Bean
-	@Scope("prototype")
-	@Conditional(OnDSTU3Condition.class)
-	public ca.uhn.fhir.cr.dstu3.measure.MeasureService dstu3measureService() {
-		return new ca.uhn.fhir.cr.dstu3.measure.MeasureService();
-	}
-
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public Function<RequestDetails, ca.uhn.fhir.cr.r4.measure.MeasureService> r4MeasureServiceFactory(ApplicationContext theApplicationContext) {
-		return r -> {
-			var ms = theApplicationContext.getBean(MeasureService.class);
-			ms.setRequestDetails(r);
-			return ms;
-		};
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.cr.dstu3.provider.CollectDataProvider dstu3CollectDataProvider() {
 		return new org.opencds.cqf.ruler.cr.dstu3.provider.CollectDataProvider();
 	}
@@ -134,9 +92,14 @@ public class CrConfig {
 	}
 
 	@Bean
-	@Conditional(OnR4Condition.class)
-	public ca.uhn.fhir.cr.r4.measure.CareGapsOperationProvider r4CareGapsProvider(Function<RequestDetails, CareGapsService> theCareGapsServiceFunction) {
-		return new ca.uhn.fhir.cr.r4.measure.CareGapsOperationProvider(theCareGapsServiceFunction);
+	public ILibraryManagerFactory libraryManagerFactory(
+			ModelManager modelManager) {
+		return (providers) -> {
+			LibraryManager libraryManager = new LibraryManager(modelManager);
+			for (LibrarySourceProvider provider : providers) {
+				libraryManager.getLibrarySourceLoader().registerProvider(provider);
+			}
+			return libraryManager;
+		};
 	}
-
 }
