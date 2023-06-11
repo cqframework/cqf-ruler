@@ -32,7 +32,7 @@ public class CdsHooksConfig {
 	@Autowired
 	AutowireCapableBeanFactory beanFactory;
 
-	@Bean
+	/*@Bean
 	@Conditional(OnR4Condition.class)
 	public ca.uhn.fhir.cr.r4.IActivityDefinitionProcessorFactory r4ActivityDefinitionProcessorFactory(EvaluationSettings theEvaluationSettings) {
 		return r -> new org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor(r, theEvaluationSettings);
@@ -65,7 +65,7 @@ public class CdsHooksConfig {
 	public ca.uhn.fhir.cr.dstu3.activitydefinition.ActivityDefinitionOperationsProvider dstu3PlanDefinitionApplyProvider() {
 		return new ca.uhn.fhir.cr.dstu3.activitydefinition.ActivityDefinitionOperationsProvider();
 	}
-
+*/
 	@Bean
 	public CdsHooksProperties cdsHooksProperties() {
 		return new CdsHooksProperties();

@@ -36,5 +36,6 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-storage-cr</artifactId>
 		</dependency>
+
 	</dependencies>
 </project>

@@ -68,6 +68,30 @@
 			<version>${hapi_version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.fhir</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.activitydefinition</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.plandefinition</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.questionnaire</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.questionnaireresponse</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
 			<exclusions>

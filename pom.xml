@@ -421,6 +421,16 @@
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.questionnaire</artifactId>
+				<version>${cql-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.questionnaireresponse</artifactId>
+				<version>${cql-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.spring</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>

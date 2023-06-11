@@ -41,6 +41,26 @@
 			<artifactId>evaluator.builder</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.activitydefinition</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.plandefinition</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.questionnaire</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.questionnaireresponse</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>info.cqframework</groupId>
 			<artifactId>engine-fhir</artifactId>
 			<version>${cql-engine.version}</version>
