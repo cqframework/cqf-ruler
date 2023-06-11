@@ -43,6 +43,7 @@ public class RulerConfig {
 				myFhirSystemDao, myValidationSupport, myServerProperties);
 	}
 
+
 	@Bean
 	IEmailSender emailSender(AppProperties appProperties) {
 		MailConfig mailConfig = new MailConfig();

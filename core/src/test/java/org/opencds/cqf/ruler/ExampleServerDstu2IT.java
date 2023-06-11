@@ -15,10 +15,12 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
 		"spring.batch.job.enabled=false",
 		"hapi.fhir.fhir_version=dstu2",
 		"spring.datasource.url=jdbc:h2:mem:dbr2",
+		"spring.main.allow-bean-definition-overriding=true",
+	   "hapi.fhir.cr_enabled=false"
 })
 public class ExampleServerDstu2IT {
 
@@ -43,7 +45,7 @@ public class ExampleServerDstu2IT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forCached(FhirVersionEnum.DSTU2);
+		ourCtx = FhirContext.forDstu2();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";

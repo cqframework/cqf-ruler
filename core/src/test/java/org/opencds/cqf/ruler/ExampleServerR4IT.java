@@ -24,13 +24,14 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.util.BundleUtil;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
 		"spring.batch.job.enabled=false",
 		"spring.datasource.url=jdbc:h2:mem:dbr4",
 		"hapi.fhir.enable_repository_validating_interceptor=true",
 		"hapi.fhir.fhir_version=r4",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.mdm_enabled=true",
+		"hapi.fhir.cr_enabled=true",
 		// Override is currently required when using MDM as the construction of the MDM
 		// beans are ambiguous as they are constructed multiple places. This is evident
 		// when running in a spring boot environment
