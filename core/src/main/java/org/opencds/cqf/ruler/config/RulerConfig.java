@@ -1,28 +1,50 @@
 package org.opencds.cqf.ruler.config;
 
 import org.opencds.cqf.external.AppProperties;
+import org.opencds.cqf.external.common.FhirServerConfigCommon;
+import org.opencds.cqf.external.common.FhirServerConfigDstu2;
+import org.opencds.cqf.external.common.FhirServerConfigDstu3;
+import org.opencds.cqf.external.common.FhirServerConfigR4;
+import org.opencds.cqf.external.common.FhirServerConfigR5;
+import org.opencds.cqf.external.cr.StarterCrDstu3Config;
+import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.ServerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.subscription.match.deliver.email.EmailSenderImpl;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
+import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
+import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
+import ca.uhn.fhir.jpa.util.LoggingEmailSender;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.mail.IMailSvc;
-import ca.uhn.fhir.rest.server.mail.MailConfig;
-import ca.uhn.fhir.rest.server.mail.MailSvc;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 @Configuration
+@Import({
+		AppProperties.class,
+		CrProviderConfig.class,
+		FhirServerConfigCommon.class,
+		FhirServerConfigDstu2.class,
+		FhirServerConfigDstu3.class,
+		FhirServerConfigR4.class,
+		FhirServerConfigR5.class,
+		StarterCrR4Config.class,
+		StarterCrDstu3Config.class,
+		JpaBatch2Config.class,
+		Batch2JobsConfig.class,
+		SubscriptionSubmitterConfig.class,
+		SubscriptionProcessorConfig.class,
+		SubscriptionChannelConfig.class })
 public class RulerConfig {
-	private static Logger log = LoggerFactory.getLogger(RulerConfig.class);
-
 	public class DaoConfigCustomizer {
 		public DaoConfigCustomizer(JpaStorageSettings theStorageSettings, ServerProperties serverProperties) {
 			theStorageSettings.setMaximumIncludesToLoadPerPage(serverProperties.getMaxIncludesPerPage());
@@ -43,18 +65,9 @@ public class RulerConfig {
 				myFhirSystemDao, myValidationSupport, myServerProperties);
 	}
 
-
+	@Primary
 	@Bean
-	IEmailSender emailSender(AppProperties appProperties) {
-		MailConfig mailConfig = new MailConfig();
-		AppProperties.Subscription.Email email = appProperties.getSubscription().getEmail();
-		mailConfig.setSmtpHostname(email.getHost());
-		mailConfig.setSmtpPort(email.getPort());
-		mailConfig.setSmtpUsername(email.getUsername());
-		mailConfig.setSmtpPassword(email.getPassword());
-		mailConfig.setSmtpUseStartTLS(email.getStartTlsEnable());
-
-		IMailSvc mailSvc = new MailSvc(mailConfig);
-		return new EmailSenderImpl(mailSvc);
+	IEmailSender emailSender() {
+		return new LoggingEmailSender();
 	}
 }
