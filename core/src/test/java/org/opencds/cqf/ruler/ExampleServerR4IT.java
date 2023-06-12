@@ -1,6 +1,8 @@
 package org.opencds.cqf.ruler;
 
+import static java.lang.Thread.sleep;
 import static java.util.Comparator.comparing;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -23,19 +25,21 @@ import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.util.BundleUtil;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
-		"spring.batch.job.enabled=false",
-		"spring.datasource.url=jdbc:h2:mem:dbr4",
-		"hapi.fhir.enable_repository_validating_interceptor=true",
-		"hapi.fhir.fhir_version=r4",
-		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.mdm_enabled=true",
-		"hapi.fhir.cr_enabled=true",
-		// Override is currently required when using MDM as the construction of the MDM
-		// beans are ambiguous as they are constructed multiple places. This is evident
-		// when running in a spring boot environment
-		"spring.main.allow-bean-definition-overriding=true"
+	"spring.datasource.url=jdbc:h2:mem:dbr4",
+	"hapi.fhir.enable_repository_validating_interceptor=true",
+	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.subscription.websocket_enabled=true",
+	"hapi.fhir.mdm_enabled=true",
+	"hapi.fhir.cr_enabled=true",
+	"hapi.fhir.implementationguides.dk-core.name=hl7.fhir.dk.core",
+	"hapi.fhir.implementationguides.dk-core.version=1.1.0",
+	// Override is currently required when using MDM as the construction of the MDM
+	// beans are ambiguous as they are constructed multiple places. This is evident
+	// when running in a spring boot environment
+	"spring.main.allow-bean-definition-overriding=true"
 })
 public class ExampleServerR4IT {
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);
@@ -46,7 +50,7 @@ public class ExampleServerR4IT {
 	private int port;
 
 	@Test
-	@Order(0)
+	@DirtiesContext
 	void testCreateAndRead() {
 		String methodName = "testCreateAndRead";
 		ourLog.info("Entering " + methodName + "()...");
@@ -169,16 +173,10 @@ public class ExampleServerR4IT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
+		ourCtx = FhirContext.forR4();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
-		// ourClient.registerInterceptor(new LoggingInterceptor(false));
-	}
-
-	@BeforeAll
-	public static void setup() {
-		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}
 }

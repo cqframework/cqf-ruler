@@ -30,6 +30,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 		"spring.main.lazy-initialization=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"spring.batch.job.enabled=false",
+	"hapi.fhir.cr_enabled=true",
 		// "spring.jpa.properties.hibernate.show_sql=true",
 		// "spring.jpa.properties.hibernate.format_sql=true",
 		// "spring.jpa.properties.hibernate.use_sql_comments=true",

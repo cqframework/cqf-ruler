@@ -9,6 +9,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -19,13 +20,16 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.UrlTenantSelectionInterceptor;
 import ca.uhn.fhir.rest.server.provider.ProviderConstants;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
-		"spring.batch.job.enabled=false",
-		"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
-		"hapi.fhir.fhir_version=r4",
-		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false",
+	"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
+	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.subscription.websocket_enabled=true",
+	"hapi.fhir.cr_enabled=false",
+	"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false",
 		"spring.main.allow-bean-definition-overriding=true"
 })
 public class MultitenantServerR4IT {
@@ -38,6 +42,7 @@ public class MultitenantServerR4IT {
 	private static UrlTenantSelectionInterceptor ourClientTenantInterceptor;
 
 	@Test
+	@DirtiesContext
 	public void testCreateAndReadInTenantA() {
 
 		// Create tenant A
@@ -64,6 +69,7 @@ public class MultitenantServerR4IT {
 	}
 
 	@Test
+	@DirtiesContext
 	public void testCreateAndReadInTenantB() {
 
 		// Create tenant A
@@ -93,7 +99,7 @@ public class MultitenantServerR4IT {
 	void beforeEach() {
 
 		ourClientTenantInterceptor = new UrlTenantSelectionInterceptor();
-		ourCtx = FhirContext.forR4Cached();
+		ourCtx = FhirContext.forR4();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
