@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.config;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.common.FhirServerConfigCommon;
 import org.opencds.cqf.external.common.FhirServerConfigDstu2;
@@ -7,6 +9,8 @@ import org.opencds.cqf.external.common.FhirServerConfigDstu3;
 import org.opencds.cqf.external.common.FhirServerConfigR4;
 import org.opencds.cqf.external.common.FhirServerConfigR5;
 import org.opencds.cqf.external.common.FhirTesterConfig;
+import org.opencds.cqf.external.cr.CrOperationProviderFactory;
+import org.opencds.cqf.external.cr.CrOperationProviderLoader;
 import org.opencds.cqf.external.cr.StarterCrDstu3Config;
 import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.ServerConfig;
@@ -37,7 +41,6 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		FhirServerConfigDstu3.class,
 		FhirServerConfigR4.class,
 		FhirServerConfigR5.class,
-	
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
 		SubscriptionSubmitterConfig.class,
@@ -45,7 +48,10 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		SubscriptionChannelConfig.class,
 		FhirTesterConfig.class,
 		StarterCrR4Config.class,
-		StarterCrDstu3Config.class})
+		StarterCrDstu3Config.class,
+		//rOperationProviderFactory.class,
+		//CrOperationProviderLoader.class
+})
 public class RulerConfig {
 	public class DaoConfigCustomizer {
 		public DaoConfigCustomizer(JpaStorageSettings theStorageSettings, ServerProperties serverProperties) {
