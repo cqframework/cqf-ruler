@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.cr;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -79,4 +81,16 @@ public class CrConfig {
 			return libraryManager;
 		};
 	}
+
+	@Bean
+	CrProviderFactory crOperationFactory() {
+		return new CrProviderFactory();
+	}
+
+	@Bean
+	CrProviderLoader crProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+												  CrProviderFactory theCrProviderFactory) {
+		return new CrProviderLoader(theFhirContext, theResourceProviderFactory, theCrProviderFactory);
+	}
+
 }

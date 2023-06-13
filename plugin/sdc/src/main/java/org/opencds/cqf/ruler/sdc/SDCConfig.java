@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.sdc;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -40,4 +42,14 @@ public class SDCConfig {
     public OperationProvider dstu3TransformProvider() {
         return new org.opencds.cqf.ruler.sdc.dstu3.TransformProvider();
     }
+	@Bean
+	SDCProviderFactory sdcOperationFactory() {
+		return new SDCProviderFactory();
+	}
+
+	@Bean
+	SDCProviderLoader sdcProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+													SDCProviderFactory theSDCProviderFactory) {
+		return new SDCProviderLoader(theFhirContext, theResourceProviderFactory, theSDCProviderFactory);
+	}
 }

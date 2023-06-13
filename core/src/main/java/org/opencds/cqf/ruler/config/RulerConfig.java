@@ -31,7 +31,6 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 @Configuration
 @Import({
 		AppProperties.class,
-		CrProviderConfig.class,
 		FhirServerConfigCommon.class,
 		FhirServerConfigDstu2.class,
 		FhirServerConfigDstu3.class,

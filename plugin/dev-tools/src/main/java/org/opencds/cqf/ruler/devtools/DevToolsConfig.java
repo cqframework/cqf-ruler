@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.devtools;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,5 +56,15 @@ public class DevToolsConfig {
 	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider dstu3CacheValueSetsProvider() {
 		return new org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider();
+	}
+	@Bean
+	DevToolsProviderFactory devToolsOperationFactory() {
+		return new DevToolsProviderFactory();
+	}
+
+	@Bean
+	DevToolsProviderLoader devToolsProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+														  DevToolsProviderFactory theDevToolsProviderFactory) {
+		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory);
 	}
 }

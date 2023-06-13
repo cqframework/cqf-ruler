@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.ra;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -69,5 +71,16 @@ public class RAConfig {
 		registrationBean.addUrlMappings("/assisted");
 		registrationBean.setLoadOnStartup(1);
 		return registrationBean;
+	}
+
+	@Bean
+	RAProviderFactory raOperationFactory() {
+		return new RAProviderFactory();
+	}
+
+	@Bean
+	RAProviderLoader raProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+												 RAProviderFactory theRAProviderFactory) {
+		return new RAProviderLoader(theFhirContext, theResourceProviderFactory, theRAProviderFactory);
 	}
 }

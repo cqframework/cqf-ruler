@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cpg;
 
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
@@ -24,7 +25,7 @@ public class CpgConfig {
 	@Bean
 	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties() {
 		return new ca.uhn.fhir.cr.config.CrProperties();
-	}
+	}  
 
 	@Bean
 	public CpgProperties cpgProperties() {
@@ -69,5 +70,15 @@ public class CpgConfig {
 		org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory r4AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory();
 		return new FhirRestLibrarySourceProviderFactory(new ClientFactory(FhirContext.forDstu3Cached()),
 				r4AdapterFactory, new LibraryVersionSelector(r4AdapterFactory));
+	}
+	@Bean
+	CpgProviderFactory cpgOperationFactory() {
+		return new CpgProviderFactory();
+	}
+
+	@Bean
+	CpgProviderLoader cpgProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+												 CpgProviderFactory theCpgProviderFactory) {
+		return new CpgProviderLoader(theFhirContext, theResourceProviderFactory, theCpgProviderFactory);
 	}
 }
