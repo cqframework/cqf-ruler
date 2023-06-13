@@ -7,8 +7,6 @@ import org.opencds.cqf.external.common.FhirServerConfigDstu3;
 import org.opencds.cqf.external.common.FhirServerConfigR4;
 import org.opencds.cqf.external.common.FhirServerConfigR5;
 import org.opencds.cqf.external.common.FhirTesterConfig;
-import org.opencds.cqf.external.cr.CrConfigCondition;
-import org.opencds.cqf.external.cr.CrProviderConfig;
 import org.opencds.cqf.external.cr.StarterCrDstu3Config;
 import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.ServerConfig;
@@ -47,9 +45,7 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		SubscriptionChannelConfig.class,
 		FhirTesterConfig.class,
 		StarterCrR4Config.class,
-		StarterCrDstu3Config.class,
-		CrConfigCondition.class,
-		CrProviderConfig.class})
+		StarterCrDstu3Config.class})
 public class RulerConfig {
 	public class DaoConfigCustomizer {
 		public DaoConfigCustomizer(JpaStorageSettings theStorageSettings, ServerProperties serverProperties) {
