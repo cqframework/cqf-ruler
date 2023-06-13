@@ -1,7 +1,14 @@
 package org.opencds.cqf.ruler;
 
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
+import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
+import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 import org.opencds.cqf.external.annotations.OnEitherVersion;
 import org.opencds.cqf.external.common.StarterJpaConfig;
+import org.opencds.cqf.external.cr.StarterCrDstu3Config;
+import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.external.mdm.MdmConfig;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
@@ -27,13 +34,16 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 @ServletComponentScan(basePackageClasses = RestfulServer.class)
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 @Import({
-		RulerConfig.class,
-		ServerProperties.class,
-		WebsocketDispatcherConfig.class,
-		MdmConfig.class,
-		TesterUIConfig.class,
-		BeanFinderConfig.class,
-	StarterJpaConfig.class,})
+	SubscriptionSubmitterConfig.class,
+	SubscriptionProcessorConfig.class,
+	SubscriptionChannelConfig.class,
+	WebsocketDispatcherConfig.class,
+	MdmConfig.class,
+	JpaBatch2Config.class,
+	Batch2JobsConfig.class,
+	TesterUIConfig.class,
+	BeanFinderConfig.class,
+	RulerConfig.class})
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

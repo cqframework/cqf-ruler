@@ -43,14 +43,7 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		FhirServerConfigR5.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
-		SubscriptionSubmitterConfig.class,
-		SubscriptionProcessorConfig.class,
-		SubscriptionChannelConfig.class,
 		FhirTesterConfig.class,
-		StarterCrR4Config.class,
-		StarterCrDstu3Config.class,
-		//rOperationProviderFactory.class,
-		//CrOperationProviderLoader.class
 })
 public class RulerConfig {
 	public class DaoConfigCustomizer {
