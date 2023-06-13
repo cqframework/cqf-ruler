@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler;
 
 import org.opencds.cqf.external.annotations.OnEitherVersion;
+import org.opencds.cqf.external.common.StarterJpaConfig;
 import org.opencds.cqf.external.mdm.MdmConfig;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
@@ -31,7 +32,8 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 		WebsocketDispatcherConfig.class,
 		MdmConfig.class,
 		TesterUIConfig.class,
-		BeanFinderConfig.class, })
+		BeanFinderConfig.class,
+	StarterJpaConfig.class,})
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
