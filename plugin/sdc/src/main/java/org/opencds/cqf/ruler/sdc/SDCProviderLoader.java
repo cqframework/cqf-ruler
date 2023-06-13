@@ -1,14 +1,11 @@
 package org.opencds.cqf.ruler.sdc;
 
-import ca.uhn.fhir.context.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 
 public class SDCProviderLoader {
 	private static final Logger myLogger = LoggerFactory.getLogger(SDCProviderLoader.class);
@@ -17,13 +14,13 @@ public class SDCProviderLoader {
 	private final SDCProviderFactory mySDCProviderFactory;
 
 	public SDCProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-									SDCProviderFactory theCrProviderFactory) {
+			SDCProviderFactory theCrProviderFactory) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		mySDCProviderFactory = theCrProviderFactory;
+		loadProvider();
 	}
 
-	@EventListener(ContextRefreshedEvent.class)
 	public void loadProvider() {
 		switch (myFhirContext.getVersion().getVersion()) {
 			case DSTU3:
@@ -38,7 +35,7 @@ public class SDCProviderLoader {
 				break;
 			default:
 				throw new ConfigurationException("SDC not supported for FHIR version "
-					+ myFhirContext.getVersion().getVersion());
+						+ myFhirContext.getVersion().getVersion());
 		}
 	}
 }

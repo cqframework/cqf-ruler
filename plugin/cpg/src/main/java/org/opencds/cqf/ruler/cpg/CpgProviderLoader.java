@@ -2,8 +2,6 @@ package org.opencds.cqf.ruler.cpg;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
@@ -16,13 +14,13 @@ public class CpgProviderLoader {
 	private final CpgProviderFactory myCpgProviderFactory;
 
 	public CpgProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-									CpgProviderFactory theCrProviderFactory) {
+			CpgProviderFactory theCrProviderFactory) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		myCpgProviderFactory = theCrProviderFactory;
+		loadProvider();
 	}
 
-	@EventListener(ContextRefreshedEvent.class)
 	public void loadProvider() {
 		switch (myFhirContext.getVersion().getVersion()) {
 			case DSTU3:
@@ -37,7 +35,7 @@ public class CpgProviderLoader {
 				break;
 			default:
 				throw new ConfigurationException("Clinical Reasoning not supported for FHIR version "
-					+ myFhirContext.getVersion().getVersion());
+						+ myFhirContext.getVersion().getVersion());
 		}
 	}
 }

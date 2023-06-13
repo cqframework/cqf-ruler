@@ -2,8 +2,6 @@ package org.opencds.cqf.ruler.ra;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
@@ -16,13 +14,13 @@ public class RAProviderLoader {
 	private final RAProviderFactory myRAProviderFactory;
 
 	public RAProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-											RAProviderFactory theCrProviderFactory) {
+			RAProviderFactory theCrProviderFactory) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		myRAProviderFactory = theCrProviderFactory;
+		loadProvider();
 	}
 
-	@EventListener(ContextRefreshedEvent.class)
 	public void loadProvider() {
 		switch (myFhirContext.getVersion().getVersion()) {
 			case R4:
@@ -35,7 +33,7 @@ public class RAProviderLoader {
 				break;
 			default:
 				throw new ConfigurationException("RA not supported for FHIR version "
-					+ myFhirContext.getVersion().getVersion());
+						+ myFhirContext.getVersion().getVersion());
 		}
 	}
 }
