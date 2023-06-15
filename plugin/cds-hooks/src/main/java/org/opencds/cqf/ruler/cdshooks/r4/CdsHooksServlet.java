@@ -250,6 +250,17 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (action.hasDescription()) {
 							card.setDetail(action.getDescription());
 						}
+						if (action.hasPriority()) {
+							String indicator;
+							switch (action.getPriority().toCode()) {
+								case "routine": indicator = "info"; break;
+								case "urgent": indicator = "warning"; break;
+								case "stat": indicator = "critical"; break;
+								default: throw new IllegalArgumentException(
+									"Invalid priority code: " + action.getPriority().toCode());
+							}
+							card.setIndicator(indicator);
+						}
 						if (action.hasDocumentation()) {
 							card.setSource(resolveSource(action));
 						}
