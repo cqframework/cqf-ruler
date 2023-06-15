@@ -4,14 +4,21 @@ import static java.lang.Thread.sleep;
 import static java.util.Comparator.comparing;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -41,7 +48,7 @@ import org.springframework.test.annotation.DirtiesContext;
 	// when running in a spring boot environment
 	"spring.main.allow-bean-definition-overriding=true"
 })
-public class ExampleServerR4IT {
+public class ExampleServerR4IT implements IServerSupport{
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
@@ -86,6 +93,43 @@ public class ExampleServerR4IT {
 		return retVal;
 	}
 
+	@Test
+	public void testCQLEvaluateMeasureEXM130() throws IOException {
+		String measureId = "ColorectalCancerScreeningsFHIR";
+		String measureUrl = "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR";
+
+		loadBundle("r4/EXM130/EXM130-7.3.000-bundle.json", ourCtx, ourClient);
+
+
+		Parameters inParams = new Parameters();
+		inParams.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		inParams.addParameter().setName("periodEnd").setValue(new StringType("2019-12-31"));
+		inParams.addParameter().setName("reportType").setValue(new StringType("summary"));
+
+		Parameters outParams = ourClient
+			.operation()
+			.onInstance(new IdDt("Measure", measureId))
+			.named("$evaluate-measure")
+			.withParameters(inParams)
+			.cacheControl(new CacheControlDirective().setNoCache(true))
+			.withAdditionalHeader("Content-Type", "application/json")
+			.useHttpGet()
+			.execute();
+
+		List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+		assertFalse(response.isEmpty());
+		Parameters.ParametersParameterComponent component = response.get(0);
+		assertTrue(component.getResource() instanceof MeasureReport);
+		MeasureReport report = (MeasureReport) component.getResource();
+		assertEquals(measureUrl, report.getMeasure());
+	}
+
+	private org.hl7.fhir.r4.model.Bundle loadBundle(String theLocation, FhirContext theCtx, IGenericClient theClient) throws IOException {
+		String json = stringFromResource(theLocation);
+		org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) theCtx.newJsonParser().parseResource(json);
+		org.hl7.fhir.r4.model.Bundle result = theClient.transaction().withBundle(bundle).execute();
+		return result;
+	}
 	// private Patient getGoldenResourcePatient() {
 	// Bundle bundle = ourClient.search()
 	// .forResource(Patient.class)
