@@ -20,7 +20,7 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		LibraryEvaluationProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";

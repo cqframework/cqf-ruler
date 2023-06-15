@@ -25,7 +25,7 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		LibraryEvaluationProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
@@ -123,7 +123,8 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(
 				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential"));
 		assertTrue(((BooleanType) result.getParameter(
-				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential").getValue()).booleanValue());
+				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential").getValue())
+				.booleanValue());
 		assertTrue(result.hasParameter("Is Perform Drug Screen Recommendation Applicable?"));
 		assertTrue(((BooleanType) result.getParameter(
 				"Is Perform Drug Screen Recommendation Applicable?").getValue()).booleanValue());

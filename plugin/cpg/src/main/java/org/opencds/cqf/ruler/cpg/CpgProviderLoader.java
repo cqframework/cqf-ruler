@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cpg;
 
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +14,15 @@ public class CpgProviderLoader {
 	private final ResourceProviderFactory myResourceProviderFactory;
 	private final CpgProviderFactory myCpgProviderFactory;
 
+	// This is just here to force the observer to register
+	private final PostInitProviderRegisterer myPostInitProviderRegisterer;
+
 	public CpgProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-			CpgProviderFactory theCrProviderFactory) {
+			CpgProviderFactory theCrProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		myCpgProviderFactory = theCrProviderFactory;
+		this.myPostInitProviderRegisterer = thePostInitProviderRegisterer;
 		loadProvider();
 	}
 

@@ -6,7 +6,6 @@ import org.opencds.cqf.external.common.FhirServerConfigDstu2;
 import org.opencds.cqf.external.common.FhirServerConfigDstu3;
 import org.opencds.cqf.external.common.FhirServerConfigR4;
 import org.opencds.cqf.external.common.FhirServerConfigR5;
-import org.opencds.cqf.external.common.FhirTesterConfig;
 import org.opencds.cqf.external.cr.StarterCrDstu3Config;
 import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.ServerConfig;
@@ -36,7 +35,6 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 		FhirServerConfigR5.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
-		FhirTesterConfig.class,
 		StarterCrDstu3Config.class,
 		StarterCrR4Config.class
 })

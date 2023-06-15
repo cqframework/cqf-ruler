@@ -12,9 +12,8 @@ import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { ProcessMessageProviderIT.class, CaseReportingConfig.class },
-		properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ProcessMessageProviderIT extends RestIntegrationTest {
 	@Test
 	void testProcessMessage() {

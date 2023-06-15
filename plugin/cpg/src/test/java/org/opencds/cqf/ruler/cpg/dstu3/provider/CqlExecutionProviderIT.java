@@ -22,7 +22,7 @@ import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 
