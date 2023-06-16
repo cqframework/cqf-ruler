@@ -221,6 +221,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 }
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class FailureCases extends RestIntegrationTest {

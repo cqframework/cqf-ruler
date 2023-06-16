@@ -20,7 +20,7 @@ import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({ CrDstu3Config.class, CrR4Config.class })
+//@Import({ CrDstu3Config.class, CrR4Config.class })
 public class CpgConfig {
 
 	@Bean
