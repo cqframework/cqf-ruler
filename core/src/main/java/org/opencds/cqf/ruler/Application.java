@@ -4,7 +4,6 @@ import org.opencds.cqf.external.annotations.OnEitherVersion;
 import org.opencds.cqf.external.mdm.MdmConfig;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
-import org.opencds.cqf.ruler.config.TesterUIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +25,6 @@ import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 import ca.uhn.fhir.rest.server.RestfulServer;
 
-@ServletComponentScan(basePackageClasses = RestfulServer.class)
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 @Import({
 		SubscriptionSubmitterConfig.class,
@@ -37,7 +34,6 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 		MdmConfig.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
-		TesterUIConfig.class,
 		BeanFinderConfig.class,
 		RulerConfig.class })
 public class Application extends SpringBootServletInitializer {

@@ -31,7 +31,6 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"spring.datasource.url=jdbc:h2:mem:test",
 		"spring.flyway.enabled=false",
 		"spring.main.allow-circular-references=true",
-		"spring.main.lazy-initialization=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"hapi.fhir.cr_enabled=true",
 		// "spring.jpa.properties.hibernate.show_sql=true",

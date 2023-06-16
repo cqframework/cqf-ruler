@@ -24,11 +24,6 @@ import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 public class CpgConfig {
 
 	@Bean
-	public ca.uhn.fhir.cr.config.CrProperties hapiCrProperties() {
-		return new ca.uhn.fhir.cr.config.CrProperties();
-	}
-
-	@Bean
 	public CpgProperties cpgProperties() {
 		return new CpgProperties();
 	}
