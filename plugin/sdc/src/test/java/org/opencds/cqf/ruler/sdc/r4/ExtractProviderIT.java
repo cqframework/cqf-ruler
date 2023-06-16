@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ExtractProviderIT extends RestIntegrationTest {
 	@Autowired

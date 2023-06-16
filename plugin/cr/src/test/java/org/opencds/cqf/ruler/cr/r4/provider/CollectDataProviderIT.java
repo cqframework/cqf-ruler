@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 
-@SpringBootTest(classes = { CollectDataProviderIT.class, CrConfig.class }, properties = {
+@SpringBootTest(classes = { CrConfig.class }, properties = {
 		"hapi.fhir.fhir_version=r4", })
 class CollectDataProviderIT extends DaoIntegrationTest {
 

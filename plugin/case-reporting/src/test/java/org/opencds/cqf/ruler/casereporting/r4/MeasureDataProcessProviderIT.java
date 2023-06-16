@@ -15,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CaseReportingConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4",
-				"spring.main.allow-bean-definition-overriding=true",
-				"hapi.fhir.cr_enabled=true"
 		})
 class MeasureDataProcessProviderIT extends RestIntegrationTest {
 	@Test

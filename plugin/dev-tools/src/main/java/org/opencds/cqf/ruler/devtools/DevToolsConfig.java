@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -64,7 +65,7 @@ public class DevToolsConfig {
 
 	@Bean
 	DevToolsProviderLoader devToolsProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-														  DevToolsProviderFactory theDevToolsProviderFactory) {
-		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory);
+														  DevToolsProviderFactory theDevToolsProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory, thePostInitProviderRegisterer);
 	}
 }

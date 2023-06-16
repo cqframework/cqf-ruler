@@ -31,7 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RiskAdjustmentProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	@Autowired
@@ -43,6 +43,8 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 		loadTransaction("ConditionCategoryPOC-bundle.json");
 	}
+
+
 
 	@Test
 	void riskAssessmentHistoricOpen() {
@@ -58,6 +60,8 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateMeasureReport(response, "historic", "open-gap", new DateType("2020-01-31"));
 	}
 
+
+
 	@Test
 	void riskAssessmentHistoricClosed() {
 		loadTransaction("tests-hist-closed-HCC189-bundle.json");
@@ -71,6 +75,8 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
 		validateMeasureReport(response, "historic", "closed-gap", new DateType("2022-01-31"));
 	}
+
+
 
 	@Test
 	void riskAssessmentHistoricNetNew() {

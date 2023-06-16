@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.devtools;
 
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +14,13 @@ public class DevToolsProviderLoader {
 	private final ResourceProviderFactory myResourceProviderFactory;
 	private final DevToolsProviderFactory myDevToolsProviderFactory;
 
+	private final PostInitProviderRegisterer myPostInitProviderRegisterer;
 	public DevToolsProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-			DevToolsProviderFactory theCrProviderFactory) {
+			DevToolsProviderFactory theCrProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		myDevToolsProviderFactory = theCrProviderFactory;
+		this.myPostInitProviderRegisterer = thePostInitProviderRegisterer;
 		loadProvider();
 	}
 

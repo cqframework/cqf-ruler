@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,7 @@ public class SDCConfig {
 
 	@Bean
 	SDCProviderLoader sdcProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-													SDCProviderFactory theSDCProviderFactory) {
-		return new SDCProviderLoader(theFhirContext, theResourceProviderFactory, theSDCProviderFactory);
+													SDCProviderFactory theSDCProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new SDCProviderLoader(theFhirContext, theResourceProviderFactory, theSDCProviderFactory, thePostInitProviderRegisterer);
 	}
 }

@@ -5,9 +5,9 @@ import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -19,15 +19,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CrConfig {
-	@Bean
-	public CrProperties crProperties() {
-		return new CrProperties();
-	}
-
-	@Bean
-	public MeasureEvaluationOptions measureEvaluationOptions() {
-		return crProperties().getMeasureEvaluation();
-	}
 
 	@Bean
 	JpaCRFhirDalFactory jpaCRFhirDalFactory(DaoRegistry daoRegistry) {
@@ -89,8 +80,8 @@ public class CrConfig {
 
 	@Bean
 	CrProviderLoader crProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-												  CrProviderFactory theCrProviderFactory) {
-		return new CrProviderLoader(theFhirContext, theResourceProviderFactory, theCrProviderFactory);
+												  CrProviderFactory theCrProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new CrProviderLoader(theFhirContext, theResourceProviderFactory, theCrProviderFactory, thePostInitProviderRegisterer);
 	}
 
 }

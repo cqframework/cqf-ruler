@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ExpressionEvaluationIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CrConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4",
 		})

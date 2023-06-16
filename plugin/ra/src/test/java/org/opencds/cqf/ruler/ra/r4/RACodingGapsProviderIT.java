@@ -31,9 +31,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RACodingGapsProviderIT.class,
-		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
-				"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		RAConfig.class }, properties = {
+	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.ra.composition.ra_composition_section_author=Organization/alphora-author",
+	"hapi.fhir.ra_enabled=true"})
 class RACodingGapsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
@@ -45,6 +47,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		loadResource("AlphoraAuthor-organization.json");
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingPeriodStartParamGET() {
 		Parameters params = parameters(
@@ -57,6 +60,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingPeriodStartParamPOST() {
 		Parameters params = parameters(
@@ -69,6 +73,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingPeriodEndParamGET() {
 		Parameters params = parameters(
@@ -81,6 +86,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingPeriodEndParamPOST() {
 		Parameters params = parameters(
@@ -93,6 +99,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testInvalidStartPeriodParamGET() {
 		Parameters params = parameters(
@@ -106,6 +113,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
 
+	@DirtiesContext
 	@Test
 	void testInvalidEndPeriodParamGET() {
 		Parameters params = parameters(
@@ -119,6 +127,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingSubjectParamGET() {
 		Parameters params = parameters(
@@ -131,6 +140,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
 	}
 
+	@DirtiesContext
 	@Test
 	void testMissingSubjectParamPOST() {
 		Parameters params = parameters(
@@ -143,6 +153,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
 	}
 
+	@DirtiesContext
 	@Test
 	void testEndPeriodBeforeStartPeriodGET() {
 		Parameters params = parameters(
@@ -156,6 +167,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
 	}
 
+	@DirtiesContext
 	@Test
 	void testEndPeriodBeforeStartPeriodPOST() {
 		Parameters params = parameters(
@@ -169,6 +181,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectPatientGET() {
 		Parameters params = parameters(
@@ -184,6 +197,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertFalse(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectPatientPOST() {
 		Parameters params = parameters(
@@ -199,6 +213,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertFalse(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectGroupGET() {
 		Parameters params = parameters(
@@ -216,6 +231,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(1, result.getParameter().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectGroupPOST() {
 		Parameters params = parameters(
@@ -233,6 +249,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(1, result.getParameter().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectIsNotPatientOrGroupGET() {
 		Parameters params = parameters(
@@ -246,6 +263,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectIsNotPatientOrGroupPOST() {
 		Parameters params = parameters(
@@ -259,6 +277,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testPatientSubjectNotFoundGET() {
 		Parameters params = parameters(
@@ -272,6 +291,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
 
+	@DirtiesContext
 	@Test
 	void testPatientSubjectNotFoundPOST() {
 		Parameters params = parameters(
@@ -285,6 +305,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
 
+	@DirtiesContext
 	@Test
 	void testGroupSubjectNotFoundGET() {
 		Parameters params = parameters(
@@ -298,6 +319,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
 
+	@DirtiesContext
 	@Test
 	void testGroupSubjectNotFoundPOST() {
 		Parameters params = parameters(
@@ -313,6 +335,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 
 	// This test requires the following application setting:
 	// enforce_referential_integrity_on_write: false
+	@DirtiesContext
 	@Test
 	void testSubjectPatientNotFoundInGroupGET() {
 		Parameters params = parameters(
@@ -330,6 +353,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertFalse(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectPatientNotFoundInGroupPOST() {
 		Parameters params = parameters(
@@ -347,6 +371,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertFalse(result.hasParameter("Invalid parameters"));
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectMultiplePatientGroupGET() {
 		Parameters params = parameters(
@@ -365,6 +390,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(2, result.getParameter().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSubjectMultiplePatientGroupPOST() {
 		Parameters params = parameters(
@@ -383,6 +409,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(2, result.getParameter().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSingleSubjectSingleReportGET() {
 		Parameters params = parameters(
@@ -427,6 +454,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSingleSubjectSingleReportPOST() {
 		Parameters params = parameters(
@@ -471,6 +499,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testReportDoesNotIncludeNonEvaluatedResourcesGET() {
 		Parameters params = parameters(
@@ -514,6 +543,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testReportDoesNotIncludeNonEvaluatedResourcesPOST() {
 		Parameters params = parameters(
@@ -557,6 +587,7 @@ class RACodingGapsProviderIT extends RestIntegrationTest {
 		assertEquals(21 + 10 + 1, bundle.getEntry().size());
 	}
 
+	@DirtiesContext
 	@Test
 	void testUpdatedReportOperation() {
 		loadResource("Organization-ra-payer01.json");

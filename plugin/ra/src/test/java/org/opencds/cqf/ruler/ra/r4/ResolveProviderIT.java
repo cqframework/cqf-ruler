@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ResolveProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class ResolveProviderIT extends RestIntegrationTest {
 	@Autowired
@@ -221,7 +221,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 	}
 }
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { FailureCases.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class FailureCases extends RestIntegrationTest {
 

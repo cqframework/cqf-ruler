@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.sdc;
 
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +14,14 @@ public class SDCProviderLoader {
 	private final ResourceProviderFactory myResourceProviderFactory;
 	private final SDCProviderFactory mySDCProviderFactory;
 
+	// This is just here to force the observer to register
+	private final PostInitProviderRegisterer myPostInitProviderRegisterer;
 	public SDCProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-			SDCProviderFactory theCrProviderFactory) {
+			SDCProviderFactory theCrProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
 		myFhirContext = theFhirContext;
 		myResourceProviderFactory = theResourceProviderFactory;
 		mySDCProviderFactory = theCrProviderFactory;
+		this.myPostInitProviderRegisterer = thePostInitProviderRegisterer;
 		loadProvider();
 	}
 
