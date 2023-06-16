@@ -60,7 +60,11 @@
 			<artifactId>org.hl7.fhir.convertors</artifactId>
 			<version>6.0.15</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.jackson-deps</artifactId>
+			<type>pom</type>
+		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.fhir</artifactId>
