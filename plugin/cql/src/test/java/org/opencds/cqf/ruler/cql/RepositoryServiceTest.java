@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -150,88 +151,77 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertNotNull(maybeException);
 		}
 	}
-	//@Test
-	//void releaseResource_test() {
-	//	loadTransaction("ersd-draft-transaction-bundle-example.json");
-	//	Library returnResource = getClient().operation()
-	//		.onInstance("Library/DraftSpecificationLibrary")
-	//		.named("$release")
-	//		.withNoParameters(Parameters.class)
-	//		.useHttpGet()
-	//		.returnResourceType(Library.class)
-	//		.execute();
 
-	/*@Test
+	@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-release-bundle.json");
-		String versionData = "1234";
+		String versionData = "1.2.3";
 
 		Parameters params1 = parameters(
-			stringPart("version", "1234"),
-			codePart("version-behavior", "default")
+			part("version", new StringType(versionData)),
+			part("versionBehavior", new StringType("default"))
 		);
 
-		Library returnResource = getClient().operation()
+		Bundle returnResource = getClient().operation()
 			.onInstance("Library/ReleaseSpecificationLibrary")
 			.named("$release")
 			.withParameters(params1)
 			.useHttpGet()
-			.returnResourceType(Library.class)
+			.returnResourceType(Bundle.class)
 			.execute();
 
 		assertNotNull(returnResource);
-	}*/
+	}
 
-	/* @Test
+	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-release-bundle.json");
 		String actualErrorMessage = "";
 
 		Parameters params1 = parameters(
-			stringPart("version", "1234"),
-			codePart("version-behavior", "default"),
-			booleanPart("latest-from-tx-server", true)
+			part("version", "1.2.3"),
+			part("versionBehavior", "default"),
+			part("latestFromTxServer", new BooleanType(true))
 		);
 
 		try {
-			Library returnResource = getClient().operation()
+			getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")
 				.named("$release")
 				.withParameters(params1)
 				.useHttpGet()
-				.returnResourceType(Library.class)
+				.returnResourceType(Bundle.class)
 				.execute();
 		} catch (Exception e) {
 			actualErrorMessage = e.getMessage();
-			assertTrue(actualErrorMessage.contains("Support for 'latest-from-tx-server' is not yet implemented."));
 		}
-	}*/
+		assertTrue(actualErrorMessage.contains("not yet implemented"));
+	}
 
-	/*@Test
+	@Test
 	void release_missing_approvalDate_validation_test() {
 		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
-		String versionData = "1234";
+		String versionData = "1.2.3";
 		String actualErrorMessage = "";
 
 		Parameters params1 = parameters(
-			stringPart("version", "1234"),
-			codePart("version-behavior", "default"),
-			booleanPart("latest-from-tx-server", false)
+			part("version", versionData),
+			part("versionBehavior", "default")
 		);
 
 		try {
-			Library returnResource = getClient().operation()
+			getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")
 				.named("$release")
 				.withParameters(params1)
 				.useHttpGet()
-				.returnResourceType(Library.class)
+				.returnResourceType(Bundle.class)
 				.execute();
 		} catch (Exception e) {
 			actualErrorMessage = e.getMessage();
-			assertTrue(actualErrorMessage.contains("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
 		}
-	}*/
+		assertTrue(actualErrorMessage.contains("approvalDate"));
+	}
 
 	@Test
 	void reviseOperation_active_test() {
@@ -240,7 +230,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String actualErrorMessage = "";
 		Parameters params = parameters(part("resource", library));
 		try {
-			Library returnResource = getClient().operation()
+			getClient().operation()
 				.onServer()
 				.named("$revise")
 				.withParameters(params)
@@ -248,8 +238,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				.execute();
 		} catch (Exception e) {
 			actualErrorMessage = e.getMessage();
-			assertTrue(actualErrorMessage.contains("Current resource status is 'ACTIVE'. Only resources with status of 'draft' can be revised."));
 		}
+		assertTrue(actualErrorMessage.contains("Current resource status is 'ACTIVE'. Only resources with status of 'draft' can be revised."));
 	}
 
 	@Test

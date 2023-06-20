@@ -12,7 +12,6 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
@@ -122,7 +121,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
 	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
 	 * @param version             new version in the form MAJOR.MINOR.PATCH
-	 * TODO: should return OperationOutcome
 	 * @return A transaction bundle result of the newly created resources
 	 */
 	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
@@ -132,10 +130,19 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
 	}
-
+	/**
+	 * Sets the status of an existing artifact to Active if it has status Draft.
+	 *
+	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param version             new version in the form MAJOR.MINOR.PATCH
+	 * @param versionBehavior     how to handle differences between the user-provided and incumbernt versions
+	 * @param latestFromTxServer  whether or not to query the TxServer if version information is missing from references
+	 * @return A transaction bundle result of the updated resources
+	 */
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
-	public Library releaseOperation(
+	public Bundle releaseOperation(
 		RequestDetails requestDetails,
 		@IdParam IdType theId,
 		@OperationParam(name = "version") String version,
@@ -144,7 +151,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return (Library) this.artifactProcessor.releaseVersion(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal);
+		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
 	}
 
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)

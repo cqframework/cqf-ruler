@@ -1,5 +1,4 @@
 package org.opencds.cqf.ruler.cql;
-
 import static java.util.Comparator.comparing;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -23,6 +21,7 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -30,8 +29,6 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UsageContext;
-import org.jetbrains.annotations.Nullable;
-import org.opencds.cqf.cql.engine.exception.InvalidOperatorArgument;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
@@ -41,6 +38,8 @@ import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
@@ -195,13 +194,13 @@ public class KnowledgeArtifactProcessor {
 		// This check is performed here to facilitate that different treatment
 		// for the root artifact and those referenced by it.
 		if (baseArtifact.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-			throw new UnprocessableEntityException(
+			throw new PreconditionFailedException(
 				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", baseArtifact.getUrl(), String.valueOf(baseArtifact.getStatus())));
 		}
 		// Ensure only one resource exists with this URL
 		Bundle existingArtifactsForUrl = searchResourceByUrl(draftVersionUrl, fhirDal);
 		if(existingArtifactsForUrl.getEntry().size() != 0){
-			throw new UnprocessableEntityException(
+			throw new PreconditionFailedException(
 				String.format("A draft of Program '%s' already exists with version: '%s'. Only one draft of a program version can exist at a time.", baseArtifact.getUrl(), draftVersionUrl));
 		}
 		List<MetadataResource> resourcesToCreate = createDraftsOfArtifactAndRelated(baseArtifact, fhirDal, version, new ArrayList<MetadataResource>());
@@ -211,7 +210,7 @@ public class KnowledgeArtifactProcessor {
 		for(int i = 0; i < resourcesToCreate.size(); i++){
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
-			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter, draftVersion);
+			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getComponents(), draftVersion);
 			MetadataResource updateIdForBundle = newResourceAdapter.copy();
 			updateIdForBundle.setId(urnList.get(i));
 			transactionBundle.addEntry(createEntry(updateIdForBundle));
@@ -235,11 +234,12 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
-	private void updateRelatedArtifactUrlsWithNewVersions(KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter, String draftVersion){
-			// For each Resource relatedArtifact, update the version of the reference.
-			newResourceAdapter.getRelatedArtifact().stream()
-				.filter(ra -> ra.hasResource()).collect(Collectors.toList())
-				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + draftVersion));
+	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
+			// For each  relatedArtifact, update the version of the reference.
+			relatedArtifactList.stream()
+				.filter(ra -> ra.hasResource())
+				.collect(Collectors.toList())
+				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
 	private void checkIfVersionIsValid(String version) throws UnprocessableEntityException{
 		if (version == null || version.isEmpty()) {
@@ -293,18 +293,16 @@ public class KnowledgeArtifactProcessor {
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(draftVersion);
 			resourcesToCreate.add(newResource);
-			for (RelatedArtifact ra : sourceResourceAdapter.getRelatedArtifact()) {
-				// If it’s a compose-of then we want to copy it
+			for (RelatedArtifact ra : sourceResourceAdapter.getComponents()) {
+				// If it’s a composed-of then we want to copy it
 				// If it’s a depends-on, we just want to reference it, but not copy it
 				// (references are updated in createDraftBundle before adding to the bundle)
-				if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
-					if (ra.hasUrl()) {
-						Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
-					} else if (ra.hasResource()) {
-						Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-						processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
-					}
+				if (ra.hasUrl()) {
+					Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
+					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
+				} else if (ra.hasResource()) {
+					Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
+					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
 				}
 			}
 		}
@@ -323,190 +321,178 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	@Nullable
-	private String getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) {
-		String releaseVersion = null;
-
+	private Optional<String> getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) throws UnprocessableEntityException {
+		Optional<String> releaseVersion = Optional.ofNullable(null);
 		// If no version exists use the version argument provided
 		if (existingVersion == null || existingVersion.isEmpty() || existingVersion.isBlank()) {
-			return version;
+			return Optional.ofNullable(version);
 		}
+		String replaceDraftInExisting = existingVersion.replace("-draft","");
 
 		if (versionBehavior.getCode().equals("default")) {
-			releaseVersion = existingVersion != null && !existingVersion.isEmpty() ? existingVersion : version;
-		} else if (versionBehavior.getCode().equals("check")) {
-			if (existingVersion.equals(version)) {
-				throw new IllegalStateException(String.format("versionBehavior specified is 'check and the version provided ('%s') does not match the version currently specified on the root artifact ('%s')."));
+			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()){
+				releaseVersion = Optional.of(replaceDraftInExisting);
+			} else {
+				releaseVersion = Optional.ofNullable(version);
 			}
 		} else if (versionBehavior.getCode().equals("force")) {
-			releaseVersion = version;
+			releaseVersion = Optional.ofNullable(version);
+		} else if (versionBehavior.getCode().equals("check")) {
+			if (!replaceDraftInExisting.equals(version)) {
+				throw new UnprocessableEntityException(String.format("versionBehavior specified is 'check' and the version provided ('%s') does not match the version currently specified on the root artifact ('%s').",version,existingVersion));
+			}
 		}
 		return releaseVersion;
 	}
 
 	/* $release */
-	public MetadataResource releaseVersion(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
+	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+		// return searchResourceByUrlAndStatus("http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19","active",fhirDal);
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
 		if (latestFromTxServer) {
-			throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
+			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
-		// TODO: This needs to be transactional!
-
-		if (version == null || version.isEmpty()) {
-			throw new InvalidOperatorArgument("'version' must be provided as an argument to the $release operation.");
-		}
-
-		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
-			throw new InvalidOperatorArgument("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
-		}
-
-		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
-			throw new InvalidOperatorArgument(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
-		}
+		checkReleaseVersion(version,versionBehavior);
 
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
 		if (rootArtifact == null) {
-			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
+			throw new ResourceNotFoundException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
 		}
 
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		if (currentApprovalDate == null) {
-			throw new InvalidOperatorArgument(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
+			throw new PreconditionFailedException(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
 		}
 
 		if (currentApprovalDate.before(rootArtifact.getDate())) {
-			throw new InvalidOperatorArgument(
+			throw new PreconditionFailedException(
 				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", currentApprovalDate, rootArtifact.getDate()));
 		}
 
 		// Determine which version should be used.
-		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion() : null;
-		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion);
-
-		List<RelatedArtifact> resolvedRelatedArtifacts = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
+		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion().replace("-draft","") : null;
+		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
+			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
+		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
+		Bundle transactionBundle = new Bundle()
+			.setType(Bundle.BundleType.TRANSACTION);
+		for(MetadataResource artifact: resourcesToUpdate){
+			transactionBundle.addEntry(createEntry(artifact));
+
+			KnowledgeArtifactAdapter<MetadataResource> artifactAdapter = new KnowledgeArtifactAdapter<MetadataResource>(artifact);
+			List<RelatedArtifact> components = artifactAdapter.getComponents();
+			// add all root artifact components
+			// and child artifact components recursively
+			// as root artifact dependencies
+			for(RelatedArtifact component : components){
+				MetadataResource resource = checkIfReferenceInList(component, resourcesToUpdate)
+					.orElseGet(() -> getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl()));
+				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+				component.setResource(reference);
+				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
+				rootArtifactAdapter.getRelatedArtifact().add(componentToDependency);
+			}
+
+			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
+			for(RelatedArtifact dependency : dependencies){
+				MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
+					.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
+				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+				dependency.setResource(reference);
+				if(!artifact.getUrl().equals(rootArtifact.getUrl())){
+					rootArtifactAdapter.getRelatedArtifact().add(dependency);
+				}
+			}
+		}
 		// removed duplicates and add
 		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
-		for (RelatedArtifact ra: resolvedRelatedArtifacts) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()))) {
+		for (RelatedArtifact ra: rootArtifactAdapter.getRelatedArtifact()) {
+			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()) && r.getType().equals(ra.getType()))) {
 				distinctResolvedRelatedArtifacts.add(ra);
 			}
 		}
-		rootArtifactAdapter.getRelatedArtifact().addAll(distinctResolvedRelatedArtifacts);
-		fhirDal.update(rootArtifact);
-
-		return rootArtifact;
+		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
+		return transactionBundle;
 	}
+	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
 
-	private List<RelatedArtifact> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
-																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) {
-		List<RelatedArtifact> resolvedRelatedArtifacts = new ArrayList<RelatedArtifact>();
+		if (version == null || version.isEmpty()) {
+			throw new UnprocessableEntityException("'version' must be provided as an argument to the $release operation.");
+		}
 
+		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
+			throw new UnprocessableEntityException("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
+		}
+
+		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
+			throw new UnprocessableEntityException(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
+		}
+		checkIfVersionIsValid(version);
+	}
+	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
+																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
+
+		// Step 1: Update the Date and the version
 		// Need to update the Date element because we're changing the status
 		artifactAdapter.resource.setDate(new Date());
 		artifactAdapter.resource.setStatus(Enumerations.PublicationStatus.ACTIVE);
-		artifactAdapter.resource.setVersion(getReleaseVersion(version, versionBehavior, artifactAdapter.resource.getVersion()));
-
-		fhirDal.update(artifactAdapter.resource);
-
+		artifactAdapter.resource.setVersion(version);
+		resourcesToUpdate.add(artifactAdapter.resource);
+		// Step 2 : Get all the COMPOSED OF relatedArtifacts
 		// TODO: This is likely the wrong characteristic to use for distinguishing between those things that are
 		// part of the spec library and the leaf value sets. Likely needs be a profile. For now though, relatedArtifact.Type
-		for (RelatedArtifact ra : artifactAdapter.getComponents()) {
-			if (ra.hasResource()) {
+		for (RelatedArtifact component : artifactAdapter.getComponents()) {
+			if (component.hasResource()) {
 				MetadataResource referencedResource;
-				CanonicalType resourceReference = ra.getResourceElement();
-				String reference = resourceReference.getValueAsString();
+				CanonicalType resourceReference = component.getResourceElement();
+				Boolean alreadyUpdated = resourcesToUpdate
+					.stream()
+					.filter(r -> r.getUrl().equals(Canonicals.getUrl(resourceReference)))
+					.findAny()
+					.isPresent();
+				if(!alreadyUpdated) {
+					String reference = resourceReference.getValueAsString();
 
-				// For composition references, if a version is not specified in the reference then the latest version
-				// of the referenced artifact should be used.
-				if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
-					List<MetadataResource> matchingResources =
-						getResourcesFromBundle(searchResourceByUrl(resourceReference.getValueAsString(), fhirDal));
-					if (matchingResources.isEmpty()) {
-						throw new ResourceNotFoundException(
-							String.format("Resource with URL '%s' is referenced by resource '%s', but is not found.",
-								resourceReference.getValueAsString(),
-								artifactAdapter.resource.getUrl()));
+					// For composition references, if a version is not specified in the reference then the latest version
+					// of the referenced artifact should be used.
+					if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
+						referencedResource = getLatestActiveVersionOfReference(reference,fhirDal,artifactAdapter.resource.getUrl());
 					} else {
-						// TODO: Log which version was selected
-						matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
-						referencedResource = matchingResources.get(0);
-						String releaseVersion = getReleaseVersion(version, versionBehavior, referencedResource.getVersion());
-						reference = String.format("%s|%s", referencedResource.getUrl(), releaseVersion);
+						referencedResource = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal)).get(0);
 					}
-				} else {
-					referencedResource = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal)).get(0);
+					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, versionBehavior, latestFromTxServer, fhirDal));
 				}
-
-				resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
-				KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-				resolvedRelatedArtifacts.addAll(internalRelease(searchResultAdapter, version, versionBehavior, latestFromTxServer, fhirDal));
 			}
 		}
 
-		for (RelatedArtifact ra : artifactAdapter.getDependencies()) {
-			if (ra.hasResource()) {
-				MetadataResource referencedResource;
-				CanonicalType resourceReference = ra.getResourceElement();
-				String reference = resourceReference.getValueAsString();
-
-				// For dependencies, if a specific version is referenced, use it. Otherwise, if latest-from-tx-server is true
-				// then lookup the latest version from tx server else get the latest version from our cache.
-				if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
-					if (latestFromTxServer) {
-						throw new NotImplementedException("Support for 'latestFromTxServer' is not yet implemented.");
-						// TODO: Will need to query the configured (will need to know the configured TxServer from client) TxServer
-						// to get the latest version of the ValueSet, download it into the cache - will need to augment the same way
-						// as client.
-					} else {
-						List<MetadataResource> matchingResources =
-							getResourcesFromBundle(searchResourceByUrlAndStatus(reference, "active", fhirDal));
-						if (matchingResources.isEmpty()) {
-							throw new ResourceNotFoundException(
-								String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
-									resourceReference.getValueAsString(),
-									artifactAdapter.resource.getUrl()));
-						} else {
-							// TODO: Log which version was selected
-							matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
-							referencedResource = matchingResources.get(0);
-							String releaseVersion = getReleaseVersion(version, versionBehavior, referencedResource.getVersion());
-							reference = String.format("%s|%s", referencedResource.getUrl(), releaseVersion);
-						}
-					}
-				} else {
-					// Search for the referenced resource and validate that it is eligible for release (i.e., Active).
-					List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal));
-
-					if (matchingResources.isEmpty()) {
-						throw new ResourceNotFoundException(
-							String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
-								resourceReference.getValueAsString(),
-								artifactAdapter.resource.getUrl()));
-					} else {
-						// TODO: Log which version was selected
-						matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
-						referencedResource = matchingResources.get(0);
-						String releaseVersion = getReleaseVersion(version, versionBehavior, referencedResource.getVersion());
-						reference = String.format("%s|%s", referencedResource.getUrl(), releaseVersion);
-					}
-
-					if (referencedResource.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
-						throw new IllegalStateException(String.format("Resource '%s' is not in active status and cannot be reference in this release.", reference));
-					}
-				}
-
-				resolvedRelatedArtifacts.add(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(reference));
-			}
-		}
-
-		return resolvedRelatedArtifacts;
+		return resourcesToUpdate;
 	}
+	private MetadataResource getLatestActiveVersionOfReference(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
+		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", fhirDal));
+		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
+		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
+			.stream()
+			.filter(r -> r.getStatus().equals(PublicationStatus.ACTIVE))
+			.collect(Collectors.toList());
 
+		if (matchingResources.isEmpty()) {
+			throw new ResourceNotFoundException(
+				String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
+					inputReference,
+					sourceArtifactUrl));
+		} else {
+			// TODO: Log which version was selected
+			matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
+			return matchingResources.get(0);
+		}
+	}
 	private List<MetadataResource> getResourcesFromBundle(Bundle bundle) {
 		List<MetadataResource> resourceList = new ArrayList<>();
 
@@ -522,7 +508,17 @@ public class KnowledgeArtifactProcessor {
 
 		return resourceList;
 	}
-
+	private Optional<MetadataResource> checkIfReferenceInList(RelatedArtifact artifactToUpdate, List<MetadataResource> resourceList){
+		Optional<MetadataResource> updatedReference = Optional.ofNullable(null);
+		for (MetadataResource resource : resourceList){
+			String referenceURL = Canonicals.getUrl(artifactToUpdate.getResourceElement());
+			String currentResourceURL = resource.getUrl();
+			if (artifactToUpdate.hasResource() && referenceURL.equals(currentResourceURL)) {
+				return Optional.of(resource);
+			}
+		}
+		return updatedReference;
+	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
