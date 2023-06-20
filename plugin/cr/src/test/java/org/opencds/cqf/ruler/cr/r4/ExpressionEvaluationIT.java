@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.DomainResource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -28,18 +27,23 @@ class ExpressionEvaluationIT extends RestIntegrationTest {
 	private Map<String, IBaseResource> measures;
 	private Map<String, IBaseResource> planDefinitions;
 
-	@BeforeEach
+	/*@BeforeEach
 	public void setup() throws Exception {
 		uploadTests("valueset");
 		uploadTests("library");
 		measures = uploadTests("measure");
 		planDefinitions = uploadTests("plandefinition");
-	}
+	}*/
 
 	@Test
 	void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
 		DomainResource measure = (DomainResource) measures.get("ANCIND01");
 		// Patient First
+		uploadTests("valueset");
+		uploadTests("library");
+		measures = uploadTests("measure");
+		planDefinitions = uploadTests("plandefinition");
+
 		uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
 		Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
 		IBaseResource patient = resources.get("charity-otala-1");

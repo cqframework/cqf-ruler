@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
@@ -25,6 +26,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 
+	@DirtiesContext
 	@Test
 	void testSimpleAsthmaInlineCode() {
 		loadResource(packagePrefix + "SimplePatient.json");

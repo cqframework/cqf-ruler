@@ -10,11 +10,6 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.text.ParseException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +19,7 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CrConfig.class }, properties = {
 	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.cr_enabled=true",
 	"hapi.fhir.cql.translator.analyze_data_requirements=true"})
 class DataOperationProviderIT extends RestIntegrationTest {
 
