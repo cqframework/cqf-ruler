@@ -1,10 +1,6 @@
 package org.opencds.cqf.ruler.cdshooks;
 
 import ca.uhn.fhir.cr.config.CrProperties;
-import ca.uhn.fhir.cr.r4.IPlanDefinitionProcessorFactory;
-import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
-import org.opencds.cqf.cql.evaluator.library.EvaluationSettings;
-import org.opencds.cqf.cql.evaluator.plandefinition.r4.PlanDefinitionProcessor;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;

@@ -20,7 +20,7 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opencds.cqf.ruler.Application;
+
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
