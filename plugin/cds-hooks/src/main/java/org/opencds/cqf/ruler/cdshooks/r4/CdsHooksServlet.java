@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ca.uhn.fhir.cr.config.CrProperties;
 import org.apache.http.entity.ContentType;
+import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
@@ -50,9 +50,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import ca.uhn.fhir.cr.config.CrProperties;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
+import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 
 @Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
@@ -77,12 +79,14 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private ModelResolver modelResolver;
 	@Autowired
 	CdsServicesCache cdsServicesCache;
+	@Autowired
+	RestfulServer restfulServer;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
 	}
 
-	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
+	private final ServletRequestDetails requestDetails = new ServletRequestDetails();
 	private R4CqlExecution cqlExecutor;
 
 	// CORS Pre-flight
@@ -127,6 +131,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 			cqlExecutor = new R4CqlExecution(baseUrl);
 			requestDetails.setFhirServerBase(baseUrl);
+			requestDetails.setServer(restfulServer);
 
 			PlanDefinition servicePlan = read(Ids.newId(PlanDefinition.class, service));
 			if (!servicePlan.hasLibrary()) {
@@ -283,12 +288,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							Type conditionResult;
 							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
 								conditionResult = evaluationResults.getParameter(
-										condition.getExpression().getExpression()
-								).getValue();
+										condition.getExpression().getExpression()).getValue();
 							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
 								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
 										patientId, condition.getExpression().getExpression())
-									.getParameterValue("return");
+										.getParameterValue("return");
 
 							} else
 								conditionResult = new BooleanType(false);
@@ -342,9 +346,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
 			suggAction.setResource(applyEvaluator.apply(definitionId,
-					patientId, null, null, null, null,
-				null, null, null, null, null,
-				null, null, null, null, null, requestDetails));
+					patientId, null, patientId, null, null,
+					null, null, null, null, null,
+					null, null, null, null, null, requestDetails));
 			hasAction = true;
 		}
 		if (hasAction)
@@ -358,14 +362,14 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				dv -> {
 					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
 							&& dv.getExpression().hasExpression()) {
-						Object dynamicValueResult;
+						IBase dynamicValueResult;
 						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
 							dynamicValueResult = evaluationResults.getParameter(
-									dv.getExpression().getExpression());
+									dv.getExpression().getExpression()).getValue();
 						} else {
 							dynamicValueResult = cqlExecutor.getExpressionExecution(cqlExecution,
 									patientId, dv.getExpression().getExpression())
-									.getParameter("return");
+									.getParameter("return").getValue();
 						}
 						if (dynamicValueResult != null) {
 							if (dv.getPath().endsWith("title")) {
@@ -399,8 +403,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()){
-			//getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
+		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()) {
+			// getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;
