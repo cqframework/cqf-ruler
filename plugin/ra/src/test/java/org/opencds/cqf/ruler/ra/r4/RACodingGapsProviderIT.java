@@ -31,6 +31,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		RAConfig.class }, properties = {
 	"hapi.fhir.fhir_version=r4",
