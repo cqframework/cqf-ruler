@@ -17,8 +17,11 @@ import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "hapi.fhir.rulercr", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CrConfig {
+
+	@Bean
+	CrRulerProperties crRulerProperties(){return new CrRulerProperties();}
 
 	@Bean
 	JpaCRFhirDalFactory jpaCRFhirDalFactory(DaoRegistry daoRegistry) {

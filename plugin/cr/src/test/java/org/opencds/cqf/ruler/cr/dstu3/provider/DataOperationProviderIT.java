@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class
-	, CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+	CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test

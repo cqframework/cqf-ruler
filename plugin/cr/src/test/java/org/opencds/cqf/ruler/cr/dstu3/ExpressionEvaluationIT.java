@@ -13,10 +13,12 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { ExpressionEvaluationIT.class, CrConfig.class},
+		classes = {CrConfig.class},
 		properties = { "hapi.fhir.fhir_version=dstu3" })
 class ExpressionEvaluationIT extends RestIntegrationTest {
 

@@ -90,13 +90,13 @@
 		<cqf-tooling.version>2.4.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cqframework.version>2.7.0</cqframework.version>
-		<cql-engine.version>2.7.0</cql-engine.version>
+		<cqframework.version>2.10.0</cqframework.version>
+		<cql-engine.version>2.10.0</cql-engine.version>
 		<cql-evaluator.version>3.0.0-PRE2</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.7.6-SNAPSHOT</hapi_version>
+		<hapi_version>6.7.8-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

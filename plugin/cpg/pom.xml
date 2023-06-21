@@ -16,7 +16,6 @@
 		<dependency>
 			<groupId>info.cqframework</groupId>
 			<artifactId>engine-fhir</artifactId>
-			<version>${cql-engine.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>

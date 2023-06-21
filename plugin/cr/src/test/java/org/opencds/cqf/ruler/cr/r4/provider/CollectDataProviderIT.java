@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import ca.uhn.fhir.cr.config.CrR4Config;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
@@ -15,19 +14,19 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cr.CqlBuilder;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.r4.Libraries;
 import org.opencds.cqf.ruler.cr.r4.MeasureBuilder;
 import org.opencds.cqf.ruler.cr.r4.Patients;
-import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = { CrConfig.class}, properties = {
 		"hapi.fhir.fhir_version=r4" })
