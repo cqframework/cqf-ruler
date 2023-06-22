@@ -10,7 +10,7 @@ import org.hl7.fhir.r5.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -18,12 +18,12 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
-		"spring.batch.job.enabled=false",
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
 		"spring.datasource.url=jdbc:h2:mem:dbr5",
 		"hapi.fhir.fhir_version=r5",
 		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.mdm_enabled=false"
+		"hapi.fhir.mdm_enabled=false",
+		"spring.main.allow-bean-definition-overriding=true"
 })
 public class ExampleServerR5IT {
 

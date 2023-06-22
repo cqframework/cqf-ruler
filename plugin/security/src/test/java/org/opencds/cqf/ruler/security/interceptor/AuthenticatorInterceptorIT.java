@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		AuthenticatorInterceptorIT.class,
 		SecurityConfig.class, DevToolsConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=true",
 				"hapi.fhir.security.basic_auth.username=someuser",

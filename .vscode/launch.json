@@ -4,6 +4,8 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+
+	
 		{
 			"type": "java",
 			"name": "Launch Application",
@@ -15,7 +17,8 @@
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
-				"-Dspring.batch.job.enabled=false"
+				"-Dspring.batch.job.enabled=false",
+				"-Dspring.main.allow-bean-definition-overriding=true"
 			],
 		},
 		{
@@ -29,7 +32,9 @@
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
-				"-Dspring.batch.job.enabled=false"
+				"-Dspring.batch.job.enabled=false",
+				"-Dhapi.fhir.cr_enabled=true",
+				"-Dspring.main.allow-bean-definition-overriding=true"
 			],
 			"classPaths": [
 				"$Auto",

@@ -1,21 +1,30 @@
 package org.opencds.cqf.ruler;
 
+import static java.lang.Thread.sleep;
 import static java.util.Comparator.comparing;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -23,20 +32,23 @@ import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.util.BundleUtil;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
-		"spring.batch.job.enabled=false",
-		"spring.datasource.url=jdbc:h2:mem:dbr4",
-		"hapi.fhir.enable_repository_validating_interceptor=true",
-		"hapi.fhir.fhir_version=r4",
-		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.mdm_enabled=true",
-		// Override is currently required when using MDM as the construction of the MDM
-		// beans are ambiguous as they are constructed multiple places. This is evident
-		// when running in a spring boot environment
-		"spring.main.allow-bean-definition-overriding=true"
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
+	"spring.datasource.url=jdbc:h2:mem:dbr4",
+	"hapi.fhir.enable_repository_validating_interceptor=true",
+	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.subscription.websocket_enabled=true",
+	"hapi.fhir.mdm_enabled=true",
+	"hapi.fhir.cr_enabled=true",
+	"hapi.fhir.implementationguides.dk-core.name=hl7.fhir.dk.core",
+	"hapi.fhir.implementationguides.dk-core.version=1.1.0",
+	// Override is currently required when using MDM as the construction of the MDM
+	// beans are ambiguous as they are constructed multiple places. This is evident
+	// when running in a spring boot environment
+	"spring.main.allow-bean-definition-overriding=true"
 })
-public class ExampleServerR4IT {
+public class ExampleServerR4IT implements IServerSupport{
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
@@ -45,7 +57,7 @@ public class ExampleServerR4IT {
 	private int port;
 
 	@Test
-	@Order(0)
+	@DirtiesContext
 	void testCreateAndRead() {
 		String methodName = "testCreateAndRead";
 		ourLog.info("Entering " + methodName + "()...");
@@ -81,6 +93,43 @@ public class ExampleServerR4IT {
 		return retVal;
 	}
 
+	@Test
+	public void testCQLEvaluateMeasureEXM130() throws IOException {
+		String measureId = "ColorectalCancerScreeningsFHIR";
+		String measureUrl = "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR";
+
+		loadBundle("r4/EXM130/EXM130-7.3.000-bundle.json", ourCtx, ourClient);
+
+
+		Parameters inParams = new Parameters();
+		inParams.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		inParams.addParameter().setName("periodEnd").setValue(new StringType("2019-12-31"));
+		inParams.addParameter().setName("reportType").setValue(new StringType("summary"));
+
+		Parameters outParams = ourClient
+			.operation()
+			.onInstance(new IdDt("Measure", measureId))
+			.named("$evaluate-measure")
+			.withParameters(inParams)
+			.cacheControl(new CacheControlDirective().setNoCache(true))
+			.withAdditionalHeader("Content-Type", "application/json")
+			.useHttpGet()
+			.execute();
+
+		List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+		assertFalse(response.isEmpty());
+		Parameters.ParametersParameterComponent component = response.get(0);
+		assertTrue(component.getResource() instanceof MeasureReport);
+		MeasureReport report = (MeasureReport) component.getResource();
+		assertEquals(measureUrl, report.getMeasure());
+	}
+
+	private org.hl7.fhir.r4.model.Bundle loadBundle(String theLocation, FhirContext theCtx, IGenericClient theClient) throws IOException {
+		String json = stringFromResource(theLocation);
+		org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) theCtx.newJsonParser().parseResource(json);
+		org.hl7.fhir.r4.model.Bundle result = theClient.transaction().withBundle(bundle).execute();
+		return result;
+	}
 	// private Patient getGoldenResourcePatient() {
 	// Bundle bundle = ourClient.search()
 	// .forResource(Patient.class)
@@ -168,16 +217,10 @@ public class ExampleServerR4IT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
+		ourCtx = FhirContext.forR4();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
-		// ourClient.registerInterceptor(new LoggingInterceptor(false));
-	}
-
-	@BeforeAll
-	public static void setup() {
-		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}
 }

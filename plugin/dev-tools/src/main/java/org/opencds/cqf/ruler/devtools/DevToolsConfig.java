@@ -1,7 +1,10 @@
 package org.opencds.cqf.ruler.devtools;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -33,7 +36,7 @@ public class DevToolsConfig {
 	}
 
 	@Bean
-	@Conditional(OnR4Condition.class)
+	@Conditional(org.opencds.cqf.external.annotations.OnR4Condition.class)
 	public org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider r4CodeSystemUpdateProvider() {
 		return new org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider();
 	}
@@ -54,5 +57,15 @@ public class DevToolsConfig {
 	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider dstu3CacheValueSetsProvider() {
 		return new org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider();
+	}
+	@Bean
+	DevToolsProviderFactory devToolsOperationFactory() {
+		return new DevToolsProviderFactory();
+	}
+
+	@Bean
+	DevToolsProviderLoader devToolsProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+														  DevToolsProviderFactory theDevToolsProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory, thePostInitProviderRegisterer);
 	}
 }

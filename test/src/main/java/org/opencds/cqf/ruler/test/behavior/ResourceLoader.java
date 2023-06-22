@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -21,7 +22,7 @@ import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+
 import ca.uhn.fhir.parser.IParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

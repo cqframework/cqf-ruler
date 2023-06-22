@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -39,9 +38,9 @@ import ca.uhn.fhir.rest.param.UriParam;
  */
 public class CodeSystemUpdateProvider implements OperationProvider {
 	@Autowired
-	private IFhirResourceDaoValueSet<ValueSet, Coding, CodeableConcept> myValueSetDaoDSTU3;
+	private IFhirResourceDaoValueSet<ValueSet> myValueSetDaoDSTU3;
 	@Autowired
-	private IFhirResourceDaoCodeSystem<CodeSystem, Coding, CodeableConcept> myCodeSystemDaoDSTU3;
+	private IFhirResourceDaoCodeSystem<CodeSystem> myCodeSystemDaoDSTU3;
 
 	/***
 	 * Update existing {@link CodeSystem CodeSystems} with the codes in all

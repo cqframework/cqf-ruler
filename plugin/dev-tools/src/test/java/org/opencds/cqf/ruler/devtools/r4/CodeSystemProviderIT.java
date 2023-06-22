@@ -32,9 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CodeSystemProviderIT.class,
-		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		DevToolsConfig.class }, properties = {
+	"hapi.fhir.fhir_version=r4"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CodeSystemProviderIT extends RestIntegrationTest {
 	private final Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);

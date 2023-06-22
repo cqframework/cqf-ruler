@@ -28,9 +28,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringAndListParam;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CacheValueSetsProviderIT.class,
-		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		DevToolsConfig.class }, properties = {
+	"hapi.fhir.fhir_version=r4"})
 class CacheValueSetsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private CacheValueSetsProvider cacheValueSetsProvider;

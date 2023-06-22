@@ -11,7 +11,7 @@ import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.test.behavior.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,16 +31,14 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"spring.datasource.url=jdbc:h2:mem:test",
 		"spring.flyway.enabled=false",
 		"spring.main.allow-circular-references=true",
-		"spring.main.lazy-initialization=true",
 		"spring.main.allow-bean-definition-overriding=true",
-		"spring.batch.job.enabled=false",
-		// "spring.jpa.properties.hibernate.show_sql=true",
-		// "spring.jpa.properties.hibernate.format_sql=true",
-		// "spring.jpa.properties.hibernate.use_sql_comments=true",
+		"hapi.fhir.cr_enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",
 		"hapi.fhir.client_id_strategy=ANY",
+		"hapi.fhir.bulk_export_enabled=false",
+		"spring.batch.job.enabled=false"
 })
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)

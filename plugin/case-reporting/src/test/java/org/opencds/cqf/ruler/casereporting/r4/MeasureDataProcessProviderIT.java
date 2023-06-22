@@ -11,9 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		MeasureDataProcessProviderIT.class, CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CaseReportingConfig.class }, properties = {
+				"hapi.fhir.fhir_version=r4",
+		})
 class MeasureDataProcessProviderIT extends RestIntegrationTest {
 	@Test
 	void testMeasureReportExtractLineListData() {

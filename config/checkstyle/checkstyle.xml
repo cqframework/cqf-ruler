@@ -40,4 +40,6 @@
 		<property name="message" value="Line has trailing spaces."/>
 	</module>
 
+	<suppress checks=".*" files="org[\\/]opencds[\\/]cqf[\\/]external[\\/]"/>
+
 </module>

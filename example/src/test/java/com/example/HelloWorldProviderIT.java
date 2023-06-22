@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { HelloWorldProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		HelloWorldConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hello.world.message=Howdy" })
 class HelloWorldProviderIT extends RestIntegrationTest {
 	@Test
