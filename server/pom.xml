@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
-		<version>0.14.0-SNAPSHOT</version>
+		<version>0.14.0-PRE</version>
 	</parent>
 
 	<artifactId>cqf-ruler-server</artifactId>
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-core</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 		</dependency>
 
 		<dependency>
@@ -245,31 +245,31 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-case-reporting</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cds-hooks</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cpg</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cr</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-dev-tools</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -277,19 +277,19 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-ra</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-sdc</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-security</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<version>0.14.0-PRE</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
