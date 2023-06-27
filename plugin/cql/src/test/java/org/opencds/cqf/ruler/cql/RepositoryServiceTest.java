@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cql;
 
 import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
@@ -70,7 +71,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = parameters(part("version", "1.1.1") );
-		UnprocessableEntityException maybeException = null;
+		String maybeException = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -78,18 +79,18 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (UnprocessableEntityException e) {
-			maybeException = e;
+		} catch (Exception e) {
+			maybeException = e.getMessage();
 		}
 		assertNotNull(maybeException);
-		assertTrue(maybeException.getMessage().contains("already exists"));
+		assertTrue(maybeException.contains("already exists"));
 	}
 	
 	@Test
 	void draftOperation_draft_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = parameters(part("version", "1.2.1") );
-		UnprocessableEntityException maybeException = null;
+		String maybeException = "";
 		try {
 			getClient().operation()
 			.onInstance(minimalLibReference)
@@ -97,11 +98,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (UnprocessableEntityException e) {
-			maybeException = e;
+		} catch (Exception e) {
+			maybeException = e.getMessage();
 		}
 		assertNotNull(maybeException);
-		assertTrue(maybeException.getMessage().contains("status of 'active'"));
+		assertTrue(maybeException.contains("status of 'active'"));
 	}
 	@Test
 	void draftOperation_wrong_id_test() {
@@ -150,6 +151,67 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			}
 			assertNotNull(maybeException);
 		}
+	}
+
+	@Test
+	void draft_approve_release_integration_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		String version = "1.2.3";
+		String versionBehaviour = "default";
+		// 1. create a draft
+		Parameters draftParams = parameters(part("version", version) );
+		Bundle draftReturnBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$draft")
+			.withParameters(draftParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<BundleEntryComponent> maybeDraftLib = draftReturnBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		assertTrue(maybeDraftLib.isPresent());
+		String draftLibraryLocation = maybeDraftLib.get().getResponse().getLocation();
+		String noApprovalDateMessage = "";
+
+		// try to release without approval
+		Parameters releaseParams = parameters(
+					part("version", new StringType(version)),
+					part("versionBehavior", new StringType(versionBehaviour))
+				);
+		Bundle expectNullBundle = null;
+		try {
+			expectNullBundle = getClient().operation()
+				.onInstance(draftLibraryLocation)
+				.named("$release")
+				.withParameters(releaseParams)
+				.returnResourceType(Bundle.class)
+				.execute();
+		} catch (Exception e) {
+			noApprovalDateMessage = e.getMessage();
+		}
+		assertNull(expectNullBundle);
+		assertTrue(noApprovalDateMessage.contains("approvalDate"));
+
+		// 2. approve the draft for release
+		Bundle approvedBundle = null;
+		approvedBundle = getClient().operation()
+			.onInstance(draftLibraryLocation)
+			.named("$approve")
+			.withParameters(parameters())
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertNotNull(approvedBundle);
+		Optional<BundleEntryComponent> maybeApprovedLib = approvedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		assertTrue(maybeApprovedLib.isPresent());
+		String approvedLibraryLocation = maybeApprovedLib.get().getResponse().getLocation();
+		
+		// 3. release the draft
+		Bundle releaseBundle = null;
+    releaseBundle = getClient().operation()
+      .onInstance(approvedLibraryLocation)
+      .named("$release")
+      .withParameters(releaseParams)
+      .returnResourceType(Bundle.class)
+      .execute();
+    assertNotNull(releaseBundle);
 	}
 
 	@Test

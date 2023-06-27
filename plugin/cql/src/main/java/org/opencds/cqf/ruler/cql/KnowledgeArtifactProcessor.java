@@ -464,7 +464,14 @@ public class KnowledgeArtifactProcessor {
 					if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
 						referencedResource = getLatestActiveVersionOfReference(reference,fhirDal,artifactAdapter.resource.getUrl());
 					} else {
-						referencedResource = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal)).get(0);
+						List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal));
+						if(searchResults.size() == 0) {
+							throw new ResourceNotFoundException(
+                String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
+                  reference,
+                  artifactAdapter.resource.getUrl()));
+						}
+						referencedResource = searchResults.get(0);
 					}
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
 					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, versionBehavior, latestFromTxServer, fhirDal));
