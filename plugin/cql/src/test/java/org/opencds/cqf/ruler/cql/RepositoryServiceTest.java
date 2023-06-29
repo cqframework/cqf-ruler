@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cql;
 
 import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
@@ -12,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -154,70 +154,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void draft_approve_release_integration_test() {
-		loadTransaction("ersd-active-transaction-bundle-example.json");
-		String version = "1.2.3";
-		String versionBehaviour = "default";
-		// 1. create a draft
-		Parameters draftParams = parameters(part("version", version) );
-		Bundle draftReturnBundle = getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$draft")
-			.withParameters(draftParams)
-			.returnResourceType(Bundle.class)
-			.execute();
-		Optional<BundleEntryComponent> maybeDraftLib = draftReturnBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
-		assertTrue(maybeDraftLib.isPresent());
-		String draftLibraryLocation = maybeDraftLib.get().getResponse().getLocation();
-		String noApprovalDateMessage = "";
-
-		// try to release without approval
-		Parameters releaseParams = parameters(
-					part("version", new StringType(version)),
-					part("versionBehavior", new StringType(versionBehaviour))
-				);
-		Bundle expectNullBundle = null;
-		try {
-			expectNullBundle = getClient().operation()
-				.onInstance(draftLibraryLocation)
-				.named("$release")
-				.withParameters(releaseParams)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch (Exception e) {
-			noApprovalDateMessage = e.getMessage();
-		}
-		assertNull(expectNullBundle);
-		assertTrue(noApprovalDateMessage.contains("approvalDate"));
-
-		// 2. approve the draft for release
-		Bundle approvedBundle = null;
-		approvedBundle = getClient().operation()
-			.onInstance(draftLibraryLocation)
-			.named("$approve")
-			.withParameters(parameters())
-			.returnResourceType(Bundle.class)
-			.execute();
-		assertNotNull(approvedBundle);
-		Optional<BundleEntryComponent> maybeApprovedLib = approvedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
-		assertTrue(maybeApprovedLib.isPresent());
-		String approvedLibraryLocation = maybeApprovedLib.get().getResponse().getLocation();
-		
-		// 3. release the draft
-		Bundle releaseBundle = null;
-    releaseBundle = getClient().operation()
-      .onInstance(approvedLibraryLocation)
-      .named("$release")
-      .withParameters(releaseParams)
-      .returnResourceType(Bundle.class)
-      .execute();
-    assertNotNull(releaseBundle);
-	}
-
-	@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-release-bundle.json");
-		String versionData = "1.2.3";
+		String existingVersion = "1.2.3";
+		String versionData = "1.2.7";
 
 		Parameters params1 = parameters(
 			part("version", new StringType(versionData)),
@@ -233,6 +173,71 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
+		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		assertTrue(maybeLib.isPresent());
+		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		// versionBehaviour == 'default' so version should be
+		// existingVersion and not the new version provided in
+		// the parameters
+		assertTrue(releasedLibrary.getVersion().equals(existingVersion));
+		List<String> ersdTestBundleDependencies = Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-dxtc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-ostc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-lotc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-lrtc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-mrtc|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/ValueSet/release-sdtc|" + existingVersion,
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1063|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.360|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.120|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.362|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.528|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.408|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.409|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1469|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1866|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1906|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.480|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.481|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.761|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1223|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1182|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1181|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1184|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1601|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1600|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1603|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1602|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1082|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1439|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1436|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1435|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1446|2022-10-19",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19"
+		);
+		List<String> ersdTestBundleComponents = Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
+			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion
+		);
+		List<String> dependenciesOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
+			.stream()
+			.filter(ra -> ra.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON))
+			.map(ra -> ra.getResource())
+			.collect(Collectors.toList());
+		List<String> componentsOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
+			.stream()
+			.filter(ra -> ra.getType().equals(RelatedArtifact.RelatedArtifactType.COMPOSEDOF))
+			.map(ra -> ra.getResource())
+			.collect(Collectors.toList());
+		for(String dependency: ersdTestBundleDependencies){
+			assertTrue(dependenciesOnReleasedArtifact.contains(dependency));
+		}
+		for(String component: ersdTestBundleComponents){
+			assertTrue(componentsOnReleasedArtifact.contains(component));
+		}
 	}
 
 	@Test
