@@ -21,7 +21,6 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -180,7 +179,7 @@ public class KnowledgeArtifactProcessor {
 	 * the new versions.
 	 */
 	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
-		checkIfVersionIsValid(version);
+		checkVersionValidSemver(version);
 		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
 
 		if (baseArtifact == null) {
@@ -241,7 +240,7 @@ public class KnowledgeArtifactProcessor {
 				.collect(Collectors.toList())
 				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
-	private void checkIfVersionIsValid(String version) throws UnprocessableEntityException{
+	private void checkVersionValidSemver(String version) throws UnprocessableEntityException{
 		if (version == null || version.isEmpty()) {
 			throw new UnprocessableEntityException("The version argument is required");
 		}
@@ -347,28 +346,15 @@ public class KnowledgeArtifactProcessor {
 
 	/* $release */
 	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
-		// return searchResourceByUrlAndStatus("http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19","active",fhirDal);
-		// TODO: This check is to avoid partial releases and should be removed once the argument is supported (or it is transactional).
+		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
 		checkReleaseVersion(version,versionBehavior);
-
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
-		if (rootArtifact == null) {
-			throw new ResourceNotFoundException(String.format("Resource with ID: '%s' not found.", idType.getIdPart()));
-		}
-
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
-		if (currentApprovalDate == null) {
-			throw new PreconditionFailedException(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
-		}
-
-		if (currentApprovalDate.before(rootArtifact.getDate())) {
-			throw new PreconditionFailedException(
-				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", currentApprovalDate, rootArtifact.getDate()));
-		}
+		checkReleasePreconditions(rootArtifact, currentApprovalDate);
 
 		// Determine which version should be used.
 		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion().replace("-draft","") : null;
@@ -420,11 +406,6 @@ public class KnowledgeArtifactProcessor {
 		return transactionBundle;
 	}
 	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
-
-		if (version == null || version.isEmpty()) {
-			throw new UnprocessableEntityException("'version' must be provided as an argument to the $release operation.");
-		}
-
 		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
 			throw new UnprocessableEntityException("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
 		}
@@ -432,7 +413,22 @@ public class KnowledgeArtifactProcessor {
 		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
 			throw new UnprocessableEntityException(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
 		}
-		checkIfVersionIsValid(version);
+		checkVersionValidSemver(version);
+	}
+	private void checkReleasePreconditions(MetadataResource artifact, Date approvalDate) throws PreconditionFailedException {
+		if (artifact == null) {
+			throw new ResourceNotFoundException("Resource not found.");
+		}
+		if(!artifact.getStatus().equals(Enumerations.PublicationStatus.DRAFT)){
+			throw new PreconditionFailedException(String.format("Resource with ID: '%s' does not have a status of 'draft'.", artifact.getIdElement().getIdPart()));
+		}
+		if (approvalDate == null) {
+			throw new PreconditionFailedException(String.format("The artifact must be approved (indicated by approvalDate) before it is eligible for release."));
+		}
+		if (approvalDate.before(artifact.getDate())) {
+			throw new PreconditionFailedException(
+				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", approvalDate, artifact.getDate()));
+		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
 																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
@@ -486,7 +482,7 @@ public class KnowledgeArtifactProcessor {
 		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
 		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
 			.stream()
-			.filter(r -> r.getStatus().equals(PublicationStatus.ACTIVE))
+			.filter(r -> r.getStatus().equals(Enumerations.PublicationStatus.ACTIVE))
 			.collect(Collectors.toList());
 
 		if (matchingResources.isEmpty()) {

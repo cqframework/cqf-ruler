@@ -1,8 +1,8 @@
 
 package org.opencds.cqf.ruler.cql;
 
-import static graphql.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
@@ -31,6 +31,7 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
@@ -41,6 +42,18 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 class RepositoryServiceTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
 	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1";
+	private final List<String> badVersionList = Arrays.asList(
+			"11asd1",
+			"1.1.3.1",
+			"1.|1.1",
+			"1/.1.1",
+			"-1.-1.2",
+			"1.-1.2",
+			"1.1.-2",
+			"1.2.3-draft",
+			"",
+			null
+		);
 	@Test
 	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
@@ -124,19 +137,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_version_format_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		List<String> testValues = Arrays.asList(new String[]{
-			"11asd1",
-			"1.1.3.1",
-			"1.|1.1",
-			"1/.1.1",
-			"-1.-1.2",
-			"1.-1.2",
-			"1.1.-2",
-			"1.2.3-draft",
-			"",
-			null
-		});
-		for(String version:testValues){
+		for(String version:badVersionList){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(part("version", new StringType(version)) );
 			try {
@@ -180,7 +181,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// existingVersion and not the new version provided in
 		// the parameters
 		assertTrue(releasedLibrary.getVersion().equals(existingVersion));
-		List<String> ersdTestBundleDependencies = Arrays.asList(
+		List<String> ersdTestArtifactDependencies = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/ValueSet/release-dxtc|" + existingVersion,
@@ -218,7 +219,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1446|2022-10-19",
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19"
 		);
-		List<String> ersdTestBundleComponents = Arrays.asList(
+		List<String> ersdTestArtifactComponents = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion
 		);
@@ -232,20 +233,47 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.filter(ra -> ra.getType().equals(RelatedArtifact.RelatedArtifactType.COMPOSEDOF))
 			.map(ra -> ra.getResource())
 			.collect(Collectors.toList());
-		for(String dependency: ersdTestBundleDependencies){
+		// check that the released artifact has all the required dependencies
+		for(String dependency: ersdTestArtifactDependencies){
 			assertTrue(dependenciesOnReleasedArtifact.contains(dependency));
 		}
-		for(String component: ersdTestBundleComponents){
+		// and components
+		for(String component: ersdTestArtifactComponents){
 			assertTrue(componentsOnReleasedArtifact.contains(component));
 		}
 	}
 
 	@Test
+	void releaseResource_force_version() {
+		loadTransaction("ersd-small-approved-draft-bundle.json");
+		String existingVersion = "1.2.3";
+		String versionData = "1.2.7";
+
+		Parameters params = parameters(
+			part("version", new StringType(versionData)),
+			part("versionBehavior", new StringType("force"))
+		);
+
+		Bundle returnResource = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+
+		assertNotNull(returnResource);
+		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		assertTrue(maybeLib.isPresent());
+		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		assertTrue(releasedLibrary.getVersion().equals(versionData));
+	}
+	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
-		loadTransaction("ersd-release-bundle.json");
+		loadTransaction("ersd-small-approved-draft-bundle.json");
 		String actualErrorMessage = "";
 
-		Parameters params1 = parameters(
+		Parameters params = parameters(
 			part("version", "1.2.3"),
 			part("versionBehavior", "default"),
 			part("latestFromTxServer", new BooleanType(true))
@@ -253,9 +281,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		try {
 			getClient().operation()
-				.onInstance("Library/ReleaseSpecificationLibrary")
+				.onInstance(specificationLibReference)
 				.named("$release")
-				.withParameters(params1)
+				.withParameters(params)
 				.useHttpGet()
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -289,7 +317,93 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertTrue(actualErrorMessage.contains("approvalDate"));
 	}
-
+	@Test
+	void release_version_format_test() {
+		loadTransaction("ersd-small-approved-draft-bundle.json");
+		for(String version:badVersionList){
+			UnprocessableEntityException maybeException = null;
+			Parameters params = parameters(
+				part("version", new StringType(version)),
+				part("versionBehavior", new StringType("force"))
+			);
+			try {
+				getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			} catch (UnprocessableEntityException e) {
+				maybeException = e;
+			}
+			assertNotNull(maybeException);
+		}
+	}
+	@Test
+	void release_version_active_test() {
+		loadTransaction("ersd-small-active-bundle.json");
+			PreconditionFailedException maybeException = null;
+			Parameters params = parameters(
+				part("version", new StringType("1.2.3")),
+				part("versionBehavior", new StringType("force"))
+			);
+			try {
+				getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			} catch (PreconditionFailedException e) {
+				maybeException = e;
+			}
+			assertNotNull(maybeException);
+	}
+	@Test
+	void release_resource_not_found_test() {
+		ResourceNotFoundException maybeException = null;
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new StringType("force"))
+		);
+		try {
+			getClient().operation()
+			.onInstance("Library/this-resource-does-not-exist")
+			.named("$release")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+	}
+	@Test
+	void release_versionBehaviour_format_test() {
+		loadTransaction("ersd-small-approved-draft-bundle.json");
+		List<String> badVersionBehaviors = Arrays.asList(
+			"not-a-valid-option",
+			null
+		);
+		for(String versionBehaviour:badVersionBehaviors){
+			UnprocessableEntityException maybeException = null;
+			Parameters params = parameters(
+				part("version", new StringType("1.2.3")),
+				part("versionBehavior", new StringType(versionBehaviour))
+			);
+			try {
+				getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			} catch (UnprocessableEntityException e) {
+				maybeException = e;
+			}
+			assertNotNull(maybeException);
+		}
+	}
 	@Test
 	void reviseOperation_active_test() {
 		Library library = (Library) loadResource("ersd-active-library-example.json");
