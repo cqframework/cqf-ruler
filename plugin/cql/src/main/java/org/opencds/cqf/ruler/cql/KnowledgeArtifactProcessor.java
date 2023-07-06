@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -360,7 +361,8 @@ public class KnowledgeArtifactProcessor {
 		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion().replace("-draft","") : null;
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
-		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
+		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
+		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
@@ -430,7 +432,7 @@ public class KnowledgeArtifactProcessor {
 				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", approvalDate, artifact.getDate()));
 		}
 	}
-	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
+	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
 																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
@@ -439,14 +441,24 @@ public class KnowledgeArtifactProcessor {
 		artifactAdapter.resource.setDate(new Date());
 		artifactAdapter.resource.setStatus(Enumerations.PublicationStatus.ACTIVE);
 		artifactAdapter.resource.setVersion(version);
+
+		// Step 2: propagate effectivePeriod if it doesn't exist
+		Period effectivePeriod = artifactAdapter.getEffectivePeriod();
+		// if the root artifact period is NOT null AND HAS a start or an end date
+		if((rootEffectivePeriod != null && (rootEffectivePeriod.hasStart() || rootEffectivePeriod.hasEnd()))
+		// and the current artifact period IS null OR does NOT HAVE a start or an end date
+		&& (effectivePeriod == null || !(effectivePeriod.hasStart() || effectivePeriod.hasEnd()))){
+			artifactAdapter.setEffectivePeriod(rootEffectivePeriod);
+		}
+
 		resourcesToUpdate.add(artifactAdapter.resource);
-		// Step 2 : Get all the COMPOSED OF relatedArtifacts
-		// TODO: This is likely the wrong characteristic to use for distinguishing between those things that are
-		// part of the spec library and the leaf value sets. Likely needs be a profile. For now though, relatedArtifact.Type
-		for (RelatedArtifact component : artifactAdapter.getComponents()) {
-			if (component.hasResource()) {
+
+		// Step 3 : Get all the OWNED relatedArtifacts
+
+		for (RelatedArtifact ownedRelatedArtifact : artifactAdapter.getOwnedRelatedArtifacts()) {
+			if (ownedRelatedArtifact.hasResource()) {
 				MetadataResource referencedResource;
-				CanonicalType resourceReference = component.getResourceElement();
+				CanonicalType resourceReference = ownedRelatedArtifact.getResourceElement();
 				Boolean alreadyUpdated = resourcesToUpdate
 					.stream()
 					.filter(r -> r.getUrl().equals(Canonicals.getUrl(resourceReference)))
@@ -470,7 +482,7 @@ public class KnowledgeArtifactProcessor {
 						referencedResource = searchResults.get(0);
 					}
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, versionBehavior, latestFromTxServer, fhirDal));
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal));
 				}
 			}
 		}
