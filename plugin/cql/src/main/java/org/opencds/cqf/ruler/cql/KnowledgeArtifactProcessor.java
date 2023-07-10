@@ -379,7 +379,16 @@ public class KnowledgeArtifactProcessor {
 			// as root artifact dependencies
 			for(RelatedArtifact component : components){
 				MetadataResource resource = checkIfReferenceInList(component, resourcesToUpdate)
-					.orElseGet(() -> getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl()));
+					.orElseGet(() -> {
+						try {
+							return getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl());
+						} catch (ResourceNotFoundException e) {
+							throw new PreconditionFailedException(
+								String.format("Resource with URL '%s' is a component of resource '%s', but no active version of that resource was found on this server and it is not owned by this server so cannot be converted to active.",
+									component.getResource(),
+									artifact.getUrl()));
+						}
+					});
 				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
 				component.setResource(reference);
 				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
