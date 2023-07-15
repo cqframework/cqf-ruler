@@ -32,6 +32,10 @@
                               "valueBoolean": true
                           }
                       ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
                   }
               ]
           },
@@ -53,6 +57,10 @@
                       "type": "depends-on",
                       "label": "RCTC Value Set Library of Trigger Codes",
                       "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
                   }
               ]
           },
@@ -79,6 +87,10 @@
                               "valueBoolean": true
                           }
                       ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
                   }
               ]
           },

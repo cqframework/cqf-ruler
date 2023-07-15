@@ -173,7 +173,7 @@ public class KnowledgeArtifactProcessor {
 	 *  1. A new version of the base artifact where status is changed to
 	 *     draft and version changed to a new version number + "-draft"
 	 * 
-	 *  2. New versions of related artifacts where status is changed to
+	 *  2. New versions of owned related artifacts where status is changed to
 	 *     draft and version changed to a new version number + "-draft"
 	 * 
 	 * Links and references between Bundle resources are updated to point to
@@ -210,7 +210,7 @@ public class KnowledgeArtifactProcessor {
 		for(int i = 0; i < resourcesToCreate.size(); i++){
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
-			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getComponents(), draftVersion);
+			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getOwnedRelatedArtifacts(), draftVersion);
 			MetadataResource updateIdForBundle = newResourceAdapter.copy();
 			updateIdForBundle.setId(urnList.get(i));
 			transactionBundle.addEntry(createEntry(updateIdForBundle));
@@ -293,10 +293,11 @@ public class KnowledgeArtifactProcessor {
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(draftVersion);
 			resourcesToCreate.add(newResource);
-			for (RelatedArtifact ra : sourceResourceAdapter.getComponents()) {
-				// If it’s a composed-of then we want to copy it
-				// If it’s a depends-on, we just want to reference it, but not copy it
-				// (references are updated in createDraftBundle before adding to the bundle)
+			for (RelatedArtifact ra : sourceResourceAdapter.getOwnedRelatedArtifacts()) {
+				// If it’s an owned RelatedArtifact composed-of then we want to copy it
+				// If it’s not owned, we just want to reference it, but not copy it
+				// (references are updated in createDraftBundle before adding to the bundle
+				// hence they are ignored here)
 				if (ra.hasUrl()) {
 					Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
 					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
@@ -346,6 +347,24 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $release */
+	/*
+	 * The operation changes the state of a Base Artifact to active
+	 * 
+	 * This method generates the transaction bundle for this operation.
+	 * 
+	 * This bundle consists of:
+	 *  1. A new version of the base artifact where status is changed to
+	 *     active and version changed to a new version number and removing "-draft"
+	 * 
+	 *  2. New versions of owned related artifacts where status is changed to
+	 *     active and version changed to a new version number removing "-draft"
+	 * 
+	 *  3. EffectivePeriod from the Base Artifact is propagated to all owned
+	 *     RelatedArtifacts which do not specify their own effectivePeriod
+	 * 
+	 * Links and references between Bundle resources are updated to point to
+	 * the new versions.
+	 */
 	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
