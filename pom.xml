@@ -92,7 +92,7 @@
 		<!-- CQL Support -->
 		<cqframework.version>2.10.0</cqframework.version>
 		<cql-engine.version>2.10.0</cql-engine.version>
-		<cql-evaluator.version>3.0.0-PRE2</cql-evaluator.version>
+		<cql-evaluator.version>3.0.0-PRE5</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
