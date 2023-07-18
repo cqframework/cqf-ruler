@@ -2,6 +2,12 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server) [![Build Status](https://app.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://app.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/alphora/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/alphora/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
 
+---
+
+### **NOTICE**: The maintainers of the cqf-ruler (Alphora) and Smile Digital Health have [merged](https://www.globenewswire.com/en/news-release/2022/11/01/2545568/0/en/Smile-Digital-Health-Expands-Product-Offering-With-Alphora-Acquisition.html)! All the functionality in the cqf-ruler is in the process of being migrated upstream to the [hapi-fhir-jpaserver-starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) project
+
+---
+
 The cqf-ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](
 http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
 knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. The cqf-ruler provides an [extensibility API](#plugins) to allow adding custom FHIR operations without the need to fork or clone the entire project.
