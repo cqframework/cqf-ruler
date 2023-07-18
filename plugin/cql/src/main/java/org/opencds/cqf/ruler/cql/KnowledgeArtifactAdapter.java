@@ -77,12 +77,16 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		switch (resource.getClass().getSimpleName()) {
 			case "ActivityDefinition":
 				((ActivityDefinition) resource).setRelatedArtifact(theRelatedArtifact);
+				break;
 			case "Library":
 				((Library) resource).setRelatedArtifact(theRelatedArtifact);
+				break;
 			case "Measure":
 				((Measure) resource).setRelatedArtifact(theRelatedArtifact);
+				break;
 			case "PlanDefinition":
 				((PlanDefinition) resource).setRelatedArtifact(theRelatedArtifact);
+				break;
 		}
 		return resource;
 	}
