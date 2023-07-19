@@ -8,7 +8,9 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -324,7 +326,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 					KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 					assertTrue(adapter.getEffectivePeriod().hasStart());
 					Date start = adapter.getEffectivePeriod().getStart();
-					String startString = (start.getYear() + 1900) + "-" + (start.getMonth() + 1) + "-" + start.getDate();
+					Calendar calendar = new GregorianCalendar();
+					calendar.setTime(start);
+					int year = calendar.get(Calendar.YEAR);
+					int month = calendar.get(Calendar.MONTH) + 1;
+					int day = calendar.get(Calendar.DAY_OF_MONTH);
+					String startString = year + "-" + month + "-" + day;
 					assertTrue(startString.equals(effectivePeriodToPropagate));
 				}
 			});
