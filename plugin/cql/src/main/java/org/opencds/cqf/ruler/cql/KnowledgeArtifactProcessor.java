@@ -525,7 +525,11 @@ public class KnowledgeArtifactProcessor {
 
 		return resourcesToUpdate;
 	}
+	private MetadataResource getLatestActiveVersionOfReference(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
 		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", fhirDal));
+		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
+		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
+			.stream()
 			.filter(r -> r.getStatus().equals(Enumerations.PublicationStatus.ACTIVE))
 			.collect(Collectors.toList());
 
