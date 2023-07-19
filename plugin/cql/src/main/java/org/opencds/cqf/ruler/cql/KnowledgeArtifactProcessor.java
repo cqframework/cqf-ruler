@@ -424,7 +424,7 @@ public class KnowledgeArtifactProcessor {
 					MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
 						.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
 					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-					dependency.setResource(reference);	
+					dependency.setResource(reference);
 				} catch (ResourceNotFoundException e) {
 					// Warn about potential missing dependency?
 				}
