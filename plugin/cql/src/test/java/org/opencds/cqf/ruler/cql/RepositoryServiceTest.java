@@ -105,7 +105,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	
 	@Test
-	void draftOperation_draft_test() {
+	void draftOperation_cannot_create_draft_of_draft_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = parameters(part("version", "1.2.1") );
 		String maybeException = "";
@@ -222,11 +222,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1436|2022-10-19",
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1435|2022-10-19",
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1446|2022-10-19",
-			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19"
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19",
+			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1",
+			"http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1",
+			"http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1"
 		);
 		List<String> ersdTestArtifactComponents = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
-			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion
+			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
+			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
 		);
 		List<String> dependenciesOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
 			.stream()
@@ -246,6 +250,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		for(String component: ersdTestArtifactComponents){
 			assertTrue(componentsOnReleasedArtifact.contains(component));
 		}
+		assertTrue(ersdTestArtifactDependencies.size() == dependenciesOnReleasedArtifact.size());
+		assertTrue(ersdTestArtifactComponents.size() == componentsOnReleasedArtifact.size());
 	}
 
 	@Test

@@ -397,29 +397,37 @@ public class KnowledgeArtifactProcessor {
 			// and child artifact components recursively
 			// as root artifact dependencies
 			for(RelatedArtifact component : components){
-				MetadataResource resource = checkIfReferenceInList(component, resourcesToUpdate)
+				MetadataResource resource;
+				if(KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)){
+					resource = checkIfReferenceInList(component, resourcesToUpdate)
 					.orElseGet(() -> {
 						try {
 							return getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl());
 						} catch (ResourceNotFoundException e) {
 							throw new PreconditionFailedException(
-								String.format("Resource with URL '%s' is a component of resource '%s', but no active version of that resource was found on this server and it is not owned by this server so cannot be converted to active.",
+								String.format("Resource with URL '%s' is an owned component of resource '%s', but no active version of that resource was found on this server, nor is there a draft version which can be updated.",
 									component.getResource(),
 									artifact.getUrl()));
 						}
 					});
-				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-				component.setResource(reference);
+					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+					component.setResource(reference);
+				}
 				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
 				rootArtifactAdapter.getRelatedArtifact().add(componentToDependency);
 			}
 
 			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
 			for(RelatedArtifact dependency : dependencies){
-				MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
-					.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
-				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-				dependency.setResource(reference);
+				// get latest version of dependency if available
+				try {
+					MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
+						.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
+					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+					dependency.setResource(reference);	
+				} catch (ResourceNotFoundException e) {
+					// Warn about potential missing dependency?
+				}
 				if(!artifact.getUrl().equals(rootArtifact.getUrl())){
 					rootArtifactAdapter.getRelatedArtifact().add(dependency);
 				}
