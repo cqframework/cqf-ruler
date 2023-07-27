@@ -522,6 +522,26 @@ public class KnowledgeArtifactProcessor {
 		}
 		return updatedReference;
 	}
+	/* $package */
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal){
+		MetadataResource resource = (MetadataResource) fhirDal.read(id);
+		Bundle packagedBundle = new Bundle()
+			.setType(Bundle.BundleType.COLLECTION);
+		recursivePackage(resource, packagedBundle, fhirDal);
+		return packagedBundle;
+	}
+	void recursivePackage(MetadataResource resource, Bundle bundle, FhirDal fhirDal){
+		if(resource != null){
+			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+			bundle.addEntry(createEntry(resource));
+			List<RelatedArtifact> components = adapter.getComponents();
+			List<RelatedArtifact> dependencies = adapter.getDependencies();
+			components.stream()
+				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
+				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal));
+		}
+	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());

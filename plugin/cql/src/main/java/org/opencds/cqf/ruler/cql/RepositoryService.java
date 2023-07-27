@@ -154,6 +154,17 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
 	}
 
+	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$package", value = "Package an artifact and components / dependencies")
+	public Bundle packageOperation(
+		RequestDetails requestDetails,
+		@IdParam IdType theId)
+		throws FHIRException {
+		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		return this.artifactProcessor.createPackageBundle(theId, fhirDal);
+	}
+
+
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
