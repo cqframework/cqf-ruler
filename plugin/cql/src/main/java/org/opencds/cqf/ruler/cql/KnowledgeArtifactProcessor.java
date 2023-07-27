@@ -533,7 +533,14 @@ public class KnowledgeArtifactProcessor {
 	void recursivePackage(MetadataResource resource, Bundle bundle, FhirDal fhirDal){
 		if(resource != null){
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-			bundle.addEntry(createEntry(resource));
+			boolean entryExists = bundle.getEntry().stream().anyMatch(
+				e -> e.hasResource()
+					&& ((MetadataResource)e.getResource()).getUrl().equals(resource.getUrl())
+					&& ((MetadataResource)e.getResource()).getVersion().equals(resource.getVersion())
+			);
+			if (!entryExists) {
+				bundle.addEntry(createEntry(resource));
+			}
 			List<RelatedArtifact> components = adapter.getComponents();
 			List<RelatedArtifact> dependencies = adapter.getDependencies();
 			components.stream()
