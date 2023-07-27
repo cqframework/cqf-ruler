@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -17,6 +18,7 @@ import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -539,11 +541,13 @@ public class KnowledgeArtifactProcessor {
 					&& ((MetadataResource)e.getResource()).getVersion().equals(resource.getVersion())
 			);
 			if (!entryExists) {
-				bundle.addEntry(createEntry(resource));
+				BundleEntryComponent entry = createEntry(resource);
+				entry.getRequest().setMethod(HTTPVerb.POST);
+				bundle.addEntry(entry);
 			}
 			List<RelatedArtifact> components = adapter.getComponents();
 			List<RelatedArtifact> dependencies = adapter.getDependencies();
-			components.stream()
+			Stream.concat(components.stream(), dependencies.stream())
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal));
