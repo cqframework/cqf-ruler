@@ -525,16 +525,32 @@ public class KnowledgeArtifactProcessor {
 		return updatedReference;
 	}
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal){
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability){
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
+		// TODO: In the case of a package manifest we already
+		// have all the resource references. We could convert
+		// that manifest into a single search transaction
 		Bundle packagedBundle = new Bundle()
 			.setType(Bundle.BundleType.COLLECTION);
-		recursivePackage(resource, packagedBundle, fhirDal);
+		recursivePackage(resource, packagedBundle, fhirDal, capability);
 		return packagedBundle;
 	}
-	void recursivePackage(MetadataResource resource, Bundle bundle, FhirDal fhirDal){
+	void recursivePackage(
+		MetadataResource resource, 
+		Bundle bundle, 
+		FhirDal fhirDal, 
+		List<String> capability
+		){
 		if(resource != null){
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+			resource.getExtension().stream()
+			.filter(ext -> ext.getUrl().contains("artifact-knowledgeCapability"))
+			.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
+			.findAny()
+			.ifPresent(ext -> {
+				// TODO: better error message
+				throw new PreconditionFailedException("Artifact does not match capability");
+			});
 			boolean entryExists = bundle.getEntry().stream().anyMatch(
 				e -> e.hasResource()
 					&& ((MetadataResource)e.getResource()).getUrl().equals(resource.getUrl())
@@ -542,7 +558,9 @@ public class KnowledgeArtifactProcessor {
 			);
 			if (!entryExists) {
 				BundleEntryComponent entry = createEntry(resource);
+				// TODO: remove history from request.url
 				entry.getRequest().setMethod(HTTPVerb.POST);
+				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 				bundle.addEntry(entry);
 			}
 			List<RelatedArtifact> components = adapter.getComponents();
@@ -550,7 +568,7 @@ public class KnowledgeArtifactProcessor {
 			Stream.concat(components.stream(), dependencies.stream())
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability));
 		}
 	}
 	/* $revise */
