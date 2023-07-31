@@ -398,7 +398,7 @@ public class KnowledgeArtifactProcessor {
 			// as root artifact dependencies
 			for(RelatedArtifact component : components){
 				MetadataResource resource;
-				if(KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)){
+				if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)) {
 					resource = checkIfReferenceInList(component, resourcesToUpdate)
 					.orElseGet(() -> {
 						try {
