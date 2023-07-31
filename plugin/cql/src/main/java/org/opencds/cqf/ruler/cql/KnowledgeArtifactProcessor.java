@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -172,7 +173,7 @@ public class KnowledgeArtifactProcessor {
 	 *  1. A new version of the base artifact where status is changed to
 	 *     draft and version changed to a new version number + "-draft"
 	 * 
-	 *  2. New versions of related artifacts where status is changed to
+	 *  2. New versions of owned related artifacts where status is changed to
 	 *     draft and version changed to a new version number + "-draft"
 	 * 
 	 * Links and references between Bundle resources are updated to point to
@@ -209,7 +210,7 @@ public class KnowledgeArtifactProcessor {
 		for(int i = 0; i < resourcesToCreate.size(); i++){
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
-			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getComponents(), draftVersion);
+			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getOwnedRelatedArtifacts(), draftVersion);
 			MetadataResource updateIdForBundle = newResourceAdapter.copy();
 			updateIdForBundle.setId(urnList.get(i));
 			transactionBundle.addEntry(createEntry(updateIdForBundle));
@@ -292,10 +293,11 @@ public class KnowledgeArtifactProcessor {
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(draftVersion);
 			resourcesToCreate.add(newResource);
-			for (RelatedArtifact ra : sourceResourceAdapter.getComponents()) {
-				// If it’s a composed-of then we want to copy it
-				// If it’s a depends-on, we just want to reference it, but not copy it
-				// (references are updated in createDraftBundle before adding to the bundle)
+			for (RelatedArtifact ra : sourceResourceAdapter.getOwnedRelatedArtifacts()) {
+				// If it’s an owned RelatedArtifact composed-of then we want to copy it
+				// If it’s not owned, we just want to reference it, but not copy it
+				// (references are updated in createDraftBundle before adding to the bundle
+				// hence they are ignored here)
 				if (ra.hasUrl()) {
 					Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
 					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
@@ -345,6 +347,24 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $release */
+	/*
+	 * The operation changes the state of a Base Artifact to active
+	 * 
+	 * This method generates the transaction bundle for this operation.
+	 * 
+	 * This bundle consists of:
+	 *  1. A new version of the base artifact where status is changed to
+	 *     active and version changed to a new version number and removing "-draft"
+	 * 
+	 *  2. New versions of owned related artifacts where status is changed to
+	 *     active and version changed to a new version number removing "-draft"
+	 * 
+	 *  3. EffectivePeriod from the Base Artifact is propagated to all owned
+	 *     RelatedArtifacts which do not specify their own effectivePeriod
+	 * 
+	 * Links and references between Bundle resources are updated to point to
+	 * the new versions.
+	 */
 	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
@@ -360,7 +380,8 @@ public class KnowledgeArtifactProcessor {
 		String existingVersion = rootArtifact.hasVersion() ? rootArtifact.getVersion().replace("-draft","") : null;
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
-		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, versionBehavior, latestFromTxServer, fhirDal);
+		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
+		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
@@ -376,20 +397,37 @@ public class KnowledgeArtifactProcessor {
 			// and child artifact components recursively
 			// as root artifact dependencies
 			for(RelatedArtifact component : components){
-				MetadataResource resource = checkIfReferenceInList(component, resourcesToUpdate)
-					.orElseGet(() -> getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl()));
-				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-				component.setResource(reference);
+				MetadataResource resource;
+				if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)) {
+					resource = checkIfReferenceInList(component, resourcesToUpdate)
+					.orElseGet(() -> {
+						try {
+							return getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl());
+						} catch (ResourceNotFoundException e) {
+							throw new PreconditionFailedException(
+								String.format("Resource with URL '%s' is an owned component of resource '%s', but no active version of that resource was found on this server, nor is there a draft version which can be updated.",
+									component.getResource(),
+									artifact.getUrl()));
+						}
+					});
+					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+					component.setResource(reference);
+				}
 				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
 				rootArtifactAdapter.getRelatedArtifact().add(componentToDependency);
 			}
 
 			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
 			for(RelatedArtifact dependency : dependencies){
-				MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
-					.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
-				String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-				dependency.setResource(reference);
+				// get latest version of dependency if available
+				try {
+					MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
+						.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
+					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+					dependency.setResource(reference);
+				} catch (ResourceNotFoundException e) {
+					// Warn about potential missing dependency?
+				}
 				if(!artifact.getUrl().equals(rootArtifact.getUrl())){
 					rootArtifactAdapter.getRelatedArtifact().add(dependency);
 				}
@@ -430,7 +468,7 @@ public class KnowledgeArtifactProcessor {
 				String.format("The artifact was approved on '%s', but was last modified on '%s'. An approval must be provided after the most-recent update.", approvalDate, artifact.getDate()));
 		}
 	}
-	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version,
+	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
 																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
@@ -439,14 +477,24 @@ public class KnowledgeArtifactProcessor {
 		artifactAdapter.resource.setDate(new Date());
 		artifactAdapter.resource.setStatus(Enumerations.PublicationStatus.ACTIVE);
 		artifactAdapter.resource.setVersion(version);
+
+		// Step 2: propagate effectivePeriod if it doesn't exist
+		Period effectivePeriod = artifactAdapter.getEffectivePeriod();
+		// if the root artifact period is NOT null AND HAS a start or an end date
+		if((rootEffectivePeriod != null && (rootEffectivePeriod.hasStart() || rootEffectivePeriod.hasEnd()))
+		// and the current artifact period IS null OR does NOT HAVE a start or an end date
+		&& (effectivePeriod == null || !(effectivePeriod.hasStart() || effectivePeriod.hasEnd()))){
+			artifactAdapter.setEffectivePeriod(rootEffectivePeriod);
+		}
+
 		resourcesToUpdate.add(artifactAdapter.resource);
-		// Step 2 : Get all the COMPOSED OF relatedArtifacts
-		// TODO: This is likely the wrong characteristic to use for distinguishing between those things that are
-		// part of the spec library and the leaf value sets. Likely needs be a profile. For now though, relatedArtifact.Type
-		for (RelatedArtifact component : artifactAdapter.getComponents()) {
-			if (component.hasResource()) {
+
+		// Step 3 : Get all the OWNED relatedArtifacts
+
+		for (RelatedArtifact ownedRelatedArtifact : artifactAdapter.getOwnedRelatedArtifacts()) {
+			if (ownedRelatedArtifact.hasResource()) {
 				MetadataResource referencedResource;
-				CanonicalType resourceReference = component.getResourceElement();
+				CanonicalType resourceReference = ownedRelatedArtifact.getResourceElement();
 				Boolean alreadyUpdated = resourcesToUpdate
 					.stream()
 					.filter(r -> r.getUrl().equals(Canonicals.getUrl(resourceReference)))
@@ -470,7 +518,7 @@ public class KnowledgeArtifactProcessor {
 						referencedResource = searchResults.get(0);
 					}
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, versionBehavior, latestFromTxServer, fhirDal));
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal));
 				}
 			}
 		}

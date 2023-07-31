@@ -14,6 +14,10 @@
               "status": "draft",
               "date": "2023-06-30",
               "approvalDate": "2023-06-30",
+              "effectivePeriod":
+              {
+                "start": "2020-12-11"
+              },
               "relatedArtifact": [
                   {
                       "type": "composed-of",

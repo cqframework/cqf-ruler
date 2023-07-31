@@ -8,11 +8,14 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -20,10 +23,14 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
@@ -100,7 +107,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	
 	@Test
-	void draftOperation_draft_test() {
+	void draftOperation_cannot_create_draft_of_draft_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = parameters(part("version", "1.2.1") );
 		String maybeException = "";
@@ -217,11 +224,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1436|2022-10-19",
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1435|2022-10-19",
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1446|2022-10-19",
-			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19"
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19",
+			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1",
+			"http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1",
+			"http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1"
 		);
 		List<String> ersdTestArtifactComponents = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
-			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion
+			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
+			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
 		);
 		List<String> dependenciesOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
 			.stream()
@@ -241,16 +252,18 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		for(String component: ersdTestArtifactComponents){
 			assertTrue(componentsOnReleasedArtifact.contains(component));
 		}
+		assertTrue(ersdTestArtifactDependencies.size() == dependenciesOnReleasedArtifact.size());
+		assertTrue(ersdTestArtifactComponents.size() == componentsOnReleasedArtifact.size());
 	}
 
 	@Test
 	void releaseResource_force_version() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
-		String existingVersion = "1.2.3";
-		String versionData = "1.2.7";
+		// Existing version should be "1.2.3";
+		String newVersionToForce = "1.2.7";
 
 		Parameters params = parameters(
-			part("version", new StringType(versionData)),
+			part("version", new StringType(newVersionToForce)),
 			part("versionBehavior", new StringType("force"))
 		);
 
@@ -263,11 +276,67 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
-		assertTrue(releasedLibrary.getVersion().equals(versionData));
+		assertTrue(releasedLibrary.getVersion().equals(newVersionToForce));
 	}
+
+	@Test
+	void releaseResource_propagate_effective_period() {
+		loadTransaction("ersd-small-approved-draft-no-child-effective-period.json");
+		String effectivePeriodToPropagate = "2020-12-11";
+
+		Parameters params = parameters(
+			part("version", new StringType("1.2.7")),
+			part("versionBehavior", new StringType("default"))
+		);
+
+		Bundle returnResource = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+
+		assertNotNull(returnResource);
+		returnResource.getEntry()
+			.stream()
+			.map(entry -> entry.getResponse().getLocation())
+			.map(location -> {
+				switch (location.split("/")[0]) {
+					case "ActivityDefinition":
+						return getClient().fetchResourceFromUrl(ActivityDefinition.class, location);
+					case "Library":
+						return getClient().fetchResourceFromUrl(Library.class, location);
+					case "Measure":
+						return getClient().fetchResourceFromUrl(Measure.class, location);
+					case "PlanDefinition":
+						return getClient().fetchResourceFromUrl(PlanDefinition.class, location);
+					case "ValueSet":
+						return getClient().fetchResourceFromUrl(ValueSet.class, location);
+					default:
+						return null;
+				}
+			})
+			.forEach(resource -> {
+				assertNotNull(resource);
+				if(!resource.getClass().getSimpleName().equals("ValueSet")){
+					KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
+					assertTrue(adapter.getEffectivePeriod().hasStart());
+					Date start = adapter.getEffectivePeriod().getStart();
+					Calendar calendar = new GregorianCalendar();
+					calendar.setTime(start);
+					int year = calendar.get(Calendar.YEAR);
+					int month = calendar.get(Calendar.MONTH) + 1;
+					int day = calendar.get(Calendar.DAY_OF_MONTH);
+					String startString = year + "-" + month + "-" + day;
+					assertTrue(startString.equals(effectivePeriodToPropagate));
+				}
+			});
+	}
+
 	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
