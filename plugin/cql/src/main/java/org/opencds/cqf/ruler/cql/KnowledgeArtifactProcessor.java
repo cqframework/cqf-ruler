@@ -548,19 +548,6 @@ public class KnowledgeArtifactProcessor {
 			return latestActiveReference;
 		}
 	}
-	private MetadataResource getLatestVersionOfReference(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
-		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal));
-		if (matchingResources.isEmpty()) {
-			throw new ResourceNotFoundException(
-				String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
-					inputReference,
-					sourceArtifactUrl));
-		} else {
-			// TODO: Log which version was selected
-			matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
-			return matchingResources.get(0);
-		}
-	}
 	private List<MetadataResource> getResourcesFromBundle(Bundle bundle) {
 		List<MetadataResource> resourceList = new ArrayList<>();
 
