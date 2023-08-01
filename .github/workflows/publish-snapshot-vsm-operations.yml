@@ -26,6 +26,8 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Install
+        run: ./scripts/install.sh
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
