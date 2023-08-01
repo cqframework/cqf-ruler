@@ -15,11 +15,27 @@
               "relatedArtifact": [
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|2.0.0"
+                      "resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|2.0.0",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
                   },
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
+                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
                   }
               ]
           },
@@ -41,6 +57,10 @@
                       "type": "depends-on",
                       "label": "RCTC Value Set Library of Trigger Codes",
                       "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
                   }
               ]
           },
@@ -60,7 +80,17 @@
               "relatedArtifact": [
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19"
+                      "resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
                   }
               ]
           },
