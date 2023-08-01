@@ -409,7 +409,7 @@ public class KnowledgeArtifactProcessor {
 					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
 					component.setResource(reference);
 				} else if (Canonicals.getVersion(component.getResourceElement()) == null || Canonicals.getVersion(component.getResourceElement()).isEmpty()) {
-					// if the not Owned component doesn't have a version, 
+					// if the not Owned component doesn't have a version,
 					// try to find the latest version
 					String updatedReference = tryUpdateReferenceToLatestActiveVersion(component.getResource(), fhirDal, artifact.getUrl());
 					component.setResource(updatedReference);
@@ -420,7 +420,7 @@ public class KnowledgeArtifactProcessor {
 
 			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
 			for (RelatedArtifact dependency : dependencies) {
-				// if the dependency gets updated as part of $release 
+				// if the dependency gets updated as part of $release
 				// then update the reference as well
 				checkIfReferenceInList(dependency, releasedResources)
 					.ifPresentOrElse((resource) -> {
@@ -430,7 +430,7 @@ public class KnowledgeArtifactProcessor {
 					// not present implies that
 					// the dependency wasn't updated as part of $release
 					() -> {
-						// if the dependency doesn't have a version, 
+						// if the dependency doesn't have a version,
 						// try to find the latest version
 						if (Canonicals.getVersion(dependency.getResourceElement()) == null || Canonicals.getVersion(dependency.getResourceElement()).isEmpty()) {
 							// TODO: update when we support expansionParameters and requireVersionedDependencies
