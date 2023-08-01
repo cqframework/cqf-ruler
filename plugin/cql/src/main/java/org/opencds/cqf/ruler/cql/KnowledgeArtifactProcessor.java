@@ -38,6 +38,7 @@ import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -381,14 +382,14 @@ public class KnowledgeArtifactProcessor {
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
-		List<MetadataResource> resourcesToUpdate = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
 		Bundle transactionBundle = new Bundle()
 			.setType(Bundle.BundleType.TRANSACTION);
-		for(MetadataResource artifact: resourcesToUpdate){
+		for (MetadataResource artifact: releasedResources) {
 			transactionBundle.addEntry(createEntry(artifact));
 
 			KnowledgeArtifactAdapter<MetadataResource> artifactAdapter = new KnowledgeArtifactAdapter<MetadataResource>(artifact);
@@ -396,39 +397,50 @@ public class KnowledgeArtifactProcessor {
 			// add all root artifact components
 			// and child artifact components recursively
 			// as root artifact dependencies
-			for(RelatedArtifact component : components){
+			for (RelatedArtifact component : components) {
 				MetadataResource resource;
+				// if the relatedArtifact is Owned, need to update
+				// the reference to the new Version
 				if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)) {
-					resource = checkIfReferenceInList(component, resourcesToUpdate)
-					.orElseGet(() -> {
-						try {
-							return getLatestActiveVersionOfReference(component.getResource(), fhirDal, artifact.getUrl());
-						} catch (ResourceNotFoundException e) {
-							throw new PreconditionFailedException(
-								String.format("Resource with URL '%s' is an owned component of resource '%s', but no active version of that resource was found on this server, nor is there a draft version which can be updated.",
-									component.getResource(),
-									artifact.getUrl()));
-						}
-					});
+					resource = checkIfReferenceInList(component, releasedResources)
+					// should never happen since we check all references
+					// as part of `internalRelease`
+					.orElseThrow(() -> new InternalErrorException("Owned resource reference not found during release"));
 					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
 					component.setResource(reference);
+				} else if (Canonicals.getVersion(component.getResourceElement()) == null || Canonicals.getVersion(component.getResourceElement()).isEmpty()) {
+					// if the not Owned component doesn't have a version, 
+					// try to find the latest version
+					String updatedReference = tryUpdateReferenceToLatestActiveVersion(component.getResource(), fhirDal, artifact.getUrl());
+					component.setResource(updatedReference);
 				}
 				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
 				rootArtifactAdapter.getRelatedArtifact().add(componentToDependency);
 			}
 
 			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
-			for(RelatedArtifact dependency : dependencies){
-				// get latest version of dependency if available
-				try {
-					MetadataResource resource = checkIfReferenceInList(dependency, resourcesToUpdate)
-						.orElseGet(() -> getLatestActiveVersionOfReference(dependency.getResource(), fhirDal, artifact.getUrl()));
-					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
-					dependency.setResource(reference);
-				} catch (ResourceNotFoundException e) {
-					// Warn about potential missing dependency?
-				}
-				if(!artifact.getUrl().equals(rootArtifact.getUrl())){
+			for (RelatedArtifact dependency : dependencies) {
+				// if the dependency gets updated as part of $release 
+				// then update the reference as well
+				checkIfReferenceInList(dependency, releasedResources)
+					.ifPresentOrElse((resource) -> {
+						String updatedReference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
+						dependency.setResource(updatedReference);
+					},
+					// not present implies that
+					// the dependency wasn't updated as part of $release
+					() -> {
+						// if the dependency doesn't have a version, 
+						// try to find the latest version
+						if (Canonicals.getVersion(dependency.getResourceElement()) == null || Canonicals.getVersion(dependency.getResourceElement()).isEmpty()) {
+							// TODO: update when we support expansionParameters and requireVersionedDependencies
+							String updatedReference = tryUpdateReferenceToLatestActiveVersion(dependency.getResource(), fhirDal, artifact.getUrl());
+							dependency.setResource(updatedReference);
+						}
+					});
+				// only add the dependency to the manifest if it is
+				// from a leaf artifact
+				if (!artifact.getUrl().equals(rootArtifact.getUrl())) {
 					rootArtifactAdapter.getRelatedArtifact().add(dependency);
 				}
 			}
@@ -494,29 +506,22 @@ public class KnowledgeArtifactProcessor {
 		for (RelatedArtifact ownedRelatedArtifact : artifactAdapter.getOwnedRelatedArtifacts()) {
 			if (ownedRelatedArtifact.hasResource()) {
 				MetadataResource referencedResource;
-				CanonicalType resourceReference = ownedRelatedArtifact.getResourceElement();
+				CanonicalType ownedResourceReference = ownedRelatedArtifact.getResourceElement();
 				Boolean alreadyUpdated = resourcesToUpdate
 					.stream()
-					.filter(r -> r.getUrl().equals(Canonicals.getUrl(resourceReference)))
+					.filter(r -> r.getUrl().equals(Canonicals.getUrl(ownedResourceReference)))
 					.findAny()
 					.isPresent();
 				if(!alreadyUpdated) {
-					String reference = resourceReference.getValueAsString();
-
 					// For composition references, if a version is not specified in the reference then the latest version
-					// of the referenced artifact should be used.
-					if (Canonicals.getVersion(resourceReference) == null || Canonicals.getVersion(resourceReference).isEmpty()) {
-						referencedResource = getLatestActiveVersionOfReference(reference,fhirDal,artifactAdapter.resource.getUrl());
-					} else {
-						List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(reference, fhirDal));
-						if(searchResults.size() == 0) {
-							throw new ResourceNotFoundException(
-                String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
-                  reference,
-                  artifactAdapter.resource.getUrl()));
-						}
-						referencedResource = searchResults.get(0);
-					}
+					// of the referenced artifact should be used. If a version is specified then `searchResourceByUrl` will
+					// return that version.
+					referencedResource = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(ownedResourceReference.getValueAsString(), fhirDal))
+					.orElseThrow(()-> new ResourceNotFoundException(
+							String.format("Resource with URL '%s' is Owned by this repository and referenced by resource '%s', but was not found on the server.",
+								ownedResourceReference.getValueAsString(),
+								artifactAdapter.resource.getUrl()))
+					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
 					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal));
 				}
@@ -525,7 +530,7 @@ public class KnowledgeArtifactProcessor {
 
 		return resourcesToUpdate;
 	}
-	private MetadataResource getLatestActiveVersionOfReference(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
+	private String tryUpdateReferenceToLatestActiveVersion(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
 		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", fhirDal));
 		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
 		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
@@ -533,6 +538,18 @@ public class KnowledgeArtifactProcessor {
 			.filter(r -> r.getStatus().equals(Enumerations.PublicationStatus.ACTIVE))
 			.collect(Collectors.toList());
 
+		if (matchingResources.isEmpty()) {
+			return inputReference;
+		} else {
+			// TODO: Log which version was selected
+			matchingResources.sort(comparing(r -> ((MetadataResource) r).getVersion()).reversed());
+			MetadataResource latestActiveVersion = matchingResources.get(0);
+			String latestActiveReference = String.format("%s|%s", latestActiveVersion.getUrl(), latestActiveVersion.getVersion());
+			return latestActiveReference;
+		}
+	}
+	private MetadataResource getLatestVersionOfReference(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
+		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal));
 		if (matchingResources.isEmpty()) {
 			throw new ResourceNotFoundException(
 				String.format("Resource with URL '%s' is referenced by resource '%s', but no active version of that resource is found.",
