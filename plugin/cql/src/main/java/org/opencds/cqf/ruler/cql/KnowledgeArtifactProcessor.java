@@ -536,21 +536,17 @@ public class KnowledgeArtifactProcessor {
 		return packagedBundle;
 	}
 	void recursivePackage(
-		MetadataResource resource, 
-		Bundle bundle, 
-		FhirDal fhirDal, 
+		MetadataResource resource,
+		Bundle bundle,
+		FhirDal fhirDal,
 		List<String> capability
 		){
 		if(resource != null){
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-			resource.getExtension().stream()
-			.filter(ext -> ext.getUrl().contains("artifact-knowledgeCapability"))
-			.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
-			.findAny()
-			.ifPresent(ext -> {
+			if(capability != null && checkIfResourceCapabilityIsAccepted(resource, capability)){
 				// TODO: better error message
 				throw new PreconditionFailedException("Artifact does not match capability");
-			});
+			}
 			boolean entryExists = bundle.getEntry().stream().anyMatch(
 				e -> e.hasResource()
 					&& ((MetadataResource)e.getResource()).getUrl().equals(resource.getUrl())
@@ -570,6 +566,13 @@ public class KnowledgeArtifactProcessor {
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability));
 		}
+	}
+	private boolean checkIfResourceCapabilityIsAccepted(MetadataResource resource, List<String> capability){
+		return resource.getExtension().stream()
+			.filter(ext -> ext.getUrl().contains("artifact-knowledgeCapability"))
+			.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
+			.findAny()
+			.isPresent();
 	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
