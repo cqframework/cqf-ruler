@@ -8,11 +8,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -91,6 +93,34 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		return resource;
 	}
 
+	public Period getEffectivePeriod(){
+		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+				return ((ActivityDefinition) resource).getEffectivePeriod();
+			case "Library":
+				return ((Library) resource).getEffectivePeriod();
+			case "Measure":
+				return ((Measure) resource).getEffectivePeriod();
+			case "PlanDefinition":
+				return ((PlanDefinition) resource).getEffectivePeriod();
+			default:
+				return new Period();
+		}
+	}
+	public MetadataResource setEffectivePeriod(Period effectivePeriod) {
+		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+				return ((ActivityDefinition) resource).setEffectivePeriod(effectivePeriod);
+			case "Library":
+				return ((Library) resource).setEffectivePeriod(effectivePeriod);
+			case "Measure":
+				return ((Measure) resource).setEffectivePeriod(effectivePeriod);
+			case "PlanDefinition":
+				return ((PlanDefinition) resource).setEffectivePeriod(effectivePeriod);
+			default:
+				return resource;
+		}
+	}
 	public List<RelatedArtifact> getRelatedArtifactsByType(RelatedArtifact.RelatedArtifactType relatedArtifactType) {
 		List<RelatedArtifact> relatedArtifacts = getRelatedArtifact().stream()
 			.filter(ra -> ra.getType() == relatedArtifactType)
@@ -99,6 +129,30 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 		return relatedArtifacts;
 	}
 
+	public List<RelatedArtifact> getOwnedRelatedArtifacts(){
+		switch (resource.getClass().getSimpleName()) {
+			case "ActivityDefinition":
+			case "Library":
+			case "Measure":
+			case "PlanDefinition":
+				return getOwnedRelatedArtifactsOfKnowledgeArtifact();
+			default :
+				return new ArrayList<>();
+		}
+	}
+	private List<RelatedArtifact> getOwnedRelatedArtifactsOfKnowledgeArtifact() {
+		return getRelatedArtifact().stream()
+			.filter(ra -> checkIfRelatedArtifactIsOwned(ra))
+			.collect(Collectors.toList());
+	}
+	static Boolean checkIfRelatedArtifactIsOwned(RelatedArtifact ra){
+		return ra.getExtension()
+					.stream()
+					.filter(ext -> ext.getUrl().equals("http://hl7.org/fhir/StructureDefinition/crmi-isOwned"))
+					.findAny()
+					.map(e -> ((BooleanType) e.getValue()).getValue())
+					.orElseGet(()-> false);
+	}
 	public List<RelatedArtifact> getComponents() {
 		switch (resource.getClass().getSimpleName()) {
 			case "ActivityDefinition":
