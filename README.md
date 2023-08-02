@@ -28,8 +28,8 @@ The public sandbox is not persistent, has no authentication, and is regularly re
 
 ### Docker
 
-The easiest way to get started with the cqf-ruler is to pull and run the docker image
-
+The easiest way to get started with the cqf-ruler is to pull and run the docker image.
+For avoiding to run docker container by default root user permission, the container from this image will run with a user named `cqfruler`
 ```bash
 docker pull alphora/cqf-ruler
 docker run -p 8080:8080 alphora/cqf-ruler
