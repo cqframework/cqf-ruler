@@ -6,22 +6,26 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-
+import org.springframework.boot.test.web.server.LocalServerPort;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
 		"spring.datasource.url=jdbc:h2:mem:dbr3",
 		"hapi.fhir.fhir_version=dstu3",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
-		"hapi.fhir.allow_placeholder_references=true" })
+		"hapi.fhir.allow_placeholder_references=true",
+		"spring.main.allow-bean-definition-overriding=true"})
 class ExampleServerDstu3IT {
 	private IGenericClient ourClient;
 
@@ -37,6 +41,7 @@ class ExampleServerDstu3IT {
 
 	@BeforeEach
 	void beforeEach() {
+		ourCtx = FhirContext.forDstu3();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
@@ -45,6 +50,7 @@ class ExampleServerDstu3IT {
 	}
 
 	@Test
+	@DirtiesContext
 	void testCreateAndRead() {
 		String methodName = "testCreateResourceConditional";
 

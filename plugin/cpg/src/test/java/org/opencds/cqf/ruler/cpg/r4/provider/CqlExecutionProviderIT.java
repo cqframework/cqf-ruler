@@ -23,9 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
-		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "debug=true",
+				"loader.debug=true", })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 
@@ -42,8 +45,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(stringPart("expression", "5 * 5"));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
-		assertTrue(results.getParameter("return") instanceof IntegerType);
-		assertEquals("25", ((IntegerType) results.getParameter("return")).asStringValue());
+		assertTrue(results.getParameter("return").getValue() instanceof IntegerType);
+		assertEquals("25", ((IntegerType) results.getParameter("return").getValue()).asStringValue());
 	}
 
 	@Test
@@ -68,8 +71,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 				stringPart("expression", "SimpleR4Library.\"simpleBooleanExpression\""));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
-		assertTrue(results.getParameter("return") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("return")).booleanValue());
+		assertTrue(results.getParameter("return").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("return").getValue()).booleanValue());
 	}
 
 	@Test
@@ -114,8 +117,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 				part("parameters", evaluationParams));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
-		assertTrue(results.getParameter("return") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("return")).booleanValue());
+		assertTrue(results.getParameter("return").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("return").getValue()).booleanValue());
 	}
 
 	@Test
@@ -151,23 +154,23 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameter().get(0).hasResource());
 		assertTrue(results.getParameter().get(0).getResource() instanceof Patient);
 		assertTrue(results.hasParameter("simpleBooleanExpression"));
-		assertTrue(results.getParameter("simpleBooleanExpression") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("simpleBooleanExpression")).booleanValue());
+		assertTrue(results.getParameter("simpleBooleanExpression").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("simpleBooleanExpression").getValue()).booleanValue());
 		assertTrue(results.hasParameter("observationRetrieve"));
 		assertTrue(results.getParameter().get(2).hasResource());
 		assertTrue(results.getParameter().get(2).getResource() instanceof Observation);
 		assertTrue(results.hasParameter("observationHasCode"));
-		assertTrue(results.getParameter("observationHasCode") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("observationHasCode")).booleanValue());
+		assertTrue(results.getParameter("observationHasCode").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("observationHasCode").getValue()).booleanValue());
 		assertTrue(results.hasParameter("Initial Population"));
-		assertTrue(results.getParameter("Initial Population") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("Initial Population")).booleanValue());
+		assertTrue(results.getParameter("Initial Population").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Initial Population").getValue()).booleanValue());
 		assertTrue(results.hasParameter("Numerator"));
-		assertTrue(results.getParameter("Numerator") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("Numerator")).booleanValue());
+		assertTrue(results.getParameter("Numerator").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Numerator").getValue()).booleanValue());
 		assertTrue(results.hasParameter("Denominator"));
-		assertTrue(results.getParameter("Denominator") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("Denominator")).booleanValue());
+		assertTrue(results.getParameter("Denominator").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Denominator").getValue()).booleanValue());
 	}
 
 	@Test
@@ -200,8 +203,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.getParameter().size());
-		assertTrue(results.getParameter("Numerator") instanceof BooleanType);
-		assertTrue(((BooleanType) results.getParameter("Numerator")).booleanValue());
+		assertTrue(results.getParameter("Numerator").getValue() instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Numerator").getValue()).booleanValue());
 	}
 
 	@Test

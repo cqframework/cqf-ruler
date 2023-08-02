@@ -4,30 +4,24 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler-plugin</artifactId>
-		<version>0.14.0-SNAPSHOT</version>
+		<version>0.15.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cqf-ruler-cr</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>info.cqframework</groupId>
-			<artifactId>elm-fhir</artifactId>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>org.hl7.fhir.r5</artifactId>
+			<version>6.0.15</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.measure</artifactId>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>org.hl7.fhir.utilities</artifactId>
+			<version>6.0.15</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.fhir</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.measure-hapi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cql</artifactId>
-			<version>0.14.0-SNAPSHOT</version>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>org.hl7.fhir.convertors</artifactId>
+			<version>6.0.15</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public class CollectDataProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
-	private MeasureEvaluateProvider measureEvaluateProvider;
+	private ca.uhn.fhir.cr.dstu3.measure.MeasureOperationsProvider measureEvaluateProvider;
 
 	/**
 	 * Implements the <a href=
@@ -61,8 +61,8 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
-		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
-				"subject", subject, practitioner, lastReceivedOn, null, null, null);
+		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theId, periodStart, periodEnd,
+				"subject", subject, practitioner, lastReceivedOn, null, null, null, theRequestDetails);
 
 		// TODO: Data collection doesn't exist?
 		report.setType(MeasureReportType.SUMMARY);

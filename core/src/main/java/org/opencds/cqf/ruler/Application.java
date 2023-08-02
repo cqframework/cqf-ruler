@@ -4,33 +4,38 @@ import org.opencds.cqf.external.annotations.OnEitherVersion;
 import org.opencds.cqf.external.mdm.MdmConfig;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.RulerConfig;
-import org.opencds.cqf.ruler.config.ServerProperties;
-import org.opencds.cqf.ruler.config.TesterUIConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
+import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
+import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
+import ca.uhn.fhir.rest.server.RestfulServer;
 
-@ServletComponentScan(basePackageClasses = Application.class)
-@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, QuartzAutoConfiguration.class })
+@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 @Import({
-		RulerConfig.class,
-		ServerProperties.class,
+		SubscriptionSubmitterConfig.class,
+		SubscriptionProcessorConfig.class,
+		SubscriptionChannelConfig.class,
 		WebsocketDispatcherConfig.class,
 		MdmConfig.class,
-		TesterUIConfig.class,
-		BeanFinderConfig.class, })
+		JpaBatch2Config.class,
+		Batch2JobsConfig.class,
+		BeanFinderConfig.class,
+		RulerConfig.class })
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
@@ -49,12 +54,10 @@ public class Application extends SpringBootServletInitializer {
 
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean<Server> hapiServletRegistration() {
-		ServletRegistrationBean<Server> servletRegistrationBean = new ServletRegistrationBean<>();
-		Server server = new Server();
-		beanFactory.autowireBean(server);
-		servletRegistrationBean.setName("fhir servlet");
-		servletRegistrationBean.setServlet(server);
+	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
+		var servletRegistrationBean = new ServletRegistrationBean();
+		beanFactory.autowireBean(restfulServer);
+		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
 		servletRegistrationBean.setLoadOnStartup(1);
 

@@ -10,8 +10,10 @@ import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.annotation.DirtiesContext;
 
 class CdsHooksRequestTest {
+	@DirtiesContext
 	@Test
 	void testFhirAuthExpiresIn() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);

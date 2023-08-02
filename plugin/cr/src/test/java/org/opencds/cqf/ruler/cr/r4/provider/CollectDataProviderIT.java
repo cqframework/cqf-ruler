@@ -19,15 +19,18 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.r4.Libraries;
 import org.opencds.cqf.ruler.cr.r4.MeasureBuilder;
 import org.opencds.cqf.ruler.cr.r4.Patients;
-import org.opencds.cqf.ruler.test.DaoIntegrationTest;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(classes = { CollectDataProviderIT.class, CrConfig.class }, properties = {
-		"hapi.fhir.fhir_version=r4", })
-class CollectDataProviderIT extends DaoIntegrationTest {
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+	classes = { CrConfig.class}, properties = {
+		"hapi.fhir.fhir_version=r4" })
+class CollectDataProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	CollectDataProvider collectDataProvider;

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.cr.config.CrProperties;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -36,8 +37,6 @@ import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.LibraryEvaluationProvider;
-import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @Configurable
@@ -60,7 +59,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private CqlProperties cqlProperties;
+	private CrProperties.CqlProperties cqlProperties;
 	@Autowired
 	private DaoRegistry daoRegistry;
 	@Autowired
@@ -70,7 +69,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private LibraryEvaluationProvider libraryExecution;
 	@Autowired
-	private ActivityDefinitionApplyProvider applyEvaluator;
+	private ca.uhn.fhir.cr.dstu3.activitydefinition.ActivityDefinitionOperationsProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
@@ -155,10 +154,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
-						cdsHooksRequest.fhirAuthorization.tokenType, cdsHooksRequest.fhirAuthorization.accessToken));
+							cdsHooksRequest.fhirAuthorization.tokenType,
+							cdsHooksRequest.fhirAuthorization.accessToken));
 					if (cdsHooksRequest.fhirAuthorization.subject != null) {
 						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
-							+ ": " + cdsHooksRequest.fhirAuthorization.subject);
+								+ ": " + cdsHooksRequest.fhirAuthorization.subject);
 					}
 				}
 			}
@@ -325,9 +325,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				&& action.getDefinition().getReference().contains("ActivityDefinition")) {
 			suggAction.setType("create");
 			IdType definitionId = new IdType(action.getDefinition().getReference());
-			suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
+			suggAction.setResource(applyEvaluator.apply(definitionId,
 					patientId, null, null, null, null,
-					null, null, null, null));
+					null, null, null, null, null,
+				null, null, null, null, null, requestDetails));
 			hasAction = true;
 		}
 		if (hasAction)
@@ -379,7 +380,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
+		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

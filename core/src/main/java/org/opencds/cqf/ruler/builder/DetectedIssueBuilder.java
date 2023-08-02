@@ -14,7 +14,6 @@ import org.hl7.fhir.instance.model.api.IDomainResource;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueEvidenceComponent;
-import org.hl7.fhir.r5.model.Enumerations.ObservationStatus;
 
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
@@ -178,8 +177,8 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 
 		detectedIssue
 				.setIdentifier(identifier)
-				.setPatient(new org.hl7.fhir.r5.model.Reference(myPatient))
-				.setStatus(ObservationStatus.valueOf(myStatus))
+				.setSubject(new org.hl7.fhir.r5.model.Reference(myPatient))
+				.setStatus(org.hl7.fhir.r5.model.DetectedIssue.DetectedIssueStatus.valueOf(myStatus))
 				.setCode(new org.hl7.fhir.r5.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.r5.model.Coding()
 								.setSystem(getCodeSetting().getSystem())

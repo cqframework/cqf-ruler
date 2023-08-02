@@ -10,7 +10,9 @@
 		{
 			"name": "test-config",
 			"vmArgs": [
-				"-XX:TieredStopAtLevel=1"
+				"-XX:TieredStopAtLevel=1",
+				"-Ddebug=true",
+				"-Dloader.debug=true"
 			]
 		},
 	],
