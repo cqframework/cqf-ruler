@@ -88,5 +88,5 @@
 	"editor.formatOnSave": true,
 	"thunder-client.saveToWorkspace": true,
 	"java.jdt.ls.vmargs": "-Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication",
-	"java.compile.nullAnalysis.mode": "disabled"
+	"java.compile.nullAnalysis.mode": "automatic"
 }

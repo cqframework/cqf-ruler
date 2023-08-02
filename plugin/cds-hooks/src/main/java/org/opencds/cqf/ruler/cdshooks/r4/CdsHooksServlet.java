@@ -297,7 +297,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (condition.hasExpression() && condition.getExpression().hasLanguage()
 								&& condition.getExpression().hasExpression()) {
 							Type conditionResult;
-							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
+							var lang = condition.getExpression().getLanguage();
+							if ("text/cql-identifier".equals(lang) || "text/cql.identifier".equals(lang)) {
 								conditionResult = evaluationResults.getParameter(
 										condition.getExpression().getExpression()).getValue();
 							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
@@ -374,7 +375,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
 							&& dv.getExpression().hasExpression()) {
 						IBase dynamicValueResult;
-						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
+						var lang = dv.getExpression().getLanguage();
+						if ("text/cql-identifier".equals(lang) || "text/cql.identifier".equals(lang)) {
 							dynamicValueResult = evaluationResults.getParameter(
 									dv.getExpression().getExpression()).getValue();
 						} else {
