@@ -17,11 +17,23 @@
               "relatedArtifact": [
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.2.3-draft"
+                      "resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.2.3-draft",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
                   },
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.3-draft"
+                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.3-draft",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
                   }
               ]
           },
@@ -62,7 +74,13 @@
               "relatedArtifact": [
                   {
                       "type": "composed-of",
-                      "resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.3-draft"
+                      "resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.3-draft",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
                   }
               ]
           },
