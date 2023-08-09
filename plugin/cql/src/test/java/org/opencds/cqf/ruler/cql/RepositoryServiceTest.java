@@ -246,7 +246,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_force_version() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
-		String existingVersion = "1.2.3";
 		String versionData = "1.2.7";
 
 		Parameters params = parameters(
@@ -451,7 +450,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);
 		UnprocessableEntityException maybeException = null;
@@ -469,7 +468,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(maybeException.getMessage().contains("URL"));
 		maybeException = null;
 		artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
-		params = parameters( 
+		params = parameters(
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);
 		try {
@@ -489,7 +488,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentType = "this-type-does-not-exist";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("artifactCommentType", artifactCommentType)
 		);
 		UnprocessableEntityException maybeException = null;
@@ -518,7 +517,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("approvalDate", approvalDate),
 			part("artifactCommentType", artifactCommentType),
 			part("artifactCommentText", artifactCommentText),
@@ -559,8 +558,74 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			artifactCommentReference,
 			artifactCommentTarget,
 			artifactCommentUser
-		));		
+		));
 	}
-
+	@Test
+	void packageOperation_should_fail_non_matching_capability() {
+		loadTransaction("ersd-release-bundle.json");
+		Parameters params = parameters(part("version", "1.3.1") );
+		ResourceNotFoundException maybeException = null;
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
+	}
+	@Test
+	void packageOperation_should_apply_check_force_canonicalVersions() {
+		loadTransaction("ersd-bundle-without-versions.json");
+		List<String> canonicalVersion = Arrays.asList(
+			"www.thing.com|1.2.3",
+			"www.thing2.com|1.2.3"
+		);
+		Parameters params = parameters(part("canonicalVersion", "1.3.1") );
+		ResourceNotFoundException maybeException = null;
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+		assertTrue(maybeException == null);
+		params = parameters(part("checkCanonicalVersion", "1.3.1") )
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+				assertTrue(maybeException == null);
+		params = parameters(part("forceCanonicalVersion", "1.3.1") )
+		try {
+			getClient().operation()
+			.onInstance("Library/there-is-no-such-id")
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (ResourceNotFoundException e) {
+			maybeException = e;
+		}
+				assertTrue(maybeException == null);
+		// assertTrue();
+	}
+		@Test
+	void packageOperation_should_respect_count_offset() {
+		
+	}
 }
 

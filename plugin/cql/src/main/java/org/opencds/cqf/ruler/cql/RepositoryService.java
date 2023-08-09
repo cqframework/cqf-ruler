@@ -166,6 +166,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "canonicalVersion") List<CanonicalType> canonicalVersion,
 		@OperationParam(name = "checkCanonicalVersion") List<CanonicalType> checkCanonicalVersion,
 		@OperationParam(name = "forceCanonicalVersion") List<CanonicalType> forceCanonicalVersion,
+		// TODO: $package - should include be CodeType?
 		@OperationParam(name = "include") List<String> include,
 		@OperationParam(name = "manifest") CanonicalType manifest,
 		@OperationParam(name = "offset", typeName = "Integer") IPrimitiveType<Integer> offset,
@@ -176,7 +177,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return this.artifactProcessor.createPackageBundle(theId, fhirDal, capability);
+		return this.artifactProcessor.createPackageBundle(theId, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion, count.getValue(), offset.getValue(), contentEndpoint, terminologyEndpoint, packageOnly.getValue());
 	}
 
 

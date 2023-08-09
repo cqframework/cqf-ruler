@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cql;
 import static java.util.Comparator.comparing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
@@ -22,13 +24,17 @@ import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cql.r4.ArtifactAssessment;
@@ -525,27 +531,85 @@ public class KnowledgeArtifactProcessor {
 		return updatedReference;
 	}
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability){
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly){
+		if (contentEndpoint != null || terminologyEndpoint != null) {
+			throw new NotImplementedOperationException("We are not implementing custom Content and Terminology endpoints at this time");
+		}
+		if (packageOnly != null) {
+			// TODO: actually work on release.packageOnly pls
+			throw new NotImplementedOperationException("PackageOnly is under construction please try again later");
+		}
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
-		// TODO: In the case of a package manifest we already
-		// have all the resource references. We could convert
-		// that manifest into a single search transaction
+		// TODO: In the case of a trusted comprehensive package manifest we already have all the resource references. We could convert that manifest into a single search transaction
 		Bundle packagedBundle = new Bundle()
 			.setType(Bundle.BundleType.COLLECTION);
-		recursivePackage(resource, packagedBundle, fhirDal, capability);
+		recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+		Integer originalTotal = packagedBundle.getTotal();
+		if (offset != null) {
+			List<BundleEntryComponent> entries = packagedBundle.getEntry();
+			Integer bundleSize = entries.size();
+			if (offset < bundleSize) {
+				packagedBundle.setEntry(entries.subList(offset, bundleSize));
+			} else {
+				packagedBundle.setEntry(Arrays.asList());
+			}
+		}
+		if (count != null) {
+			// repeat these two from earlier
+			// because we might modify / replace the
+			// entries list at any time
+			List<BundleEntryComponent> entries = packagedBundle.getEntry();
+			Integer bundleSize = entries.size();
+			if (count == 0) {
+				// special case
+				packagedBundle.setEntry(Arrays.asList());
+				packagedBundle.setTotal(originalTotal);
+		  } else if (count < bundleSize){
+				packagedBundle.setEntry(entries.subList(0, count));
+			} else {
+				// there are not enough entries in the bundle
+				// to page so we return all of them
+				// no change
+			}
+		}
 		return packagedBundle;
 	}
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
 		FhirDal fhirDal,
-		List<String> capability
+		List<String> capability,
+		List<String> include,
+		List<CanonicalType> canonicalVersion,
+		List<CanonicalType> checkCanonicalVersion,
+		List<CanonicalType> forceCanonicalVersion
 		){
 		if(resource != null){
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-			if(capability != null && checkIfResourceCapabilityIsAccepted(resource, capability)){
+			if(capability != null && findUnsupportedCapability(resource, capability)){
 				// TODO: better error message
 				throw new PreconditionFailedException("Artifact does not match capability");
+			}
+			if(include != null && findUnsupportedInclude(resource, include)){
+				// TODO: better error message
+				throw new PreconditionFailedException("Artifact does not match capability");
+			}
+			if (checkCanonicalVersion != null) {
+				// check throws an error
+				findVersionInListMatchingResource(checkCanonicalVersion, resource)
+					.ifPresent((version) -> {
+						if (!resource.getVersion().equals(version)) {
+							throw new Error("The versions don't match!");
+						}
+					});
+			} else if (forceCanonicalVersion != null) {
+				// force just does a silent override
+				findVersionInListMatchingResource(forceCanonicalVersion, resource)
+					.ifPresent((version) -> resource.setVersion(version));
+			} else if (canonicalVersion != null && !resource.hasVersion()) {
+				// canonicalVersion adds a version if it's missing
+				findVersionInListMatchingResource(forceCanonicalVersion, resource)
+					.ifPresent((version) -> resource.setVersion(version));
 			}
 			boolean entryExists = bundle.getEntry().stream().anyMatch(
 				e -> e.hasResource()
@@ -564,15 +628,86 @@ public class KnowledgeArtifactProcessor {
 			Stream.concat(components.stream(), dependencies.stream())
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, 	canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
 		}
 	}
-	private boolean checkIfResourceCapabilityIsAccepted(MetadataResource resource, List<String> capability){
+	private Optional<String> findVersionInListMatchingResource(List<CanonicalType> list, MetadataResource resource){
+		return list.stream()
+					.filter((canonical) -> Canonicals.getUrl(canonical).equals(resource.getUrl()))
+					.map((canonical) -> Canonicals.getVersion(canonical))
+					.findAny();
+	}
+	private boolean findUnsupportedCapability(MetadataResource resource, List<String> capability){
 		return resource.getExtension().stream()
 			.filter(ext -> ext.getUrl().contains("artifact-knowledgeCapability"))
 			.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
 			.findAny()
 			.isPresent();
+	}
+	private boolean findUnsupportedInclude(MetadataResource resource, List<String> include){
+		if(include.stream().anyMatch((type) -> type.equals("all"))){
+			// all = all resource types, no filtering needed
+			return false;
+		}
+		// type == artifact case should be caught at before recursion starts anyway
+		if (include.stream().anyMatch((type) -> type.equals("artifact"))
+				// no action needed, all MetadataResources are Canonical right?
+			|| include.stream().anyMatch((type) -> type.equals("canonical"))
+				// no action needed, all MetadataResources are knowledge artifacts right?
+			|| include.stream().anyMatch((type) -> type.equals("knowledge"))
+			) {
+				// do nothing
+		}
+		if (include.stream().anyMatch((type) -> type.equals("terminology"))) {
+			Boolean resourceIsTerminologyType = resource.getResourceType().equals(ResourceType.CodeSystem)
+			|| resource.getResourceType().equals(ResourceType.ValueSet)
+			|| resource.getResourceType().equals(ResourceType.ConceptMap)
+			|| resource.getResourceType().equals(ResourceType.NamingSystem)
+			|| resource.getResourceType().equals(ResourceType.TerminologyCapabilities);
+			if (!resourceIsTerminologyType) {
+				return true;
+			}
+		}
+		if (include.stream().anyMatch((type) -> type.equals("conformance"))) {
+			Boolean resourceIsConformanceType = resource.getResourceType().equals(ResourceType.CapabilityStatement)
+			|| resource.getResourceType().equals(ResourceType.StructureDefinition)
+			|| resource.getResourceType().equals(ResourceType.ImplementationGuide)
+			|| resource.getResourceType().equals(ResourceType.SearchParameter)
+			|| resource.getResourceType().equals(ResourceType.MessageDefinition)
+			|| resource.getResourceType().equals(ResourceType.OperationDefinition)
+			|| resource.getResourceType().equals(ResourceType.CompartmentDefinition)
+			|| resource.getResourceType().equals(ResourceType.StructureMap)
+			|| resource.getResourceType().equals(ResourceType.GraphDefinition)
+			|| resource.getResourceType().equals(ResourceType.ExampleScenario);
+			if (!resourceIsConformanceType) {
+				return true;
+			}
+		}
+		if (include.stream().anyMatch((type) -> type.equals("extensions"))
+			&& resource.getResourceType().equals(ResourceType.StructureDefinition)
+			&& !((StructureDefinition) resource).getType().equals("Extension")) {
+				return true;
+		}
+		if (include.stream().anyMatch((type) -> type.equals("profiles"))
+			&& resource.getResourceType().equals(ResourceType.StructureDefinition)
+			&& ((StructureDefinition) resource).getType().equals("Extension")) {
+				return true;
+		}
+		if (include.stream().anyMatch((type) -> type.equals("tests"))){
+			if (resource.getResourceType().equals(ResourceType.Library) && ((Library) resource).getType().getCoding().stream().anyMatch(coding -> coding.getCode().equals("test-case"))
+				|| resource.getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isTestCase") && ext.hasValue() && ((BooleanType) ext.getValue()).getValue())
+			) {
+					return true;
+			}
+		}
+		if (include.stream().anyMatch((type) -> type.equals("examples"))){
+			// TODO: idk if this is legit just a placeholder for now
+			if (resource.getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isExample") && ext.hasValue() && ((BooleanType) ext.getValue()).getValue())
+			) {
+					return true;
+			}
+		}
+		return false;
 	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
