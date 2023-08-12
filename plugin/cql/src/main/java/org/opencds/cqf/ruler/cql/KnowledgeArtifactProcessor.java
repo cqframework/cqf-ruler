@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
@@ -595,8 +596,33 @@ public class KnowledgeArtifactProcessor {
 		// TODO: In the case of a trusted comprehensive package manifest we already have all the resource references. We could convert that manifest into a single search transaction
 		Bundle packagedBundle = new Bundle()
 			.setType(Bundle.BundleType.COLLECTION);
-		recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
-		Integer originalTotal = packagedBundle.getTotal();
+		if (include != null
+			&& include.size() == 1
+			&& include.stream().anyMatch((includedType) -> includedType.equals("artifact"))) {
+			findUnsupportedCapability(resource, capability);
+			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			BundleEntryComponent entry = createEntry(resource);
+			// TODO: remove history from request.url
+			entry.getRequest().setMethod(HTTPVerb.POST);
+			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
+			packagedBundle.addEntry(entry);
+		} else {
+			recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
+			if (include != null
+				&& include.contains("artifact")
+				&& !included.stream()
+					.map((entry) -> ((MetadataResource) entry.getResource()))
+					.anyMatch((includedResource) -> includedResource.getUrl().equals(resource.getUrl()) && includedResource.getVersion().equals(resource.getVersion()))) {
+				BundleEntryComponent entry = createEntry(resource);
+				// TODO: remove history from request.url
+				entry.getRequest().setMethod(HTTPVerb.POST);
+				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
+				included.add(0, entry);
+			}
+			packagedBundle.setEntry(included);
+		}
+		packagedBundle.setTotal(packagedBundle.getEntry().size());
 		if (offset != null) {
 			List<BundleEntryComponent> entries = packagedBundle.getEntry();
 			Integer bundleSize = entries.size();
@@ -612,11 +638,7 @@ public class KnowledgeArtifactProcessor {
 			// entries list at any time
 			List<BundleEntryComponent> entries = packagedBundle.getEntry();
 			Integer bundleSize = entries.size();
-			if (count == 0) {
-				// special case
-				packagedBundle.setEntry(Arrays.asList());
-				packagedBundle.setTotal(originalTotal);
-		  } else if (count < bundleSize){
+			if (count < bundleSize){
 				packagedBundle.setEntry(entries.subList(0, count));
 			} else {
 				// there are not enough entries in the bundle
@@ -636,33 +658,10 @@ public class KnowledgeArtifactProcessor {
 		List<CanonicalType> checkCanonicalVersion,
 		List<CanonicalType> forceCanonicalVersion
 		){
-		if(resource != null){
+		if (resource != null) {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-			if(capability != null && findUnsupportedCapability(resource, capability)){
-				// TODO: better error message
-				throw new PreconditionFailedException("Artifact does not match capability");
-			}
-			if(include != null && findUnsupportedInclude(resource, include)){
-				// TODO: better error message
-				throw new PreconditionFailedException("Artifact does not match capability");
-			}
-			if (checkCanonicalVersion != null) {
-				// check throws an error
-				findVersionInListMatchingResource(checkCanonicalVersion, resource)
-					.ifPresent((version) -> {
-						if (!resource.getVersion().equals(version)) {
-							throw new Error("The versions don't match!");
-						}
-					});
-			} else if (forceCanonicalVersion != null) {
-				// force just does a silent override
-				findVersionInListMatchingResource(forceCanonicalVersion, resource)
-					.ifPresent((version) -> resource.setVersion(version));
-			} else if (canonicalVersion != null && !resource.hasVersion()) {
-				// canonicalVersion adds a version if it's missing
-				findVersionInListMatchingResource(forceCanonicalVersion, resource)
-					.ifPresent((version) -> resource.setVersion(version));
-			}
+			findUnsupportedCapability(resource, capability);
+			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
 			boolean entryExists = bundle.getEntry().stream().anyMatch(
 				e -> e.hasResource()
 					&& ((MetadataResource)e.getResource()).getUrl().equals(resource.getUrl())
@@ -689,77 +688,119 @@ public class KnowledgeArtifactProcessor {
 					.map((canonical) -> Canonicals.getVersion(canonical))
 					.findAny();
 	}
-	private boolean findUnsupportedCapability(MetadataResource resource, List<String> capability){
-		return resource.getExtension().stream()
-			.filter(ext -> ext.getUrl().contains("artifact-knowledgeCapability"))
-			.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
-			.findAny()
-			.isPresent();
+	private void findUnsupportedCapability(MetadataResource resource, List<String> capability) throws PreconditionFailedException{
+		if (capability != null) {
+			List<Extension> knowledgeCapabilityExtension = resource.getExtension().stream()
+			.filter(ext -> ext.getUrl().contains("cqf-knowledgeCapability"))
+			.collect(Collectors.toList());
+			if (knowledgeCapabilityExtension.isEmpty()) {
+				// consider resource unsupported
+				// if it's knowledgeCapability is
+				// undefined
+				throw new PreconditionFailedException("Artifact does not match capability");
+			}
+			knowledgeCapabilityExtension.stream()
+				.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
+				.findAny()
+				.ifPresent((ext) -> {
+					throw new PreconditionFailedException("Artifact does not match capability");
+				});
+		}
 	}
-	private boolean findUnsupportedInclude(MetadataResource resource, List<String> include){
-		if(include.stream().anyMatch((type) -> type.equals("all"))){
-			// all = all resource types, no filtering needed
-			return false;
+	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws UnprocessableEntityException {
+		if (checkCanonicalVersion != null) {
+			// check throws an error
+			findVersionInListMatchingResource(checkCanonicalVersion, resource)
+				.ifPresent((version) -> {
+					if (!resource.getVersion().equals(version)) {
+						throw new UnprocessableEntityException("The versions don't match!");
+					}
+				});
+		} else if (forceCanonicalVersion != null) {
+			// force just does a silent override
+			findVersionInListMatchingResource(forceCanonicalVersion, resource)
+				.ifPresent((version) -> resource.setVersion(version));
+		} else if (canonicalVersion != null && !resource.hasVersion()) {
+			// canonicalVersion adds a version if it's missing
+			findVersionInListMatchingResource(forceCanonicalVersion, resource)
+				.ifPresent((version) -> resource.setVersion(version));
 		}
-		// type == artifact case should be caught at before recursion starts anyway
-		if (include.stream().anyMatch((type) -> type.equals("artifact"))
-				// no action needed, all MetadataResources are Canonical right?
-			|| include.stream().anyMatch((type) -> type.equals("canonical"))
-				// no action needed, all MetadataResources are knowledge artifacts right?
-			|| include.stream().anyMatch((type) -> type.equals("knowledge"))
+	}
+	private List<BundleEntryComponent> findUnsupportedInclude(List<BundleEntryComponent> entries, List<String> include){
+		if (include == null
+			|| include.stream().anyMatch((includedType) -> includedType.equals("all"))) {
+			return entries;
+		}
+		List<BundleEntryComponent> filteredList = new ArrayList<>();
+		entries.stream().forEach(entry -> {
+			// no action needed, all MetadataResources are Canonical right?
+			if (include.stream().anyMatch((type) -> type.equals("canonical"))
+			// no action needed, all MetadataResources are knowledge artifacts right?
+				|| include.stream().anyMatch((type) -> type.equals("knowledge"))) {
+				filteredList.add(entry);
+			}
+			if (include.stream().anyMatch((type) -> type.equals("terminology"))) {
+				Boolean resourceIsTerminologyType = entry.getResource().getResourceType().equals(ResourceType.CodeSystem)
+				|| entry.getResource().getResourceType().equals(ResourceType.ValueSet)
+				|| entry.getResource().getResourceType().equals(ResourceType.ConceptMap)
+				|| entry.getResource().getResourceType().equals(ResourceType.NamingSystem)
+				|| entry.getResource().getResourceType().equals(ResourceType.TerminologyCapabilities);
+				if (resourceIsTerminologyType) {
+					filteredList.add(entry);
+				}
+			}
+			if (include.stream().anyMatch((type) -> type.equals("conformance"))) {
+				Boolean resourceIsConformanceType = entry.getResource().getResourceType().equals(ResourceType.CapabilityStatement)
+				|| entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.ImplementationGuide)
+				|| entry.getResource().getResourceType().equals(ResourceType.SearchParameter)
+				|| entry.getResource().getResourceType().equals(ResourceType.MessageDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.OperationDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.CompartmentDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.StructureMap)
+				|| entry.getResource().getResourceType().equals(ResourceType.GraphDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.ExampleScenario);
+				if (resourceIsConformanceType) {
+					filteredList.add(entry);
+				}
+			}
+			if (include.stream().anyMatch((type) -> type.equals("extensions"))
+				&& entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
+				&& ((StructureDefinition) entry.getResource()).getType().equals("Extension")) {
+						filteredList.add(entry);
+			}
+			if (include.stream().anyMatch((type) -> type.equals("profiles"))
+				&& entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
+				&& !((StructureDefinition) entry.getResource()).getType().equals("Extension")) {
+				filteredList.add(entry);
+			}
+			if (include.stream().anyMatch((type) -> type.equals("tests"))){
+				if (entry.getResource().getResourceType().equals(ResourceType.Library)
+					&& ((Library) entry.getResource()).getType().getCoding().stream().anyMatch(coding -> coding.getCode().equals("test-case"))) {
+					filteredList.add(entry);
+				} else if (((MetadataResource) entry.getResource()).getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isTestCase")
+					&& ((BooleanType) ext.getValue()).getValue())) {
+					filteredList.add(entry);
+				}
+			}
+			if (include.stream().anyMatch((type) -> type.equals("examples"))){
+				// TODO: idk if this is legit just a placeholder for now
+				if (((MetadataResource) entry.getResource()).getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isExample")
+					&& ((BooleanType) ext.getValue()).getValue())) {
+					filteredList.add(entry);
+				}
+			}
+		});
+		List<BundleEntryComponent> distinctFilteredEntries = new ArrayList<>();
+		for (BundleEntryComponent entry: filteredList) {
+			if (!distinctFilteredEntries.stream()
+				.map((e) -> ((MetadataResource) e.getResource()))
+				.anyMatch(existingEntry -> existingEntry.getUrl().equals(((MetadataResource) entry.getResource()).getUrl()) && existingEntry.getVersion().equals(((MetadataResource) entry.getResource()).getVersion()))
 			) {
-				// do nothing
-		}
-		if (include.stream().anyMatch((type) -> type.equals("terminology"))) {
-			Boolean resourceIsTerminologyType = resource.getResourceType().equals(ResourceType.CodeSystem)
-			|| resource.getResourceType().equals(ResourceType.ValueSet)
-			|| resource.getResourceType().equals(ResourceType.ConceptMap)
-			|| resource.getResourceType().equals(ResourceType.NamingSystem)
-			|| resource.getResourceType().equals(ResourceType.TerminologyCapabilities);
-			if (!resourceIsTerminologyType) {
-				return true;
+				distinctFilteredEntries.add(entry);
 			}
 		}
-		if (include.stream().anyMatch((type) -> type.equals("conformance"))) {
-			Boolean resourceIsConformanceType = resource.getResourceType().equals(ResourceType.CapabilityStatement)
-			|| resource.getResourceType().equals(ResourceType.StructureDefinition)
-			|| resource.getResourceType().equals(ResourceType.ImplementationGuide)
-			|| resource.getResourceType().equals(ResourceType.SearchParameter)
-			|| resource.getResourceType().equals(ResourceType.MessageDefinition)
-			|| resource.getResourceType().equals(ResourceType.OperationDefinition)
-			|| resource.getResourceType().equals(ResourceType.CompartmentDefinition)
-			|| resource.getResourceType().equals(ResourceType.StructureMap)
-			|| resource.getResourceType().equals(ResourceType.GraphDefinition)
-			|| resource.getResourceType().equals(ResourceType.ExampleScenario);
-			if (!resourceIsConformanceType) {
-				return true;
-			}
-		}
-		if (include.stream().anyMatch((type) -> type.equals("extensions"))
-			&& resource.getResourceType().equals(ResourceType.StructureDefinition)
-			&& !((StructureDefinition) resource).getType().equals("Extension")) {
-				return true;
-		}
-		if (include.stream().anyMatch((type) -> type.equals("profiles"))
-			&& resource.getResourceType().equals(ResourceType.StructureDefinition)
-			&& ((StructureDefinition) resource).getType().equals("Extension")) {
-				return true;
-		}
-		if (include.stream().anyMatch((type) -> type.equals("tests"))){
-			if (resource.getResourceType().equals(ResourceType.Library) && ((Library) resource).getType().getCoding().stream().anyMatch(coding -> coding.getCode().equals("test-case"))
-				|| resource.getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isTestCase") && ext.hasValue() && ((BooleanType) ext.getValue()).getValue())
-			) {
-					return true;
-			}
-		}
-		if (include.stream().anyMatch((type) -> type.equals("examples"))){
-			// TODO: idk if this is legit just a placeholder for now
-			if (resource.getExtension().stream().anyMatch(ext -> ext.getUrl().contains("isExample") && ext.hasValue() && ((BooleanType) ext.getValue()).getValue())
-			) {
-					return true;
-			}
-		}
-		return false;
+		return distinctFilteredEntries;
 	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {

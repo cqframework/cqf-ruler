@@ -594,7 +594,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget)),
 			part("artifactCommentReference", new CanonicalType(artifactCommentReference)),
 			part("artifactCommentUser", new Reference(artifactCommentUser))
-		);	
+		);
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -633,19 +633,28 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void packageOperation_should_fail_non_matching_capability() {
 		loadTransaction("ersd-release-bundle.json");
-		Parameters params = parameters(part("version", "1.3.1") );
-		ResourceNotFoundException maybeException = null;
-		try {
-			getClient().operation()
-			.onInstance("Library/there-is-no-such-id")
-			.named("$package")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
-		} catch (ResourceNotFoundException e) {
-			maybeException = e;
+		List<String> capabilities = Arrays.asList(
+			"computable",
+			"publishable",
+			"executable"
+		);
+		for (String capability : capabilities) {
+				Parameters params = parameters(
+					part("capability", capability)
+				);
+						ResourceNotFoundException maybeException = null;
+				try {
+					getClient().operation()
+					.onInstance("Library/there-is-no-such-id")
+					.named("$package")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
+				} catch (ResourceNotFoundException e) {
+					maybeException = e;
+				}
+				assertNotNull(maybeException);
 		}
-		assertNotNull(maybeException);
 	}
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {
@@ -667,7 +676,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			maybeException = e;
 		}
 		assertTrue(maybeException == null);
-		params = parameters(part("checkCanonicalVersion", "1.3.1") )
+		params = parameters(part("checkCanonicalVersion", "1.3.1") );
 		try {
 			getClient().operation()
 			.onInstance("Library/there-is-no-such-id")
@@ -679,7 +688,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			maybeException = e;
 		}
 				assertTrue(maybeException == null);
-		params = parameters(part("forceCanonicalVersion", "1.3.1") )
+		params = parameters(part("forceCanonicalVersion", "1.3.1") );
 		try {
 			getClient().operation()
 			.onInstance("Library/there-is-no-such-id")
@@ -693,9 +702,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				assertTrue(maybeException == null);
 		// assertTrue();
 	}
-		@Test
+	@Test
 	void packageOperation_should_respect_count_offset() {
-		
+	}
+	@Test
+	void packageOperation_should_conditionally_create() {
 	}
 }
 

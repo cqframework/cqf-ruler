@@ -177,7 +177,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return this.artifactProcessor.createPackageBundle(theId, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion, count.getValue(), offset.getValue(), contentEndpoint, terminologyEndpoint, packageOnly.getValue());
+		return this.artifactProcessor.createPackageBundle(theId, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion, count != null ? count.getValue() : null, offset != null ? offset.getValue() : null, contentEndpoint, terminologyEndpoint, packageOnly != null ? packageOnly.getValue() : null);
 	}
 
 
