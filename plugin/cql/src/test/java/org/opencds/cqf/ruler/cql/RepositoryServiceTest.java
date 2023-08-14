@@ -11,7 +11,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -632,29 +635,40 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void packageOperation_should_fail_non_matching_capability() {
-		loadTransaction("ersd-release-bundle.json");
-		List<String> capabilities = Arrays.asList(
-			"computable",
-			"publishable",
-			"executable"
-		);
-		for (String capability : capabilities) {
+		loadTransaction("ersd-active-transaction-capabilities-bundle.json");
+		Map<String,String> capabilities = new HashMap<String, String>();
+		capabilities.put("computable","PlanDefinition/us-ecr-specification");
+		capabilities.put("publishable","PlanDefinition/us-ecr-specification");
+		capabilities.put("executable","PlanDefinition/us-ecr-specification");
+		for (Entry<String, String> capability : capabilities.entrySet()) {
 				Parameters params = parameters(
-					part("capability", capability)
+					part("capability", capability.getKey())
 				);
-						ResourceNotFoundException maybeException = null;
+						PreconditionFailedException maybeException = null;
 				try {
 					getClient().operation()
-					.onInstance("Library/there-is-no-such-id")
+					.onInstance("Library/SpecificationLibrary")
 					.named("$package")
 					.withParameters(params)
 					.returnResourceType(Bundle.class)
 					.execute();
-				} catch (ResourceNotFoundException e) {
+				} catch (PreconditionFailedException e) {
 					maybeException = e;
 				}
 				assertNotNull(maybeException);
 		}
+		Parameters allParams = parameters(
+					part("capability", "computable"),
+					part("capability", "publishable"),
+					part("capability", "executable")
+				);
+		Bundle packaged = getClient().operation()
+			.onInstance("Library/SpecificationLibrary")
+			.named("$package")
+			.withParameters(allParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+			assertNotNull(packaged);
 	}
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {

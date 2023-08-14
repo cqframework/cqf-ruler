@@ -697,13 +697,15 @@ public class KnowledgeArtifactProcessor {
 				// consider resource unsupported
 				// if it's knowledgeCapability is
 				// undefined
-				throw new PreconditionFailedException("Artifact does not match capability");
+				throw new PreconditionFailedException(String.format("Resource with url: '%s' does not specify capability.", resource.getUrl()));
 			}
 			knowledgeCapabilityExtension.stream()
 				.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
 				.findAny()
 				.ifPresent((ext) -> {
-					throw new PreconditionFailedException("Artifact does not match capability");
+					throw new PreconditionFailedException(String.format("Resource with url: '%s' is not one of '%s'.", 
+					resource.getUrl(),
+					String.join(", ", capability)));
 				});
 		}
 	}

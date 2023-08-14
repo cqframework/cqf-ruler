@@ -1,0 +1,308 @@
+{
+  "resourceType": "Bundle",
+  "id": "rctc-release-2022-10-19-Bundle-rctc",
+  "type": "transaction",
+  "timestamp": "2022-10-21T15:18:28.504-04:00",
+  "entry": [
+      {
+          "fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+          "resource": {
+              "resourceType": "Library",
+              "id": "SpecificationLibrary",
+              "url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+              "version": "2022-10-19",
+              "status": "active",
+              "relatedArtifact": [
+                  {
+                      "type": "composed-of",
+                      "resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|2.0.0",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
+                  }
+              ],
+              "extension":[{
+                "url":"http://hl7.org/fhir/StructureDefinition/cqf-knowledgeCapability",
+                "valueCode":"publishable"
+              }]
+          },
+          "request": {
+              "method": "PUT",
+              "url": "Library/SpecificationLibrary"
+          }
+      },
+      {
+          "fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+          "resource": {
+              "resourceType": "PlanDefinition",
+              "id": "us-ecr-specification",
+              "url": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+              "version": "2.0.0",
+              "status": "active",
+              "relatedArtifact": [
+                  {
+                      "type": "depends-on",
+                      "label": "RCTC Value Set Library of Trigger Codes",
+                      "resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
+                  }
+              ],
+              "extension":[{
+                "url":"http://hl7.org/fhir/StructureDefinition/cqf-knowledgeCapability",
+                "valueCode":"computable"
+              }]
+          },
+          "request": {
+              "method": "PUT",
+              "url": "PlanDefinition/us-ecr-specification"
+          }
+      },
+      {
+          "fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc",
+          "resource": {
+              "resourceType": "Library",
+              "id": "rctc",
+              "url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
+              "version": "2022-10-19",
+              "status": "active",
+              "relatedArtifact": [
+                  {
+                      "type": "composed-of",
+                      "resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19",
+                      "extension":[
+                          {
+                              "url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+                              "valueBoolean": true
+                          }
+                      ]
+                  },
+                  {
+                      "type": "composed-of",
+                      "resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
+                  }
+              ],
+              "extension":[{
+                "url":"http://hl7.org/fhir/StructureDefinition/cqf-knowledgeCapability",
+                "valueCode":"publishable"
+              }]
+          },
+          "request": {
+              "method": "PUT",
+              "url": "Library/rctc"
+          }
+      },
+      {
+          "fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+          "resource": {
+              "resourceType": "ValueSet",
+              "id": "dxtc",
+              "url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+              "version": "2022-10-19",
+              "status": "active",
+              "compose": {
+                  "include": [
+                      {
+                          "valueSet": [
+                              "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
+                          ]
+                      }
+                  ]
+              },
+              "expansion": {
+                  "timestamp": "2022-10-21T15:18:29-04:00",
+                  "contains": [
+                      {
+                          "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                          "version": "Provisional_2022-01-12",
+                          "code": "T40.0X1A"
+                      },
+                      {
+                          "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                          "version": "Provisional_2022-01-12",
+                          "code": "T40.0X2A"
+                      },
+                      {
+                          "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                          "version": "Provisional_2022-01-12",
+                          "code": "T40.0X3A"
+                      }
+                  ]
+              },
+              "extension":[{
+                "url":"http://hl7.org/fhir/StructureDefinition/cqf-knowledgeCapability",
+                "valueCode":"executable"
+              }]
+          },
+          "request": {
+              "method": "PUT",
+              "url": "ValueSet/dxtc"
+          }
+      },
+      {
+          "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+          "resource": {
+              "resourceType": "ValueSet",
+              "id": "2.16.840.1.113762.1.4.1146.6",
+              "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+              "identifier": [
+                  {
+                      "system": "urn:ietf:rfc:3986",
+                      "value": "urn:oid:2.16.840.1.113762.1.4.1146.6"
+                  }
+              ],
+              "version": "20210526",
+              "status": "active",
+              "compose": {
+                  "include": [
+                      {
+                          "system": "http://snomed.info/sct",
+                          "version": "Provisional_2022-04-25",
+                          "concept": [
+                              {
+                                  "code": "1086051000119107",
+                                  "display": "Cardiomyopathy due to diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "1086061000119109",
+                                  "display": "Diphtheria radiculomyelitis (disorder)"
+                              },
+                              {
+                                  "code": "1086071000119103",
+                                  "display": "Diphtheria tubulointerstitial nephropathy (disorder)"
+                              },
+                              {
+                                  "code": "1090211000119102",
+                                  "display": "Pharyngeal diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "129667001",
+                                  "display": "Diphtheritic peripheral neuritis (disorder)"
+                              },
+                              {
+                                  "code": "13596001",
+                                  "display": "Diphtheritic peritonitis (disorder)"
+                              },
+                              {
+                                  "code": "15682004",
+                                  "display": "Anterior nasal diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "186347006",
+                                  "display": "Diphtheria of penis (disorder)"
+                              },
+                              {
+                                  "code": "18901009",
+                                  "display": "Cutaneous diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "194945009",
+                                  "display": "Acute myocarditis - diphtheritic (disorder)"
+                              },
+                              {
+                                  "code": "230596007",
+                                  "display": "Diphtheritic neuropathy (disorder)"
+                              },
+                              {
+                                  "code": "240422004",
+                                  "display": "Tracheobronchial diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "26117009",
+                                  "display": "Diphtheritic myocarditis (disorder)"
+                              },
+                              {
+                                  "code": "276197005",
+                                  "display": "Infection caused by Corynebacterium diphtheriae (disorder)"
+                              },
+                              {
+                                  "code": "3419005",
+                                  "display": "Faucial diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "397428000",
+                                  "display": "Diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "397430003",
+                                  "display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
+                              },
+                              {
+                                  "code": "48278001",
+                                  "display": "Diphtheritic cystitis (disorder)"
+                              },
+                              {
+                                  "code": "50215002",
+                                  "display": "Laryngeal diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "715659006",
+                                  "display": "Diphtheria of respiratory system (disorder)"
+                              },
+                              {
+                                  "code": "75589004",
+                                  "display": "Nasopharyngeal diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "7773002",
+                                  "display": "Conjunctival diphtheria (disorder)"
+                              },
+                              {
+                                  "code": "789005009",
+                                  "display": "Paralysis of uvula after diphtheria (disorder)"
+                              }
+                          ]
+                      }
+                  ]
+              },
+              "expansion": {
+                  "timestamp": "2022-10-21T15:18:29-04:00",
+                  "contains": [
+                      {
+                          "system": "http://snomed.info/sct",
+                          "version": "Provisional_2022-04-25",
+                          "code": "1086051000119107"
+                      },
+                      {
+                          "system": "http://snomed.info/sct",
+                          "version": "Provisional_2022-04-25",
+                          "code": "1086061000119109"
+                      },
+                      {
+                          "system": "http://snomed.info/sct",
+                          "version": "Provisional_2022-04-25",
+                          "code": "1086071000119103"
+                      }
+                  ]
+              },
+              "extension":[{
+                "url":"http://hl7.org/fhir/StructureDefinition/cqf-knowledgeCapability",
+                "valueCode":"executable"
+              }]
+          },
+          "request": {
+              "method": "PUT",
+              "url": "ValueSet/2.16.840.1.113762.1.4.1146.6"
+          }
+      }
+  ]
+}
