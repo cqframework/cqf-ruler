@@ -672,49 +672,74 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {
-		loadTransaction("ersd-bundle-without-versions.json");
-		List<String> canonicalVersion = Arrays.asList(
-			"www.thing.com|1.2.3",
-			"www.thing2.com|1.2.3"
+		loadTransaction("ersd-active-transaction-no-versions.json");
+		String versionToUpdateTo = "1.3.1";
+		Parameters params = parameters(
+			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
+			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
 		);
-		Parameters params = parameters(part("canonicalVersion", "1.3.1") );
-		ResourceNotFoundException maybeException = null;
-		try {
-			getClient().operation()
-			.onInstance("Library/there-is-no-such-id")
+		Bundle updatedCanonicalVersionPackage = getClient().operation()
+			.onInstance("Library/SpecificationLibrary")
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (ResourceNotFoundException e) {
-			maybeException = e;
+		List<MetadataResource> updatedResources = updatedCanonicalVersionPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-add-missing-version"))
+			.collect(Collectors.toList());
+		assertTrue(updatedResources.size() == 2);
+		for (MetadataResource updatedResource: updatedResources) {
+			assertTrue(updatedResource.getVersion().equals(versionToUpdateTo));
 		}
-		assertTrue(maybeException == null);
-		params = parameters(part("checkCanonicalVersion", "1.3.1") );
+		params = parameters(
+			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
+		);
+		String correctCheckVersion = "2022-10-19";
+		UnprocessableEntityException checkCanonicalThrewError = null;
 		try {
 			getClient().operation()
-			.onInstance("Library/there-is-no-such-id")
+			.onInstance("Library/SpecificationLibrary")
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (ResourceNotFoundException e) {
-			maybeException = e;
+		} catch (UnprocessableEntityException e) {
+			checkCanonicalThrewError = e;
 		}
-				assertTrue(maybeException == null);
-		params = parameters(part("forceCanonicalVersion", "1.3.1") );
-		try {
-			getClient().operation()
-			.onInstance("Library/there-is-no-such-id")
+		assertNotNull(checkCanonicalThrewError);
+		params = parameters(
+			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
+		);
+		Bundle noErrorCheckCanonicalPackage = getClient().operation()
+			.onInstance("Library/SpecificationLibrary")
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (ResourceNotFoundException e) {
-			maybeException = e;
-		}
-				assertTrue(maybeException == null);
-		// assertTrue();
+		Optional<MetadataResource> checkedVersionResource = noErrorCheckCanonicalPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-check-version"))
+			.findFirst();
+		assertTrue(checkedVersionResource.isPresent());
+		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
+		String versionToForceTo = "1.1.9";
+		params = parameters(
+			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
+		);
+		Bundle forcedVersionPackage = getClient().operation()
+			.onInstance("Library/SpecificationLibrary")
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();	
+		Optional<MetadataResource> forcedVersionResource = forcedVersionPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-force-version"))
+			.findFirst();
+		assertTrue(forcedVersionResource.isPresent());
+		assertTrue(forcedVersionResource.get().getVersion().equals(versionToForceTo));
+
 	}
 	@Test
 	void packageOperation_should_respect_count_offset() {

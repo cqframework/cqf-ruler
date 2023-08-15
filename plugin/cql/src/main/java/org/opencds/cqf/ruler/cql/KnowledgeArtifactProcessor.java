@@ -230,6 +230,7 @@ public class KnowledgeArtifactProcessor {
 	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
 		List<UsageContext> useContexts = newResource.getUseContext();
 		for(UsageContext useContext : useContexts){
+			// TODO: this implementation of useContext resolution is simplistic and untested, should be updated or removed - will we ever need to resolve these references?
 			if(useContext.hasValueReference()){
 				Reference useContextRef = useContext.getValueReference();
 				if(useContextRef != null){
@@ -593,7 +594,7 @@ public class KnowledgeArtifactProcessor {
 			throw new NotImplementedOperationException("PackageOnly is under construction please try again later");
 		}
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
-		// TODO: In the case of a trusted comprehensive package manifest we already have all the resource references. We could convert that manifest into a single search transaction
+		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
 		Bundle packagedBundle = new Bundle()
 			.setType(Bundle.BundleType.COLLECTION);
 		if (include != null
@@ -609,6 +610,9 @@ public class KnowledgeArtifactProcessor {
 		} else {
 			recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
+			// if the root artifact is not in the bundle
+			// and include contains "artifact" then add
+			// the root artifact to the bundle
 			if (include != null
 				&& include.contains("artifact")
 				&& !included.stream()
@@ -662,11 +666,10 @@ public class KnowledgeArtifactProcessor {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 			findUnsupportedCapability(resource, capability);
 			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
-			boolean entryExists = bundle.getEntry().stream().anyMatch(
-				e -> e.hasResource()
-					&& ((MetadataResource)e.getResource()).getUrl().equals(resource.getUrl())
-					&& ((MetadataResource)e.getResource()).getVersion().equals(resource.getVersion())
-			);
+			boolean entryExists = bundle.getEntry().stream()
+				.map(e -> (MetadataResource)e.getResource())
+				.filter(mr -> mr.getUrl() != null && mr.getVersion() != null)
+				.anyMatch(mr -> mr.getUrl().equals(resource.getUrl()) && mr.getVersion().equals(resource.getVersion()));
 			if (!entryExists) {
 				BundleEntryComponent entry = createEntry(resource);
 				// TODO: remove history from request.url
@@ -679,7 +682,7 @@ public class KnowledgeArtifactProcessor {
 			Stream.concat(components.stream(), dependencies.stream())
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, 	canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
 		}
 	}
 	private Optional<String> findVersionInListMatchingResource(List<CanonicalType> list, MetadataResource resource){
@@ -703,7 +706,7 @@ public class KnowledgeArtifactProcessor {
 				.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
 				.findAny()
 				.ifPresent((ext) -> {
-					throw new PreconditionFailedException(String.format("Resource with url: '%s' is not one of '%s'.", 
+					throw new PreconditionFailedException(String.format("Resource with url: '%s' is not one of '%s'.",
 					resource.getUrl(),
 					String.join(", ", capability)));
 				});
@@ -724,7 +727,7 @@ public class KnowledgeArtifactProcessor {
 				.ifPresent((version) -> resource.setVersion(version));
 		} else if (canonicalVersion != null && !resource.hasVersion()) {
 			// canonicalVersion adds a version if it's missing
-			findVersionInListMatchingResource(forceCanonicalVersion, resource)
+			findVersionInListMatchingResource(canonicalVersion, resource)
 				.ifPresent((version) -> resource.setVersion(version));
 		}
 	}
