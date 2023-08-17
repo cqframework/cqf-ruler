@@ -706,7 +706,7 @@ public class KnowledgeArtifactProcessor {
 				.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
 				.findAny()
 				.ifPresent((ext) -> {
-					throw new PreconditionFailedException(String.format("Resource with url: '%s' is not one of '%s'.",
+					throw new PreconditionFailedException(String.format("Resourc		e with url: '%s' is not one of '%s'.",
 					resource.getUrl(),
 					String.join(", ", capability)));
 				});
@@ -738,11 +738,48 @@ public class KnowledgeArtifactProcessor {
 		}
 		List<BundleEntryComponent> filteredList = new ArrayList<>();
 		entries.stream().forEach(entry -> {
-			// no action needed, all MetadataResources are Canonical right?
-			if (include.stream().anyMatch((type) -> type.equals("canonical"))
-			// no action needed, all MetadataResources are knowledge artifacts right?
-				|| include.stream().anyMatch((type) -> type.equals("knowledge"))) {
-				filteredList.add(entry);
+			if (include.stream().anyMatch((type) -> type.equals("knowledge"))) {
+				Boolean resourceIsKnowledgeType = entry.getResource().getResourceType().equals(ResourceType.Library)
+				|| entry.getResource().getResourceType().equals(ResourceType.Measure)
+				|| entry.getResource().getResourceType().equals(ResourceType.ActivityDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.PlanDefinition);
+				if (resourceIsKnowledgeType) {
+					filteredList.add(entry);
+				}
+			}
+			// as per http://hl7.org/fhir/R4/resource.html#canonical
+			if (include.stream().anyMatch((type) -> type.equals("canonical"))) {
+				Boolean resourceIsCanonicalType = entry.getResource().getResourceType().equals(ResourceType.ActivityDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.CapabilityStatement)
+				|| entry.getResource().getResourceType().equals(ResourceType.ChargeItemDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.CompartmentDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.ConceptMap)
+				|| entry.getResource().getResourceType().equals(ResourceType.EffectEvidenceSynthesis)
+				|| entry.getResource().getResourceType().equals(ResourceType.EventDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.Evidence)
+				|| entry.getResource().getResourceType().equals(ResourceType.EvidenceVariable)
+				|| entry.getResource().getResourceType().equals(ResourceType.ExampleScenario)
+				|| entry.getResource().getResourceType().equals(ResourceType.GraphDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.ImplementationGuide)
+				|| entry.getResource().getResourceType().equals(ResourceType.Library)
+				|| entry.getResource().getResourceType().equals(ResourceType.Measure)
+				|| entry.getResource().getResourceType().equals(ResourceType.MessageDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.NamingSystem)
+				|| entry.getResource().getResourceType().equals(ResourceType.OperationDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.PlanDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.Questionnaire)
+				|| entry.getResource().getResourceType().equals(ResourceType.ResearchDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.ResearchElementDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.RiskEvidenceSynthesis)
+				|| entry.getResource().getResourceType().equals(ResourceType.SearchParameter)
+				|| entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
+				|| entry.getResource().getResourceType().equals(ResourceType.StructureMap)
+				|| entry.getResource().getResourceType().equals(ResourceType.TerminologyCapabilities)
+				|| entry.getResource().getResourceType().equals(ResourceType.TestScript)
+				|| entry.getResource().getResourceType().equals(ResourceType.ValueSet);
+				if (resourceIsCanonicalType) {
+					filteredList.add(entry);
+				}
 			}
 			if (include.stream().anyMatch((type) -> type.equals("terminology"))) {
 				Boolean resourceIsTerminologyType = entry.getResource().getResourceType().equals(ResourceType.CodeSystem)
@@ -797,6 +834,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		});
 		List<BundleEntryComponent> distinctFilteredEntries = new ArrayList<>();
+		// remove duplicates
 		for (BundleEntryComponent entry: filteredList) {
 			if (!distinctFilteredEntries.stream()
 				.map((e) -> ((MetadataResource) e.getResource()))

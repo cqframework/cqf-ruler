@@ -636,15 +636,19 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void packageOperation_should_fail_non_matching_capability() {
 		loadTransaction("ersd-active-transaction-capabilities-bundle.json");
-		Map<String,String> capabilities = new HashMap<String, String>();
-		capabilities.put("computable","PlanDefinition/us-ecr-specification");
-		capabilities.put("publishable","PlanDefinition/us-ecr-specification");
-		capabilities.put("executable","PlanDefinition/us-ecr-specification");
-		for (Entry<String, String> capability : capabilities.entrySet()) {
+		List<String> capabilities = Arrays.asList(
+			"computable",
+			"publishable",
+			"executable"
+		);
+		// the library contains all three capabilities
+		// so we should get an error when trying with
+		// any one capability
+		for (String capability : capabilities) {
 				Parameters params = parameters(
-					part("capability", capability.getKey())
+					part("capability", capability)
 				);
-						PreconditionFailedException maybeException = null;
+				PreconditionFailedException maybeException = null;
 				try {
 					getClient().operation()
 					.onInstance("Library/SpecificationLibrary")
@@ -658,17 +662,19 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				assertNotNull(maybeException);
 		}
 		Parameters allParams = parameters(
-					part("capability", "computable"),
-					part("capability", "publishable"),
-					part("capability", "executable")
-				);
+			part("capability", "computable"),
+			part("capability", "publishable"),
+			part("capability", "executable")
+		);
 		Bundle packaged = getClient().operation()
 			.onInstance("Library/SpecificationLibrary")
 			.named("$package")
 			.withParameters(allParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-			assertNotNull(packaged);
+		// no error when running the operation with all
+		// three capabilities
+		assertNotNull(packaged);
 	}
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {
@@ -732,7 +738,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
-			.execute();	
+			.execute();
 		Optional<MetadataResource> forcedVersionResource = forcedVersionPackage.getEntry().stream()
 			.map(entry -> (MetadataResource) entry.getResource())
 			.filter(resource -> resource.getUrl().contains("to-force-version"))
@@ -746,6 +752,57 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void packageOperation_should_conditionally_create() {
+	}
+	@Test
+	void packageOperation_should_respect_include() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Map<String, List<String>> includeOptions = new HashMap<String,List<String>>();
+		includeOptions.put("artifact",Arrays.asList("http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary"));
+		includeOptions.put("canonical",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+		));
+		includeOptions.put("knowledge",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc"
+		));
+		includeOptions.put("terminology",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+		));
+		includeOptions.put("conformance",Arrays.asList());
+		includeOptions.put("extensions",Arrays.asList());
+		includeOptions.put("profiles",Arrays.asList());
+		includeOptions.put("tests",Arrays.asList());
+		includeOptions.put("examples",Arrays.asList());
+		for (Entry<String, List<String>> includedTypeURLs : includeOptions.entrySet()) {
+			Parameters params = parameters(
+				part("include", includedTypeURLs.getKey())
+			);
+			Bundle packaged = getClient().operation()
+				.onInstance("Library/SpecificationLibrary")
+				.named("$package")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			List<MetadataResource> resources = packaged.getEntry().stream()
+					.map(entry -> (MetadataResource) entry.getResource())
+					.collect(Collectors.toList());
+			for (MetadataResource resource: resources) {
+				Boolean noExtraResourcesReturned = includedTypeURLs.getValue().stream()
+					.anyMatch(url -> url.equals(resource.getUrl()));
+				assertTrue(noExtraResourcesReturned);
+			}
+			for (String url: includedTypeURLs.getValue()) {
+				Boolean expectedResourceReturned = resources.stream()
+					.anyMatch(resource -> resource.getUrl().equals(url));
+				assertTrue(expectedResourceReturned);
+			}
+		}
 	}
 }
 
