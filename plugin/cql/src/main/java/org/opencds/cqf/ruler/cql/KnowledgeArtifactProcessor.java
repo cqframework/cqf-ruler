@@ -610,20 +610,6 @@ public class KnowledgeArtifactProcessor {
 		} else {
 			recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
-			// if the root artifact is not in the bundle
-			// and include contains "artifact" then add
-			// the root artifact to the bundle
-			if (include != null
-				&& include.contains("artifact")
-				&& !included.stream()
-					.map((entry) -> ((MetadataResource) entry.getResource()))
-					.anyMatch((includedResource) -> includedResource.getUrl().equals(resource.getUrl()) && includedResource.getVersion().equals(resource.getVersion()))) {
-				BundleEntryComponent entry = createEntry(resource);
-				// TODO: remove history from request.url
-				entry.getRequest().setMethod(HTTPVerb.POST);
-				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
-				included.add(0, entry);
-			}
 			packagedBundle.setEntry(included);
 		}
 		packagedBundle.setTotal(packagedBundle.getEntry().size());

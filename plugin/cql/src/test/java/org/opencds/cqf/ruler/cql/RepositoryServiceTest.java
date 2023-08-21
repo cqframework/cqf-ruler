@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -25,6 +26,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -651,7 +653,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				PreconditionFailedException maybeException = null;
 				try {
 					getClient().operation()
-					.onInstance("Library/SpecificationLibrary")
+					.onInstance(specificationLibReference)
 					.named("$package")
 					.withParameters(params)
 					.returnResourceType(Bundle.class)
@@ -667,7 +669,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("capability", "executable")
 		);
 		Bundle packaged = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(allParams)
 			.returnResourceType(Bundle.class)
@@ -685,7 +687,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
 		);
 		Bundle updatedCanonicalVersionPackage = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
@@ -705,7 +707,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		UnprocessableEntityException checkCanonicalThrewError = null;
 		try {
 			getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
@@ -718,7 +720,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
 		);
 		Bundle noErrorCheckCanonicalPackage = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
@@ -734,7 +736,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
 		);
 		Bundle forcedVersionPackage = getClient().operation()
-			.onInstance("Library/SpecificationLibrary")
+			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
@@ -749,9 +751,88 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void packageOperation_should_respect_count_offset() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters countZeroParams = parameters(
+			part("count", new IntegerType(0))
+		);
+		Bundle countZeroBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(countZeroParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		// when count = 0 only show the total
+		assertTrue(countZeroBundle.getEntry().size() == 0);
+		assertTrue(countZeroBundle.getTotal() == 5);
+		Parameters count2Params = parameters(
+			part("count", new IntegerType(2))
+		);
+		Bundle count2Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(count2Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(count2Bundle.getEntry().size() == 2);
+		Parameters count2Offset2Params = parameters(
+			part("count", new IntegerType(2)),
+			part("offset", new IntegerType(2))
+		);
+		Bundle count2Offset2Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(count2Offset2Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(count2Offset2Bundle.getEntry().size() == 2);
+		Parameters offset4Params = parameters(
+			part("offset", new IntegerType(4))
+		);
+		Bundle offset4Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offset4Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offset4Bundle.getEntry().size() == (countZeroBundle.getTotal() - 4));
+		Parameters offsetMaxParams = parameters(
+			part("offset", new IntegerType(countZeroBundle.getTotal()))
+		);
+		Bundle offsetMaxBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offsetMaxParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offsetMaxBundle.getEntry().size() == 0);
+		Parameters offsetMaxRandomCountParams = parameters(
+			part("offset", new IntegerType(countZeroBundle.getTotal())),
+			part("count", new IntegerType(ThreadLocalRandom.current().nextInt(3, 20)))
+		);
+		Bundle offsetMaxRandomCountBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offsetMaxRandomCountParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offsetMaxRandomCountBundle.getEntry().size() == 0);
 	}
 	@Test
 	void packageOperation_should_conditionally_create() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		for (BundleEntryComponent component : packagedBundle.getEntry()) {
+			String ifNoneExist = component.getRequest().getIfNoneExist();
+			String url = ((MetadataResource) component.getResource()).getUrl();
+			String version = ((MetadataResource) component.getResource()).getVersion();
+			assertTrue(ifNoneExist.equals("url="+url+"&version="+version));
+		}
 	}
 	@Test
 	void packageOperation_should_respect_include() {
@@ -784,7 +865,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				part("include", includedTypeURLs.getKey())
 			);
 			Bundle packaged = getClient().operation()
-				.onInstance("Library/SpecificationLibrary")
+				.onInstance(specificationLibReference)
 				.named("$package")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
