@@ -230,7 +230,7 @@ public class KnowledgeArtifactProcessor {
 	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
 		List<UsageContext> useContexts = newResource.getUseContext();
 		for(UsageContext useContext : useContexts){
-			// TODO: this implementation of useContext resolution is simplistic and untested, should be updated or removed - will we ever need to resolve these references?
+			// TODO: will we ever need to resolve these references?
 			if(useContext.hasValueReference()){
 				Reference useContextRef = useContext.getValueReference();
 				if(useContextRef != null){
@@ -587,11 +587,10 @@ public class KnowledgeArtifactProcessor {
 	/* $package */
 	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly){
 		if (contentEndpoint != null || terminologyEndpoint != null) {
-			throw new NotImplementedOperationException("We are not implementing custom Content and Terminology endpoints at this time");
+			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
 		if (packageOnly != null) {
-			// TODO: actually work on release.packageOnly pls
-			throw new NotImplementedOperationException("PackageOnly is under construction please try again later");
+			throw new NotImplementedOperationException("This repository is not implementing packageOnly at this time");
 		}
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
