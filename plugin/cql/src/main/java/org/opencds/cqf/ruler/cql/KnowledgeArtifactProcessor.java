@@ -602,8 +602,7 @@ public class KnowledgeArtifactProcessor {
 			findUnsupportedCapability(resource, capability);
 			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
 			BundleEntryComponent entry = createEntry(resource);
-			// TODO: remove history from request.url
-			entry.getRequest().setMethod(HTTPVerb.POST);
+			entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());			entry.getRequest().setMethod(HTTPVerb.POST);
 			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 			packagedBundle.addEntry(entry);
 		} else {
@@ -657,7 +656,7 @@ public class KnowledgeArtifactProcessor {
 				.anyMatch(mr -> mr.getUrl().equals(resource.getUrl()) && mr.getVersion().equals(resource.getVersion()));
 			if (!entryExists) {
 				BundleEntryComponent entry = createEntry(resource);
-				// TODO: remove history from request.url
+				entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());
 				entry.getRequest().setMethod(HTTPVerb.POST);
 				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 				bundle.addEntry(entry);
