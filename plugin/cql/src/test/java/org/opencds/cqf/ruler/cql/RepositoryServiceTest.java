@@ -635,6 +635,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			artifactCommentUser
 		));
 	}
+	
 	@Test
 	void packageOperation_should_fail_non_matching_capability() {
 		loadTransaction("ersd-active-transaction-capabilities-bundle.json");
@@ -884,6 +885,17 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				assertTrue(expectedResourceReturned);
 			}
 		}
+	}
+	@Test
+	void packageOperation_big_bundle() {
+		Bundle loadedBundle = (Bundle) loadTransaction("ersd-active-transaction-bundle-example.json");
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(parameters())
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
 	}
 }
 
