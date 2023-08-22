@@ -705,7 +705,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
 		);
 		String correctCheckVersion = "2022-10-19";
-		UnprocessableEntityException checkCanonicalThrewError = null;
+		PreconditionFailedException checkCanonicalThrewError = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -713,7 +713,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (UnprocessableEntityException e) {
+		} catch (PreconditionFailedException e) {
 			checkCanonicalThrewError = e;
 		}
 		assertNotNull(checkCanonicalThrewError);

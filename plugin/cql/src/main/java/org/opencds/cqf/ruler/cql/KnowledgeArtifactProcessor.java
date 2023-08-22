@@ -585,7 +585,7 @@ public class KnowledgeArtifactProcessor {
 		return updatedReference;
 	}
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly){
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
 		if (contentEndpoint != null || terminologyEndpoint != null) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
@@ -645,7 +645,7 @@ public class KnowledgeArtifactProcessor {
 		List<CanonicalType> canonicalVersion,
 		List<CanonicalType> checkCanonicalVersion,
 		List<CanonicalType> forceCanonicalVersion
-		){
+		) throws PreconditionFailedException{
 		if (resource != null) {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 			findUnsupportedCapability(resource, capability);
@@ -690,19 +690,23 @@ public class KnowledgeArtifactProcessor {
 				.filter(ext -> !capability.contains(((CodeType) ext.getValue()).getValue()))
 				.findAny()
 				.ifPresent((ext) -> {
-					throw new PreconditionFailedException(String.format("Resourc		e with url: '%s' is not one of '%s'.",
+					throw new PreconditionFailedException(String.format("Resource with url: '%s' is not one of '%s'.",
 					resource.getUrl(),
 					String.join(", ", capability)));
 				});
 		}
 	}
-	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws UnprocessableEntityException {
+	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws PreconditionFailedException {
 		if (checkCanonicalVersion != null) {
 			// check throws an error
 			findVersionInListMatchingResource(checkCanonicalVersion, resource)
 				.ifPresent((version) -> {
 					if (!resource.getVersion().equals(version)) {
-						throw new UnprocessableEntityException("The versions don't match!");
+						throw new PreconditionFailedException(String.format("Resource with url '%s' has version '%s' but checkVersion specifies '%s'",
+						resource.getUrl(),
+						resource.getVersion(),
+						version
+						));
 					}
 				});
 		} else if (forceCanonicalVersion != null) {
