@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cql;
 
 import java.util.Date;
+import java.util.List;
 
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -11,6 +12,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Reference;
@@ -153,6 +155,44 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
 	}
+
+	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$package", value = "Package an artifact and components / dependencies")
+	public Bundle packageOperation(
+		RequestDetails requestDetails,
+		@IdParam IdType theId,
+		// TODO: $package - should capability be CodeType?
+		@OperationParam(name = "capability") List<String> capability,
+		@OperationParam(name = "canonicalVersion") List<CanonicalType> canonicalVersion,
+		@OperationParam(name = "checkCanonicalVersion") List<CanonicalType> checkCanonicalVersion,
+		@OperationParam(name = "forceCanonicalVersion") List<CanonicalType> forceCanonicalVersion,
+		// TODO: $package - should include be CodeType?
+		@OperationParam(name = "include") List<String> include,
+		@OperationParam(name = "manifest") CanonicalType manifest,
+		@OperationParam(name = "offset", typeName = "Integer") IPrimitiveType<Integer> offset,
+		@OperationParam(name = "count", typeName = "Integer") IPrimitiveType<Integer> count,
+		@OperationParam(name = "packageOnly", typeName = "Boolean") IPrimitiveType<Boolean> packageOnly,
+		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
+		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
+		)
+		throws FHIRException {
+		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		return this.artifactProcessor.createPackageBundle(
+				theId,
+				fhirDal,
+				capability,
+				include,
+				canonicalVersion,
+				checkCanonicalVersion,
+				forceCanonicalVersion,
+				count != null ? count.getValue() : null,
+				offset != null ? offset.getValue() : null,
+				contentEndpoint,
+				terminologyEndpoint,
+				packageOnly != null ? packageOnly.getValue() : null
+			);
+	}
+
 
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")

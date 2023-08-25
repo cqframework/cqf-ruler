@@ -11,8 +11,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -22,6 +26,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
@@ -520,7 +525,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);
 		UnprocessableEntityException maybeException = null;
@@ -538,7 +543,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(maybeException.getMessage().contains("URL"));
 		maybeException = null;
 		artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
-		params = parameters( 
+		params = parameters(
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget))
 		);
 		try {
@@ -558,7 +563,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentType = "this-type-does-not-exist";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("artifactCommentType", artifactCommentType)
 		);
 		UnprocessableEntityException maybeException = null;
@@ -587,14 +592,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
-		Parameters params = parameters( 
+		Parameters params = parameters(
 			part("approvalDate", approvalDate),
 			part("artifactCommentType", artifactCommentType),
 			part("artifactCommentText", artifactCommentText),
 			part("artifactCommentTarget", new CanonicalType(artifactCommentTarget)),
 			part("artifactCommentReference", new CanonicalType(artifactCommentReference)),
 			part("artifactCommentUser", new Reference(artifactCommentUser))
-		);	
+		);
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -628,8 +633,269 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			artifactCommentReference,
 			artifactCommentTarget,
 			artifactCommentUser
-		));		
+		));
 	}
+	
+	@Test
+	void packageOperation_should_fail_non_matching_capability() {
+		loadTransaction("ersd-active-transaction-capabilities-bundle.json");
+		List<String> capabilities = Arrays.asList(
+			"computable",
+			"publishable",
+			"executable"
+		);
+		// the library contains all three capabilities
+		// so we should get an error when trying with
+		// any one capability
+		for (String capability : capabilities) {
+				Parameters params = parameters(
+					part("capability", capability)
+				);
+				PreconditionFailedException maybeException = null;
+				try {
+					getClient().operation()
+					.onInstance(specificationLibReference)
+					.named("$package")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
+				} catch (PreconditionFailedException e) {
+					maybeException = e;
+				}
+				assertNotNull(maybeException);
+		}
+		Parameters allParams = parameters(
+			part("capability", "computable"),
+			part("capability", "publishable"),
+			part("capability", "executable")
+		);
+		Bundle packaged = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(allParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		// no error when running the operation with all
+		// three capabilities
+		assertNotNull(packaged);
+	}
+	@Test
+	void packageOperation_should_apply_check_force_canonicalVersions() {
+		loadTransaction("ersd-active-transaction-no-versions.json");
+		String versionToUpdateTo = "1.3.1";
+		Parameters params = parameters(
+			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
+			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
+		);
+		Bundle updatedCanonicalVersionPackage = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		List<MetadataResource> updatedResources = updatedCanonicalVersionPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-add-missing-version"))
+			.collect(Collectors.toList());
+		assertTrue(updatedResources.size() == 2);
+		for (MetadataResource updatedResource: updatedResources) {
+			assertTrue(updatedResource.getVersion().equals(versionToUpdateTo));
+		}
+		params = parameters(
+			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
+		);
+		String correctCheckVersion = "2022-10-19";
+		PreconditionFailedException checkCanonicalThrewError = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (PreconditionFailedException e) {
+			checkCanonicalThrewError = e;
+		}
+		assertNotNull(checkCanonicalThrewError);
+		params = parameters(
+			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
+		);
+		Bundle noErrorCheckCanonicalPackage = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<MetadataResource> checkedVersionResource = noErrorCheckCanonicalPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-check-version"))
+			.findFirst();
+		assertTrue(checkedVersionResource.isPresent());
+		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
+		String versionToForceTo = "1.1.9";
+		params = parameters(
+			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
+		);
+		Bundle forcedVersionPackage = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<MetadataResource> forcedVersionResource = forcedVersionPackage.getEntry().stream()
+			.map(entry -> (MetadataResource) entry.getResource())
+			.filter(resource -> resource.getUrl().contains("to-force-version"))
+			.findFirst();
+		assertTrue(forcedVersionResource.isPresent());
+		assertTrue(forcedVersionResource.get().getVersion().equals(versionToForceTo));
 
+	}
+	@Test
+	void packageOperation_should_respect_count_offset() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters countZeroParams = parameters(
+			part("count", new IntegerType(0))
+		);
+		Bundle countZeroBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(countZeroParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		// when count = 0 only show the total
+		assertTrue(countZeroBundle.getEntry().size() == 0);
+		assertTrue(countZeroBundle.getTotal() == 5);
+		Parameters count2Params = parameters(
+			part("count", new IntegerType(2))
+		);
+		Bundle count2Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(count2Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(count2Bundle.getEntry().size() == 2);
+		Parameters count2Offset2Params = parameters(
+			part("count", new IntegerType(2)),
+			part("offset", new IntegerType(2))
+		);
+		Bundle count2Offset2Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(count2Offset2Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(count2Offset2Bundle.getEntry().size() == 2);
+		Parameters offset4Params = parameters(
+			part("offset", new IntegerType(4))
+		);
+		Bundle offset4Bundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offset4Params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offset4Bundle.getEntry().size() == (countZeroBundle.getTotal() - 4));
+		Parameters offsetMaxParams = parameters(
+			part("offset", new IntegerType(countZeroBundle.getTotal()))
+		);
+		Bundle offsetMaxBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offsetMaxParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offsetMaxBundle.getEntry().size() == 0);
+		Parameters offsetMaxRandomCountParams = parameters(
+			part("offset", new IntegerType(countZeroBundle.getTotal())),
+			part("count", new IntegerType(ThreadLocalRandom.current().nextInt(3, 20)))
+		);
+		Bundle offsetMaxRandomCountBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(offsetMaxRandomCountParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offsetMaxRandomCountBundle.getEntry().size() == 0);
+	}
+	@Test
+	void packageOperation_should_conditionally_create() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		for (BundleEntryComponent component : packagedBundle.getEntry()) {
+			String ifNoneExist = component.getRequest().getIfNoneExist();
+			String url = ((MetadataResource) component.getResource()).getUrl();
+			String version = ((MetadataResource) component.getResource()).getVersion();
+			assertTrue(ifNoneExist.equals("url="+url+"&version="+version));
+		}
+	}
+	@Test
+	void packageOperation_should_respect_include() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Map<String, List<String>> includeOptions = new HashMap<String,List<String>>();
+		includeOptions.put("artifact",Arrays.asList("http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary"));
+		includeOptions.put("canonical",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+		));
+		includeOptions.put("knowledge",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc"
+		));
+		includeOptions.put("terminology",Arrays.asList(
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+		));
+		includeOptions.put("conformance",Arrays.asList());
+		includeOptions.put("extensions",Arrays.asList());
+		includeOptions.put("profiles",Arrays.asList());
+		includeOptions.put("tests",Arrays.asList());
+		includeOptions.put("examples",Arrays.asList());
+		for (Entry<String, List<String>> includedTypeURLs : includeOptions.entrySet()) {
+			Parameters params = parameters(
+				part("include", includedTypeURLs.getKey())
+			);
+			Bundle packaged = getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$package")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+			List<MetadataResource> resources = packaged.getEntry().stream()
+					.map(entry -> (MetadataResource) entry.getResource())
+					.collect(Collectors.toList());
+			for (MetadataResource resource: resources) {
+				Boolean noExtraResourcesReturned = includedTypeURLs.getValue().stream()
+					.anyMatch(url -> url.equals(resource.getUrl()));
+				assertTrue(noExtraResourcesReturned);
+			}
+			for (String url: includedTypeURLs.getValue()) {
+				Boolean expectedResourceReturned = resources.stream()
+					.anyMatch(resource -> resource.getUrl().equals(url));
+				assertTrue(expectedResourceReturned);
+			}
+		}
+	}
+	@Test
+	void packageOperation_big_bundle() {
+		Bundle loadedBundle = (Bundle) loadTransaction("ersd-active-transaction-bundle-example.json");
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withParameters(parameters())
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
+	}
 }
 
