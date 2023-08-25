@@ -54,14 +54,89 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 @Configurable
-// TODO: This belongs in the Evaluator. Only included in Ruler at dev time for
-// shorter cycle.
+// TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
+<<<<<<< HEAD
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+=======
+
+	// as per http://hl7.org/fhir/R4/resource.html#canonical
+	public static final List<ResourceType> canonicalResourceTypes =
+		new ArrayList<>(
+			List.of(
+				ResourceType.ActivityDefinition,
+				ResourceType.CapabilityStatement,
+				ResourceType.ChargeItemDefinition,
+				ResourceType.CompartmentDefinition,
+				ResourceType.ConceptMap,
+				ResourceType.EffectEvidenceSynthesis,
+				ResourceType.EventDefinition,
+				ResourceType.Evidence,
+				ResourceType.EvidenceVariable,
+				ResourceType.ExampleScenario,
+				ResourceType.GraphDefinition,
+				ResourceType.ImplementationGuide,
+				ResourceType.Library,
+				ResourceType.Measure,
+				ResourceType.MessageDefinition,
+				ResourceType.NamingSystem,
+				ResourceType.OperationDefinition,
+				ResourceType.PlanDefinition,
+				ResourceType.Questionnaire,
+				ResourceType.ResearchDefinition,
+				ResourceType.ResearchElementDefinition,
+				ResourceType.RiskEvidenceSynthesis,
+				ResourceType.SearchParameter,
+				ResourceType.StructureDefinition,
+				ResourceType.StructureMap,
+				ResourceType.TerminologyCapabilities,
+				ResourceType.TestScript,
+				ResourceType.ValueSet
+			)
+		);
+
+	public static final List<ResourceType> conformanceResourceTypes =
+		new ArrayList<>(
+			List.of(
+				ResourceType.CapabilityStatement,
+				ResourceType.StructureDefinition,
+				ResourceType.ImplementationGuide,
+				ResourceType.SearchParameter,
+				ResourceType.MessageDefinition,
+				ResourceType.OperationDefinition,
+				ResourceType.CompartmentDefinition,
+				ResourceType.StructureMap,
+				ResourceType.GraphDefinition,
+				ResourceType.ExampleScenario
+			)
+		);
+
+	public static final List<ResourceType> knowledgeArtifactResourceTypes =
+		new ArrayList<>(
+			List.of(
+				ResourceType.Library,
+				ResourceType.Measure,
+				ResourceType.ActivityDefinition,
+				ResourceType.PlanDefinition
+			)
+		);
+
+	public static final List<ResourceType> terminologyResourceTypes =
+		new ArrayList<>(
+			List.of(
+				ResourceType.CodeSystem,
+				ResourceType.ValueSet,
+				ResourceType.ConceptMap,
+				ResourceType.NamingSystem,
+				ResourceType.TerminologyCapabilities
+			)
+		);
+	
+>>>>>>> vsm_operations
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
@@ -602,15 +677,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
-		Bundle packagedBundle = new Bundle()
-			.setType(Bundle.BundleType.COLLECTION);
+		Bundle packagedBundle = new Bundle().setType(Bundle.BundleType.COLLECTION);
 		if (include != null
 			&& include.size() == 1
 			&& include.stream().anyMatch((includedType) -> includedType.equals("artifact"))) {
 			findUnsupportedCapability(resource, capability);
 			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
 			BundleEntryComponent entry = createEntry(resource);
-			entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());			entry.getRequest().setMethod(HTTPVerb.POST);
+			entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());
+			entry.getRequest().setMethod(HTTPVerb.POST);
 			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 			packagedBundle.addEntry(entry);
 		} else {
@@ -629,17 +704,15 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		if (count != null) {
-			// repeat these two from earlier
-			// because we might modify / replace the
-			// entries list at any time
+			// repeat these two from earlier because we might modify / replace
+			// the entries list at any time
 			List<BundleEntryComponent> entries = packagedBundle.getEntry();
 			Integer bundleSize = entries.size();
 			if (count < bundleSize){
 				packagedBundle.setEntry(entries.subList(0, count));
 			} else {
-				// there are not enough entries in the bundle
-				// to page so we return all of them
-				// no change
+				// there are not enough entries in the bundle to page, so
+				// we return all of them no change
 			}
 		}
 		return packagedBundle;
@@ -689,9 +762,7 @@ public class KnowledgeArtifactProcessor {
 			.filter(ext -> ext.getUrl().contains("cqf-knowledgeCapability"))
 			.collect(Collectors.toList());
 			if (knowledgeCapabilityExtension.isEmpty()) {
-				// consider resource unsupported
-				// if it's knowledgeCapability is
-				// undefined
+				// consider resource unsupported if it's knowledgeCapability is undefined
 				throw new PreconditionFailedException(String.format("Resource with url: '%s' does not specify capability.", resource.getUrl()));
 			}
 			knowledgeCapabilityExtension.stream()
@@ -727,77 +798,32 @@ public class KnowledgeArtifactProcessor {
 				.ifPresent((version) -> resource.setVersion(version));
 		}
 	}
-	private List<BundleEntryComponent> findUnsupportedInclude(List<BundleEntryComponent> entries, List<String> include){
-		if (include == null
-			|| include.stream().anyMatch((includedType) -> includedType.equals("all"))) {
+	private List<BundleEntryComponent> findUnsupportedInclude(List<BundleEntryComponent> entries, List<String> include) {
+		if (include == null || include.stream().anyMatch((includedType) -> includedType.equals("all"))) {
 			return entries;
 		}
 		List<BundleEntryComponent> filteredList = new ArrayList<>();
 		entries.stream().forEach(entry -> {
 			if (include.stream().anyMatch((type) -> type.equals("knowledge"))) {
-				Boolean resourceIsKnowledgeType = entry.getResource().getResourceType().equals(ResourceType.Library)
-				|| entry.getResource().getResourceType().equals(ResourceType.Measure)
-				|| entry.getResource().getResourceType().equals(ResourceType.ActivityDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.PlanDefinition);
+				Boolean resourceIsKnowledgeType = knowledgeArtifactResourceTypes.contains(entry.getResource().getResourceType());
 				if (resourceIsKnowledgeType) {
 					filteredList.add(entry);
 				}
 			}
-			// as per http://hl7.org/fhir/R4/resource.html#canonical
 			if (include.stream().anyMatch((type) -> type.equals("canonical"))) {
-				Boolean resourceIsCanonicalType = entry.getResource().getResourceType().equals(ResourceType.ActivityDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.CapabilityStatement)
-				|| entry.getResource().getResourceType().equals(ResourceType.ChargeItemDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.CompartmentDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.ConceptMap)
-				|| entry.getResource().getResourceType().equals(ResourceType.EffectEvidenceSynthesis)
-				|| entry.getResource().getResourceType().equals(ResourceType.EventDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.Evidence)
-				|| entry.getResource().getResourceType().equals(ResourceType.EvidenceVariable)
-				|| entry.getResource().getResourceType().equals(ResourceType.ExampleScenario)
-				|| entry.getResource().getResourceType().equals(ResourceType.GraphDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.ImplementationGuide)
-				|| entry.getResource().getResourceType().equals(ResourceType.Library)
-				|| entry.getResource().getResourceType().equals(ResourceType.Measure)
-				|| entry.getResource().getResourceType().equals(ResourceType.MessageDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.NamingSystem)
-				|| entry.getResource().getResourceType().equals(ResourceType.OperationDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.PlanDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.Questionnaire)
-				|| entry.getResource().getResourceType().equals(ResourceType.ResearchDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.ResearchElementDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.RiskEvidenceSynthesis)
-				|| entry.getResource().getResourceType().equals(ResourceType.SearchParameter)
-				|| entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.StructureMap)
-				|| entry.getResource().getResourceType().equals(ResourceType.TerminologyCapabilities)
-				|| entry.getResource().getResourceType().equals(ResourceType.TestScript)
-				|| entry.getResource().getResourceType().equals(ResourceType.ValueSet);
+				Boolean resourceIsCanonicalType = canonicalResourceTypes.contains(entry.getResource().getResourceType());
 				if (resourceIsCanonicalType) {
 					filteredList.add(entry);
 				}
 			}
 			if (include.stream().anyMatch((type) -> type.equals("terminology"))) {
-				Boolean resourceIsTerminologyType = entry.getResource().getResourceType().equals(ResourceType.CodeSystem)
-				|| entry.getResource().getResourceType().equals(ResourceType.ValueSet)
-				|| entry.getResource().getResourceType().equals(ResourceType.ConceptMap)
-				|| entry.getResource().getResourceType().equals(ResourceType.NamingSystem)
-				|| entry.getResource().getResourceType().equals(ResourceType.TerminologyCapabilities);
+				Boolean resourceIsTerminologyType = terminologyResourceTypes.contains(entry.getResource().getResourceType());
 				if (resourceIsTerminologyType) {
 					filteredList.add(entry);
 				}
 			}
 			if (include.stream().anyMatch((type) -> type.equals("conformance"))) {
-				Boolean resourceIsConformanceType = entry.getResource().getResourceType().equals(ResourceType.CapabilityStatement)
-				|| entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.ImplementationGuide)
-				|| entry.getResource().getResourceType().equals(ResourceType.SearchParameter)
-				|| entry.getResource().getResourceType().equals(ResourceType.MessageDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.OperationDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.CompartmentDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.StructureMap)
-				|| entry.getResource().getResourceType().equals(ResourceType.GraphDefinition)
-				|| entry.getResource().getResourceType().equals(ResourceType.ExampleScenario);
+				Boolean resourceIsConformanceType = conformanceResourceTypes.contains(entry.getResource().getResourceType());
 				if (resourceIsConformanceType) {
 					filteredList.add(entry);
 				}
@@ -805,12 +831,12 @@ public class KnowledgeArtifactProcessor {
 			if (include.stream().anyMatch((type) -> type.equals("extensions"))
 				&& entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
 				&& ((StructureDefinition) entry.getResource()).getType().equals("Extension")) {
-						filteredList.add(entry);
+					filteredList.add(entry);
 			}
 			if (include.stream().anyMatch((type) -> type.equals("profiles"))
 				&& entry.getResource().getResourceType().equals(ResourceType.StructureDefinition)
 				&& !((StructureDefinition) entry.getResource()).getType().equals("Extension")) {
-				filteredList.add(entry);
+					filteredList.add(entry);
 			}
 			if (include.stream().anyMatch((type) -> type.equals("tests"))){
 				if (entry.getResource().getResourceType().equals(ResourceType.Library)
@@ -841,6 +867,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
+	
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
