@@ -192,7 +192,8 @@ public class KnowledgeArtifactProcessor {
 	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
 		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
-
+		KnowledgeArtifactAdapter<MetadataResource> baseArtifactAdapter = new KnowledgeArtifactAdapter<MetadataResource>(baseArtifact);
+		baseArtifactAdapter.setApprovalDate(null);
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
