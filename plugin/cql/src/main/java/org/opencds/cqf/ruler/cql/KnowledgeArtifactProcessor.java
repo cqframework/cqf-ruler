@@ -61,7 +61,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
-	public static final List<ResourceType> canonicalResourceTypes = 
+	public static final List<ResourceType> canonicalResourceTypes =
 		new ArrayList<>(
 			List.of(
 				ResourceType.ActivityDefinition,
