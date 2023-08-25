@@ -74,7 +74,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		.resource(Library.class)
 		.withId(specificationLibReference.split("/")[1])
 		.execute();
-		// Root Artifact must have approval date for this test
+		// Root Artifact must have approval date, releaseLabel and releaseDescription for this test
+		assertTrue(baseLib.hasApprovalDate());
+		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
+		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		assertTrue(baseLib.hasApprovalDate());
 		String version = "1.0.1";
 		String draftedVersion = version + "-draft";
@@ -94,6 +97,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(lib.getStatus() == Enumerations.PublicationStatus.DRAFT);
 		assertTrue(lib.getVersion().equals(draftedVersion));
 		assertFalse(lib.hasApprovalDate());
+		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
+		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
 		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));
