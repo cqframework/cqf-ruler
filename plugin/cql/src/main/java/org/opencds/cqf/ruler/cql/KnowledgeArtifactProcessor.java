@@ -59,6 +59,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
+	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
+	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -131,7 +133,7 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-	
+
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
@@ -264,10 +266,16 @@ public class KnowledgeArtifactProcessor {
 	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
 		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
-
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
+		KnowledgeArtifactAdapter<MetadataResource> baseArtifactAdapter = new KnowledgeArtifactAdapter<MetadataResource>(baseArtifact);
+		List<Extension> removeReleaseLabelAndDescription = baseArtifact.getExtension()
+			.stream()
+			.filter(ext -> !ext.getUrl().equals(releaseLabelUrl) && !ext.getUrl().equals(releaseDescriptionUrl))
+			.collect(Collectors.toList());
+		baseArtifact.setExtension(removeReleaseLabelAndDescription);
+		baseArtifactAdapter.setApprovalDate(null);
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(baseArtifact.getUrl()) + "|" + draftVersion;
 
