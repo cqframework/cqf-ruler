@@ -1,57 +1,32 @@
 package org.opencds.cqf.ruler.cr;
 
-import java.util.function.Function;
-
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
-import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
-import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
+import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(CqlConfig.class)
+@ConditionalOnProperty(prefix = "hapi.fhir.rulercr", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CrConfig {
-	@Bean
-	public CrProperties crProperties() {
-		return new CrProperties();
-	}
 
 	@Bean
-	public MeasureEvaluationOptions measureEvaluationOptions() {
-		return crProperties().getMeasureEvaluation();
-	}
-
-	@Bean
-	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
-		return new SearchParameterResolver(fhirContext);
-	}
+	CrRulerProperties crRulerProperties(){return new CrRulerProperties();}
 
 	@Bean
 	JpaCRFhirDalFactory jpaCRFhirDalFactory(DaoRegistry daoRegistry) {
 		return rd -> new JpaCRFhirDal(daoRegistry, rd);
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider dstu3ActivityDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.ActivityDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider r4ActivityDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider();
 	}
 
 	@Bean
@@ -64,76 +39,6 @@ public class CrConfig {
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation r4ExpressionEvaluation() {
 		return new org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider dstu3PlanDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider r4PlanDefinitionApplyProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.MeasureEvaluateProvider dstu3MeasureEvaluateProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.MeasureEvaluateProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public Function<RequestDetails, org.opencds.cqf.ruler.cr.dstu3.service.MeasureService> dstu3MeasureServiceFactory() {
-		return r -> {
-			var ms = dstu3measureService();
-			ms.setRequestDetails(r);
-			return ms;
-		};
-	}
-
-	@Bean
-	@Scope("prototype")
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.service.MeasureService dstu3measureService() {
-		return new org.opencds.cqf.ruler.cr.dstu3.service.MeasureService();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider r4MeasureEvaluateProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public Function<RequestDetails, org.opencds.cqf.ruler.cr.r4.service.MeasureService> r4MeasureServiceFactory() {
-		return r -> {
-			var ms = r4measureService();
-			ms.setRequestDetails(r);
-			return ms;
-		};
-	}
-
-	@Bean
-	@Scope("prototype")
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.service.MeasureService r4measureService() {
-		return new org.opencds.cqf.ruler.cr.r4.service.MeasureService();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider dstu3SubmitDataProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider r4SubmitDataProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider();
 	}
 
 	@Bean
@@ -161,8 +66,54 @@ public class CrConfig {
 	}
 
 	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.CareGapsProvider r4CareGapsProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.CareGapsProvider();
+	public ILibraryManagerFactory libraryManagerFactory(
+			ModelManager modelManager) {
+		return (providers) -> {
+			LibraryManager libraryManager = new LibraryManager(modelManager);
+			for (LibrarySourceProvider provider : providers) {
+				libraryManager.getLibrarySourceLoader().registerProvider(provider);
+			}
+			return libraryManager;
+		};
 	}
+
+	@Bean
+	CrProviderFactory crOperationFactory() {
+		return new CrProviderFactory();
+	}
+
+	@Bean
+	CrProviderLoader crProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+												  CrProviderFactory theCrProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new CrProviderLoader(theFhirContext, theResourceProviderFactory, theCrProviderFactory, thePostInitProviderRegisterer);
+	}
+
+	@Bean
+	JpaFhirDalFactory jpaFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaFhirDal(daoRegistry, rd);
+	}
+
+	@Bean
+	JpaEvalFhirDalFactory jpaEvalFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaEvalFhirDal(daoRegistry, rd);
+	}
+
+	@Bean({ "artifactAssessment", "r4ArtifactAssessment", "r4ArtifactAssessment" })
+	@Conditional(OnR4Condition.class)
+	public ArtifactAssessment ArtifactAssessment() {
+		return new ArtifactAssessment();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public RepositoryService repositoryService() {
+		return new RepositoryService();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public KnowledgeArtifactProcessor knowledgeArtifactProcessor() {
+		return new KnowledgeArtifactProcessor();
+	}
+
 }

@@ -3,8 +3,12 @@ FROM openjdk:18-slim-bullseye
 ARG COMMIT_HASH
 LABEL COMMIT_HASH ${COMMIT_HASH}
 ENV COMMIT_HASH ${COMMIT_HASH}
+
 ENV VERSION=0.14.0-SNAPSHOT
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+RUN groupadd -r cqfruler && useradd -r -g cqfruler cqfruler
+USER cqfruler
+WORKDIR /home/cqfruler
 
 RUN mkdir server
 RUN mkdir plugin

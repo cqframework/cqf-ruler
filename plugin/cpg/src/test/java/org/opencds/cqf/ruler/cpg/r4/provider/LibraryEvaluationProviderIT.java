@@ -23,13 +23,16 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		LibraryEvaluationProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	private final String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 
+	@DirtiesContext
 	@Test
 	void testSimpleAsthmaInlineCode() {
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -46,9 +49,10 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Has Asthma Diagnosis"));
-		assertTrue(((BooleanType) result.getParameter("Has Asthma Diagnosis")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Has Asthma Diagnosis").getValue()).booleanValue());
 	}
 
+	@DirtiesContext
 	@Test
 	void testSimpleLibrary() {
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -65,11 +69,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Initial Population"));
-		assertTrue(((BooleanType) result.getParameter("Initial Population")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Initial Population").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Numerator"));
-		assertTrue(((BooleanType) result.getParameter("Numerator")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Numerator").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Denominator"));
-		assertTrue(((BooleanType) result.getParameter("Denominator")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Denominator").getValue()).booleanValue());
 	}
 
 	@Test
@@ -90,11 +94,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 		assertNotNull(result);
 		assertTrue(result.hasParameter("Initial Population"));
-		assertTrue(((BooleanType) result.getParameter("Initial Population")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Initial Population").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Numerator"));
-		assertTrue(((BooleanType) result.getParameter("Numerator")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Numerator").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Denominator"));
-		assertTrue(((BooleanType) result.getParameter("Denominator")).booleanValue());
+		assertTrue(((BooleanType) result.getParameter("Denominator").getValue()).booleanValue());
 	}
 
 	@Test
@@ -123,24 +127,25 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter(
 				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential"));
 		assertTrue(((BooleanType) result.getParameter(
-				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential")).booleanValue());
+				"Patient Is Being Prescribed Opioid Analgesic with Ambulatory Misuse Potential").getValue())
+				.booleanValue());
 		assertTrue(result.hasParameter("Is Perform Drug Screen Recommendation Applicable?"));
 		assertTrue(((BooleanType) result.getParameter(
-				"Is Perform Drug Screen Recommendation Applicable?")).booleanValue());
+				"Is Perform Drug Screen Recommendation Applicable?").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Applicable Because of Positive Cocaine or PCP or Opiates"));
 		assertFalse(((BooleanType) result.getParameter(
-				"Applicable Because of Positive Cocaine or PCP or Opiates")).booleanValue());
+				"Applicable Because of Positive Cocaine or PCP or Opiates").getValue()).booleanValue());
 		assertTrue(result.hasParameter("Urine Drug Screening ProcedureRequest Category"));
 		assertTrue(result.getParameter(
-				"Urine Drug Screening ProcedureRequest Category") instanceof CodeableConcept);
+				"Urine Drug Screening ProcedureRequest Category").getValue() instanceof CodeableConcept);
 		assertTrue(result.hasParameter("Detail"));
 		assertEquals("Patients on opioid therapy should have a urine drug test performed every 12 months.",
-				((StringType) result.getParameter("Detail")).getValue());
+				((StringType) result.getParameter("Detail").getValue()).getValue());
 		assertTrue(result.hasParameter("Indicator"));
-		assertEquals("warning", ((StringType) result.getParameter("Indicator")).getValue());
+		assertEquals("warning", ((StringType) result.getParameter("Indicator").getValue()).getValue());
 		assertTrue(result.hasParameter("Summary"));
 		assertEquals("Annual Urine Screening Check",
-				((StringType) result.getParameter("Summary")).getValue());
+				((StringType) result.getParameter("Summary").getValue()).getValue());
 		assertTrue(result.hasParameter("Urine Drug Screening Request"));
 		assertTrue(result.getParameter().get(9).hasResource());
 		assertTrue(result.getParameter().get(9).getResource() instanceof ServiceRequest);

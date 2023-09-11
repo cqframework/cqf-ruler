@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
+import ca.uhn.fhir.cr.common.ILibrarySourceProviderFactory;
+import ca.uhn.fhir.cr.common.ITerminologyProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -36,11 +39,7 @@ import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals.CanonicalParts;
 import org.opencds.cqf.cql.evaluator.fhir.util.Libraries;
 import org.opencds.cqf.cql.evaluator.measure.helper.DateHelper;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
-import org.opencds.cqf.ruler.cql.utility.Translators;
+import org.opencds.cqf.ruler.cr.utility.CqlTranslators;
 import org.opencds.cqf.ruler.cr.utility.DataRequirements;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Searches;
@@ -60,10 +59,10 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private Logger myLog = LoggerFactory.getLogger(DataOperationsProvider.class);
 
 	@Autowired
-	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
+	private ILibrarySourceProviderFactory librarySourceProviderFactory;
 
 	@Autowired
-	private LibraryManagerFactory libraryManagerFactory;
+	private ILibraryManagerFactory libraryManagerFactory;
 
 	@Autowired
 	private LibraryVersionSelector libraryVersionSelector;
@@ -72,7 +71,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private AdapterFactory adapterFactory;
 
 	@Autowired
-	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
+	private ITerminologyProviderFactory terminologyProviderFactory;
 
 	@Autowired
 	private SearchParameterResolver searchParameterResolver;
@@ -151,7 +150,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	}
 
 	private LibraryManager createLibraryManager(Library library, RequestDetails theRequestDetails) {
-		JpaLibrarySourceProvider jpaLibrarySourceProvider = jpaLibrarySourceProviderFactory.create(theRequestDetails);
+		var librarySourceProvider = librarySourceProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
 		List<Library> listLib = fetchDependencyLibraries(library, theRequestDetails);
@@ -167,17 +166,17 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 				libraryBundle, adapterFactory, libraryVersionSelector);
 
 		List<LibrarySourceProvider> sourceProviders = new ArrayList<>(
-				Arrays.asList(bundleLibraryProvider, jpaLibrarySourceProvider));
+				Arrays.asList(bundleLibraryProvider, librarySourceProvider));
 
 		return libraryManagerFactory.create(sourceProviders);
 	}
 
 	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager) {
-		CqlTranslator translator = Translators.getTranslator(
+		CqlTranslator translator = CqlTranslators.getTranslator(
 				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
 				libraryManager.getModelManager(), cqlTranslatorOptions);
 		if (!translator.getErrors().isEmpty()) {
-			throw new CqlCompilerException(Translators.errorsToString(translator.getErrors()));
+			throw new CqlCompilerException(CqlTranslators.errorsToString(translator.getErrors()));
 		}
 		return translator;
 	}
@@ -189,7 +188,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		cqlOptions.setCqlTranslatorOptions(cqlTranslatorOptions);
 		// TODO: Enable passing a capability statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager, translator.getTranslatedLibrary(),
-				cqlOptions, searchParameterResolver, jpaTerminologyProviderFactory.create(theRequestDetails),
+				cqlOptions, searchParameterResolver, terminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null, parameters);
 	}
 
@@ -200,7 +199,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		cqlOptions.setCqlTranslatorOptions(cqlTranslatorOptions);
 		// TODO: Enable passing a capability statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(measure, libraryManager, translator.getTranslatedLibrary(),
-				cqlOptions, searchParameterResolver, jpaTerminologyProviderFactory.create(theRequestDetails),
+				cqlOptions, searchParameterResolver, terminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null, parameters);
 	}
 

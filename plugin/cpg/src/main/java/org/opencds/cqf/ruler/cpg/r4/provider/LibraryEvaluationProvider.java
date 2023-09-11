@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.fhir.cr.common.IFhirDalFactory;
+import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
+import ca.uhn.fhir.cr.common.ILibrarySourceProviderFactory;
+import ca.uhn.fhir.cr.common.ITerminologyProviderFactory;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
@@ -23,10 +27,6 @@ import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
-import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -41,15 +41,15 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
-	private LibraryLoaderFactory libraryLoaderFactory;
+	private ILibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
+	private ILibrarySourceProviderFactory myLibrarySourceProviderFactory;
 	@Autowired
 	private FhirRestLibrarySourceProviderFactory fhirRestLibrarySourceProviderFactory;
 	@Autowired
-	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
+	private ITerminologyProviderFactory myTerminologyProviderFactory;
 	@Autowired
-	private JpaFhirDalFactory jpaFhirDalFactory;
+	private IFhirDalFactory myFhirDalFactory;
 	@Autowired
 	ModelResolver myModelResolver;
 	@Autowired
@@ -157,8 +157,8 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
 				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
 				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
-				jpaLibrarySourceProviderFactory.create(requestDetails), contentProvider,
-				jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
+				myLibrarySourceProviderFactory.create(requestDetails), contentProvider,
+				myTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
 
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
 			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails,

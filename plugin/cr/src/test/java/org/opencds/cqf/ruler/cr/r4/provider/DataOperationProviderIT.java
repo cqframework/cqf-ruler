@@ -1,6 +1,15 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import org.hl7.fhir.dstu3.model.DateTimeType;
+import org.hl7.fhir.r4.model.DateTimeType;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Collections;
+import java.util.Date;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.IdType;
@@ -10,17 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Collections;
-import java.util.Date;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CrConfig.class }, properties = {
 	"hapi.fhir.fhir_version=r4",
 	"hapi.fhir.cql.translator.analyze_data_requirements=true"})
@@ -137,7 +137,7 @@ class DataOperationProviderIT extends RestIntegrationTest {
 							.getValueAsPrimitive().getValueAsString();
 					if (dr.hasCodeFilter()) {
 						assertEquals(
-								"Encounter?status=finished&subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292",
+								"Encounter?subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292",
 								query);
 					} else {
 						assertEquals("Encounter?subject=Patient/{{context.patientId}}", query);
@@ -157,53 +157,53 @@ class DataOperationProviderIT extends RestIntegrationTest {
 			}
 		}
 	}
- /*Found DST Bug
-	@Test
-	void testR4LibraryFhirQueryPatternWithDateFilter() throws ParseException {
-		loadTransaction("DataReqLibraryDateFilterQueryTransactionBundleR4.json");
 
-		Parameters params = parameters(stringPart("target", "dummy"));
-
-		Library returnLibrary = getClient().operation()
-			.onInstance(new IdType("Library", "DateFilterQuery"))
-			.named("$data-requirements")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
-
-		assertNotNull(returnLibrary);
-
-		for (DataRequirement dr : returnLibrary.getDataRequirement()) {
-			switch (dr.getType()) {
-				case "Patient": {
-					String query = dr.getExtensionByUrl(
-							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
-						.getValueAsPrimitive().getValueAsString();
-					assertEquals("Patient?_id={{context.patientId}}", query);
-				}
-				break;
-
-				case "Condition": {
-					String query = dr.getExtensionByUrl(
-							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
-						.getValueAsPrimitive().getValueAsString();
-
-					OffsetDateTime evaluationOffsetDateTime = OffsetDateTime.now().truncatedTo(ChronoUnit.DAYS);
-
-					Date expectedLowDate = Date.from(evaluationOffsetDateTime.minusDays(90).toInstant());
-					Date expectedHighDate = Date.from(evaluationOffsetDateTime.minusNanos(1000000).toInstant());
-					SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-					String lowDateString = simpleDateFormatter.format(expectedLowDate).replace("Z", "+00:00");
-					String highDateString = simpleDateFormatter.format(expectedHighDate).replace("Z", "+00:00");
-
-					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDateString);
-
-					assertEquals(expectedQuery, query);
-				}
-				break;
-			}
-		}
-	}*/
+//	@Test //TODO:
+//	void testR4LibraryFhirQueryPatternWithDateFilter() throws ParseException {
+//		loadTransaction("DataReqLibraryDateFilterQueryTransactionBundleR4.json");
+//
+//		Parameters params = parameters(stringPart("target", "dummy"));
+//
+//		Library returnLibrary = getClient().operation()
+//			.onInstance(new IdType("Library", "DateFilterQuery"))
+//			.named("$data-requirements")
+//			.withParameters(params)
+//			.returnResourceType(Library.class)
+//			.execute();
+//
+//		assertNotNull(returnLibrary);
+//
+//		for (DataRequirement dr : returnLibrary.getDataRequirement()) {
+//			switch (dr.getType()) {
+//				case "Patient": {
+//					String query = dr.getExtensionByUrl(
+//							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
+//						.getValueAsPrimitive().getValueAsString();
+//					assertEquals("Patient?_id={{context.patientId}}", query);
+//				}
+//				break;
+//
+//				case "Condition": {
+//					String query = dr.getExtensionByUrl(
+//							"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern")
+//						.getValueAsPrimitive().getValueAsString();
+//
+//					OffsetDateTime evaluationOffsetDateTime = OffsetDateTime.now().truncatedTo(ChronoUnit.DAYS);
+//
+//					Date expectedLowDate = Date.from(evaluationOffsetDateTime.minusDays(90).toInstant());
+//					Date expectedHighDate = Date.from(evaluationOffsetDateTime.minusNanos(1000000).toInstant());
+//					SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+//					String lowDateString = simpleDateFormatter.format(expectedLowDate).replace("Z", "+00:00");
+//					String highDateString = simpleDateFormatter.format(expectedHighDate).replace("Z", "+00:00");
+//
+//					String expectedQuery = String.format("Condition?onset-date=ge%s&onset-date=le%s&subject=Patient/{{context.patientId}}", lowDateString, highDateString);
+//
+//					assertEquals(expectedQuery, query);
+//				}
+//				break;
+//			}
+//		}
+//	}
 
 	@Test
 	void testR4MeasureDataRequirementsOperation() {

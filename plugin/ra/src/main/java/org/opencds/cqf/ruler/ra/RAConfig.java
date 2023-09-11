@@ -1,6 +1,10 @@
 package org.opencds.cqf.ruler.ra;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.cr.config.CrR4Config;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.ra.r4.ApproveProvider;
@@ -19,7 +23,6 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.ra", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(CrConfig.class)
 public class RAConfig {
 
 	@Bean
@@ -50,6 +53,7 @@ public class RAConfig {
 	public OperationProvider r4ApproveProvider() {
 		return new ApproveProvider();
 	}
+
 	@Bean
 	@Conditional(OnR4Condition.class)
 	public OperationProvider r4ResolveProvider() {
@@ -68,5 +72,16 @@ public class RAConfig {
 		registrationBean.addUrlMappings("/assisted");
 		registrationBean.setLoadOnStartup(1);
 		return registrationBean;
+	}
+
+	@Bean
+	RAProviderFactory raOperationFactory() {
+		return new RAProviderFactory();
+	}
+
+	@Bean
+	RAProviderLoader raProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
+												 RAProviderFactory theRAProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new RAProviderLoader(theFhirContext, theResourceProviderFactory, theRAProviderFactory, thePostInitProviderRegisterer);
 	}
 }

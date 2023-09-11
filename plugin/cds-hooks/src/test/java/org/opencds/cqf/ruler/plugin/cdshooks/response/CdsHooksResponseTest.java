@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.springframework.test.annotation.DirtiesContext;
 
 public class CdsHooksResponseTest {
+	@DirtiesContext
 	@Test
 	void unicodeCharacterTest() throws JsonProcessingException {
 		Card card = new Card();

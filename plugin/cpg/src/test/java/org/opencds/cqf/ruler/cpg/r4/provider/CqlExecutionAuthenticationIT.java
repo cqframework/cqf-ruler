@@ -16,8 +16,10 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CpgConfig.class, SecurityConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
 				"hapi.fhir.security.basic_auth.enabled=true",
 				"hapi.fhir.security.basic_auth.username=admin",
@@ -37,8 +39,8 @@ class CqlExecutionAuthenticationIT extends RestIntegrationTest {
 				.withAdditionalHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
 				.execute();
 
-		assertTrue(results.getParameter("return") instanceof IntegerType);
-		assertEquals("25", ((IntegerType) results.getParameter("return")).asStringValue());
+		assertTrue(results.getParameter("return").getValue() instanceof IntegerType);
+		assertEquals("25", ((IntegerType) results.getParameter("return").getValue()).asStringValue());
 	}
 
 	@Test

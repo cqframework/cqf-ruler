@@ -5,6 +5,7 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.getPartsB
 
 import java.util.List;
 
+import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -16,17 +17,19 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.cr.CqlBuilder;
+import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.dstu3.Libraries;
 import org.opencds.cqf.ruler.cr.dstu3.MeasureBuilder;
 import org.opencds.cqf.ruler.cr.dstu3.Patients;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-
-@SpringBootTest(classes = { CollectDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=dstu3", })
-class CollectDataProviderIT extends DaoIntegrationTest {
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3", })
+class CollectDataProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	CollectDataProvider collectDataProvider;
