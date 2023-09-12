@@ -1,3 +1,4 @@
 [submodule "external/hapi-fhir-jpaserver-starter"]
 	path = external/hapi-fhir-jpaserver-starter
 	url = https://github.com/hapifhir/hapi-fhir-jpaserver-starter.git
+	branch = 6.6.1-cr-updates
