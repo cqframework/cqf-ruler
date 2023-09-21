@@ -953,6 +953,24 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 		}
 		return this;
 	}
+	public ArtifactAssessment setDerivedFromContentRelatedArtifact(CanonicalType targetUri){
+		ArtifactAssessmentContentExtension content = (ArtifactAssessmentContentExtension) this.getExtensionByUrl(CONTENT);
+		if (content == null) {
+			content = new ArtifactAssessmentContentExtension();
+			content.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+		} else {
+			Optional<Extension> maybeRelatedArtifact = content.getExtension().stream()
+				.filter(extension -> extension.getUrl().equals(ArtifactAssessmentContentExtension.RELATEDARTIFACT) && ((RelatedArtifact)extension.getValue()).getType().equals(RelatedArtifactType.DERIVEDFROM))
+				.findFirst();
+			if (maybeRelatedArtifact.isPresent()) {
+				RelatedArtifact derivedFromArtifact = (RelatedArtifact) maybeRelatedArtifact.get().getValue();
+				derivedFromArtifact.setResourceElement(targetUri);
+			} else {
+				content.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+			}
+		}
+		return this;
+	}
 	public boolean checkArtifactCommentParams(String infoType, String summary, String artifactReference, String citationRelatedArtifactUrl, String derivedFromRelatedArtifactUrl, String authorReference){
 		boolean infoTypeCorrect = false;
 		boolean summaryCorrect = false;

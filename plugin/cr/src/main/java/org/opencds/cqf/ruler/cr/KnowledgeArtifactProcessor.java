@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -168,6 +169,14 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		return searchResultsBundle;
+	}
+	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
+		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+		List<IQueryParameterType> urlList = new ArrayList<>();
+		urlList.add(new ReferenceParam(reference));
+		searchParams.put("artifact", List.of(urlList));
+		Bundle searchResultsBundle = (Bundle)fhirDal.search("Basic", searchParams);
 		return searchResultsBundle;
 	}
 
@@ -543,6 +552,15 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
+		// find any artifact assessments and update those as part of the bundle
+		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
+			.getEntry()
+			.stream()
+			.map(entry -> (ArtifactAssessment) entry.getResource())
+			.forEach(artifactComment -> {
+				artifactComment.setDerivedFromContentRelatedArtifact(new CanonicalType(String.format("%s|%s", rootArtifact.getUrl(), releaseVersion)));
+				transactionBundle.addEntry(createEntry(artifactComment));
+			});
 		return transactionBundle;
 	}
 	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
