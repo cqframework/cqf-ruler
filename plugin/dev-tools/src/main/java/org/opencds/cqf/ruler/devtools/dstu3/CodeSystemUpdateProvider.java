@@ -17,7 +17,7 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 

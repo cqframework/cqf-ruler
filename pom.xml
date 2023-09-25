@@ -4,7 +4,7 @@
 
 	<groupId>org.opencds.cqf.ruler</groupId>
 	<artifactId>cqf-ruler</artifactId>
-	<version>0.14.0</version>
+	<version>0.14.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>cqf-ruler</name>
@@ -90,13 +90,13 @@
 		<cqf-tooling.version>2.4.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cqframework.version>2.10.0</cqframework.version>
-		<cql-engine.version>2.10.0</cql-engine.version>
-		<cql-evaluator.version>3.0.0-PRE2</cql-evaluator.version>
+		<cqframework.version>3.1.0</cqframework.version>
+		<cql-engine.version>3.1.0</cql-engine.version>
+		<cql-evaluator.version>3.0.0-PRE7</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.6.1</hapi_version>
+		<hapi_version>6.9.7-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -362,23 +362,14 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.activitydefinition</artifactId>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cr</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
+
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.expression</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.builder</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.fhir</artifactId>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cql</artifactId>
 				<version>${cql-evaluator.version}</version>
 				<exclusions>
 					<exclusion>
@@ -400,43 +391,13 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.library</artifactId>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cr-spring</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure-hapi</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.plandefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaire</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaireresponse</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.spring</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.jackson-deps</artifactId>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-jackson</artifactId>
 				<version>${cql-evaluator.version}</version>
 				<type>pom</type>
 			</dependency>

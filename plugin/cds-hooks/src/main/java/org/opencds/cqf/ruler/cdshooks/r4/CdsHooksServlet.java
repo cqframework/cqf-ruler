@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.cr.r4.IActivityDefinitionProcessorFactory;
+import ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionApplyProvider;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -27,9 +29,10 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.external.AppProperties;
+import org.opencds.cqf.fhir.cql.EvaluationSettings;
+import org.opencds.cqf.fhir.utility.Canonicals;
+import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -50,7 +53,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ca.uhn.fhir.cr.config.CrProperties;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -62,17 +64,19 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private CrProperties.CqlProperties cqlProperties;
+	private EvaluationSettings evaluationSettings;
 	@Autowired
 	private DaoRegistry daoRegistry;
 	@Autowired
 	private AppProperties myAppProperties;
+	//@Autowired
+	//private CqlExecutionProvider cqlExecution;
+	//@Autowired
+	//private LibraryEvaluationProvider libraryExecution;
 	@Autowired
-	private CqlExecutionProvider cqlExecution;
+	private ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired
-	private LibraryEvaluationProvider libraryExecution;
-	@Autowired
-	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider applyEvaluator;
+	IActivityDefinitionProcessorFactory myR4ActivityDefinitionProcessorFactory;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
@@ -356,10 +360,26 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			IdType definitionId = new IdType(
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
-			suggAction.setResource(applyEvaluator.apply(definitionId,
-					patientId, null, patientId, null, null,
-					null, null, null, null, null,
-					null, null, null, null, null, requestDetails));
+			suggAction.setResource(myR4ActivityDefinitionProcessorFactory.create(requestDetails).apply(
+				definitionId, //id
+				null, //canonical
+				null, //activitydef
+				patientId, //subject
+				null, //encounter
+				null, //practitioner
+				null, //org
+				null, //usertype
+				null, //userLanguage
+				null, //userTaskContext
+				null,//setting
+				null, //settingcontext
+				null, //parameters
+				null, //serverdata
+				null, //data
+				null, //endpoint
+				null,//contentendpoint
+				null//terminologyendpoint
+				));
 			hasAction = true;
 		}
 		if (hasAction)
@@ -414,7 +434,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()) {
+		if (evaluationSettings.getCqlOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			// getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}

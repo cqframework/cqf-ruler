@@ -16,18 +16,6 @@ public class CpgProviderFactory {
 	@Autowired
 	private ApplicationContext myApplicationContext;
 
-	public Object getCqlExecutionProvider() {
-		switch (myFhirContext.getVersion().getVersion()) {
-			case DSTU3:
-				return myApplicationContext.getBean(CqlExecutionProvider.class);
-			case R4:
-				return myApplicationContext.getBean(org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider.class);
-			default:
-				throw new ConfigurationException("CqlExecutionProvider not supported for FHIR version "
-					+ myFhirContext.getVersion().getVersion());
-		}
-	}
-
 	public Object getLibraryEvalProvider() {
 		switch (myFhirContext.getVersion().getVersion()) {
 			case DSTU3:

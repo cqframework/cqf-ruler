@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
-		<version>0.14.0</version>
+		<version>0.14.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cqf-ruler-server</artifactId>
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-core</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -269,7 +269,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-dev-tools</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -289,7 +289,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-security</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>

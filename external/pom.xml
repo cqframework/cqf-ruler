@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
-		<version>0.14.0</version>
+		<version>0.14.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cqf-ruler-external</artifactId>
@@ -68,28 +68,21 @@
 			<version>${hapi_version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.fhir</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.library</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.activitydefinition</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr-spring</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.plandefinition</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaire</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaireresponse</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-jackson</artifactId>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.simplejavamail</groupId>
@@ -171,7 +164,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
+
 					<additionalOptions>-Xdoclint:none</additionalOptions>
 					<additionalJOption>-Xdoclint:none</additionalJOption>
 				</configuration>

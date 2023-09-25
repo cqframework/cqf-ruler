@@ -4,34 +4,49 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
-		<version>0.14.0</version>
+		<version>0.14.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cqf-ruler-plugin</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>cds-hooks</module>
-		<module>cpg</module>
-		<module>case-reporting</module>
-		<module>cr</module>
+		<!--<module>cds-hooks</module>-->
+		<!--<module>case-reporting</module>-->
 		<module>dev-tools</module>
-		<module>ra</module>
-		<module>sdc</module>
+		<!--<module>ra</module>-->
+		<!--<module>sdc</module>-->
 		<module>security</module>
+		<!--<module>cpg</module>-->
 	</modules>
 	<dependencies>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-core</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-external</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-jackson</artifactId>
+			<type>pom</type>
+		</dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>org.hl7.fhir.r5</artifactId>
@@ -46,30 +61,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.builder</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.library</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.activitydefinition</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.plandefinition</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaire</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaireresponse</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>info.cqframework</groupId>
 			<artifactId>engine-fhir</artifactId>
@@ -87,7 +79,7 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-test</artifactId>
-			<version>0.14.0</version>
+			<version>0.14.2-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

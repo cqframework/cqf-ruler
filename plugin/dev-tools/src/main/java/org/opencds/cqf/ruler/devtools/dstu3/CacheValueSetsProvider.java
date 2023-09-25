@@ -13,7 +13,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.opencds.cqf.cql.evaluator.fhir.util.Clients;
+import org.opencds.cqf.fhir.utility.client.Clients;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 

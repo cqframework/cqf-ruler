@@ -1,12 +1,10 @@
 package org.opencds.cqf.ruler.ra;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.cr.config.CrR4Config;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.ra.r4.ApproveProvider;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.RACodingGapsProvider;

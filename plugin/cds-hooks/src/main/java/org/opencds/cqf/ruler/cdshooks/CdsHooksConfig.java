@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.cdshooks;
 
-import ca.uhn.fhir.cr.config.CrProperties;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.fhir.cql.EvaluationSettings;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,7 @@ import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
-@Import({CpgConfig.class,
-})
+//@Import({CpgConfig.class,})
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CdsHooksConfig {
 
@@ -34,8 +33,8 @@ public class CdsHooksConfig {
 	}
 
 	@Bean
-	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, CrProperties.CqlProperties cqlProperties) {
-		return new ProviderConfiguration(cdsProperties, cqlProperties);
+	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, EvaluationSettings evaluationSettings) {
+		return new ProviderConfiguration(cdsProperties, evaluationSettings);
 	}
 
 	@Bean

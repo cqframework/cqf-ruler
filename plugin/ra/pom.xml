@@ -10,11 +10,6 @@
 	<artifactId>cqf-ruler-ra</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cr</artifactId>
-			<version>0.14.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>5.7.1</version>

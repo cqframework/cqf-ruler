@@ -1,6 +1,6 @@
 package org.opencds.cqf.ruler.cdshooks.providers;
 
-import ca.uhn.fhir.cr.config.CrProperties;
+import org.opencds.cqf.fhir.cql.EvaluationSettings;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksProperties;
 
 
@@ -30,14 +30,14 @@ public class ProviderConfiguration {
 		this.clientIdHeaderName = clientIdHeaderName;
 	}
 
-	public ProviderConfiguration(CdsHooksProperties cdsProperties, CrProperties.CqlProperties cqlProperties) {
+	public ProviderConfiguration(CdsHooksProperties cdsProperties, EvaluationSettings evaluationSettings) {
 		this.expandValueSets = cdsProperties.getFhirServer().getExpandValueSets();
 		this.maxCodesPerQuery = cdsProperties.getFhirServer().getMaxCodesPerQuery();
 		this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
 		this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
 		this.queryBatchThreshold = cdsProperties.getFhirServer().getQueryBatchThreshold();
 		this.clientIdHeaderName = cdsProperties.getClientIdHeaderName();
-		this.cqlLoggingEnabled = cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled();
+		this.cqlLoggingEnabled = evaluationSettings.getCqlOptions().getCqlEngineOptions().isDebugLoggingEnabled();
 	}
 
 	public Integer getMaxCodesPerQuery() {

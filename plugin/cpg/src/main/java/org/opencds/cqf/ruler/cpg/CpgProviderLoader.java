@@ -31,12 +31,10 @@ public class CpgProviderLoader {
 			case DSTU3:
 				myLogger.info("Registering DSTU3 Ruler Cpg Providers");
 				myResourceProviderFactory.addSupplier(myCpgProviderFactory::getLibraryEvalProvider);
-				myResourceProviderFactory.addSupplier(myCpgProviderFactory::getCqlExecutionProvider);
 				break;
 			case R4:
 				myLogger.info("Registering R4 Ruler Cpg Providers");
 				myResourceProviderFactory.addSupplier(myCpgProviderFactory::getLibraryEvalProvider);
-				myResourceProviderFactory.addSupplier(myCpgProviderFactory::getCqlExecutionProvider);
 				break;
 			default:
 				throw new ConfigurationException("Clinical Reasoning not supported for FHIR version "

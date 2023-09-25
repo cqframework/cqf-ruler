@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
 @Configuration
@@ -50,30 +49,6 @@ public class CrConfig {
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.provider.CollectDataProvider r4CollectDataProvider() {
 		return new org.opencds.cqf.ruler.cr.r4.provider.CollectDataProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.DataOperationsProvider dstu3DataRequirementsProvider() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.DataOperationsProvider();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cr.r4.provider.DataOperationsProvider r4DataRequirementsProvider() {
-		return new org.opencds.cqf.ruler.cr.r4.provider.DataOperationsProvider();
-	}
-
-	@Bean
-	public ILibraryManagerFactory libraryManagerFactory(
-			ModelManager modelManager) {
-		return (providers) -> {
-			LibraryManager libraryManager = new LibraryManager(modelManager);
-			for (LibrarySourceProvider provider : providers) {
-				libraryManager.getLibrarySourceLoader().registerProvider(provider);
-			}
-			return libraryManager;
-		};
 	}
 
 	@Bean

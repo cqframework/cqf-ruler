@@ -18,8 +18,6 @@ import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
