@@ -1,8 +1,6 @@
 package org.opencds.cqf.ruler;
 
-import static java.lang.Thread.sleep;
 import static java.util.Comparator.comparing;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +17,8 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opencds.cqf.external.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -36,8 +36,11 @@ import org.springframework.test.annotation.DirtiesContext;
 	//"hapi.fhir.subscription.websocket_enabled=true",
 	//"hapi.fhir.mdm_enabled=true",
 	"hapi.fhir.cr_enabled=true",
+	"hapi.fhir.caregaps_section_author=Organization/alphora-author",
+	"hapi.fhir.caregaps_reporter=Organization/alphora",
 	"hapi.fhir.implementationguides.dk-core.name=hl7.fhir.dk.core",
 	"hapi.fhir.implementationguides.dk-core.version=1.1.0",
+	"hapi.fhir.auto_create_placeholder_reference_targets=true",
 	// Override is currently required when using MDM as the construction of the MDM
 	// beans are ambiguous as they are constructed multiple places. This is evident
 	// when running in a spring boot environment
@@ -47,6 +50,9 @@ public class ExampleServerR4IT implements IServerSupport{
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
+
+	@Autowired
+	private AppProperties appProperties;
 
 	@LocalServerPort
 	private int port;
@@ -116,7 +122,7 @@ public class ExampleServerR4IT implements IServerSupport{
 		Parameters.ParametersParameterComponent component = response.get(0);
 		assertTrue(component.getResource() instanceof MeasureReport);
 		MeasureReport report = (MeasureReport) component.getResource();
-		assertEquals(measureUrl, report.getMeasure());
+		assertEquals(measureUrl + "|0.0.003", report.getMeasure());
 	}
 
 	private org.hl7.fhir.r4.model.Bundle loadBundle(String theLocation, FhirContext theCtx, IGenericClient theClient) throws IOException {
