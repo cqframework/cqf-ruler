@@ -9,25 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import ca.uhn.fhir.model.primitive.IdDt;
-import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -38,8 +33,8 @@ import org.springframework.test.annotation.DirtiesContext;
 	"spring.datasource.url=jdbc:h2:mem:dbr4",
 	"hapi.fhir.enable_repository_validating_interceptor=true",
 	"hapi.fhir.fhir_version=r4",
-	"hapi.fhir.subscription.websocket_enabled=true",
-	"hapi.fhir.mdm_enabled=true",
+	//"hapi.fhir.subscription.websocket_enabled=true",
+	//"hapi.fhir.mdm_enabled=true",
 	"hapi.fhir.cr_enabled=true",
 	"hapi.fhir.implementationguides.dk-core.name=hl7.fhir.dk.core",
 	"hapi.fhir.implementationguides.dk-core.version=1.1.0",

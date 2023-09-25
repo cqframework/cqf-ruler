@@ -34,6 +34,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 		MdmConfig.class,
 		JpaBatch2Config.class,
 		Batch2JobsConfig.class,
+
 		BeanFinderConfig.class,
 		RulerConfig.class })
 public class Application extends SpringBootServletInitializer {
