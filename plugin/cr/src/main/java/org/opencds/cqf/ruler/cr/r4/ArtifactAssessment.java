@@ -953,28 +953,38 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 		}
 		return this;
 	}
-	public ArtifactAssessment setDerivedFromContentRelatedArtifact(CanonicalType targetUri){
-		Extension content = this.getExtensionByUrl(CONTENT);
-		if (content == null) {
-			ArtifactAssessmentContentExtension newContent = new ArtifactAssessmentContentExtension();
-			newContent.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
-			this.addExtension(newContent);
-		} else {
-			Optional<Extension> maybeRelatedArtifact = content.getExtension().stream()
+	public Optional<RelatedArtifact> getDerivedFromContentRelatedArtifact() {
+		Optional<RelatedArtifact> returnedRelatedArtifact = Optional.empty();
+		Optional<Extension> content = Optional.ofNullable(this.getExtensionByUrl(CONTENT));
+		if (content.isPresent()) {
+			Optional<Extension> maybeRelatedArtifact = content.get().getExtension().stream()
 				.filter(extension -> extension.getUrl().equals(ArtifactAssessmentContentExtension.RELATEDARTIFACT) && ((RelatedArtifact)extension.getValue()).getType().equals(RelatedArtifactType.DERIVEDFROM))
 				.findFirst();
 			if (maybeRelatedArtifact.isPresent()) {
 				RelatedArtifact derivedFromArtifact = (RelatedArtifact) maybeRelatedArtifact.get().getValue();
-				derivedFromArtifact.setResourceElement(targetUri);
-			} else {
-				// this is duplicated from the addRelatedArtifact method
-				// since otherwise we get ClassCastExceptions when trying
-				// to Cast from Basic to ArtifactAssessment
-				RelatedArtifact newRelatedArtifact = new RelatedArtifact();
-				newRelatedArtifact.setType(RelatedArtifactType.DERIVEDFROM);
-				newRelatedArtifact.setResourceElement(targetUri);
-				content.addExtension(ArtifactAssessmentContentExtension.RELATEDARTIFACT,newRelatedArtifact);
+				returnedRelatedArtifact = Optional.of(derivedFromArtifact);
 			}
+		}
+		return returnedRelatedArtifact;
+	}
+	public ArtifactAssessment setDerivedFromContentRelatedArtifact(CanonicalType targetUri){
+		Optional<RelatedArtifact> existingRelatedArtifact = this.getDerivedFromContentRelatedArtifact();
+		if (existingRelatedArtifact.isPresent()) {
+				RelatedArtifact derivedFromArtifact = existingRelatedArtifact.get();
+				derivedFromArtifact.setResourceElement(targetUri);
+		} else {
+			Extension content = this.getExtensionByUrl(CONTENT);
+			if (content == null) {
+				content = new Extension(CONTENT);
+				this.addExtension(content);
+			}
+			// this is duplicated from the addRelatedArtifact method
+			// since otherwise we get ClassCastExceptions when trying
+			// to Cast from Basic to ArtifactAssessment or its Extension subclasses
+			RelatedArtifact newRelatedArtifact = new RelatedArtifact();
+			newRelatedArtifact.setType(RelatedArtifactType.DERIVEDFROM);
+			newRelatedArtifact.setResourceElement(targetUri);
+			content.addExtension(ArtifactAssessmentContentExtension.RELATEDARTIFACT,newRelatedArtifact);
 		}
 		return this;
 	}

@@ -493,6 +493,41 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertNotNull(maybeException);
 		}
 	}
+		@Test
+	void release_test_artifactComment_updated() {
+		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		String versionData = "1.2.3";
+		Parameters approveParams = parameters(
+			part("approvalDate", new DateType(new Date(),TemporalPrecisionEnum.DAY))
+		);
+		Bundle approvedBundle = getClient().operation()
+				.onInstance("Library/ReleaseSpecificationLibrary")
+				.named("$crmi.approve")
+				.withParameters(approveParams)
+				.useHttpGet()
+				.returnResourceType(Bundle.class)
+				.execute();
+		Optional<BundleEntryComponent> maybeArtifactAssessment = approvedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+		assertTrue(maybeArtifactAssessment.isPresent());
+		ArtifactAssessment artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
+		assertTrue(artifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3-draft"));
+		Parameters releaseParams = parameters(
+			part("version", versionData),
+			part("versionBehavior", "default")
+		);
+		Bundle releasedBundle = getClient().operation()
+				.onInstance("Library/ReleaseSpecificationLibrary")
+				.named("$crmi.release")
+				.withParameters(releaseParams)
+				.useHttpGet()
+				.returnResourceType(Bundle.class)
+				.execute();
+		Optional<BundleEntryComponent> maybeReleasedArtifactAssessment = releasedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+		assertTrue(maybeReleasedArtifactAssessment.isPresent());
+		ArtifactAssessment releasedArtifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeReleasedArtifactAssessment.get().getResponse().getLocation());
+		assertTrue(releasedArtifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3"));
+	}
 	@Test
 	void reviseOperation_active_test() {
 		Library library = (Library) loadResource("ersd-active-library-example.json");
