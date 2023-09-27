@@ -954,10 +954,11 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 		return this;
 	}
 	public ArtifactAssessment setDerivedFromContentRelatedArtifact(CanonicalType targetUri){
-		ArtifactAssessmentContentExtension content = (ArtifactAssessmentContentExtension) this.getExtensionByUrl(CONTENT);
+		Extension content = this.getExtensionByUrl(CONTENT);
 		if (content == null) {
-			content = new ArtifactAssessmentContentExtension();
-			content.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+			ArtifactAssessmentContentExtension newContent = new ArtifactAssessmentContentExtension();
+			newContent.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+			this.addExtension(newContent);
 		} else {
 			Optional<Extension> maybeRelatedArtifact = content.getExtension().stream()
 				.filter(extension -> extension.getUrl().equals(ArtifactAssessmentContentExtension.RELATEDARTIFACT) && ((RelatedArtifact)extension.getValue()).getType().equals(RelatedArtifactType.DERIVEDFROM))
@@ -966,7 +967,13 @@ public String toSystem(ArtifactAssessmentDisposition code) {
 				RelatedArtifact derivedFromArtifact = (RelatedArtifact) maybeRelatedArtifact.get().getValue();
 				derivedFromArtifact.setResourceElement(targetUri);
 			} else {
-				content.addRelatedArtifact(targetUri, RelatedArtifactType.DERIVEDFROM);
+				// this is duplicated from the addRelatedArtifact method
+				// since otherwise we get ClassCastExceptions when trying
+				// to Cast from Basic to ArtifactAssessment
+				RelatedArtifact newRelatedArtifact = new RelatedArtifact();
+				newRelatedArtifact.setType(RelatedArtifactType.DERIVEDFROM);
+				newRelatedArtifact.setResourceElement(targetUri);
+				content.addExtension(ArtifactAssessmentContentExtension.RELATEDARTIFACT,newRelatedArtifact);
 			}
 		}
 		return this;

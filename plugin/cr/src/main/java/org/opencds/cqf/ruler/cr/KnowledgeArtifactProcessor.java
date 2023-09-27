@@ -16,6 +16,7 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -556,7 +557,22 @@ public class KnowledgeArtifactProcessor {
 		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
 			.getEntry()
 			.stream()
-			.map(entry -> (ArtifactAssessment) entry.getResource())
+			// The search is on Basic resources only unless we can register the ArtifactAssessment class
+			.map(entry -> {
+				try {
+					return (Basic) entry.getResource();
+				} catch (Exception e) {
+					return null;
+				}
+			})
+			.filter(entry -> entry != null)
+			// convert Basic to ArtifactAssessment by transferring the extensions
+			.map(basic -> {
+				ArtifactAssessment extensionsTransferred = new ArtifactAssessment();
+				extensionsTransferred.setExtension(basic.getExtension());
+				extensionsTransferred.setId(basic.getClass().getSimpleName() + "/" + basic.getIdPart());
+				return extensionsTransferred;
+			})
 			.forEach(artifactComment -> {
 				artifactComment.setDerivedFromContentRelatedArtifact(new CanonicalType(String.format("%s|%s", rootArtifact.getUrl(), releaseVersion)));
 				transactionBundle.addEntry(createEntry(artifactComment));
