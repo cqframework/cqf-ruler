@@ -59,7 +59,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 *                            used to represent the proper structure.
 	 * @return An IBaseResource that is the targeted resource, updated with the approval
 	 */
-	@Operation(name = "$approve", idempotent = true, global = true, type = MetadataResource.class)
+	@Operation(name = "$crmi.approve", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$approve", value = "Apply an approval to an existing artifact, regardless of status.")
 	public Bundle approveOperation(
 			RequestDetails requestDetails,
@@ -125,7 +125,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @param version             new version in the form MAJOR.MINOR.PATCH
 	 * @return A transaction bundle result of the newly created resources
 	 */
-	@Operation(name = "$draft", idempotent = true, global = true, type = MetadataResource.class)
+	@Operation(name = "$crmi.draft", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
@@ -142,7 +142,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @param latestFromTxServer  whether or not to query the TxServer if version information is missing from references
 	 * @return A transaction bundle result of the updated resources
 	 */
-	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
+	@Operation(name = "$crmi.release", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
 	public Bundle releaseOperation(
 		RequestDetails requestDetails,
@@ -156,7 +156,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
 	}
 
-	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
+	@Operation(name = "$crmi.package", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$package", value = "Package an artifact and components / dependencies")
 	public Bundle packageOperation(
 		RequestDetails requestDetails,
@@ -194,7 +194,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	}
 
 
-	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
+	@Operation(name = "$crmi.revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {

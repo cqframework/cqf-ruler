@@ -37,18 +37,17 @@ import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactAdapter;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import org.springframework.context.annotation.Lazy;
 
 @Lazy
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -87,7 +86,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters params = parameters(part("version", version) );
 		Bundle returnedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$draft")
+			.named("$crmi.draft")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -116,7 +115,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$draft")
+			.named("$crmi.draft")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -135,7 +134,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(minimalLibReference)
-			.named("$draft")
+			.named("$crmi.draft")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -153,7 +152,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance("Library/there-is-no-such-id")
-			.named("$draft")
+			.named("$crmi.draft")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -171,7 +170,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			try {
 				getClient().operation()
 				.onInstance(minimalLibReference)
-				.named("$draft")
+				.named("$crmi.draft")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -195,7 +194,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Bundle returnResource = getClient().operation()
 			.onInstance("Library/ReleaseSpecificationLibrary")
-			.named("$release")
+			.named("$crmi.release")
 			.withParameters(params1)
 			.useHttpGet()
 			.returnResourceType(Bundle.class)
@@ -290,7 +289,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Bundle returnResource = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$release")
+			.named("$crmi.release")
 			.withParameters(params)
 			.useHttpGet()
 			.returnResourceType(Bundle.class)
@@ -315,7 +314,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Bundle returnResource = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$release")
+			.named("$crmi.release")
 			.withParameters(params)
 			.useHttpGet()
 			.returnResourceType(Bundle.class)
@@ -372,7 +371,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 				.onInstance(specificationLibReference)
-				.named("$release")
+				.named("$crmi.release")
 				.withParameters(params)
 				.useHttpGet()
 				.returnResourceType(Bundle.class)
@@ -397,7 +396,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")
-				.named("$release")
+				.named("$crmi.release")
 				.withParameters(params1)
 				.useHttpGet()
 				.returnResourceType(Bundle.class)
@@ -419,7 +418,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			try {
 				getClient().operation()
 				.onInstance(specificationLibReference)
-				.named("$release")
+				.named("$crmi.release")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -440,7 +439,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			try {
 				getClient().operation()
 				.onInstance(specificationLibReference)
-				.named("$release")
+				.named("$crmi.release")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -459,7 +458,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance("Library/this-resource-does-not-exist")
-			.named("$release")
+			.named("$crmi.release")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -484,7 +483,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			try {
 				getClient().operation()
 				.onInstance(specificationLibReference)
-				.named("$release")
+				.named("$crmi.release")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -503,7 +502,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 				.onServer()
-				.named("$revise")
+				.named("$crmi.revise")
 				.withParameters(params)
 				.returnResourceType(Library.class)
 				.execute();
@@ -524,7 +523,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			returnResource = getClient().operation()
 				.onServer()
-				.named("$revise")
+				.named("$crmi.revise")
 				.withParameters(params)
 				.returnResourceType(Library.class)
 				.execute();
@@ -548,7 +547,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$approve")
+			.named("$crmi.approve")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -565,7 +564,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$approve")
+			.named("$crmi.approve")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -586,7 +585,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$approve")
+			.named("$crmi.approve")
 			.withParameters(params)
 			.returnResourceType(Library.class)
 			.execute();
@@ -619,7 +618,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$approve")
+			.named("$crmi.approve")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -633,7 +632,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		lib.getMeta().getLastUpdatedElement().setPrecision(TemporalPrecisionEnum.DAY);
 		// Library.date matches the meta.lastUpdated value
 		assertTrue(lib.getDateElement().asStringValue().equals(lib.getMeta().getLastUpdatedElement().asStringValue()));
-		// Ensure that approval date is NOT before Library.date (see $release)
+		// Ensure that approval date is NOT before Library.date (see $crmi.release)
 		assertFalse(lib.getApprovalDate().before(lib.getDate()));
 		// ArtifactAssessment is saved as type Basic, update when we change to OperationOutcome
 		// Get the reference from BundleEntry.response.location
@@ -671,7 +670,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				try {
 					getClient().operation()
 					.onInstance(specificationLibReference)
-					.named("$package")
+					.named("$crmi.package")
 					.withParameters(params)
 					.returnResourceType(Bundle.class)
 					.execute();
@@ -687,7 +686,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle packaged = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(allParams)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -705,7 +704,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle updatedCanonicalVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -725,7 +724,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -738,7 +737,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle noErrorCheckCanonicalPackage = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -754,7 +753,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle forcedVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -774,7 +773,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle countZeroBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(countZeroParams)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -786,7 +785,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle count2Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(count2Params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -797,7 +796,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle count2Offset2Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(count2Offset2Params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -807,7 +806,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle offset4Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(offset4Params)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -817,7 +816,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle offsetMaxBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(offsetMaxParams)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -828,7 +827,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Bundle offsetMaxRandomCountBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(offsetMaxRandomCountParams)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -840,7 +839,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters emptyParams = parameters();
 		Bundle packagedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(emptyParams)
 			.returnResourceType(Bundle.class)
 			.execute();
@@ -883,7 +882,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			);
 			Bundle packaged = getClient().operation()
 				.onInstance(specificationLibReference)
-				.named("$package")
+				.named("$crmi.package")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -907,7 +906,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Bundle loadedBundle = (Bundle) loadTransaction("ersd-active-transaction-bundle-example.json");
 		Bundle packagedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
-			.named("$package")
+			.named("$crmi.package")
 			.withParameters(parameters())
 			.returnResourceType(Bundle.class)
 			.execute();
