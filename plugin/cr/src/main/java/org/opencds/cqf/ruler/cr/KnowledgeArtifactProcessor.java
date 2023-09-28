@@ -36,6 +36,7 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -343,22 +344,26 @@ public class KnowledgeArtifactProcessor {
 			throw new UnprocessableEntityException("The version contains illegal characters");
 		}
 		if (!version.contains(".")) {
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH.REVISION");
 		} else {
 			String[] versionParts = version.split("\\.");
-			if(versionParts.length != 3){
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
+			if(versionParts.length != 4){
+				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH.REVISION");
 			}
 			for(int i = 0; i < versionParts.length; i++) {
 				String section = "";
-				if(Integer.parseInt(versionParts[i]) < 0) {
-					if(i == 0) {
+				if(i == 0) {
 						section = "Major";
 					} else if(i == 1) {
 						section = "Minor";
 					} else if (i == 2) {
 						section = "Patch";
+					} else if (i == 3) {
+						section = "Revision";
 					}
+				if (versionParts[i] == null || versionParts[i] == "") {
+					throw new UnprocessableEntityException("The " + section + " version part should not be empty.");
+				} else if (Integer.parseInt(versionParts[i]) < 0) {
 					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
 				}
 			}
@@ -456,7 +461,7 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, String releaseLabel, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
@@ -473,7 +478,15 @@ public class KnowledgeArtifactProcessor {
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
-
+		if (releaseLabel != null) {
+			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
+			if (releaseLabelExtension == null) {
+				// create the Extension and add it to the root artifact if it doesn't exist
+				releaseLabelExtension = new Extension(releaseLabelUrl);
+				rootArtifact.addExtension(releaseLabelExtension);
+			}
+			releaseLabelExtension.setValue(new StringType(releaseLabel));
+		}
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
