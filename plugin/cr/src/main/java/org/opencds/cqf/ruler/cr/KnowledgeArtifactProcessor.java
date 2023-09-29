@@ -16,6 +16,7 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -45,6 +46,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -168,6 +170,14 @@ public class KnowledgeArtifactProcessor {
 		}
 
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		return searchResultsBundle;
+	}
+	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
+		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+		List<IQueryParameterType> urlList = new ArrayList<>();
+		urlList.add(new ReferenceParam(reference));
+		searchParams.put("artifact", List.of(urlList));
+		Bundle searchResultsBundle = (Bundle)fhirDal.search("Basic", searchParams);
 		return searchResultsBundle;
 	}
 
@@ -543,6 +553,30 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
+		// find any artifact assessments and update those as part of the bundle
+		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
+			.getEntry()
+			.stream()
+			// The search is on Basic resources only unless we can register the ArtifactAssessment class
+			.map(entry -> {
+				try {
+					return (Basic) entry.getResource();
+				} catch (Exception e) {
+					return null;
+				}
+			})
+			.filter(entry -> entry != null)
+			// convert Basic to ArtifactAssessment by transferring the extensions
+			.map(basic -> {
+				ArtifactAssessment extensionsTransferred = new ArtifactAssessment();
+				extensionsTransferred.setExtension(basic.getExtension());
+				extensionsTransferred.setId(basic.getClass().getSimpleName() + "/" + basic.getIdPart());
+				return extensionsTransferred;
+			})
+			.forEach(artifactComment -> {
+				artifactComment.setDerivedFromContentRelatedArtifact(new CanonicalType(String.format("%s|%s", rootArtifact.getUrl(), releaseVersion)));
+				transactionBundle.addEntry(createEntry(artifactComment));
+			});
 		return transactionBundle;
 	}
 	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
