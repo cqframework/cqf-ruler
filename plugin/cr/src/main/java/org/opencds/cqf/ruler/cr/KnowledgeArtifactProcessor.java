@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -343,30 +345,11 @@ public class KnowledgeArtifactProcessor {
 		if(version.contains("/") || version.contains("\\") || version.contains("|")){
 			throw new UnprocessableEntityException("The version contains illegal characters");
 		}
-		if (!version.contains(".")) {
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH.REVISION");
-		} else {
-			String[] versionParts = version.split("\\.");
-			if(versionParts.length != 4){
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH.REVISION");
-			}
-			for(int i = 0; i < versionParts.length; i++) {
-				String section = "";
-				if(i == 0) {
-						section = "Major";
-					} else if(i == 1) {
-						section = "Minor";
-					} else if (i == 2) {
-						section = "Patch";
-					} else if (i == 3) {
-						section = "Revision";
-					}
-				if (versionParts[i] == null || versionParts[i] == "") {
-					throw new UnprocessableEntityException("The " + section + " version part should not be empty.");
-				} else if (Integer.parseInt(versionParts[i]) < 0) {
-					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
-				}
-			}
+		Pattern pattern = Pattern.compile("^(\\d+\\.)(\\d+\\.)(\\d+\\.)?(\\*|\\d+)$", Pattern.CASE_INSENSITIVE);
+    Matcher matcher = pattern.matcher(version);
+    boolean matchFound = matcher.find();
+		if (!matchFound) {
+			throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.REVISION");
 		}
 	}
 	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {

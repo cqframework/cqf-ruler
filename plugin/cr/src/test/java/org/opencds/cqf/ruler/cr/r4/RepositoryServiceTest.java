@@ -65,8 +65,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"-1.-1.2.1",
 			"1.-1.2.1",
 			"1.1.-2.1",
-			"1.1..21",
+			"7.1..21",
 			"1.2.1.3-draft",
+			"1.2.3-draft",
+			"3.2",
+			"1.",
+			"3.ad.2.",
 			"",
 			null
 		);
