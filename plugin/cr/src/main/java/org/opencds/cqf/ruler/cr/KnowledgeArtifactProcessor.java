@@ -654,12 +654,12 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
+					String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
+								ownedResourceReference.getValueAsString());
 					if (warnNonExperimental && referencedResource.getExperimental()) {
-						myLog.warn(String.format("Root artifact is not experimental, but references an Experimental resource with URL '%s'.",
-								ownedResourceReference.getValueAsString()));
+						myLog.warn(nonExperimentalError);
 					} else if (errorNonExperimental && referencedResource.getExperimental()) {
-						throw new UnprocessableEntityException(String.format("Root artifact is not experimental, but references an Experimental resource with URL '%s'.",
-								ownedResourceReference.getValueAsString()));
+						throw new UnprocessableEntityException(nonExperimentalError);
 					}
 					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, errorNonExperimental, warnNonExperimental, fhirDal));
 				}
