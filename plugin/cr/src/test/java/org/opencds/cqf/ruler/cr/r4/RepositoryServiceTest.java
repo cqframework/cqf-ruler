@@ -305,7 +305,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void releaseResource_require_non_experimental() {
+	void releaseResource_require_non_experimental_error() {
 		loadResource("artifactAssessment-search-parameter.json");
 		// SpecificationLibrary - root is experimentalbut HAS experimental children
 		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
@@ -345,14 +345,45 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertTrue(nonExperimentalChildException != null);
 		assertTrue(nonExperimentalChildException.getMessage().contains("not Experimental"));
-		// Bundle returnResource = 
-
-		// assertNotNull(returnResource);
-		// Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
-		// assertTrue(maybeLib.isPresent());
-		// Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 	}
 
+	// @Test
+	// void releaseResource_require_non_experimental_warn() {
+	// 	loadResource("artifactAssessment-search-parameter.json");
+	// 	// SpecificationLibrary - root is experimentalbut HAS experimental children
+	// 	loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
+	// 	// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
+	// 	loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
+	// 	// mock the logger
+	// 	mockStatic(LoggerFactory.class);
+	// 	Logger myLog = mock(Logger.class);
+	// 	when(LoggerFactory.getLogger(any(Class.class))).thenReturn(myLog);
+
+	// 	Parameters params = parameters(
+	// 		part("version", new StringType("1.2.3")),
+	// 		part("versionBehavior", new StringType("default")),
+	// 		part("requireNonExperimental", new BooleanType(false))
+	// 	);
+	// 	getClient().operation()
+	// 		.onInstance(specificationLibReference)
+	// 		.named("$crmi.release")
+	// 		.withParameters(params)
+	// 		.useHttpGet()
+	// 		.returnResourceType(Bundle.class)
+	// 		.execute();
+	// 	// no warning if the root is Experimental
+	// 	verify(myLog, never()).warn(anyString());
+
+	// 	getClient().operation()
+	// 		.onInstance(specificationLibReference+"2")
+	// 		.named("$crmi.release")
+	// 		.withParameters(params)
+	// 		.useHttpGet()
+	// 		.returnResourceType(Bundle.class)
+	// 		.execute();
+	// 	// SHOULD warn if the root is not experimental
+	// 	verify(myLog).warn(anyString());
+	// }
 
 	@Test
 	void releaseResource_propagate_effective_period() {
