@@ -149,11 +149,12 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@IdParam IdType theId,
 		@OperationParam(name = "version") String version,
 		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
-		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
+		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer,
+		@OperationParam(name = "requireNonExperimental", typeName = "Boolean") IPrimitiveType<Boolean> requireNonExpermimental)
 		throws FHIRException {
 
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
+		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, latestFromTxServer != null && latestFromTxServer.getValue(), requireNonExpermimental != null && requireNonExpermimental.getValue(), fhirDal));
 	}
 
 	@Operation(name = "$crmi.package", idempotent = true, global = true, type = MetadataResource.class)
