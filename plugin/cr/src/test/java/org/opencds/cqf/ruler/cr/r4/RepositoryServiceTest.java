@@ -184,6 +184,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-release-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		String existingVersion = "1.2.3";
 		String versionData = "1.2.7";
 
@@ -279,6 +280,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_force_version() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		// Existing version should be "1.2.3";
 		String newVersionToForce = "1.2.7";
 
@@ -303,8 +305,59 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
+	void releaseResource_require_non_experimental() {
+		loadResource("artifactAssessment-search-parameter.json");
+		// SpecificationLibrary - root is experimentalbut HAS experimental children
+		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
+		// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
+		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new StringType("default")),
+			part("requireNonExperimental", new BooleanType(true))
+		);
+		Exception notExpectingAnyException = null;
+		// no Exception if root is experimental
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (Exception e) {
+			notExpectingAnyException = e;
+		}
+		assertTrue(notExpectingAnyException == null);
+
+		UnprocessableEntityException nonExperimentalChildException = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference+"2")
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			nonExperimentalChildException = e;
+		}
+		assertTrue(nonExperimentalChildException != null);
+		assertTrue(nonExperimentalChildException.getMessage().contains("not Experimental"));
+		// Bundle returnResource = 
+
+		// assertNotNull(returnResource);
+		// Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
+		// assertTrue(maybeLib.isPresent());
+		// Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+	}
+
+
+	@Test
 	void releaseResource_propagate_effective_period() {
 		loadTransaction("ersd-small-approved-draft-no-child-effective-period.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		String effectivePeriodToPropagate = "2020-12-11";
 
 		Parameters params = parameters(
@@ -409,6 +462,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_version_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		for(String version:badVersionList){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(
@@ -431,6 +485,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_version_active_test() {
 		loadTransaction("ersd-small-active-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 			PreconditionFailedException maybeException = null;
 			Parameters params = parameters(
 				part("version", new StringType("1.2.3")),
@@ -470,6 +525,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_versionBehaviour_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		List<String> badVersionBehaviors = Arrays.asList(
 			"not-a-valid-option",
 			null
