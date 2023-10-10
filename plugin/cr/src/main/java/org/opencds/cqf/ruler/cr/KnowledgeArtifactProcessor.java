@@ -471,15 +471,7 @@ public class KnowledgeArtifactProcessor {
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
-		if (releaseLabel != null) {
-			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
-			if (releaseLabelExtension == null) {
-				// create the Extension and add it to the root artifact if it doesn't exist
-				releaseLabelExtension = new Extension(releaseLabelUrl);
-				rootArtifact.addExtension(releaseLabelExtension);
-			}
-			releaseLabelExtension.setValue(new StringType(releaseLabel));
-		}
+		updateReleaseLabel(rootArtifact, releaseLabel);
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -548,7 +540,14 @@ public class KnowledgeArtifactProcessor {
 				distinctResolvedRelatedArtifacts.add(ra);
 			}
 		}
+		// update ArtifactComments referencing the old Canonical Reference
+		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, fhirDal));
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
+
+		return transactionBundle;
+	}
+	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact, FhirDal fhirDal){
+		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
 		// find any artifact assessments and update those as part of the bundle
 		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
 			.getEntry()
@@ -571,9 +570,20 @@ public class KnowledgeArtifactProcessor {
 			})
 			.forEach(artifactComment -> {
 				artifactComment.setDerivedFromContentRelatedArtifact(new CanonicalType(String.format("%s|%s", rootArtifact.getUrl(), releaseVersion)));
-				transactionBundle.addEntry(createEntry(artifactComment));
+				returnEntries.add(createEntry(artifactComment));
 			});
-		return transactionBundle;
+			return returnEntries;
+	}
+	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) {
+		if (releaseLabel != null) {
+			Extension releaseLabelExtension = artifact.getExtensionByUrl(releaseLabel);
+			if (releaseLabelExtension == null) {
+				// create the Extension and add it to the artifact if it doesn't exist
+				releaseLabelExtension = new Extension(releaseLabelUrl);
+				artifact.addExtension(releaseLabelExtension);
+			}
+			releaseLabelExtension.setValue(new StringType(releaseLabel));
+		}
 	}
 	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
 		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
