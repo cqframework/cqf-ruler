@@ -97,7 +97,6 @@
               "url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc2",
               "version": "1.2.3-draft",
               "status": "draft",
-              "experimental":true,
               "compose": {
                   "include": [
                       {
@@ -147,6 +146,7 @@
               ],
               "version": "20210526",
               "status": "active",
+              "experimental":true,
               "compose": {
                   "include": [
                       {

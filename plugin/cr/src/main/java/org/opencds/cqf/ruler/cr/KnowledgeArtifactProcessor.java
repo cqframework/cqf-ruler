@@ -39,6 +39,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
@@ -654,13 +655,7 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
-								ownedResourceReference.getValueAsString());
-					if (warnNonExperimental && referencedResource.getExperimental()) {
-						myLog.warn(nonExperimentalError);
-					} else if (errorNonExperimental && referencedResource.getExperimental()) {
-						throw new UnprocessableEntityException(nonExperimentalError);
-					}
+					checkNonExperimental(referencedResource, warnNonExperimental, errorNonExperimental, fhirDal);
 					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, errorNonExperimental, warnNonExperimental, fhirDal));
 				}
 			}
@@ -711,6 +706,29 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		return updatedReference;
+	}
+	private void checkNonExperimental(MetadataResource resource, boolean warnNonExperimental, boolean errorNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException {
+		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
+								resource.getUrl());
+		if (warnNonExperimental && resource.getExperimental()) {
+			myLog.warn(nonExperimentalError);
+		} else if (errorNonExperimental && resource.getExperimental()) {
+			throw new UnprocessableEntityException(nonExperimentalError);
+		}
+		// for ValueSets need to check recursively if any chldren are experimental
+		// since we don't own these
+		if (resource.getResourceType().equals(ResourceType.ValueSet)) {
+			ValueSet valueSet = (ValueSet) resource;
+			List<CanonicalType> valueSets = valueSet
+				.getCompose()
+				.getInclude()
+				.stream().flatMap(include -> include.getValueSet().stream())
+				.collect(Collectors.toList());
+			for (CanonicalType value: valueSets) {
+				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), fhirDal))
+				.ifPresent(childVs -> checkNonExperimental(childVs, warnNonExperimental, errorNonExperimental, fhirDal));
+			}
+		}
 	}
 	/* $package */
 	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
