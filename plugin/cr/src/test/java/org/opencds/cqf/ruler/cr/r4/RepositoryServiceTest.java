@@ -3,9 +3,13 @@ package org.opencds.cqf.ruler.cr.r4;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +45,7 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactAdapter;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Lazy;
 
@@ -48,6 +53,9 @@ import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 
 @Lazy
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -347,43 +355,57 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(nonExperimentalChildException.getMessage().contains("not Experimental"));
 	}
 
-	// @Test
-	// void releaseResource_require_non_experimental_warn() {
-	// 	loadResource("artifactAssessment-search-parameter.json");
-	// 	// SpecificationLibrary - root is experimentalbut HAS experimental children
-	// 	loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
-	// 	// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
-	// 	loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
-	// 	// mock the logger
-	// 	mockStatic(LoggerFactory.class);
-	// 	Logger myLog = mock(Logger.class);
-	// 	when(LoggerFactory.getLogger(any(Class.class))).thenReturn(myLog);
+	@Test
+	void releaseResource_require_non_experimental_warn() {
+		loadResource("artifactAssessment-search-parameter.json");
+		// SpecificationLibrary - root is experimentalbut HAS experimental children
+		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
+		// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
+		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
+		Appender<ILoggingEvent> myMockAppender = mock(Appender.class);
+		List<String> warningMessages = new ArrayList<>();
+		doAnswer(t -> {
+			ILoggingEvent evt = (ILoggingEvent) t.getArguments()[0];
+			// we only care about warning messages here
+			if (evt.getLevel().equals(Level.WARN)) {
+				// instead of appending to logs, we just add it to a list
+				warningMessages.add(evt.getFormattedMessage());
+			}
+			return null;
+		}).when(myMockAppender).doAppend(any());
+		org.slf4j.Logger logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+		ch.qos.logback.classic.Logger myLoggerRoot = (ch.qos.logback.classic.Logger) logger;
+		// add the mocked appender, make sure it is detached at the end
+		myLoggerRoot.addAppender(myMockAppender);
 
-	// 	Parameters params = parameters(
-	// 		part("version", new StringType("1.2.3")),
-	// 		part("versionBehavior", new StringType("default")),
-	// 		part("requireNonExperimental", new BooleanType(false))
-	// 	);
-	// 	getClient().operation()
-	// 		.onInstance(specificationLibReference)
-	// 		.named("$crmi.release")
-	// 		.withParameters(params)
-	// 		.useHttpGet()
-	// 		.returnResourceType(Bundle.class)
-	// 		.execute();
-	// 	// no warning if the root is Experimental
-	// 	verify(myLog, never()).warn(anyString());
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new StringType("default")),
+			part("requireNonExperimental", new BooleanType(false))
+		);
+		getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		// no warning if the root is Experimental
+		assertTrue(warningMessages.size()==0);
 
-	// 	getClient().operation()
-	// 		.onInstance(specificationLibReference+"2")
-	// 		.named("$crmi.release")
-	// 		.withParameters(params)
-	// 		.useHttpGet()
-	// 		.returnResourceType(Bundle.class)
-	// 		.execute();
-	// 	// SHOULD warn if the root is not experimental
-	// 	verify(myLog).warn(anyString());
-	// }
+		getClient().operation()
+			.onInstance(specificationLibReference+"2")
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		// SHOULD warn if the root is not experimental
+		assertTrue(warningMessages.stream().anyMatch(message -> message.contains("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.7")));
+		assertTrue(warningMessages.stream().anyMatch(message -> message.contains("http://ersd.aimsplatform.org/fhir/Library/rctc2")));
+		// cleanup
+		myLoggerRoot.detachAppender(myMockAppender);
+	}
 
 	@Test
 	void releaseResource_propagate_effective_period() {

@@ -71,6 +71,7 @@
               "url": "http://ersd.aimsplatform.org/fhir/Library/rctc2",
               "version": "1.2.3-draft",
               "status": "draft",
+              "experimental":true,
               "relatedArtifact": [
                   {
                       "type": "composed-of",
