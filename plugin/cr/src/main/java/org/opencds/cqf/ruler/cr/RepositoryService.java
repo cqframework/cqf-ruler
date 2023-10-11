@@ -18,8 +18,6 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor.CRMIReleaseExperimentalBehaviorCodes;
-import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor.CRMIReleaseVersionBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +151,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
 		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer,
 		@OperationParam(name = "requireNonExperimental") CodeType requireNonExpermimental)
+		@OperationParam(name = "releaseLabel") String releaseLabel)
 		throws FHIRException {
 		CRMIReleaseVersionBehaviorCodes versionBehaviorCode;
 		CRMIReleaseExperimentalBehaviorCodes experimentalBehaviorCode;
@@ -165,7 +164,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return transaction(this.artifactProcessor.createReleaseBundle(
 			theId, 
-			version, 
+			releaseLabel, 
+			version,
 			versionBehaviorCode,
 			latestFromTxServer != null && latestFromTxServer.getValue(), 
 			experimentalBehaviorCode,

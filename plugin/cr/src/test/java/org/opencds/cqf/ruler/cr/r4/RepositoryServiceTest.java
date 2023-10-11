@@ -11,9 +11,7 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,28 +20,23 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.r4.model.ActivityDefinition;
-import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.cr.KnowledgeArtifactAdapter;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.slf4j.LoggerFactory;
@@ -64,16 +57,21 @@ import ch.qos.logback.core.Appender;
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class RepositoryServiceTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
-	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1";
+	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1-23";
 	private final List<String> badVersionList = Arrays.asList(
 			"11asd1",
-			"1.1.3.1",
-			"1.|1.1",
-			"1/.1.1",
-			"-1.-1.2",
-			"1.-1.2",
-			"1.1.-2",
+			"1.1.3.1.1",
+			"1.|1.1.1",
+			"1/.1.1.1",
+			"-1.-1.2.1",
+			"1.-1.2.1",
+			"1.1.-2.1",
+			"7.1..21",
+			"1.2.1.3-draft",
 			"1.2.3-draft",
+			"3.2",
+			"1.",
+			"3.ad.2.",
 			"",
 			null
 		);
@@ -90,7 +88,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		assertTrue(baseLib.hasApprovalDate());
-		String version = "1.0.1";
+		String version = "1.0.1.23";
 		String draftedVersion = version + "-draft";
 		Parameters params = parameters(part("version", version) );
 		Bundle returnedBundle = getClient().operation()
@@ -119,7 +117,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		Parameters params = parameters(part("version", "1.1.1") );
+		Parameters params = parameters(part("version", "1.1.1.23") );
 		String maybeException = null;
 		try {
 			getClient().operation()
@@ -138,7 +136,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_cannot_create_draft_of_draft_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		Parameters params = parameters(part("version", "1.2.1") );
+		Parameters params = parameters(part("version", "1.2.1.23") );
 		String maybeException = "";
 		try {
 			getClient().operation()
@@ -156,7 +154,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_wrong_id_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-		Parameters params = parameters(part("version", "1.3.1") );
+		Parameters params = parameters(part("version", "1.3.1.23") );
 		ResourceNotFoundException maybeException = null;
 		try {
 			getClient().operation()
@@ -195,7 +193,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-release-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		String existingVersion = "1.2.3";
-		String versionData = "1.2.7";
+		String versionData = "1.2.7.23";
 
 		Parameters params1 = parameters(
 			part("version", new StringType(versionData)),
@@ -291,7 +289,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		// Existing version should be "1.2.3";
-		String newVersionToForce = "1.2.7";
+		String newVersionToForce = "1.2.7.23";
 
 		Parameters params = parameters(
 			part("version", new StringType(newVersionToForce)),
@@ -492,7 +490,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_missing_approvalDate_validation_test() {
 		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
-		String versionData = "1.2.3";
+		String versionData = "1.2.3.23";
 		String actualErrorMessage = "";
 
 		Parameters params1 = parameters(
@@ -535,6 +533,29 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			}
 			assertNotNull(maybeException);
 		}
+	}
+	@Test
+	void release_releaseLabel_test() {
+		loadTransaction("ersd-small-approved-draft-bundle.json");
+		String releaseLabel = "release label test";
+		Parameters params = parameters(
+			part("releaseLabel", new StringType(releaseLabel)),
+			part("version", "1.2.3.23"),
+			part("versionBehavior", new StringType("default"))
+		);
+		Bundle returnResource = getClient().operation()
+		.onInstance(specificationLibReference)
+		.named("$crmi.release")
+		.withParameters(params)
+		.returnResourceType(Bundle.class)
+		.execute();
+		assertNotNull(returnResource);
+		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
+		assertTrue(maybeLib.isPresent());
+		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		Optional<Extension> maybeReleaseLabel = releasedLibrary.getExtension().stream().filter(ext -> ext.getUrl().equals(KnowledgeArtifactProcessor.releaseLabelUrl)).findFirst();
+		assertTrue(maybeReleaseLabel.isPresent());
+		assertTrue(((StringType) maybeReleaseLabel.get().getValue()).getValue().equals(releaseLabel));
 	}
 	@Test
 	void release_version_active_test() {
@@ -842,7 +863,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {
 		loadTransaction("ersd-active-transaction-no-versions.json");
-		String versionToUpdateTo = "1.3.1";
+		String versionToUpdateTo = "1.3.1.23";
 		Parameters params = parameters(
 			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
 			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
@@ -892,7 +913,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(checkedVersionResource.isPresent());
 		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
-		String versionToForceTo = "1.1.9";
+		String versionToForceTo = "1.1.9.23";
 		params = parameters(
 			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
 		);

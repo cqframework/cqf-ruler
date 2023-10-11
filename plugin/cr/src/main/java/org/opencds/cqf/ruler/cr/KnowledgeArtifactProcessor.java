@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,7 +19,6 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Base;
-import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -42,9 +43,11 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4b.model.Basic;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
@@ -642,26 +645,11 @@ public class KnowledgeArtifactProcessor {
 		if(version.contains("/") || version.contains("\\") || version.contains("|")){
 			throw new UnprocessableEntityException("The version contains illegal characters");
 		}
-		if (!version.contains(".")) {
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
-		} else {
-			String[] versionParts = version.split("\\.");
-			if(versionParts.length != 3){
-				throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH");
-			}
-			for(int i = 0; i < versionParts.length; i++) {
-				String section = "";
-				if(Integer.parseInt(versionParts[i]) < 0) {
-					if(i == 0) {
-						section = "Major";
-					} else if(i == 1) {
-						section = "Minor";
-					} else if (i == 2) {
-						section = "Patch";
-					}
-					throw new UnprocessableEntityException("The " + section + " version part should be greater than 0.");
-				}
-			}
+		Pattern pattern = Pattern.compile("^(\\d+\\.)(\\d+\\.)(\\d+\\.)?(\\*|\\d+)$", Pattern.CASE_INSENSITIVE);
+    Matcher matcher = pattern.matcher(version);
+    boolean matchFound = matcher.find();
+		if (!matchFound) {
+			throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.REVISION");
 		}
 	}
 	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
@@ -756,7 +744,7 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
@@ -777,7 +765,15 @@ public class KnowledgeArtifactProcessor {
 			requireNonExperimental = CRMIReleaseExperimentalBehaviorCodes.NONE;
 		}
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, requireNonExperimental ,fhirDal);
-
+		if (releaseLabel != null) {
+			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
+			if (releaseLabelExtension == null) {
+				// create the Extension and add it to the root artifact if it doesn't exist
+				releaseLabelExtension = new Extension(releaseLabelUrl);
+				rootArtifact.addExtension(releaseLabelExtension);
+			}
+			releaseLabelExtension.setValue(new StringType(releaseLabel));
+		}
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
