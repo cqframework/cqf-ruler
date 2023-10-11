@@ -150,7 +150,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "version") String version,
 		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
 		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer,
-		@OperationParam(name = "requireNonExperimental") CodeType requireNonExpermimental)
+		@OperationParam(name = "requireNonExperimental") CodeType requireNonExpermimental,
 		@OperationParam(name = "releaseLabel") String releaseLabel)
 		throws FHIRException {
 		CRMIReleaseVersionBehaviorCodes versionBehaviorCode;
