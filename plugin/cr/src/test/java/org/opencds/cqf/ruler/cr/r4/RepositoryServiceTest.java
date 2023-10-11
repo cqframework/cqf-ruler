@@ -27,6 +27,7 @@ import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IntegerType;
@@ -198,7 +199,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			part("version", new StringType(versionData)),
-			part("versionBehavior", new StringType("default"))
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -294,7 +295,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params = parameters(
 			part("version", new StringType(newVersionToForce)),
-			part("versionBehavior", new StringType("force"))
+			part("versionBehavior", new CodeType("force"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -321,8 +322,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
 		Parameters params = parameters(
 			part("version", new StringType("1.2.3")),
-			part("versionBehavior", new StringType("default")),
-			part("requireNonExperimental", new BooleanType(true))
+			part("versionBehavior", new CodeType("default")),
+			part("requireNonExperimental", new CodeType("error"))
 		);
 		Exception notExpectingAnyException = null;
 		// no Exception if root is experimental
@@ -380,8 +381,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params = parameters(
 			part("version", new StringType("1.2.3")),
-			part("versionBehavior", new StringType("default")),
-			part("requireNonExperimental", new BooleanType(false))
+			part("versionBehavior", new CodeType("default")),
+			part("requireNonExperimental", new CodeType("warn"))
 		);
 		getClient().operation()
 			.onInstance(specificationLibReference)
@@ -415,7 +416,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params = parameters(
 			part("version", new StringType("1.2.7")),
-			part("versionBehavior", new StringType("default"))
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -470,7 +471,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params = parameters(
 			part("version", "1.2.3"),
-			part("versionBehavior", "default"),
+			part("versionBehavior", new CodeType("default")),
 			part("latestFromTxServer", new BooleanType(true))
 		);
 
@@ -496,7 +497,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			part("version", versionData),
-			part("versionBehavior", "default")
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		try {
@@ -520,7 +521,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(
 				part("version", new StringType(version)),
-				part("versionBehavior", new StringType("force"))
+				part("versionBehavior", new CodeType("force"))
 			);
 			try {
 				getClient().operation()
@@ -542,7 +543,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			PreconditionFailedException maybeException = null;
 			Parameters params = parameters(
 				part("version", new StringType("1.2.3")),
-				part("versionBehavior", new StringType("force"))
+				part("versionBehavior", new CodeType("force"))
 			);
 			try {
 				getClient().operation()
@@ -561,7 +562,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		ResourceNotFoundException maybeException = null;
 		Parameters params = parameters(
 			part("version", new StringType("1.2.3")),
-			part("versionBehavior", new StringType("force"))
+			part("versionBehavior", new CodeType("force"))
 		);
 		try {
 			getClient().operation()
@@ -587,7 +588,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(
 				part("version", new StringType("1.2.3")),
-				part("versionBehavior", new StringType(versionBehaviour))
+				part("versionBehavior", new CodeType(versionBehaviour))
 			);
 			try {
 				getClient().operation()
@@ -623,7 +624,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(artifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3-draft"));
 		Parameters releaseParams = parameters(
 			part("version", versionData),
-			part("versionBehavior", "default")
+			part("versionBehavior", new CodeType("default"))
 		);
 		Bundle releasedBundle = getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")

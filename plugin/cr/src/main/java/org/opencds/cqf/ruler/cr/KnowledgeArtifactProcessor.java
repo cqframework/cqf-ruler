@@ -16,6 +16,7 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.Base;
 import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -24,8 +25,11 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.Configuration;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.EnumFactory;
+import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
@@ -33,6 +37,7 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -139,6 +144,287 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
+	public enum CRMIReleaseExperimentalBehaviorCodes {
+		/**
+		 * The repository should throw an error if a specification which is not Experimental references Experimental components.
+		 */
+		ERROR,
+		/**
+		 * The repository should warn if a specification which is not Experimental references Experimental components.
+		 */
+		WARN,
+		/**
+		 * The repository does not need to consider the state of Experimental.
+		 */
+		NONE,
+		/**
+		 * added to help the parsers with the generic types
+		 */
+		NULL;
+
+		public static CRMIReleaseExperimentalBehaviorCodes fromCode(String codeString) throws FHIRException {
+			if (codeString == null || "".equals(codeString))
+				return null;
+			if ("error".equals(codeString))
+				return ERROR;
+			if ("warn".equals(codeString))
+				return WARN;
+			if ("none".equals(codeString))
+				return NONE;
+			if (Configuration.isAcceptInvalidEnums())
+				return null;
+			else
+				throw new FHIRException("Unknown CRMIReleaseExperimentalBehaviorCode '" + codeString + "'");
+		}
+
+		public String toCode() {
+			switch (this) {
+				case ERROR:
+					return "error";
+				case WARN:
+					return "warn";
+				case NONE:
+					return "none";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getSystem() {
+			switch (this) {
+				case ERROR:
+					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
+				case WARN:
+					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
+				case NONE:
+					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getDefinition() {
+			switch (this) {
+				case ERROR:
+					return "The repository should throw an error if a specification which is not Experimental references Experimental components.";
+				case WARN:
+					return "The repository should warn if a specification which is not Experimental references Experimental components.";
+				case NONE:
+					return "The repository does not need to consider the state of Experimental.";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getDisplay() {
+			switch (this) {
+				case ERROR:
+					return "Error";
+				case WARN:
+					return "Warn";
+				case NONE:
+					return "None";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+	}
+
+	public static class CRMIReleaseExperimentalBehaviorCodesEnumFactory implements EnumFactory<CRMIReleaseExperimentalBehaviorCodes> {
+		public CRMIReleaseExperimentalBehaviorCodes fromCode(String codeString) throws IllegalArgumentException {
+			if (codeString == null || "".equals(codeString))
+				if (codeString == null || "".equals(codeString))
+					return null;
+			if ("error".equals(codeString))
+				return CRMIReleaseExperimentalBehaviorCodes.ERROR;
+			if ("warn".equals(codeString))
+				return CRMIReleaseExperimentalBehaviorCodes.WARN;
+			if ("none".equals(codeString))
+				return CRMIReleaseExperimentalBehaviorCodes.NONE;
+			throw new IllegalArgumentException("Unknown CRMIReleaseExperimentalBehaviorCodes code '" + codeString + "'");
+		}
+
+		public Enumeration<CRMIReleaseExperimentalBehaviorCodes> fromType(Base code) throws FHIRException {
+			if (code == null)
+				return null;
+			if (code.isEmpty())
+				return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this);
+			String codeString = ((PrimitiveType) code).asStringValue();
+			if (codeString == null || "".equals(codeString))
+				return null;
+			if ("error".equals(codeString))
+				return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.ERROR);
+				if ("warn".equals(codeString))
+					return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.WARN);
+				if ("none".equals(codeString))
+					return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.NONE);
+			throw new FHIRException("Unknown CRMIReleaseExperimentalBehaviorCodes code '" + codeString + "'");
+		}
+
+		public String toCode(CRMIReleaseExperimentalBehaviorCodes code) {
+			if (code == CRMIReleaseExperimentalBehaviorCodes.ERROR)
+				return "error";
+			if (code == CRMIReleaseExperimentalBehaviorCodes.WARN)
+				return "warn";
+			if (code == CRMIReleaseExperimentalBehaviorCodes.NONE)
+				return "none";
+			return "?";
+		}
+
+		public String toSystem(CRMIReleaseExperimentalBehaviorCodes code) {
+			return code.getSystem();
+		}
+	}
+
+	public enum CRMIReleaseVersionBehaviorCodes {
+		/**
+		 * The version provided will be applied to the root artifact and all owned components if a version is not specified.
+		 */
+		DEFAULT,
+		/**
+		 * If the root artifact has a specified version different from the version passed to the operation, an error will be returned.
+		 */
+		CHECK,
+		/**
+		 * The version provided will be applied to the root artifact and all owned components, regardless of whether or not a version was already specified.
+		 */
+		FORCE,
+		/**
+		 * added to help the parsers with the generic types
+		 */
+		NULL;
+
+		public static CRMIReleaseVersionBehaviorCodes fromCode(String codeString) throws FHIRException {
+			if (codeString == null || "".equals(codeString))
+				return null;
+			if ("default".equals(codeString))
+				return DEFAULT;
+			if ("check".equals(codeString))
+				return CHECK;
+			if ("force".equals(codeString))
+				return FORCE;
+			if (Configuration.isAcceptInvalidEnums())
+				return null;
+			else
+				throw new FHIRException("Unknown CRMIReleaseVersionBehaviorCodes '" + codeString + "'");
+		}
+
+		public String toCode() {
+			switch (this) {
+				case DEFAULT:
+					return "default";
+				case CHECK:
+					return "check";
+				case FORCE:
+					return "force";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getSystem() {
+			switch (this) {
+				case DEFAULT:
+					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
+				case CHECK:
+					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
+				case FORCE:
+					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getDefinition() {
+			switch (this) {
+				case DEFAULT:
+					return "The version provided will be applied to the root artifact and all owned components if a version is not specified.";
+				case CHECK:
+					return "If the root artifact has a specified version different from the version passed to the operation, an error will be returned.";
+				case FORCE:
+					return "The version provided will be applied to the root artifact and all owned components, regardless of whether or not a version was already specified.";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+		public String getDisplay() {
+			switch (this) {
+				case DEFAULT:
+					return "Default";
+				case CHECK:
+					return "Check";
+				case FORCE:
+					return "Force";
+				case NULL:
+					return null;
+				default:
+					return "?";
+			}
+		}
+
+	}
+
+	public static class CRMIReleaseVersionBehaviorCodesEnumFactory implements EnumFactory<CRMIReleaseVersionBehaviorCodes> {
+		public CRMIReleaseVersionBehaviorCodes fromCode(String codeString) throws IllegalArgumentException {
+			if (codeString == null || "".equals(codeString))
+				if (codeString == null || "".equals(codeString))
+					return null;
+			if ("default".equals(codeString))
+				return CRMIReleaseVersionBehaviorCodes.DEFAULT;
+			if ("check".equals(codeString))
+				return CRMIReleaseVersionBehaviorCodes.CHECK;
+			if ("force".equals(codeString))
+				return CRMIReleaseVersionBehaviorCodes.FORCE;
+			throw new IllegalArgumentException("Unknown CRMIReleaseVersionBehaviorCodes code '" + codeString + "'");
+		}
+
+		public Enumeration<CRMIReleaseVersionBehaviorCodes> fromType(Base code) throws FHIRException {
+			if (code == null)
+				return null;
+			if (code.isEmpty())
+				return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this);
+			String codeString = ((PrimitiveType) code).asStringValue();
+			if (codeString == null || "".equals(codeString))
+				return null;
+			if ("default".equals(codeString))
+				return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.DEFAULT);
+				if ("check".equals(codeString))
+					return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.CHECK);
+				if ("force".equals(codeString))
+					return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.FORCE);
+			throw new FHIRException("Unknown CRMIReleaseVersionBehaviorCodes code '" + codeString + "'");
+		}
+
+		public String toCode(CRMIReleaseVersionBehaviorCodes code) {
+			if (code == CRMIReleaseVersionBehaviorCodes.DEFAULT)
+				return "error";
+			if (code == CRMIReleaseVersionBehaviorCodes.CHECK)
+				return "check";
+			if (code == CRMIReleaseVersionBehaviorCodes.FORCE)
+				return "force";
+			return "?";
+		}
+
+		public String toSystem(CRMIReleaseVersionBehaviorCodes code) {
+			return code.getSystem();
+		}
+	}
 
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
@@ -427,7 +713,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private Optional<String> getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) throws UnprocessableEntityException {
+	private Optional<String> getReleaseVersion(String version, CRMIReleaseVersionBehaviorCodes versionBehavior, String existingVersion) throws UnprocessableEntityException {
 		Optional<String> releaseVersion = Optional.ofNullable(null);
 		// If no version exists use the version argument provided
 		if (existingVersion == null || existingVersion.isEmpty() || existingVersion.isBlank()) {
@@ -435,15 +721,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		String replaceDraftInExisting = existingVersion.replace("-draft","");
 
-		if (versionBehavior.getCode().equals("default")) {
+		if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.DEFAULT)) {
 			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()){
 				releaseVersion = Optional.of(replaceDraftInExisting);
 			} else {
 				releaseVersion = Optional.ofNullable(version);
 			}
-		} else if (versionBehavior.getCode().equals("force")) {
+		} else if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.FORCE)) {
 			releaseVersion = Optional.ofNullable(version);
-		} else if (versionBehavior.getCode().equals("check")) {
+		} else if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.CHECK)) {
 			if (!replaceDraftInExisting.equals(version)) {
 				throw new UnprocessableEntityException(String.format("versionBehavior specified is 'check' and the version provided ('%s') does not match the version currently specified on the root artifact ('%s').",version,existingVersion));
 			}
@@ -470,7 +756,7 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, boolean latestFromTxServer, boolean requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
@@ -486,11 +772,11 @@ public class KnowledgeArtifactProcessor {
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
-		// if requireNonExperimental == true and the root artifact is not experimental, throw error
-		boolean errorNonExperimental = requireNonExperimental && !rootArtifact.getExperimental();
-		// if requireNonExperimental == false and the root artifact is not experimental, warn
-		boolean warnNonExperimental = !requireNonExperimental && !rootArtifact.getExperimental();
-		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, errorNonExperimental, warnNonExperimental ,fhirDal);
+		// if the root artifact is experimental then we don't need to check for experimental children
+		if (rootArtifact.getExperimental()) {
+			requireNonExperimental = CRMIReleaseExperimentalBehaviorCodes.NONE;
+		}
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, requireNonExperimental ,fhirDal);
 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
@@ -587,13 +873,9 @@ public class KnowledgeArtifactProcessor {
 			});
 		return transactionBundle;
 	}
-	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
-		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
+	private void checkReleaseVersion(String version,CRMIReleaseVersionBehaviorCodes versionBehavior) throws UnprocessableEntityException {
+		if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.NULL)) {
 			throw new UnprocessableEntityException("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
-		}
-
-		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
-			throw new UnprocessableEntityException(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
 		}
 		checkVersionValidSemver(version);
 	}
@@ -613,7 +895,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
-																 CodeType versionBehavior, boolean latestFromTxServer, boolean errorNonExperimental, boolean warnNonExperimental, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
 		// Step 1: Update the Date and the version
@@ -655,8 +937,10 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					checkNonExperimental(referencedResource, warnNonExperimental, errorNonExperimental, fhirDal);
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, errorNonExperimental, warnNonExperimental, fhirDal));
+					if (!requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.NULL) && !requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.NONE) ) {
+						checkNonExperimental(referencedResource, requireNonExperimental, fhirDal);
+					}
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, requireNonExperimental, fhirDal));
 				}
 			}
 		}
@@ -707,12 +991,12 @@ public class KnowledgeArtifactProcessor {
 		}
 		return updatedReference;
 	}
-	private void checkNonExperimental(MetadataResource resource, boolean warnNonExperimental, boolean errorNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException {
+	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
-		if (warnNonExperimental && resource.getExperimental()) {
+		if (requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.WARN) && resource.getExperimental()) {
 			myLog.warn(nonExperimentalError);
-		} else if (errorNonExperimental && resource.getExperimental()) {
+		} else if (requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.ERROR) && resource.getExperimental()) {
 			throw new UnprocessableEntityException(nonExperimentalError);
 		}
 		// for ValueSets need to check recursively if any chldren are experimental
@@ -726,7 +1010,7 @@ public class KnowledgeArtifactProcessor {
 				.collect(Collectors.toList());
 			for (CanonicalType value: valueSets) {
 				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), fhirDal))
-				.ifPresent(childVs -> checkNonExperimental(childVs, warnNonExperimental, errorNonExperimental, fhirDal));
+				.ifPresent(childVs -> checkNonExperimental(childVs, requireNonExperimental, fhirDal));
 			}
 		}
 	}
