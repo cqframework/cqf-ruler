@@ -66,6 +66,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -472,6 +473,8 @@ public class KnowledgeArtifactProcessor {
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
 		updateReleaseLabel(rootArtifact, releaseLabel);
+		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
+	  List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList()); 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -538,15 +541,21 @@ public class KnowledgeArtifactProcessor {
 		for (RelatedArtifact ra: rootArtifactAdapter.getRelatedArtifact()) {
 			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()) && r.getType().equals(ra.getType()))) {
 				distinctResolvedRelatedArtifacts.add(ra);
+				// add priority Extension if found
+				originalDependenciesWithPriorityExtension.stream()
+					.filter(r -> r.getResource().equals(ra.getResource()))
+					.map(r -> r.getExtensionByUrl(valueSetPriorityUrl))
+					.findFirst()
+					.ifPresent(e -> ra.addExtension(e));
 			}
 		}
 		// update ArtifactComments referencing the old Canonical Reference
-		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, fhirDal));
+		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, releaseVersion, fhirDal));
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
 
 		return transactionBundle;
 	}
-	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact, FhirDal fhirDal){
+	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
 		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
 		// find any artifact assessments and update those as part of the bundle
 		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)

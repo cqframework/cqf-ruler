@@ -34,6 +34,23 @@
                               "valueBoolean": true
                           }
                       ]
+                  },{
+                    "extension": [
+                      {
+                        "url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority",          
+                        "valueCodeableConcept": {
+                          "coding": [
+                            {
+                              "system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+                              "code": "emergent"
+                            }
+                          ],
+                          "text": "Emergent"
+                        }
+                      }
+                    ],
+                    "type": "depends-on",
+                    "resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
                   }
               ]
           },
