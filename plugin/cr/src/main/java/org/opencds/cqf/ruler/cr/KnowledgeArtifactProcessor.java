@@ -538,15 +538,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		// removed duplicates and add
 		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
-		for (RelatedArtifact ra: rootArtifactAdapter.getRelatedArtifact()) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()) && r.getType().equals(ra.getType()))) {
-				distinctResolvedRelatedArtifacts.add(ra);
+		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
+			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
+				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
 				// add priority Extension if found
 				originalDependenciesWithPriorityExtension.stream()
-					.filter(r -> r.getResource().equals(ra.getResource()))
-					.map(r -> r.getExtensionByUrl(valueSetPriorityUrl))
+					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
+					.map(originalDep -> originalDep.getExtensionByUrl(valueSetPriorityUrl))
 					.findFirst()
-					.ifPresent(e -> ra.addExtension(e));
+					.ifPresent(priorityExt -> resolvedRelatedArtifact.addExtension(priorityExt));
 			}
 		}
 		// update ArtifactComments referencing the old Canonical Reference
