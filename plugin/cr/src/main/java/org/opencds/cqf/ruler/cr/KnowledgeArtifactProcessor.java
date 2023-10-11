@@ -18,7 +18,6 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
-import org.hl7.fhir.r4.model.Base;
 import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -27,11 +26,8 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.Configuration;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.EnumFactory;
-import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
@@ -39,7 +35,6 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
@@ -51,6 +46,8 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -147,287 +144,6 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-	public enum CRMIReleaseExperimentalBehaviorCodes {
-		/**
-		 * The repository should throw an error if a specification which is not Experimental references Experimental components.
-		 */
-		ERROR,
-		/**
-		 * The repository should warn if a specification which is not Experimental references Experimental components.
-		 */
-		WARN,
-		/**
-		 * The repository does not need to consider the state of Experimental.
-		 */
-		NONE,
-		/**
-		 * added to help the parsers with the generic types
-		 */
-		NULL;
-
-		public static CRMIReleaseExperimentalBehaviorCodes fromCode(String codeString) throws FHIRException {
-			if (codeString == null || "".equals(codeString))
-				return null;
-			if ("error".equals(codeString))
-				return ERROR;
-			if ("warn".equals(codeString))
-				return WARN;
-			if ("none".equals(codeString))
-				return NONE;
-			if (Configuration.isAcceptInvalidEnums())
-				return null;
-			else
-				throw new FHIRException("Unknown CRMIReleaseExperimentalBehaviorCode '" + codeString + "'");
-		}
-
-		public String toCode() {
-			switch (this) {
-				case ERROR:
-					return "error";
-				case WARN:
-					return "warn";
-				case NONE:
-					return "none";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getSystem() {
-			switch (this) {
-				case ERROR:
-					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
-				case WARN:
-					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
-				case NONE:
-					return "http://hl7.org/fhir/uv/crmi/CodeSystem/crmi-release-experimental-behavior-codes";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getDefinition() {
-			switch (this) {
-				case ERROR:
-					return "The repository should throw an error if a specification which is not Experimental references Experimental components.";
-				case WARN:
-					return "The repository should warn if a specification which is not Experimental references Experimental components.";
-				case NONE:
-					return "The repository does not need to consider the state of Experimental.";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getDisplay() {
-			switch (this) {
-				case ERROR:
-					return "Error";
-				case WARN:
-					return "Warn";
-				case NONE:
-					return "None";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-	}
-
-	public static class CRMIReleaseExperimentalBehaviorCodesEnumFactory implements EnumFactory<CRMIReleaseExperimentalBehaviorCodes> {
-		public CRMIReleaseExperimentalBehaviorCodes fromCode(String codeString) throws IllegalArgumentException {
-			if (codeString == null || "".equals(codeString))
-				if (codeString == null || "".equals(codeString))
-					return null;
-			if ("error".equals(codeString))
-				return CRMIReleaseExperimentalBehaviorCodes.ERROR;
-			if ("warn".equals(codeString))
-				return CRMIReleaseExperimentalBehaviorCodes.WARN;
-			if ("none".equals(codeString))
-				return CRMIReleaseExperimentalBehaviorCodes.NONE;
-			throw new IllegalArgumentException("Unknown CRMIReleaseExperimentalBehaviorCodes code '" + codeString + "'");
-		}
-
-		public Enumeration<CRMIReleaseExperimentalBehaviorCodes> fromType(Base code) throws FHIRException {
-			if (code == null)
-				return null;
-			if (code.isEmpty())
-				return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this);
-			String codeString = ((PrimitiveType) code).asStringValue();
-			if (codeString == null || "".equals(codeString))
-				return null;
-			if ("error".equals(codeString))
-				return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.ERROR);
-				if ("warn".equals(codeString))
-					return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.WARN);
-				if ("none".equals(codeString))
-					return new Enumeration<CRMIReleaseExperimentalBehaviorCodes>(this, CRMIReleaseExperimentalBehaviorCodes.NONE);
-			throw new FHIRException("Unknown CRMIReleaseExperimentalBehaviorCodes code '" + codeString + "'");
-		}
-
-		public String toCode(CRMIReleaseExperimentalBehaviorCodes code) {
-			if (code == CRMIReleaseExperimentalBehaviorCodes.ERROR)
-				return "error";
-			if (code == CRMIReleaseExperimentalBehaviorCodes.WARN)
-				return "warn";
-			if (code == CRMIReleaseExperimentalBehaviorCodes.NONE)
-				return "none";
-			return "?";
-		}
-
-		public String toSystem(CRMIReleaseExperimentalBehaviorCodes code) {
-			return code.getSystem();
-		}
-	}
-
-	public enum CRMIReleaseVersionBehaviorCodes {
-		/**
-		 * The version provided will be applied to the root artifact and all owned components if a version is not specified.
-		 */
-		DEFAULT,
-		/**
-		 * If the root artifact has a specified version different from the version passed to the operation, an error will be returned.
-		 */
-		CHECK,
-		/**
-		 * The version provided will be applied to the root artifact and all owned components, regardless of whether or not a version was already specified.
-		 */
-		FORCE,
-		/**
-		 * added to help the parsers with the generic types
-		 */
-		NULL;
-
-		public static CRMIReleaseVersionBehaviorCodes fromCode(String codeString) throws FHIRException {
-			if (codeString == null || "".equals(codeString))
-				return null;
-			if ("default".equals(codeString))
-				return DEFAULT;
-			if ("check".equals(codeString))
-				return CHECK;
-			if ("force".equals(codeString))
-				return FORCE;
-			if (Configuration.isAcceptInvalidEnums())
-				return null;
-			else
-				throw new FHIRException("Unknown CRMIReleaseVersionBehaviorCodes '" + codeString + "'");
-		}
-
-		public String toCode() {
-			switch (this) {
-				case DEFAULT:
-					return "default";
-				case CHECK:
-					return "check";
-				case FORCE:
-					return "force";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getSystem() {
-			switch (this) {
-				case DEFAULT:
-					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
-				case CHECK:
-					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
-				case FORCE:
-					return "http://hl7.org/fhir/uv/crmi/ValueSet/crmi-release-version-behavior";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getDefinition() {
-			switch (this) {
-				case DEFAULT:
-					return "The version provided will be applied to the root artifact and all owned components if a version is not specified.";
-				case CHECK:
-					return "If the root artifact has a specified version different from the version passed to the operation, an error will be returned.";
-				case FORCE:
-					return "The version provided will be applied to the root artifact and all owned components, regardless of whether or not a version was already specified.";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-		public String getDisplay() {
-			switch (this) {
-				case DEFAULT:
-					return "Default";
-				case CHECK:
-					return "Check";
-				case FORCE:
-					return "Force";
-				case NULL:
-					return null;
-				default:
-					return "?";
-			}
-		}
-
-	}
-
-	public static class CRMIReleaseVersionBehaviorCodesEnumFactory implements EnumFactory<CRMIReleaseVersionBehaviorCodes> {
-		public CRMIReleaseVersionBehaviorCodes fromCode(String codeString) throws IllegalArgumentException {
-			if (codeString == null || "".equals(codeString))
-				if (codeString == null || "".equals(codeString))
-					return null;
-			if ("default".equals(codeString))
-				return CRMIReleaseVersionBehaviorCodes.DEFAULT;
-			if ("check".equals(codeString))
-				return CRMIReleaseVersionBehaviorCodes.CHECK;
-			if ("force".equals(codeString))
-				return CRMIReleaseVersionBehaviorCodes.FORCE;
-			throw new IllegalArgumentException("Unknown CRMIReleaseVersionBehaviorCodes code '" + codeString + "'");
-		}
-
-		public Enumeration<CRMIReleaseVersionBehaviorCodes> fromType(Base code) throws FHIRException {
-			if (code == null)
-				return null;
-			if (code.isEmpty())
-				return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this);
-			String codeString = ((PrimitiveType) code).asStringValue();
-			if (codeString == null || "".equals(codeString))
-				return null;
-			if ("default".equals(codeString))
-				return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.DEFAULT);
-				if ("check".equals(codeString))
-					return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.CHECK);
-				if ("force".equals(codeString))
-					return new Enumeration<CRMIReleaseVersionBehaviorCodes>(this, CRMIReleaseVersionBehaviorCodes.FORCE);
-			throw new FHIRException("Unknown CRMIReleaseVersionBehaviorCodes code '" + codeString + "'");
-		}
-
-		public String toCode(CRMIReleaseVersionBehaviorCodes code) {
-			if (code == CRMIReleaseVersionBehaviorCodes.DEFAULT)
-				return "error";
-			if (code == CRMIReleaseVersionBehaviorCodes.CHECK)
-				return "check";
-			if (code == CRMIReleaseVersionBehaviorCodes.FORCE)
-				return "force";
-			return "?";
-		}
-
-		public String toSystem(CRMIReleaseVersionBehaviorCodes code) {
-			return code.getSystem();
-		}
-	}
 
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
