@@ -874,7 +874,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		// when count = 0 only show the total
 		assertTrue(countZeroBundle.getEntry().size() == 0);
-		assertTrue(countZeroBundle.getTotal() == 5);
+		assertTrue(countZeroBundle.getTotal() == 6);
 		Parameters count2Params = parameters(
 			part("count", new IntegerType(2))
 		);
@@ -992,7 +992,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
 			"http://ersd.aimsplatform.org/fhir/Library/rctc",
 			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine"
 		));
 		includeOptions.put("knowledge",Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
@@ -1001,7 +1002,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		));
 		includeOptions.put("terminology",Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6"
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine"
 		));
 		includeOptions.put("conformance",Arrays.asList());
 		includeOptions.put("extensions",Arrays.asList());
