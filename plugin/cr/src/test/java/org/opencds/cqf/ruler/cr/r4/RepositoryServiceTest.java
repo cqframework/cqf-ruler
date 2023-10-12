@@ -35,7 +35,9 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -943,6 +945,43 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertTrue(ifNoneExist.equals("url="+url+"&version="+version));
 		}
 	}
+	@Test
+	void packageOperation_should_be_aware_of_valueset_priority_extension() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<ValueSet> shouldBeUpdatedToEmergent = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.filter(vs -> vs.getUrl().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6") && vs.getVersion().equals("20210526"))
+			.findFirst();
+		assertTrue(shouldBeUpdatedToEmergent.isPresent());
+		Optional<UsageContext> priority = shouldBeUpdatedToEmergent.get().getUseContext().stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.findFirst();
+		assertTrue(priority.isPresent());
+		assertTrue(((CodeableConcept) priority.get().getValue()).getCoding().get(0).getCode().equals("emergent"));
+		assertTrue(((CodeableConcept) priority.get().getValue()).getCoding().get(0).getSystem().equals(KnowledgeArtifactProcessor.contextUrl));
+
+		Optional<ValueSet> shouldBeUpdatedToRoutine = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.filter(vs -> vs.getUrl().equals("http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine") && vs.getVersion().equals("20210526"))
+			.findFirst();
+		assertTrue(shouldBeUpdatedToRoutine.isPresent());
+		Optional<UsageContext> priority2 = shouldBeUpdatedToRoutine.get().getUseContext().stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.findFirst();
+		assertTrue(priority2.isPresent());
+		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getCode().equals("routine"));
+		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getSystem().equals(KnowledgeArtifactProcessor.contextUrl));
+	}
+	
 	@Test
 	void packageOperation_should_respect_include() {
 		loadTransaction("ersd-small-active-bundle.json");

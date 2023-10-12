@@ -26,6 +26,8 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
@@ -42,6 +44,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
@@ -67,6 +70,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
+	public static final String contextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -761,7 +766,44 @@ public class KnowledgeArtifactProcessor {
 				// we return all of them no change
 			}
 		}
+		handlePriority(resource,packagedBundle.getEntry());
 		return packagedBundle;
+	}
+	void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
+		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+		List<ValueSet> valueSets = bundleEntries.stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.collect(Collectors.toList());
+		List<RelatedArtifact> relatedArtifactsWithPriorityExtension = adapter.getDependencies().stream()
+			.filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null)
+			.collect(Collectors.toList());
+		valueSets.stream().forEach(valueSet -> {
+			UsageContext priority = valueSet.getUseContext().stream()
+				.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+				.findFirst().orElseGet(()-> {
+					// create the priority UseContext if it doesn't exist
+					Coding contextType = new Coding(contextTypeUrl, "priority", null);
+					UsageContext newPriority = new UsageContext(contextType, null);
+					// add it to the ValueSet before returning
+					valueSet.getUseContext().add(newPriority);
+					return newPriority;
+				});
+			relatedArtifactsWithPriorityExtension.stream()
+				.filter(relatedArtifactWithPriorityExtension -> valueSet.getUrl().equals(Canonicals.getUrl(relatedArtifactWithPriorityExtension.getResource())) && valueSet.getVersion().equals(Canonicals.getVersion(relatedArtifactWithPriorityExtension.getResource())))
+				.findFirst()
+				.ifPresentOrElse(
+					// set priority to author-assigned value if possible
+					relatedArtifactWithPriorityExtension -> {
+						priority.setValue(relatedArtifactWithPriorityExtension.getExtensionByUrl(valueSetPriorityUrl).getValue());
+					},
+					// otherwise set it to routine 
+					() -> {
+						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
+						priority.setValue(routine);
+					}
+				);
+		});
 	}
 	void recursivePackage(
 		MetadataResource resource,
