@@ -425,15 +425,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		String replaceDraftInExisting = existingVersion.replace("-draft","");
 
-		if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.DEFAULT)) {
+		if (CRMIReleaseVersionBehaviorCodes.DEFAULT == versionBehavior) {
 			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()){
 				releaseVersion = Optional.of(replaceDraftInExisting);
 			} else {
 				releaseVersion = Optional.ofNullable(version);
 			}
-		} else if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.FORCE)) {
+		} else if (CRMIReleaseVersionBehaviorCodes.FORCE == versionBehavior) {
 			releaseVersion = Optional.ofNullable(version);
-		} else if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.CHECK)) {
+		} else if (CRMIReleaseVersionBehaviorCodes.CHECK == versionBehavior) {
 			if (!replaceDraftInExisting.equals(version)) {
 				throw new UnprocessableEntityException(String.format("versionBehavior specified is 'check' and the version provided ('%s') does not match the version currently specified on the root artifact ('%s').",version,existingVersion));
 			}
@@ -480,7 +480,7 @@ public class KnowledgeArtifactProcessor {
 		if (rootArtifact.getExperimental()) {
 			experimentalBehavior = CRMIReleaseExperimentalBehaviorCodes.NONE;
 		}
-		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior ,fhirDal);
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
 		if (releaseLabel != null) {
 			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
 			if (releaseLabelExtension == null) {
@@ -586,7 +586,7 @@ public class KnowledgeArtifactProcessor {
 		return transactionBundle;
 	}
 	private void checkReleaseVersion(String version,CRMIReleaseVersionBehaviorCodes versionBehavior) throws UnprocessableEntityException {
-		if (versionBehavior.equals(CRMIReleaseVersionBehaviorCodes.NULL)) {
+		if (CRMIReleaseVersionBehaviorCodes.NULL == versionBehavior) {
 			throw new UnprocessableEntityException("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
 		}
 		checkVersionValidSemver(version);
@@ -595,7 +595,8 @@ public class KnowledgeArtifactProcessor {
 		if (artifact == null) {
 			throw new ResourceNotFoundException("Resource not found.");
 		}
-		if(!artifact.getStatus().equals(Enumerations.PublicationStatus.DRAFT)){
+
+		if (Enumerations.PublicationStatus.DRAFT != artifact.getStatus()) {
 			throw new PreconditionFailedException(String.format("Resource with ID: '%s' does not have a status of 'draft'.", artifact.getIdElement().getIdPart()));
 		}
 		if (approvalDate == null) {
@@ -649,7 +650,7 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					if (!experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.NULL) && !experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.NONE) ) {
+					if (CRMIReleaseExperimentalBehaviorCodes.NULL != experimentalBehavior && CRMIReleaseExperimentalBehaviorCodes.NONE != experimentalBehavior) {
 						checkNonExperimental(referencedResource, experimentalBehavior, fhirDal);
 					}
 					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal));
@@ -706,9 +707,9 @@ public class KnowledgeArtifactProcessor {
 	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
-		if (experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.WARN) && resource.getExperimental()) {
+		if (CRMIReleaseExperimentalBehaviorCodes.WARN == experimentalBehavior && resource.getExperimental()) {
 			myLog.warn(nonExperimentalError);
-		} else if (experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.ERROR) && resource.getExperimental()) {
+		} else if (CRMIReleaseExperimentalBehaviorCodes.ERROR == experimentalBehavior && resource.getExperimental()) {
 			throw new UnprocessableEntityException(nonExperimentalError);
 		}
 		// for ValueSets need to check recursively if any chldren are experimental
