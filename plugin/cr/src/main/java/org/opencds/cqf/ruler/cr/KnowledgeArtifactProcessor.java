@@ -460,12 +460,12 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
-		checkReleaseVersion(version,versionBehavior);
+		checkReleaseVersion(version, versionBehavior);
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
@@ -478,9 +478,9 @@ public class KnowledgeArtifactProcessor {
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
 		// if the root artifact is experimental then we don't need to check for experimental children
 		if (rootArtifact.getExperimental()) {
-			requireNonExperimental = CRMIReleaseExperimentalBehaviorCodes.NONE;
+			experimentalBehavior = CRMIReleaseExperimentalBehaviorCodes.NONE;
 		}
-		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, requireNonExperimental ,fhirDal);
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior ,fhirDal);
 		if (releaseLabel != null) {
 			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
 			if (releaseLabelExtension == null) {
@@ -607,7 +607,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
-																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
 		// Step 1: Update the Date and the version
@@ -649,10 +649,10 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					if (!requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.NULL) && !requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.NONE) ) {
-						checkNonExperimental(referencedResource, requireNonExperimental, fhirDal);
+					if (!experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.NULL) && !experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.NONE) ) {
+						checkNonExperimental(referencedResource, experimentalBehavior, fhirDal);
 					}
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, requireNonExperimental, fhirDal));
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal));
 				}
 			}
 		}
@@ -703,12 +703,12 @@ public class KnowledgeArtifactProcessor {
 		}
 		return updatedReference;
 	}
-	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes requireNonExperimental, FhirDal fhirDal) throws UnprocessableEntityException {
+	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
-		if (requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.WARN) && resource.getExperimental()) {
+		if (experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.WARN) && resource.getExperimental()) {
 			myLog.warn(nonExperimentalError);
-		} else if (requireNonExperimental.equals(CRMIReleaseExperimentalBehaviorCodes.ERROR) && resource.getExperimental()) {
+		} else if (experimentalBehavior.equals(CRMIReleaseExperimentalBehaviorCodes.ERROR) && resource.getExperimental()) {
 			throw new UnprocessableEntityException(nonExperimentalError);
 		}
 		// for ValueSets need to check recursively if any chldren are experimental
@@ -722,7 +722,7 @@ public class KnowledgeArtifactProcessor {
 				.collect(Collectors.toList());
 			for (CanonicalType value: valueSets) {
 				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), fhirDal))
-				.ifPresent(childVs -> checkNonExperimental(childVs, requireNonExperimental, fhirDal));
+				.ifPresent(childVs -> checkNonExperimental(childVs, experimentalBehavior, fhirDal));
 			}
 		}
 	}
