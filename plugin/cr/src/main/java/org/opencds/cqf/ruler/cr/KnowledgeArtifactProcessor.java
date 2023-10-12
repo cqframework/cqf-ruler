@@ -766,7 +766,7 @@ public class KnowledgeArtifactProcessor {
 				// we return all of them no change
 			}
 		}
-		handlePriority(resource,packagedBundle.getEntry());
+		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
 	void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
