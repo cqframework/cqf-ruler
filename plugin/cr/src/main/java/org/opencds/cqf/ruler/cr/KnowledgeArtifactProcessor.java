@@ -72,6 +72,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -481,15 +482,9 @@ public class KnowledgeArtifactProcessor {
 			experimentalBehavior = CRMIReleaseExperimentalBehaviorCodes.NONE;
 		}
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
-		if (releaseLabel != null) {
-			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
-			if (releaseLabelExtension == null) {
-				// create the Extension and add it to the root artifact if it doesn't exist
-				releaseLabelExtension = new Extension(releaseLabelUrl);
-				rootArtifact.addExtension(releaseLabelExtension);
-			}
-			releaseLabelExtension.setValue(new StringType(releaseLabel));
-		}
+		updateReleaseLabel(rootArtifact, releaseLabel);
+		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
+	  List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList()); 
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -553,12 +548,25 @@ public class KnowledgeArtifactProcessor {
 		}
 		// removed duplicates and add
 		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
-		for (RelatedArtifact ra: rootArtifactAdapter.getRelatedArtifact()) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(r -> r.getResource().equals(ra.getResource()) && r.getType().equals(ra.getType()))) {
-				distinctResolvedRelatedArtifacts.add(ra);
+		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
+			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
+				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
+				// add priority Extension if found
+				originalDependenciesWithPriorityExtension.stream()
+					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
+					.map(originalDep -> originalDep.getExtensionByUrl(valueSetPriorityUrl))
+					.findFirst()
+					.ifPresent(priorityExt -> resolvedRelatedArtifact.addExtension(priorityExt));
 			}
 		}
+		// update ArtifactComments referencing the old Canonical Reference
+		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, releaseVersion, fhirDal));
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
+
+		return transactionBundle;
+	}
+	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
+		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
 		// find any artifact assessments and update those as part of the bundle
 		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
 			.getEntry()
@@ -581,9 +589,20 @@ public class KnowledgeArtifactProcessor {
 			})
 			.forEach(artifactComment -> {
 				artifactComment.setDerivedFromContentRelatedArtifact(new CanonicalType(String.format("%s|%s", rootArtifact.getUrl(), releaseVersion)));
-				transactionBundle.addEntry(createEntry(artifactComment));
+				returnEntries.add(createEntry(artifactComment));
 			});
-		return transactionBundle;
+			return returnEntries;
+	}
+	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) {
+		if (releaseLabel != null) {
+			Extension releaseLabelExtension = artifact.getExtensionByUrl(releaseLabel);
+			if (releaseLabelExtension == null) {
+				// create the Extension and add it to the artifact if it doesn't exist
+				releaseLabelExtension = new Extension(releaseLabelUrl);
+				artifact.addExtension(releaseLabelExtension);
+			}
+			releaseLabelExtension.setValue(new StringType(releaseLabel));
+		}
 	}
 	private void checkReleaseVersion(String version,CRMIReleaseVersionBehaviorCodes versionBehavior) throws UnprocessableEntityException {
 		if (CRMIReleaseVersionBehaviorCodes.NULL == versionBehavior) {
