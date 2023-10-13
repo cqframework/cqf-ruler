@@ -26,6 +26,8 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
@@ -73,6 +75,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
+	public static final String contextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -165,6 +169,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return request;
 	}
+
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 
@@ -182,6 +187,7 @@ public class KnowledgeArtifactProcessor {
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
+
 	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 		List<IQueryParameterType> urlList = new ArrayList<>();
@@ -327,6 +333,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return transactionBundle;
 	}
+
 	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
 		List<UsageContext> useContexts = newResource.getUseContext();
 		for(UsageContext useContext : useContexts){
@@ -345,6 +352,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
+
 	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
 			// For each  relatedArtifact, update the version of the reference.
 			relatedArtifactList.stream()
@@ -352,6 +360,7 @@ public class KnowledgeArtifactProcessor {
 				.collect(Collectors.toList())
 				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
+
 	private void checkVersionValidSemver(String version) throws UnprocessableEntityException{
 		if (version == null || version.isEmpty()) {
 			throw new UnprocessableEntityException("The version argument is required");
@@ -369,6 +378,7 @@ public class KnowledgeArtifactProcessor {
 			throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.REVISION");
 		}
 	}
+	
 	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(resourceToDraft.getUrl()) + "|" + draftVersion;
@@ -794,8 +804,47 @@ public class KnowledgeArtifactProcessor {
 				// we return all of them no change
 			}
 		}
+		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
+
+	void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
+		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+		List<ValueSet> valueSets = bundleEntries.stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.collect(Collectors.toList());
+		List<RelatedArtifact> relatedArtifactsWithPriorityExtension = adapter.getDependencies().stream()
+			.filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null)
+			.collect(Collectors.toList());
+		valueSets.stream().forEach(valueSet -> {
+			UsageContext priority = valueSet.getUseContext().stream()
+				.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+				.findFirst().orElseGet(()-> {
+					// create the priority UseContext if it doesn't exist
+					Coding contextType = new Coding(contextTypeUrl, "priority", null);
+					UsageContext newPriority = new UsageContext(contextType, null);
+					// add it to the ValueSet before returning
+					valueSet.getUseContext().add(newPriority);
+					return newPriority;
+				});
+			relatedArtifactsWithPriorityExtension.stream()
+				.filter(relatedArtifactWithPriorityExtension -> valueSet.getUrl().equals(Canonicals.getUrl(relatedArtifactWithPriorityExtension.getResource())) && valueSet.getVersion().equals(Canonicals.getVersion(relatedArtifactWithPriorityExtension.getResource())))
+				.findFirst()
+				.ifPresentOrElse(
+					// set priority to author-assigned value if possible
+					relatedArtifactWithPriorityExtension -> {
+						priority.setValue(relatedArtifactWithPriorityExtension.getExtensionByUrl(valueSetPriorityUrl).getValue());
+					},
+					// otherwise set it to routine 
+					() -> {
+						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
+						priority.setValue(routine);
+					}
+				);
+		});
+	}
+
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
@@ -829,12 +878,14 @@ public class KnowledgeArtifactProcessor {
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
 		}
 	}
+
 	private Optional<String> findVersionInListMatchingResource(List<CanonicalType> list, MetadataResource resource){
 		return list.stream()
 					.filter((canonical) -> Canonicals.getUrl(canonical).equals(resource.getUrl()))
 					.map((canonical) -> Canonicals.getVersion(canonical))
 					.findAny();
 	}
+
 	private void findUnsupportedCapability(MetadataResource resource, List<String> capability) throws PreconditionFailedException{
 		if (capability != null) {
 			List<Extension> knowledgeCapabilityExtension = resource.getExtension().stream()
@@ -854,6 +905,7 @@ public class KnowledgeArtifactProcessor {
 				});
 		}
 	}
+
 	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws PreconditionFailedException {
 		if (checkCanonicalVersion != null) {
 			// check throws an error
@@ -877,6 +929,7 @@ public class KnowledgeArtifactProcessor {
 				.ifPresent((version) -> resource.setVersion(version));
 		}
 	}
+
 	private List<BundleEntryComponent> findUnsupportedInclude(List<BundleEntryComponent> entries, List<String> include) {
 		if (include == null || include.stream().anyMatch((includedType) -> includedType.equals("all"))) {
 			return entries;
