@@ -19,6 +19,8 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -149,12 +151,27 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@IdParam IdType theId,
 		@OperationParam(name = "version") String version,
 		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
-		@OperationParam(name = "releaseLabel") String releaseLabel,
-		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer)
+		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer,
+		@OperationParam(name = "requireNonExperimental") CodeType requireNonExpermimental,
+		@OperationParam(name = "releaseLabel") String releaseLabel)
 		throws FHIRException {
-
+		CRMIReleaseVersionBehaviorCodes versionBehaviorCode;
+		CRMIReleaseExperimentalBehaviorCodes experimentalBehaviorCode;
+		try {
+			versionBehaviorCode = versionBehavior == null ? CRMIReleaseVersionBehaviorCodes.NULL : CRMIReleaseVersionBehaviorCodes.fromCode(versionBehavior.getCode());
+			experimentalBehaviorCode = requireNonExpermimental == null ? CRMIReleaseExperimentalBehaviorCodes.NULL : CRMIReleaseExperimentalBehaviorCodes.fromCode(requireNonExpermimental.getCode());
+		} catch (FHIRException e) {
+			throw new UnprocessableEntityException(e.getMessage());
+		}
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return transaction(this.artifactProcessor.createReleaseBundle(theId, version, versionBehavior, releaseLabel, latestFromTxServer != null && latestFromTxServer.getValue(), fhirDal));
+		return transaction(this.artifactProcessor.createReleaseBundle(
+			theId, 
+			releaseLabel, 
+			version,
+			versionBehaviorCode,
+			latestFromTxServer != null && latestFromTxServer.getValue(), 
+			experimentalBehaviorCode,
+			fhirDal));
 	}
 
 	@Operation(name = "$crmi.package", idempotent = true, global = true, type = MetadataResource.class)

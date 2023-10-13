@@ -3,9 +3,13 @@ package org.opencds.cqf.ruler.cr.r4;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,6 +27,7 @@ import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
@@ -42,6 +47,7 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactAdapter;
 import org.opencds.cqf.ruler.cr.KnowledgeArtifactProcessor;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Lazy;
 
@@ -49,6 +55,9 @@ import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 
 @Lazy
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -190,12 +199,13 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_test() {
 		loadTransaction("ersd-release-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		String existingVersion = "1.2.3";
 		String versionData = "1.2.7.23";
 
 		Parameters params1 = parameters(
 			part("version", new StringType(versionData)),
-			part("versionBehavior", new StringType("default"))
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -285,12 +295,13 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_force_version() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		// Existing version should be "1.2.3";
 		String newVersionToForce = "1.2.7.23";
 
 		Parameters params = parameters(
 			part("version", new StringType(newVersionToForce)),
-			part("versionBehavior", new StringType("force"))
+			part("versionBehavior", new CodeType("force"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -309,13 +320,109 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
+	void releaseResource_require_non_experimental_error() {
+		loadResource("artifactAssessment-search-parameter.json");
+		// SpecificationLibrary - root is experimentalbut HAS experimental children
+		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
+		// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
+		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new CodeType("default")),
+			part("requireNonExperimental", new CodeType("error"))
+		);
+		Exception notExpectingAnyException = null;
+		// no Exception if root is experimental
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (Exception e) {
+			notExpectingAnyException = e;
+		}
+		assertTrue(notExpectingAnyException == null);
+
+		UnprocessableEntityException nonExperimentalChildException = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference+"2")
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			nonExperimentalChildException = e;
+		}
+		assertTrue(nonExperimentalChildException != null);
+		assertTrue(nonExperimentalChildException.getMessage().contains("not Experimental"));
+	}
+
+	@Test
+	void releaseResource_require_non_experimental_warn() {
+		loadResource("artifactAssessment-search-parameter.json");
+		// SpecificationLibrary - root is experimentalbut HAS experimental children
+		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
+		// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
+		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
+		Appender<ILoggingEvent> myMockAppender = mock(Appender.class);
+		List<String> warningMessages = new ArrayList<>();
+		doAnswer(t -> {
+			ILoggingEvent evt = (ILoggingEvent) t.getArguments()[0];
+			// we only care about warning messages here
+			if (evt.getLevel().equals(Level.WARN)) {
+				// instead of appending to logs, we just add it to a list
+				warningMessages.add(evt.getFormattedMessage());
+			}
+			return null;
+		}).when(myMockAppender).doAppend(any());
+		org.slf4j.Logger logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+		ch.qos.logback.classic.Logger myLoggerRoot = (ch.qos.logback.classic.Logger) logger;
+		// add the mocked appender, make sure it is detached at the end
+		myLoggerRoot.addAppender(myMockAppender);
+
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new CodeType("default")),
+			part("requireNonExperimental", new CodeType("warn"))
+		);
+		getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		// no warning if the root is Experimental
+		assertTrue(warningMessages.size()==0);
+
+		getClient().operation()
+			.onInstance(specificationLibReference+"2")
+			.named("$crmi.release")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		// SHOULD warn if the root is not experimental
+		assertTrue(warningMessages.stream().anyMatch(message -> message.contains("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.7")));
+		assertTrue(warningMessages.stream().anyMatch(message -> message.contains("http://ersd.aimsplatform.org/fhir/Library/rctc2")));
+		// cleanup
+		myLoggerRoot.detachAppender(myMockAppender);
+	}
+
+	@Test
 	void releaseResource_propagate_effective_period() {
 		loadTransaction("ersd-small-approved-draft-no-child-effective-period.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		String effectivePeriodToPropagate = "2020-12-11";
 
 		Parameters params = parameters(
-			part("version", new StringType("1.2.7.23")),
-			part("versionBehavior", new StringType("default"))
+			part("version", new StringType("1.2.7")),
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		Bundle returnResource = getClient().operation()
@@ -369,8 +476,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String actualErrorMessage = "";
 
 		Parameters params = parameters(
-			part("version", "1.2.3.23"),
-			part("versionBehavior", "default"),
+			part("version", "1.2.3"),
+			part("versionBehavior", new CodeType("default")),
 			part("latestFromTxServer", new BooleanType(true))
 		);
 
@@ -396,7 +503,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 		Parameters params1 = parameters(
 			part("version", versionData),
-			part("versionBehavior", "default")
+			part("versionBehavior", new CodeType("default"))
 		);
 
 		try {
@@ -415,11 +522,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_version_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		for(String version:badVersionList){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(
 				part("version", new StringType(version)),
-				part("versionBehavior", new StringType("force"))
+				part("versionBehavior", new CodeType("force"))
 			);
 			try {
 				getClient().operation()
@@ -460,10 +568,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_version_active_test() {
 		loadTransaction("ersd-small-active-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 			PreconditionFailedException maybeException = null;
 			Parameters params = parameters(
-				part("version", new StringType("1.2.3.23")),
-				part("versionBehavior", new StringType("force"))
+				part("version", new StringType("1.2.3")),
+				part("versionBehavior", new CodeType("force"))
 			);
 			try {
 				getClient().operation()
@@ -481,8 +590,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void release_resource_not_found_test() {
 		ResourceNotFoundException maybeException = null;
 		Parameters params = parameters(
-			part("version", new StringType("1.2.3.23")),
-			part("versionBehavior", new StringType("force"))
+			part("version", new StringType("1.2.3")),
+			part("versionBehavior", new CodeType("force"))
 		);
 		try {
 			getClient().operation()
@@ -499,6 +608,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void release_versionBehaviour_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
 		List<String> badVersionBehaviors = Arrays.asList(
 			"not-a-valid-option",
 			null
@@ -506,8 +616,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		for(String versionBehaviour:badVersionBehaviors){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = parameters(
-				part("version", new StringType("1.2.3.23")),
-				part("versionBehavior", new StringType(versionBehaviour))
+				part("version", new StringType("1.2.3")),
+				part("versionBehavior", new CodeType(versionBehaviour))
 			);
 			try {
 				getClient().operation()
@@ -543,7 +653,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(artifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3-draft"));
 		Parameters releaseParams = parameters(
 			part("version", versionData),
-			part("versionBehavior", "default")
+			part("versionBehavior", new CodeType("default"))
 		);
 		Bundle releasedBundle = getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")

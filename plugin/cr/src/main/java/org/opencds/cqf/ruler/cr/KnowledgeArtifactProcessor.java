@@ -42,9 +42,14 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -61,6 +66,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	private Logger myLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
@@ -411,7 +417,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private Optional<String> getReleaseVersion(String version, CodeType versionBehavior, String existingVersion) throws UnprocessableEntityException {
+	private Optional<String> getReleaseVersion(String version, CRMIReleaseVersionBehaviorCodes versionBehavior, String existingVersion) throws UnprocessableEntityException {
 		Optional<String> releaseVersion = Optional.ofNullable(null);
 		// If no version exists use the version argument provided
 		if (existingVersion == null || existingVersion.isEmpty() || existingVersion.isBlank()) {
@@ -419,15 +425,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		String replaceDraftInExisting = existingVersion.replace("-draft","");
 
-		if (versionBehavior.getCode().equals("default")) {
+		if (CRMIReleaseVersionBehaviorCodes.DEFAULT == versionBehavior) {
 			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()){
 				releaseVersion = Optional.of(replaceDraftInExisting);
 			} else {
 				releaseVersion = Optional.ofNullable(version);
 			}
-		} else if (versionBehavior.getCode().equals("force")) {
+		} else if (CRMIReleaseVersionBehaviorCodes.FORCE == versionBehavior) {
 			releaseVersion = Optional.ofNullable(version);
-		} else if (versionBehavior.getCode().equals("check")) {
+		} else if (CRMIReleaseVersionBehaviorCodes.CHECK == versionBehavior) {
 			if (!replaceDraftInExisting.equals(version)) {
 				throw new UnprocessableEntityException(String.format("versionBehavior specified is 'check' and the version provided ('%s') does not match the version currently specified on the root artifact ('%s').",version,existingVersion));
 			}
@@ -454,12 +460,12 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String version, CodeType versionBehavior, String releaseLabel, boolean latestFromTxServer, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
-		checkReleaseVersion(version,versionBehavior);
+		checkReleaseVersion(version, versionBehavior);
 		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
@@ -470,7 +476,11 @@ public class KnowledgeArtifactProcessor {
 		String releaseVersion = getReleaseVersion(version, versionBehavior, existingVersion)
 			.orElseThrow(() -> new UnprocessableEntityException("Could not resolve a version for the root artifact."));
 		Period rootEffectivePeriod = rootArtifactAdapter.getEffectivePeriod();
-		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal);
+		// if the root artifact is experimental then we don't need to check for experimental children
+		if (rootArtifact.getExperimental()) {
+			experimentalBehavior = CRMIReleaseExperimentalBehaviorCodes.NONE;
+		}
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
 		if (releaseLabel != null) {
 			Extension releaseLabelExtension = rootArtifact.getExtensionByUrl(releaseLabel);
 			if (releaseLabelExtension == null) {
@@ -575,13 +585,9 @@ public class KnowledgeArtifactProcessor {
 			});
 		return transactionBundle;
 	}
-	private void checkReleaseVersion(String version,CodeType versionBehavior) throws UnprocessableEntityException {
-		if (versionBehavior == null || versionBehavior.getCode() == null || versionBehavior.getCode().isEmpty()) {
+	private void checkReleaseVersion(String version,CRMIReleaseVersionBehaviorCodes versionBehavior) throws UnprocessableEntityException {
+		if (CRMIReleaseVersionBehaviorCodes.NULL == versionBehavior) {
 			throw new UnprocessableEntityException("'versionBehavior' must be provided as an argument to the $release operation. Valid values are 'default', 'check', 'force'.");
-		}
-
-		if (!versionBehavior.getCode().equals("default") && !versionBehavior.getCode().equals("check") && !versionBehavior.getCode().equals("force")) {
-			throw new UnprocessableEntityException(String.format("'%s' is not a valid versionBehavior. Valid values are 'default', 'check', 'force'", versionBehavior.getCode()));
 		}
 		checkVersionValidSemver(version);
 	}
@@ -589,7 +595,8 @@ public class KnowledgeArtifactProcessor {
 		if (artifact == null) {
 			throw new ResourceNotFoundException("Resource not found.");
 		}
-		if(!artifact.getStatus().equals(Enumerations.PublicationStatus.DRAFT)){
+
+		if (Enumerations.PublicationStatus.DRAFT != artifact.getStatus()) {
 			throw new PreconditionFailedException(String.format("Resource with ID: '%s' does not have a status of 'draft'.", artifact.getIdElement().getIdPart()));
 		}
 		if (approvalDate == null) {
@@ -601,7 +608,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
-																 CodeType versionBehavior, boolean latestFromTxServer, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
 		// Step 1: Update the Date and the version
@@ -643,7 +650,10 @@ public class KnowledgeArtifactProcessor {
 								artifactAdapter.resource.getUrl()))
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, fhirDal));
+					if (CRMIReleaseExperimentalBehaviorCodes.NULL != experimentalBehavior && CRMIReleaseExperimentalBehaviorCodes.NONE != experimentalBehavior) {
+						checkNonExperimental(referencedResource, experimentalBehavior, fhirDal);
+					}
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal));
 				}
 			}
 		}
@@ -693,6 +703,29 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		return updatedReference;
+	}
+	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
+		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
+								resource.getUrl());
+		if (CRMIReleaseExperimentalBehaviorCodes.WARN == experimentalBehavior && resource.getExperimental()) {
+			myLog.warn(nonExperimentalError);
+		} else if (CRMIReleaseExperimentalBehaviorCodes.ERROR == experimentalBehavior && resource.getExperimental()) {
+			throw new UnprocessableEntityException(nonExperimentalError);
+		}
+		// for ValueSets need to check recursively if any chldren are experimental
+		// since we don't own these
+		if (resource.getResourceType().equals(ResourceType.ValueSet)) {
+			ValueSet valueSet = (ValueSet) resource;
+			List<CanonicalType> valueSets = valueSet
+				.getCompose()
+				.getInclude()
+				.stream().flatMap(include -> include.getValueSet().stream())
+				.collect(Collectors.toList());
+			for (CanonicalType value: valueSets) {
+				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), fhirDal))
+				.ifPresent(childVs -> checkNonExperimental(childVs, experimentalBehavior, fhirDal));
+			}
+		}
 	}
 	/* $package */
 	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
