@@ -169,6 +169,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return request;
 	}
+
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 
@@ -186,6 +187,7 @@ public class KnowledgeArtifactProcessor {
 		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
+
 	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 		List<IQueryParameterType> urlList = new ArrayList<>();
@@ -331,6 +333,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return transactionBundle;
 	}
+
 	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
 		List<UsageContext> useContexts = newResource.getUseContext();
 		for(UsageContext useContext : useContexts){
@@ -349,6 +352,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
+
 	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
 			// For each  relatedArtifact, update the version of the reference.
 			relatedArtifactList.stream()
@@ -356,6 +360,7 @@ public class KnowledgeArtifactProcessor {
 				.collect(Collectors.toList())
 				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
+
 	private void checkVersionValidSemver(String version) throws UnprocessableEntityException{
 		if (version == null || version.isEmpty()) {
 			throw new UnprocessableEntityException("The version argument is required");
@@ -373,6 +378,7 @@ public class KnowledgeArtifactProcessor {
 			throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.REVISION");
 		}
 	}
+	
 	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(resourceToDraft.getUrl()) + "|" + draftVersion;
@@ -801,6 +807,7 @@ public class KnowledgeArtifactProcessor {
 		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
+
 	void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		List<ValueSet> valueSets = bundleEntries.stream()
@@ -837,6 +844,7 @@ public class KnowledgeArtifactProcessor {
 				);
 		});
 	}
+
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
@@ -870,12 +878,14 @@ public class KnowledgeArtifactProcessor {
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
 		}
 	}
+
 	private Optional<String> findVersionInListMatchingResource(List<CanonicalType> list, MetadataResource resource){
 		return list.stream()
 					.filter((canonical) -> Canonicals.getUrl(canonical).equals(resource.getUrl()))
 					.map((canonical) -> Canonicals.getVersion(canonical))
 					.findAny();
 	}
+
 	private void findUnsupportedCapability(MetadataResource resource, List<String> capability) throws PreconditionFailedException{
 		if (capability != null) {
 			List<Extension> knowledgeCapabilityExtension = resource.getExtension().stream()
@@ -895,6 +905,7 @@ public class KnowledgeArtifactProcessor {
 				});
 		}
 	}
+
 	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws PreconditionFailedException {
 		if (checkCanonicalVersion != null) {
 			// check throws an error
@@ -918,6 +929,7 @@ public class KnowledgeArtifactProcessor {
 				.ifPresent((version) -> resource.setVersion(version));
 		}
 	}
+
 	private List<BundleEntryComponent> findUnsupportedInclude(List<BundleEntryComponent> entries, List<String> include) {
 		if (include == null || include.stream().anyMatch((includedType) -> includedType.equals("all"))) {
 			return entries;
