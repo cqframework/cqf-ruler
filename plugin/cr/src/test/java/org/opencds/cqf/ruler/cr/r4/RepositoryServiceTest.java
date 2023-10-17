@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -36,6 +37,7 @@ import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
@@ -1152,6 +1154,20 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
+	}
+
+	@Test
+	void validate_bundle() {
+		Library library = (Library) loadResource("ersd-active-library-example.json");
+		Parameters allParams = parameters(
+			part("resource", library)
+		);
+		var response = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$validate")
+			.withParameters(allParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
 	}
 }
 

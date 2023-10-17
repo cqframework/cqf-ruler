@@ -242,7 +242,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(myDefaultValidationSupport);
 		// FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(this.getFhirContext());
 		valid.registerValidatorModule(myInstanceVal);
-		Set<String>set = BuildExtensions.allConsts();
+		List<String>set = BuildExtensions.allConsts();
     ValidationResult result = valid.validateWithResult(resource, null);
     IBaseOperationOutcome outcome = result.toOperationOutcome();
     return (OperationOutcome) outcome;
