@@ -63,7 +63,7 @@
 	"relatedArtifact": [
 		{
 			"type": "composed-of",
-			"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+			"resource": "http://this/PlanDefinition/does-not-exist",
 			"extension":[
 				{
 					"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
@@ -73,7 +73,7 @@
 		},
 		{
 			"type": "composed-of",
-			"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
+			"resource": "http://this/Library/does-not-exist",
 			"extension":[
 				{
 					"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
