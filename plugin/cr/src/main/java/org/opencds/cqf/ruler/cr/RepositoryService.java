@@ -2,12 +2,12 @@ package org.opencds.cqf.ruler.cr;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -21,7 +21,6 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r5.utils.BuildExtensions;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
@@ -35,10 +34,10 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.FhirValidator;
-import ca.uhn.fhir.validation.ValidationResult;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
 
@@ -231,23 +230,29 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$validate", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$validate", value = "Validate a bundle")
-	public IBaseResource validateOperation(RequestDetails requestDetails, 
+	public OperationOutcome validateOperation(RequestDetails requestDetails, 
 		@OperationParam(name = "resource") IBaseResource resource,
 		@OperationParam(name = "mode") CodeType mode,
 		@OperationParam(name = "profile") String profile
 	)
 		throws FHIRException {
-		FhirValidator valid = this.getFhirContext().newValidator();
+		FhirValidator validator = this.getFhirContext().newValidator();
 		DefaultProfileValidationSupport myDefaultValidationSupport = new DefaultProfileValidationSupport(this.getFhirContext());
-		FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(myDefaultValidationSupport);
-		// FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(this.getFhirContext());
-		valid.registerValidatorModule(myInstanceVal);
-		List<String>set = BuildExtensions.allConsts();
-    ValidationResult result = valid.validateWithResult(resource, null);
-    IBaseOperationOutcome outcome = result.toOperationOutcome();
-    return (OperationOutcome) outcome;
-
-		// return (IBaseResource) Validator.validate(resource, mode, profile, ctx);
+		NpmPackageValidationSupport npm = new NpmPackageValidationSupport(this.getFhirContext());
+		try {
+			// needs to be in /server/target/classes
+			npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new InternalErrorException("Could not load package");
+		}
+		ValidationSupportChain chain = new ValidationSupportChain(
+			npm,
+			myDefaultValidationSupport
+		);
+		FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(chain);
+		validator.registerValidatorModule(myInstanceVal);
+    return (OperationOutcome) validator.validateWithResult(resource, null).toOperationOutcome();
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()

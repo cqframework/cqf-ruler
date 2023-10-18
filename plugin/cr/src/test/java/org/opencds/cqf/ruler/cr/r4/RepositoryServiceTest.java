@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -38,6 +37,7 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
@@ -1157,17 +1157,20 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void validate_bundle() {
-		Library library = (Library) loadResource("ersd-active-library-example.json");
+	void validateOperation() {
+		Library library = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
 		Parameters allParams = parameters(
 			part("resource", library)
 		);
-		var response = getClient().operation()
-			.onInstance(specificationLibReference)
+		OperationOutcome outcome = getClient().operation()
+			.onServer()
 			.named("$validate")
 			.withParameters(allParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
+		boolean badInitiationReasonExtensionExists = outcome.getIssue().stream()
+			.anyMatch((issue) -> issue.getSeverity() == IssueSeverity.ERROR && issue.getDiagnostics().contains("The Extension 'http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-initiation-reason-extension' definition allows for the types [string, CodeableConcept] but found type integer"));
+		assertTrue(badInitiationReasonExtensionExists);
 	}
 }
 
