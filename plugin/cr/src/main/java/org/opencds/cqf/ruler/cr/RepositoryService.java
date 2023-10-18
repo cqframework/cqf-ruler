@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
@@ -237,7 +239,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	)
 		throws FHIRException {
 		FhirValidator validator = this.getFhirContext().newValidator();
-		DefaultProfileValidationSupport myDefaultValidationSupport = new DefaultProfileValidationSupport(this.getFhirContext());
 		NpmPackageValidationSupport npm = new NpmPackageValidationSupport(this.getFhirContext());
 		try {
 			// needs to be in /server/target/classes
@@ -248,7 +249,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		}
 		ValidationSupportChain chain = new ValidationSupportChain(
 			npm,
-			myDefaultValidationSupport
+			new DefaultProfileValidationSupport(this.getFhirContext()),
+			new InMemoryTerminologyServerValidationSupport(this.getFhirContext()),
+      new CommonCodeSystemsTerminologyService(this.getFhirContext())
 		);
 		FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(chain);
 		validator.registerValidatorModule(myInstanceVal);
