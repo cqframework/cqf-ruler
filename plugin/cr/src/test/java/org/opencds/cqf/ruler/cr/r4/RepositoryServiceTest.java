@@ -71,7 +71,7 @@ import ch.qos.logback.core.Appender;
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class RepositoryServiceTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
-	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1-23";
+	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-0-0-23";
 	private final List<String> badVersionList = Arrays.asList(
 			"11asd1",
 			"1.1.3.1.1",
