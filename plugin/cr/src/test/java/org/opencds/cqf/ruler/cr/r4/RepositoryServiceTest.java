@@ -131,7 +131,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		Parameters params = parameters(part("version", "1.1.1.23") );
+		Parameters params = parameters(part("version", "1.0.0.23") );
 		String maybeException = null;
 		try {
 			getClient().operation()
