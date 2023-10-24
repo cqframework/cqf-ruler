@@ -243,7 +243,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "profile") String profile
 	)
 		throws FHIRException {
-		FhirContext ctx = this.getFhirContext()
+		FhirContext ctx = this.getFhirContext();
 		if (ctx != null) {
 			FhirValidator validator = ctx.newValidator();
 			validator.setValidateAgainstStandardSchema(false);
