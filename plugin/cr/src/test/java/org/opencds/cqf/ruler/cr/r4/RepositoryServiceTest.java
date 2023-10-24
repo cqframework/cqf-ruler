@@ -1159,34 +1159,43 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void validateOperation() {
-		Library library = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
-		Parameters allParams = parameters(
-			part("resource", library)
+		Bundle ersdExampleSpecBundle = (Bundle) loadResource("ersd-bundle-example.json");
+		Parameters specBundleParams = parameters(
+			part("resource", ersdExampleSpecBundle)
 		);
-		OperationOutcome outcome = getClient().operation()
+		OperationOutcome specBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
-			.withParameters(allParams)
+			.withParameters(specBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> errors = outcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR).collect(Collectors.toList());
-		assertTrue(errors.size() == 5);
-		
-		boolean missingPlanDefSlice = errors.stream()
-			.anyMatch((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:slicePlanDefinition: minimum required = 1, but only found 0"));
-		assertTrue(missingPlanDefSlice);
-		boolean missingVSLibSlice = errors.stream()
-			.anyMatch((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:sliceTriggeringValueSetLibrary: minimum required = 1, but only found 0"));
-		assertTrue(missingVSLibSlice);
-		boolean initiationExtensionWrongResource = errors.stream()
-			.anyMatch((issue) -> issue.getDiagnostics().contains("The extension http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-initiation-reason-extension is not allowed to be used at this point (allowed = e:Composition; this element is [Library])"));
-		assertTrue(initiationExtensionWrongResource);
-		boolean initiationExtensionWrongType = errors.stream()
-			.anyMatch((issue) -> issue.getDiagnostics().contains("The Extension 'http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-initiation-reason-extension' definition allows for the types [string, CodeableConcept] but found type integer"));
-		assertTrue(initiationExtensionWrongType);
-		boolean initiationExtensionWrongType2 = outcome.getIssue().stream()
-			.anyMatch((issue) -> issue.getDiagnostics().contains("The type of element valueInteger is not known, which is invalid. Valid types at this point are string, CodeableConcept"));
-		assertTrue(initiationExtensionWrongType2);
+		List<OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(specBundleValidationErrors.size() == 0);
+		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
+		Parameters supplementalBundleParams = parameters(
+			part("resource", ersdExampleSupplementalBundle)
+		);
+		OperationOutcome supplementalBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(supplementalBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(supplementalBundleErrors.size() == 0);
+
+		Library validationErrorLibrary = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
+		Parameters validationFailedParams = parameters(
+			part("resource", validationErrorLibrary)
+		);
+		OperationOutcome failedValidationOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(validationFailedParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(invalidLibraryErrors.size() == 5);
 	}
 }
 

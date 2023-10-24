@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +29,11 @@ import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -42,6 +46,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.FhirValidator;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
+	private Logger myLog = LoggerFactory.getLogger(RepositoryService.class);
 
 	@Autowired
 	private JpaFhirDalFactory fhirDalFactory;
@@ -238,24 +243,30 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "profile") String profile
 	)
 		throws FHIRException {
-		FhirValidator validator = this.getFhirContext().newValidator();
-		NpmPackageValidationSupport npm = new NpmPackageValidationSupport(this.getFhirContext());
-		try {
-			// needs to be in /server/target/classes
-			npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
-		} catch (Exception e) {
-			// TODO: handle exception
-			throw new InternalErrorException("Could not load package");
+		FhirContext ctx = this.getFhirContext()
+		if (ctx != null) {
+			FhirValidator validator = ctx.newValidator();
+			validator.setValidateAgainstStandardSchema(false);
+			validator.setValidateAgainstStandardSchematron(false);
+			NpmPackageValidationSupport npm = new NpmPackageValidationSupport(ctx);
+			try {
+				// needs to be in /server/target/classes
+				npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
+			} catch (IOException e) {
+				throw new InternalErrorException("Could not load package");
+			}
+			ValidationSupportChain chain = new ValidationSupportChain(
+				npm,
+				new DefaultProfileValidationSupport(ctx),
+				new InMemoryTerminologyServerValidationSupport(ctx),
+				new CommonCodeSystemsTerminologyService(ctx)
+			);
+			FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(chain);
+			validator.registerValidatorModule(myInstanceVal);
+			return (OperationOutcome) validator.validateWithResult(resource, null).toOperationOutcome();
+		} else {
+			throw new InternalErrorException("Could not load FHIR Context");
 		}
-		ValidationSupportChain chain = new ValidationSupportChain(
-			npm,
-			new DefaultProfileValidationSupport(this.getFhirContext()),
-			new InMemoryTerminologyServerValidationSupport(this.getFhirContext()),
-      new CommonCodeSystemsTerminologyService(this.getFhirContext())
-		);
-		FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(chain);
-		validator.registerValidatorModule(myInstanceVal);
-    return (OperationOutcome) validator.validateWithResult(resource, null).toOperationOutcome();
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
