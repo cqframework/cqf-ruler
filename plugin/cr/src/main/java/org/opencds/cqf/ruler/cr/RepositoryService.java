@@ -41,6 +41,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.FhirValidator;
@@ -243,6 +244,15 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "profile") String profile
 	)
 		throws FHIRException {
+		if (mode != null) {
+			throw new NotImplementedOperationException("'mode' Parameter not implemented yet.");
+		}
+		if (profile != null) {
+			throw new NotImplementedOperationException("'profile' Parameter not implemented yet.");
+		}
+		if (resource == null) {
+			throw new UnprocessableEntityException("A FHIR resource must be provided for validation");
+		}
 		FhirContext ctx = this.getFhirContext();
 		if (ctx != null) {
 			FhirValidator validator = ctx.newValidator();
@@ -250,7 +260,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			validator.setValidateAgainstStandardSchematron(false);
 			NpmPackageValidationSupport npm = new NpmPackageValidationSupport(ctx);
 			try {
-				// needs to be in /server/target/classes
 				npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
 			} catch (IOException e) {
 				throw new InternalErrorException("Could not load package");

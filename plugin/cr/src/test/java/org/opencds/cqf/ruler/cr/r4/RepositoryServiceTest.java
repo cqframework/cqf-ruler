@@ -1196,6 +1196,21 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		List<OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(invalidLibraryErrors.size() == 5);
+
+		Parameters noResourceParams = parameters();
+		UnprocessableEntityException noResourceException = null;
+		try {	
+			getClient().operation()
+				.onServer()
+				.named("$validate")
+				.withParameters(noResourceParams)
+				.returnResourceType(OperationOutcome.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noResourceException = e;
+		}
+		assertNotNull(noResourceException);
+		assertTrue(noResourceException.getMessage().contains("resource must be provided"));
 	}
 }
 
