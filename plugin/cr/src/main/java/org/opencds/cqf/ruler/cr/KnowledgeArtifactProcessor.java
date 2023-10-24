@@ -151,9 +151,21 @@ public class KnowledgeArtifactProcessor {
 		);
 
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
-		return new Bundle.BundleEntryComponent()
+		BundleEntryComponent entry = new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
 				.setRequest(createRequest(theResource));
+		String fullUrl = entry.getRequest().getUrl();
+		if (theResource instanceof MetadataResource) {
+			MetadataResource resource = (MetadataResource) theResource;
+			if (resource.hasUrl()) {
+				fullUrl = resource.getUrl();
+				if (resource.hasVersion()) {
+					fullUrl += "|" + resource.getVersion();
+				}
+			}
+		}
+		entry.setFullUrl(fullUrl);
+		return entry;
 	}
 
 	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {

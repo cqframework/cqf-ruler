@@ -1212,5 +1212,30 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertNotNull(noResourceException);
 		assertTrue(noResourceException.getMessage().contains("resource must be provided"));
 	}
+	@Test
+	void validatePackageOutput() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(parameters())
+			.returnResourceType(Bundle.class)
+			.execute();
+		Parameters packagedBundleParams = parameters(
+			part("resource", packagedBundle)
+		);
+		OperationOutcome packagedBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(packagedBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> packagedBundleValidationErrors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		// currently the packaged bundle is not valid due to:
+		// - bundle.total
+		// - bundle.entry.request
+		// being present on a bundle with type = collection
+		assertTrue(packagedBundleValidationErrors.size() == 2);
+	}
 }
 
