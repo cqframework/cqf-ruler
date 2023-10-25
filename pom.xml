@@ -63,6 +63,7 @@
 
 	<modules>
 		<module>example</module>
+		<module>v1-converter</module>
 		<module>external</module>
 		<module>test</module>
 		<module>core</module>
