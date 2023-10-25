@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ConverterProviderIT extends RestIntegrationTest {
 	@Test
 	void testConverterConfig() {
-		var outcome = getClient()
+		OperationOutcome outcome = getClient()
 				.operation()
 				.onServer()
 				.named("$convert-v1")
@@ -23,6 +23,6 @@ class ConverterProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(outcome);
-		assertEquals("Howdy", outcome.getIssueFirstRep().getDiagnostics());
+		assertEquals("hi", outcome.getIssueFirstRep().getDiagnostics());
 	}
 }

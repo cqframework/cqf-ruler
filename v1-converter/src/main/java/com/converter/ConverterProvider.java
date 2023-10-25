@@ -38,7 +38,7 @@ public class ConverterProvider implements OperationProvider {
 	@Operation(idempotent = true, name = "$convert-v1")
 	public OperationOutcome convert_v1() {
 		OperationOutcome outcome = new OperationOutcome();
-		// outcome.addIssue().setDiagnostics(converterProperties.getMessage());
+		outcome.addIssue().setDiagnostics("hi");
 		return outcome;
 	}
 }

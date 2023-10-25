@@ -71,6 +71,11 @@
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.fhir</artifactId>
 		</dependency>
+		<!-- <dependency>
+			<groupId>com.converter</groupId>
+			<artifactId>cqf-ruler-v1-converter-plugin</artifactId>
+			<version>1.0.0</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.library</artifactId>
