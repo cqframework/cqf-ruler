@@ -3,8 +3,7 @@ package com.converter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,12 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ConverterProviderIT extends RestIntegrationTest {
 	@Test
 	void testConverterConfig() {
-		OperationOutcome outcome = getClient()
+		loadResource("ersd-v1-plandefinition-skeleton.json");
+		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
+		
+		Bundle outcome = getClient()
 				.operation()
 				.onServer()
 				.named("$convert-v1")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(OperationOutcome.class)
+				.withParameters(v2BundleParams)
+				.returnResourceType(Bundle.class)
 				.execute();
 
 		assertNotNull(outcome);
