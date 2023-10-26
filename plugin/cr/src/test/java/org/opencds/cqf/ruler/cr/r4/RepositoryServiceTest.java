@@ -1171,6 +1171,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		List<OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(specBundleValidationErrors.size() == 0);
+
 		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
 		Parameters supplementalBundleParams = parameters(
 			part("resource", ersdExampleSupplementalBundle)
@@ -1212,6 +1213,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertNotNull(noResourceException);
 		assertTrue(noResourceException.getMessage().contains("resource must be provided"));
 	}
+
+	@Test
+	void validateOperationUnqualifiedRelatedArtifact() {
+		Bundle ersdExampleSpecBundleUnqualifiedPlanDefinition = (Bundle) loadResource("ersd-library-validation-failure-unqualified-plandefinition-bundle.json");
+		Parameters validationFailedUnqualifiedPlanDefinitionParams = parameters(
+			part("resource", ersdExampleSpecBundleUnqualifiedPlanDefinition)
+		);
+		OperationOutcome failedValidationUnqualifiedPlanDefinitionOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(validationFailedUnqualifiedPlanDefinitionParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> invalidLibraryUnqualifiedPlanDefinitionErrors =
+			failedValidationUnqualifiedPlanDefinitionOutcome.getIssue().stream().filter((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:slicePlanDefinition: minimum required = 1, but only found 0 (from http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library|2.1.0)")).collect(Collectors.toList());
+		assertTrue(invalidLibraryUnqualifiedPlanDefinitionErrors.size() == 1);
+	}
+
 	@Test
 	void validatePackageOutput() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
