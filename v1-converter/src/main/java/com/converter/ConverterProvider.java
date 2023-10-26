@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -97,7 +98,7 @@ public class ConverterProvider implements OperationProvider {
 		 && resource.getMeta().getProfile().stream().anyMatch(canonical -> canonical.getValue().contains("us-ph-triggering-valueset"))) {
 			resource.getUseContext().stream().forEach(useContext -> {
 				if (useContext.getCode().getCode().equals("program")) {
-					useContext.setValue(new CanonicalType(v1PlanDefinitionUrl));
+					useContext.setValue(new Reference(v1PlanDefinitionUrl));
 				}
 			});
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
