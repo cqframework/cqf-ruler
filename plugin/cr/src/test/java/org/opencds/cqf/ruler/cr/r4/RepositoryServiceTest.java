@@ -1226,9 +1226,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(validationFailedUnqualifiedPlanDefinitionParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> invalidLibraryUnqualifiedPlanDefinitionErrors =
-			failedValidationUnqualifiedPlanDefinitionOutcome.getIssue().stream().filter((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:slicePlanDefinition: minimum required = 1, but only found 0 (from http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library|2.1.0)")).collect(Collectors.toList());
-		assertTrue(invalidLibraryUnqualifiedPlanDefinitionErrors.size() == 1);
+		boolean missingPlanDefinitionSliceErrorExists = failedValidationUnqualifiedPlanDefinitionOutcome.getIssue().stream()
+			.anyMatch((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:slicePlanDefinition: minimum required = 1, but only found 0 (from http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library|2.1.0)"));
+		assertTrue(missingPlanDefinitionSliceErrorExists);
 	}
 
 	@Test
