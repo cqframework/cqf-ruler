@@ -9,6 +9,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
@@ -55,7 +56,6 @@ public class ConverterProvider implements OperationProvider {
 					checkAndUpdateV2PlanDefinition(entry, v1PlanDefinition);
 					updateV2TriggeringValueSets(resource, v1PlanDefinition.getUrl());
 					updateV2TriggeringValueSetLibrary(resource);
-					removeUSPHProfiles(resource);
 					resource.setExperimentalElement(null);
 				}
 			});
@@ -64,14 +64,7 @@ public class ConverterProvider implements OperationProvider {
 	private void removeRootSpecificationLibrary(Bundle v2) {
 		List<BundleEntryComponent> filteredRootLib = v2.getEntry().stream()
 			.filter(entry -> entry.hasResource())
-			.filter(entry -> {
-				if (entry.getResource().hasMeta() 
-				 && entry.getResource().getMeta().getProfile().stream().anyMatch(canonical -> canonical.getValue().contains("us-ph-specification-library"))) {
-					return false;
-				 } else {
-					return true;
-				 }
-			}).collect(Collectors.toList());
+			.filter(entry -> !(entry.getResource().hasMeta() && entry.getResource().getMeta().hasProfile(ConverterProperties.usPHSpecLibProfile))).collect(Collectors.toList());
 		v2.setEntry(filteredRootLib);
 	}
 	private void checkAndUpdateV2PlanDefinition(BundleEntryComponent entry, PlanDefinition v1PlanDefinition) {
@@ -81,13 +74,27 @@ public class ConverterProvider implements OperationProvider {
 			entry.setResource(v1PlanDefinition);
 		}
 	}
+	private void replaceProfile(Meta meta, String oldProfile, String newProfile) {
+		meta.getProfile().replaceAll(profile -> {
+			if (profile.getValue().equals(oldProfile)) {
+				return new CanonicalType(newProfile);
+			} else {
+				return profile;
+			}
+		});
+	}
 	private void updateV2TriggeringValueSetLibrary(MetadataResource resource) {
-		if (resource.getResourceType() == ResourceType.ValueSet
+		if (resource.getResourceType() == ResourceType.Library
 			&& resource.hasMeta() 
-			&& resource.getMeta().getProfile().stream().anyMatch(canonical -> canonical.getValue().contains("us-ph-triggering-valueset-library"))
+			&& resource.getMeta().hasProfile(ConverterProperties.usPHTriggeringVSLibProfile)
 		) {
+			replaceProfile(resource.getMeta(), ConverterProperties.usPHTriggeringVSLibProfile, ConverterProperties.ersdVSLibProfile);
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
-				.filter(useContext -> !useContext.getCode().getCode().equals("reporting") && !useContext.getCode().getCode().equals("specification-type"))
+				.filter(useContext -> 
+					 !(useContext.getCode().getCode().equals("reporting")
+					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "triggering")) 
+				&& !(useContext.getCode().getCode().equals("specification-type")
+					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "value-set-library")))
 				.collect(Collectors.toList());
 			resource.setUseContext(filteredUseContexts);
 		}
@@ -95,24 +102,21 @@ public class ConverterProvider implements OperationProvider {
 	private void updateV2TriggeringValueSets(MetadataResource resource, String v1PlanDefinitionUrl) {
 		if (resource.getResourceType() == ResourceType.ValueSet
 		 && resource.hasMeta() 
-		 && resource.getMeta().getProfile().stream().anyMatch(canonical -> canonical.getValue().contains("us-ph-triggering-valueset"))) {
+		 && resource.getMeta().hasProfile(ConverterProperties.usPHTriggeringVSProfile)) {
+			replaceProfile(resource.getMeta(), ConverterProperties.usPHTriggeringVSProfile, ConverterProperties.ersdVSProfile);
 			resource.getUseContext().stream().forEach(useContext -> {
 				if (useContext.getCode().getCode().equals("program")) {
 					useContext.setValue(new Reference(v1PlanDefinitionUrl));
 				}
 			});
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
-				.filter(useContext -> !useContext.getCode().getCode().equals("reporting") && !useContext.getCode().getCode().equals("priority"))
+				.filter(useContext -> 
+					 !(useContext.getCode().getCode().equals("reporting")
+					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "triggering")) 
+				&& !(useContext.getCode().getCode().equals("priority")
+					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "routine")))
 				.collect(Collectors.toList());
 			resource.setUseContext(filteredUseContexts);
-		}
-	}
-	private void removeUSPHProfiles(MetadataResource resource){
-		if (resource.hasMeta() && resource.getMeta().hasProfile()) {
-			// need to remove us ph meta profiles
-			List<CanonicalType> filteredProfiles = resource.getMeta().getProfile().stream()
-				.filter(profile -> !profile.getValueAsString().contains("us-ph")).collect(Collectors.toList());
-			resource.getMeta().setProfile(filteredProfiles);
 		}
 	}
 	private PlanDefinition getV1PlanDefinition(RequestDetails requestDetails) throws ResourceNotFoundException {
@@ -120,8 +124,8 @@ public class ConverterProvider implements OperationProvider {
 		try {
 			PlanDefinition v1PlanDefinition = (PlanDefinition) converterProperties
 				.getDaoRegistry()
-				.getResourceDao(converterProperties.v1PlanDefinitionId.getResourceType())
-				.read(converterProperties.v1PlanDefinitionId, requestDetails);	
+				.getResourceDao(ConverterProperties.v1PlanDefinitionId.getResourceType())
+				.read(ConverterProperties.v1PlanDefinitionId, requestDetails);	
 			maybePlanDefinition = Optional.of(v1PlanDefinition);
 		} catch (ResourceNotFoundException | ResourceGoneException e) {
 			throw new ResourceNotFoundException("Could not find V1 PlanDefinition");
