@@ -1240,21 +1240,20 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(parameters())
 			.returnResourceType(Bundle.class)
 			.execute();
-		Parameters packagedBundleParams = parameters(
-			part("resource", packagedBundle)
-		);
-		OperationOutcome packagedBundleOutcome = getClient().operation()
-			.onServer()
-			.named("$validate")
-			.withParameters(packagedBundleParams)
-			.returnResourceType(OperationOutcome.class)
-			.execute();
-		List<OperationOutcomeIssueComponent> packagedBundleValidationErrors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-		// currently the packaged bundle is not valid due to:
-		// - bundle.total
-		// - bundle.entry.request
-		// being present on a bundle with type = collection
-		assertTrue(packagedBundleValidationErrors.size() == 2);
+		assertTrue(packagedBundle.getEntry().size() == 37);
+		packagedBundle.getEntry().stream().forEach(entry -> {
+			Parameters singleResourceParams = parameters(
+				part("resource", entry.getResource())
+			);
+			OperationOutcome packagedBundleOutcome = getClient().operation()
+				.onServer()
+				.named("$validate")
+				.withParameters(singleResourceParams)
+				.returnResourceType(OperationOutcome.class)
+				.execute();
+			List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+			assertTrue(errors.size() == 0);
+		});
 	}
 }
 
