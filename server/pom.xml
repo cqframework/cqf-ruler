@@ -242,6 +242,8 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- runtime only dependencies for developing plugins -->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-case-reporting</artifactId>
@@ -272,8 +274,6 @@
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
-
-		<!-- runtime only dependencies for developing plugins -->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-ra</artifactId>
@@ -290,6 +290,12 @@
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-security</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.converter</groupId>
+			<artifactId>cqf-ruler-v1-converter-plugin</artifactId>
+			<version>1.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
