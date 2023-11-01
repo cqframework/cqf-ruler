@@ -293,8 +293,8 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.converter</groupId>
-			<artifactId>cqf-ruler-v1-converter-plugin</artifactId>
+			<groupId>com.transform</groupId>
+			<artifactId>cqf-ruler-ersd-v2-v1-transform-plugin</artifactId>
 			<version>1.0.0</version>
 			<scope>runtime</scope>
 		</dependency>

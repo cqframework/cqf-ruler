@@ -1,4 +1,4 @@
-package com.converter;
+package com.transform;
 
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -7,15 +7,15 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ConverterConfig {
+public class TransformConfig {
   @Bean
-	public ConverterProperties converterProperties() {
-		return new ConverterProperties();
+	public TransformProperties transformProperties() {
+		return new TransformProperties();
 	}
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider converterProvider() {
-		return new ConverterProvider();
+	public OperationProvider transformProvider() {
+		return new TransformProvider();
 	}
 }

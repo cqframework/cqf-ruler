@@ -1,4 +1,4 @@
-package com.converter;
+package com.transform;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,17 +26,17 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceGoneException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
-public class ConverterProvider implements OperationProvider {
+public class TransformProvider implements OperationProvider {
 	@Autowired
-	ConverterProperties converterProperties;
+	TransformProperties transformProperties;
 
 	/**
-	 * Implements the $convert-v1 operation which transforms an ersd v2 Bundle
+	 * Implements the $ersd-v2-to-v1-transform operation which transforms an ersd v2 Bundle
 	 * into an ersd v1 compatible bundle
 	 * @return a greeting
 	 */
 	@Description(shortDefinition = "Converts a v2 ERSD bundle into a v1 ERSD bundle", value = "Converts a v2 ERSD bundle into a v1 ERSD bundle")
-	@Operation(idempotent = true, name = "$convert-v1")
+	@Operation(idempotent = true, name = "$ersd-v2-to-v1-transform")
 	public Bundle convert_v1(
 		RequestDetails requestDetails,
 		@OperationParam(name = "resource") IBaseResource maybeBundle) throws UnprocessableEntityException {
@@ -64,7 +64,7 @@ public class ConverterProvider implements OperationProvider {
 	private void removeRootSpecificationLibrary(Bundle v2) {
 		List<BundleEntryComponent> filteredRootLib = v2.getEntry().stream()
 			.filter(entry -> entry.hasResource())
-			.filter(entry -> !(entry.getResource().hasMeta() && entry.getResource().getMeta().hasProfile(ConverterProperties.usPHSpecLibProfile))).collect(Collectors.toList());
+			.filter(entry -> !(entry.getResource().hasMeta() && entry.getResource().getMeta().hasProfile(TransformProperties.usPHSpecLibProfile))).collect(Collectors.toList());
 		v2.setEntry(filteredRootLib);
 	}
 	private void checkAndUpdateV2PlanDefinition(BundleEntryComponent entry, PlanDefinition v1PlanDefinition) {
@@ -86,15 +86,15 @@ public class ConverterProvider implements OperationProvider {
 	private void updateV2TriggeringValueSetLibrary(MetadataResource resource) {
 		if (resource.getResourceType() == ResourceType.Library
 			&& resource.hasMeta() 
-			&& resource.getMeta().hasProfile(ConverterProperties.usPHTriggeringVSLibProfile)
+			&& resource.getMeta().hasProfile(TransformProperties.usPHTriggeringVSLibProfile)
 		) {
-			replaceProfile(resource.getMeta(), ConverterProperties.usPHTriggeringVSLibProfile, ConverterProperties.ersdVSLibProfile);
+			replaceProfile(resource.getMeta(), TransformProperties.usPHTriggeringVSLibProfile, TransformProperties.ersdVSLibProfile);
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
 				.filter(useContext -> 
 					 !(useContext.getCode().getCode().equals("reporting")
-					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "triggering")) 
+					&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "triggering")) 
 				&& !(useContext.getCode().getCode().equals("specification-type")
-					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "value-set-library")))
+					&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "value-set-library")))
 				.collect(Collectors.toList());
 			resource.setUseContext(filteredUseContexts);
 		}
@@ -102,8 +102,8 @@ public class ConverterProvider implements OperationProvider {
 	private void updateV2TriggeringValueSets(MetadataResource resource, String v1PlanDefinitionUrl) {
 		if (resource.getResourceType() == ResourceType.ValueSet
 		 && resource.hasMeta() 
-		 && resource.getMeta().hasProfile(ConverterProperties.usPHTriggeringVSProfile)) {
-			replaceProfile(resource.getMeta(), ConverterProperties.usPHTriggeringVSProfile, ConverterProperties.ersdVSProfile);
+		 && resource.getMeta().hasProfile(TransformProperties.usPHTriggeringVSProfile)) {
+			replaceProfile(resource.getMeta(), TransformProperties.usPHTriggeringVSProfile, TransformProperties.ersdVSProfile);
 			resource.getUseContext().stream().forEach(useContext -> {
 				if (useContext.getCode().getCode().equals("program")) {
 					useContext.setValue(new Reference(v1PlanDefinitionUrl));
@@ -112,9 +112,9 @@ public class ConverterProvider implements OperationProvider {
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
 				.filter(useContext -> 
 					 !(useContext.getCode().getCode().equals("reporting")
-					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "triggering")) 
+					&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "triggering")) 
 				&& !(useContext.getCode().getCode().equals("priority")
-					&& useContext.getValueCodeableConcept().hasCoding(ConverterProperties.usPHUsageContext, "routine")))
+					&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "routine")))
 				.collect(Collectors.toList());
 			resource.setUseContext(filteredUseContexts);
 		}
@@ -122,10 +122,10 @@ public class ConverterProvider implements OperationProvider {
 	private PlanDefinition getV1PlanDefinition(RequestDetails requestDetails) throws ResourceNotFoundException {
 		Optional<PlanDefinition> maybePlanDefinition = Optional.ofNullable(null);
 		try {
-			PlanDefinition v1PlanDefinition = (PlanDefinition) converterProperties
+			PlanDefinition v1PlanDefinition = (PlanDefinition) transformProperties
 				.getDaoRegistry()
-				.getResourceDao(ConverterProperties.v1PlanDefinitionId.getResourceType())
-				.read(ConverterProperties.v1PlanDefinitionId, requestDetails);	
+				.getResourceDao(TransformProperties.v1PlanDefinitionId.getResourceType())
+				.read(TransformProperties.v1PlanDefinitionId, requestDetails);	
 			maybePlanDefinition = Optional.of(v1PlanDefinition);
 		} catch (ResourceNotFoundException | ResourceGoneException e) {
 			throw new ResourceNotFoundException("Could not find V1 PlanDefinition");

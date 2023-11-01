@@ -1,4 +1,4 @@
-package com.converter;
+package com.transform;
 import org.hl7.fhir.r5.model.IdType;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
-@ConfigurationProperties(prefix = "converter")
-public class ConverterProperties implements DaoRegistryUser {
+@ConfigurationProperties(prefix = "transform")
+public class TransformProperties implements DaoRegistryUser {
   @Autowired
 	private DaoRegistry myDaoRegistry;
 
