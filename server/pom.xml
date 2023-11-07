@@ -292,12 +292,6 @@
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.transform</groupId>
-			<artifactId>cqf-ruler-ersd-v2-v1-transform-plugin</artifactId>
-			<version>1.0.0</version>
-			<scope>runtime</scope>
-		</dependency>
 	</dependencies>
 
 	<build>

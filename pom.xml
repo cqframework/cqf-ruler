@@ -62,8 +62,6 @@
 	</developers>
 
 	<modules>
-		<module>example</module>
-		<module>ersd-v2-v1-transform</module>
 		<module>external</module>
 		<module>test</module>
 		<module>core</module>
