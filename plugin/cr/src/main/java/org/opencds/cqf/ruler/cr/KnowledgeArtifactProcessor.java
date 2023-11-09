@@ -23,6 +23,7 @@ import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
@@ -764,9 +765,12 @@ public class KnowledgeArtifactProcessor {
 		if (packageOnly != null) {
 			throw new NotImplementedOperationException("This repository is not implementing packageOnly at this time");
 		}
+		if (count != null && count < 0) {
+			throw new UnprocessableEntityException("'count' must be non-negative");
+		}
 		MetadataResource resource = (MetadataResource) fhirDal.read(id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
-		Bundle packagedBundle = new Bundle().setType(Bundle.BundleType.COLLECTION);
+		Bundle packagedBundle = new Bundle();
 		if (include != null
 			&& include.size() == 1
 			&& include.stream().anyMatch((includedType) -> includedType.equals("artifact"))) {
@@ -782,33 +786,59 @@ public class KnowledgeArtifactProcessor {
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
 			packagedBundle.setEntry(included);
 		}
-		packagedBundle.setTotal(packagedBundle.getEntry().size());
+		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
+		setCorrectBundleType(count,offset,packagedBundle);
+		handlePriority(resource, packagedBundle.getEntry());
+		return packagedBundle;
+	}
+	private void pageBundleBasedOnCountAndOffset(Integer count, Integer offset, Bundle bundle) {
 		if (offset != null) {
-			List<BundleEntryComponent> entries = packagedBundle.getEntry();
+			List<BundleEntryComponent> entries = bundle.getEntry();
 			Integer bundleSize = entries.size();
 			if (offset < bundleSize) {
-				packagedBundle.setEntry(entries.subList(offset, bundleSize));
+				bundle.setEntry(entries.subList(offset, bundleSize));
 			} else {
-				packagedBundle.setEntry(Arrays.asList());
+				bundle.setEntry(Arrays.asList());
 			}
 		}
 		if (count != null) {
 			// repeat these two from earlier because we might modify / replace
 			// the entries list at any time
-			List<BundleEntryComponent> entries = packagedBundle.getEntry();
+			List<BundleEntryComponent> entries = bundle.getEntry();
 			Integer bundleSize = entries.size();
 			if (count < bundleSize){
-				packagedBundle.setEntry(entries.subList(0, count));
+				bundle.setEntry(entries.subList(0, count));
 			} else {
 				// there are not enough entries in the bundle to page, so
 				// we return all of them no change
 			}
 		}
-		handlePriority(resource, packagedBundle.getEntry());
-		return packagedBundle;
 	}
-
-	void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
+	private void setCorrectBundleType(Integer count, Integer offset, Bundle bundle) {
+		// if the bundle is paged then it must be of type = collection
+		// and modified to follow bundle.type constraints
+		// if not, set type =  transaction
+		// special case of count = 0 -> set type = searchset so we can display bundle.total
+		if (count != null && count == 0) {
+			bundle.setType(BundleType.SEARCHSET);
+			bundle.setTotal(bundle.getEntry().size());
+		} else if (
+			(offset != null && offset > 0) || 
+			(count != null && count < bundle.getEntry().size())
+		) {
+			bundle.setType(BundleType.COLLECTION);
+			List<BundleEntryComponent> removedRequest = bundle.getEntry().stream()
+				.map(entry -> {
+					entry.setRequest(null);
+					return entry;
+				}).collect(Collectors.toList());
+			bundle.setEntry(removedRequest);
+		} else {
+			bundle.setType(BundleType.TRANSACTION);
+			bundle.setTotal(bundle.getEntry().size());
+		}
+	}
+	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		List<ValueSet> valueSets = bundleEntries.stream()
 			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
