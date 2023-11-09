@@ -1,6 +1,6 @@
 # cqf-ruler
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server) [![Build Status](https://app.travis-ci.com/cqframework/cqf-ruler.svg?branch=master)](https://app.travis-ci.com/cqframework/cqf-ruler) [![docker image](https://img.shields.io/docker/v/alphora/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/alphora/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server) [![Build Status](https://app.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://app.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/alphora/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/alphora/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
 
 ---
 
@@ -11,7 +11,7 @@
 The cqf-ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
 knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. The cqf-ruler provides an [extensibility API](#plugins) to allow adding custom FHIR operations without the need to fork or clone the entire project.
 
-See the [wiki](https://github.com/cqframework/cqf-ruler/wiki/Home) for more information
+See the [wiki](https://github.com/DBCG/cqf-ruler/wiki/Home) for more information
 
 ## Usage
 
@@ -37,7 +37,7 @@ docker run -p 8080:8080 alphora/cqf-ruler
 
 This will make the cqf-ruler available on <http://localhost:8080>
 
-Other options for deployment are listed on the [wiki](https://github.com/cqframework/cqf-ruler/wiki/Deployment) for more documentation.
+Other options for deployment are listed on the [wiki](https://github.com/DBCG/cqf-ruler/wiki/Deployment) for more documentation.
 
 ### GUI
 
@@ -51,9 +51,9 @@ Similarly, Open API docs are available at [http://localhost:8080/fhir/api-docs](
 
 ### Example Operations
 
-The [wiki](https://github.com/cqframework/cqf-ruler/wiki) provides walkthroughs of several of the features of the cqf-ruler such as [Quality Measure Processing](https://github.com/cqframework/cqf-ruler/wiki/Quality-Measure-Processing).
+The [wiki](https://github.com/DBCG/cqf-ruler/wiki) provides walkthroughs of several of the features of the cqf-ruler such as [Quality Measure Processing](https://github.com/DBCG/cqf-ruler/wiki/Quality-Measure-Processing).
 
-In general, you need to load the cqf-ruler with FHIR Resources prior to using it. One way to do this is to start a cqf-ruler server and use the FHIR REST API to load resources. See [Resource Loading](https://github.com/cqframework/cqf-ruler/wiki/Resource-Loading) on the wiki for a description of how to do that.
+In general, you need to load the cqf-ruler with FHIR Resources prior to using it. One way to do this is to start a cqf-ruler server and use the FHIR REST API to load resources. See [Resource Loading](https://github.com/DBCG/cqf-ruler/wiki/Resource-Loading) on the wiki for a description of how to do that.
 
 ## Development
 
@@ -63,7 +63,7 @@ In general, you need to load the cqf-ruler with FHIR Resources prior to using it
 
 This project includes the `hapi-fhir-jpaserver-starter` project as a submodule and includes the compiled classes as a jar called `cqf-ruler-external`. Be sure to use the following command when cloning this repository to ensure the submodules are initialized correctly:
 
-`git clone --recurse-submodules https://github.com/cqframework/cqf-ruler.git`
+`git clone --recurse-submodules https://github.com/DBCG/cqf-ruler.git`
 
 or if you've already checked out the repo, use
 
@@ -94,21 +94,21 @@ To run the cqf-ruler directory from this project use:
 
 ### Contributing
 
-See [Contributing](https://github.com/cqframework/cqf-ruler/wiki/Contributing) on the wiki for more information about developing and contributing to the cqf-ruler project.
+See [Contributing](https://github.com/DBCG/cqf-ruler/wiki/Contributing) on the wiki for more information about developing and contributing to the cqf-ruler project.
 
 ## Plugins
 
-The cqf-ruler offers a basic plugin framework to allow the addition of custom FHIR operations. See [Plugins](https://github.com/cqframework/cqf-ruler/wiki/Architecture#Plugins) on the wiki for more information.
+The cqf-ruler offers a basic plugin framework to allow the addition of custom FHIR operations. See [Plugins](https://github.com/DBCG/cqf-ruler/wiki/Architecture#Plugins) on the wiki for more information.
 
 A complete example of a dynamically loaded plugin is available in the [example](/example) directory.
 
 ## Architecture
 
-See [Architecture](https://github.com/cqframework/cqf-ruler/wiki/Architecture) on the wiki.
+See [Architecture](https://github.com/DBCG/cqf-ruler/wiki/Architecture) on the wiki.
 
 ## Getting Help
 
-Additional documentation is on the [wiki](https://github.com/cqframework/cqf-ruler/wiki).
+Additional documentation is on the [wiki](https://github.com/DBCG/cqf-ruler/wiki).
 
 Bugs and feature requests can be filed with [Github Issues](https://github.com/cqframework/cqf-ruler/issues).
 
