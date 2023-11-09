@@ -835,7 +835,6 @@ public class KnowledgeArtifactProcessor {
 			bundle.setEntry(removedRequest);
 		} else {
 			bundle.setType(BundleType.TRANSACTION);
-			bundle.setTotal(bundle.getEntry().size());
 		}
 	}
 	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
