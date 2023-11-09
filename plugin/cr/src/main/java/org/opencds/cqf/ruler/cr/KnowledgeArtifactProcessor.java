@@ -786,8 +786,8 @@ public class KnowledgeArtifactProcessor {
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
 			packagedBundle.setEntry(included);
 		}
-		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
 		setCorrectBundleType(count,offset,packagedBundle);
+		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
 		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
