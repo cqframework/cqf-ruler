@@ -1239,8 +1239,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(OperationOutcome.class)
 			.execute();
 		List<OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-		assertTrue(specBundleValidationErrors.size() == 0);
-
+		assertTrue(specBundleValidationErrors.size() == 3);
+		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
+		assertTrue(specBundleValidationErrors.get(0).getDiagnostics().contains("slicePlanDefinition"));
+		assertTrue(specBundleValidationErrors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(specBundleValidationErrors.get(2).getDiagnostics().contains("variable"));
 		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
 		Parameters supplementalBundleParams = parameters(
 			part("resource", ersdExampleSupplementalBundle)
@@ -1320,7 +1323,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(OperationOutcome.class)
 			.execute();
 		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-		assertTrue(errors.size() == 0);
+		assertTrue(errors.size() == 3);
+		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
+		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
+		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
 	}
 }
-
