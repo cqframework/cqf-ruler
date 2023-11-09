@@ -1310,19 +1310,17 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == 37);
-		packagedBundle.getEntry().stream().forEach(entry -> {
-			Parameters singleResourceParams = parameters(
-				part("resource", entry.getResource())
-			);
-			OperationOutcome packagedBundleOutcome = getClient().operation()
-				.onServer()
-				.named("$validate")
-				.withParameters(singleResourceParams)
-				.returnResourceType(OperationOutcome.class)
-				.execute();
-			List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-			assertTrue(errors.size() == 0);
-		});
+		Parameters packagedBundleParams = parameters(
+			part("resource", packagedBundle)
+		);
+		OperationOutcome packagedBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(packagedBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(errors.size() == 0);
 	}
 }
 
