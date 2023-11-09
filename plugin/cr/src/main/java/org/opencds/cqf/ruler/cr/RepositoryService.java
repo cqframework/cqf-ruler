@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -252,9 +253,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		}
 		FhirContext ctx = this.getFhirContext();
 		if (ctx != null) {
-			FhirValidator validator = ctx.newValidator();
-			validator.setValidateAgainstStandardSchema(false);
-			validator.setValidateAgainstStandardSchematron(false);
+			FhirValidator fhirValidator = ctx.newValidator();
+			fhirValidator.setValidateAgainstStandardSchema(false);
+			fhirValidator.setValidateAgainstStandardSchematron(false);
 			NpmPackageValidationSupport npm = new NpmPackageValidationSupport(ctx);
 			try {
 				npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
@@ -267,9 +268,10 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 				new InMemoryTerminologyServerValidationSupport(ctx),
 				new CommonCodeSystemsTerminologyService(ctx)
 			);
-			FhirInstanceValidator myInstanceVal = new FhirInstanceValidator(chain);
-			validator.registerValidatorModule(myInstanceVal);
-			return (OperationOutcome) validator.validateWithResult(resource, null).toOperationOutcome();
+			FhirInstanceValidator instanceValidatorModule = new FhirInstanceValidator(chain);
+			instanceValidatorModule.setValidatorResourceFetcher(new ValidatorResourceFetcher(ctx, chain, getDaoRegistry()));
+			fhirValidator.registerValidatorModule(instanceValidatorModule);
+			return (OperationOutcome) fhirValidator.validateWithResult(resource, null).toOperationOutcome();
 		} else {
 			throw new InternalErrorException("Could not load FHIR Context");
 		}
