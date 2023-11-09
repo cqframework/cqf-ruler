@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -1016,6 +1017,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(offset4Bundle.getEntry().size() == (countZeroBundle.getTotal() - 4));
+		assertTrue(offset4Bundle.getType() == BundleType.COLLECTION);
+		assertTrue(offset4Bundle.hasTotal() == false);
 		Parameters offsetMaxParams = parameters(
 			part("offset", new IntegerType(countZeroBundle.getTotal()))
 		);
@@ -1037,6 +1040,72 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(offsetMaxRandomCountBundle.getEntry().size() == 0);
+	}
+	@Test
+	void packageOperation_different_bundle_types() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters countZeroParams = parameters(
+			part("count", new IntegerType(0))
+		);
+		Bundle countZeroBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(countZeroParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(countZeroBundle.getType() == BundleType.SEARCHSET);
+		Parameters countSevenParams = parameters(
+			part("count", new IntegerType(7))
+		);
+		Bundle countSevenBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(countSevenParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(countSevenBundle.getType() == BundleType.TRANSACTION);
+		Parameters countFourParams = parameters(
+			part("count", new IntegerType(4))
+		);
+		Bundle countFourBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(countFourParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(countFourBundle.getType() == BundleType.COLLECTION);
+		// these assertions test for Bundle base profile conformance when type = collection
+		assertFalse(countFourBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
+		assertFalse(countFourBundle.hasTotal());
+		Parameters offsetOneParams = parameters(
+			part("offset", new IntegerType(1))
+		);
+		Bundle offsetOneBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(offsetOneParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(offsetOneBundle.getType() == BundleType.COLLECTION);
+		// these assertions test for Bundle base profile conformance when type = collection
+		assertFalse(offsetOneBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
+		assertFalse(offsetOneBundle.hasTotal());
+
+		Parameters countOneOffsetOneParams = parameters(
+			part("count", new IntegerType(1)),
+			part("offset", new IntegerType(1))
+		);
+		Bundle countOneOffsetOneBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(countOneOffsetOneParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(countOneOffsetOneBundle.getType() == BundleType.COLLECTION);
+		// these assertions test for Bundle base profile conformance when type = collection
+		assertFalse(countOneOffsetOneBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
+		assertFalse(countOneOffsetOneBundle.hasTotal());
+
 	}
 	@Test
 	void packageOperation_should_conditionally_create() {
