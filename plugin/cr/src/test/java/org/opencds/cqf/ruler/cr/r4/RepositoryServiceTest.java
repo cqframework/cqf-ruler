@@ -37,6 +37,9 @@ import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
@@ -69,7 +72,7 @@ import ch.qos.logback.core.Appender;
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class RepositoryServiceTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
-	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-1-1-23";
+	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-0-0-23";
 	private final List<String> badVersionList = Arrays.asList(
 			"11asd1",
 			"1.1.3.1.1",
@@ -129,7 +132,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
-		Parameters params = parameters(part("version", "1.1.1.23") );
+		Parameters params = parameters(part("version", "1.0.0.23") );
 		String maybeException = null;
 		try {
 			getClient().operation()
@@ -1222,5 +1225,108 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
 	}
-}
 
+	@Test
+	void validateOperation() {
+		Bundle ersdExampleSpecBundle = (Bundle) loadResource("ersd-bundle-example.json");
+		Parameters specBundleParams = parameters(
+			part("resource", ersdExampleSpecBundle)
+		);
+		OperationOutcome specBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(specBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(specBundleValidationErrors.size() == 3);
+		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
+		assertTrue(specBundleValidationErrors.get(0).getDiagnostics().contains("slicePlanDefinition"));
+		assertTrue(specBundleValidationErrors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(specBundleValidationErrors.get(2).getDiagnostics().contains("variable"));
+		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
+		Parameters supplementalBundleParams = parameters(
+			part("resource", ersdExampleSupplementalBundle)
+		);
+		OperationOutcome supplementalBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(supplementalBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(supplementalBundleErrors.size() == 0);
+
+		Library validationErrorLibrary = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
+		Parameters validationFailedParams = parameters(
+			part("resource", validationErrorLibrary)
+		);
+		OperationOutcome failedValidationOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(validationFailedParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(invalidLibraryErrors.size() == 5);
+
+		Parameters noResourceParams = parameters();
+		UnprocessableEntityException noResourceException = null;
+		try {	
+			getClient().operation()
+				.onServer()
+				.named("$validate")
+				.withParameters(noResourceParams)
+				.returnResourceType(OperationOutcome.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noResourceException = e;
+		}
+		assertNotNull(noResourceException);
+		assertTrue(noResourceException.getMessage().contains("resource must be provided"));
+	}
+
+	@Test
+	void validateOperationUnqualifiedRelatedArtifact() {
+		Bundle ersdExampleSpecBundleUnqualifiedPlanDefinition = (Bundle) loadResource("ersd-library-validation-failure-unqualified-plandefinition-bundle.json");
+		Parameters validationFailedUnqualifiedPlanDefinitionParams = parameters(
+			part("resource", ersdExampleSpecBundleUnqualifiedPlanDefinition)
+		);
+		OperationOutcome failedValidationUnqualifiedPlanDefinitionOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(validationFailedUnqualifiedPlanDefinitionParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		boolean missingPlanDefinitionSliceErrorExists = failedValidationUnqualifiedPlanDefinitionOutcome.getIssue().stream()
+			.anyMatch((issue) -> issue.getDiagnostics().contains("Library.relatedArtifact:slicePlanDefinition: minimum required = 1, but only found 0 (from http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library|2.1.0)"));
+		assertTrue(missingPlanDefinitionSliceErrorExists);
+	}
+
+	@Test
+	void validatePackageOutput() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(parameters())
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertTrue(packagedBundle.getEntry().size() == 37);
+		Parameters packagedBundleParams = parameters(
+			part("resource", packagedBundle)
+		);
+		OperationOutcome packagedBundleOutcome = getClient().operation()
+			.onServer()
+			.named("$validate")
+			.withParameters(packagedBundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
+		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		assertTrue(errors.size() == 3);
+		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
+		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
+		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
+	}
+}
