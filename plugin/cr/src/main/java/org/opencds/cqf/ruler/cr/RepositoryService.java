@@ -1,9 +1,15 @@
 package org.opencds.cqf.ruler.cr;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.cqframework.fhir.api.FhirDal;
+import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
+import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
@@ -15,6 +21,7 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -24,13 +31,19 @@ import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersion
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import ca.uhn.fhir.validation.FhirValidator;
 
 public class RepositoryService extends DaoRegistryOperationProvider {
 
@@ -44,7 +57,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * Applies an approval to an existing artifact, regardless of status.
 	 *
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
-	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param theId					the {@link IdType IdType}, always an argument for instance level operations
 	 * @param approvalDate        Optional Date parameter for indicating the date of approval
 	 *                            for an approval submission. If approvalDate is not
 	 *                           	provided, the current date will be used.
@@ -62,7 +75,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @return An IBaseResource that is the targeted resource, updated with the approval
 	 */
 	@Operation(name = "$crmi.approve", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$approve", value = "Apply an approval to an existing artifact, regardless of status.")
+	@Description(shortDefinition = "$crmi.approve", value = "Apply an approval to an existing artifact, regardless of status.")
 	public Bundle approveOperation(
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
@@ -77,29 +90,29 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
-		if(artifactCommentTarget != null){
-			if(Canonicals.getUrl(artifactCommentTarget) != null
-			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())){
+		if (artifactCommentTarget != null) {
+			if (Canonicals.getUrl(artifactCommentTarget) != null
+			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())) {
 				throw new UnprocessableEntityException("ArtifactCommentTarget URL does not match URL of resource being approved.");
 			}
-			if(Canonicals.getVersion(artifactCommentTarget) != null
-			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())){
+			if (Canonicals.getVersion(artifactCommentTarget) != null
+			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())) {
 				throw new UnprocessableEntityException("ArtifactCommentTarget version does not match version of resource being approved.");
 			}
-		} else if(artifactCommentTarget == null){
+		} else if (artifactCommentTarget == null) {
 			String target = "";
 			String url = resource.getUrl();
 			String version = resource.getVersion();
 			if (url != null) {
 				target += url;
 			}
-			if (version!=null) {
-				if (url!=null) {
+			if (version != null) {
+				if (url != null) {
 					target += "|";
 				}
 				target += version;
 			}
-			if(target!=null){
+			if (target != null) {
 				artifactCommentTarget = new CanonicalType(target);
 			}
 		}
@@ -112,9 +125,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			artifactCommentUser);
 		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, newAssessment);
 		Bundle transactionBundle = new Bundle()
-		.setType(Bundle.BundleType.TRANSACTION)
-		.addEntry(createEntry(approvedResource));
-		if(newAssessment != null && newAssessment.isValidArtifactComment()){
+			.setType(Bundle.BundleType.TRANSACTION)
+			.addEntry(createEntry(approvedResource));
+		if (newAssessment != null && newAssessment.isValidArtifactComment()) {
 			transactionBundle.addEntry(createEntry(newAssessment));
 		}
 		return transaction(transactionBundle, requestDetails);
@@ -123,12 +136,12 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * Creates a draft of an existing artifact if it has status Active.
 	 *
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
-	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param theId					the {@link IdType IdType}, always an argument for instance level operations
 	 * @param version             new version in the form MAJOR.MINOR.PATCH
 	 * @return A transaction bundle result of the newly created resources
 	 */
 	@Operation(name = "$crmi.draft", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
+	@Description(shortDefinition = "$crmi.draft", value = "Create a new draft version of the reference artifact")
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
@@ -145,7 +158,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * @return A transaction bundle result of the updated resources
 	 */
 	@Operation(name = "$crmi.release", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
+	@Description(shortDefinition = "$crmi.release", value = "Release an existing draft artifact")
 	public Bundle releaseOperation(
 		RequestDetails requestDetails,
 		@IdParam IdType theId,
@@ -169,13 +182,13 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			releaseLabel, 
 			version,
 			versionBehaviorCode,
-			latestFromTxServer != null && latestFromTxServer.getValue(), 
+			latestFromTxServer != null && latestFromTxServer.getValue(),
 			experimentalBehaviorCode,
 			fhirDal));
 	}
 
 	@Operation(name = "$crmi.package", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$package", value = "Package an artifact and components / dependencies")
+	@Description(shortDefinition = "$crmi.package", value = "Package an artifact and components / dependencies")
 	public Bundle packageOperation(
 		RequestDetails requestDetails,
 		@IdParam IdType theId,
@@ -192,49 +205,91 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "packageOnly", typeName = "Boolean") IPrimitiveType<Boolean> packageOnly,
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
-		)
-		throws FHIRException {
+		) throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return this.artifactProcessor.createPackageBundle(
-				theId,
-				fhirDal,
-				capability,
-				include,
-				canonicalVersion,
-				checkCanonicalVersion,
-				forceCanonicalVersion,
-				count != null ? count.getValue() : null,
-				offset != null ? offset.getValue() : null,
-				contentEndpoint,
-				terminologyEndpoint,
-				packageOnly != null ? packageOnly.getValue() : null
-			);
+			theId,
+			fhirDal,
+			capability,
+			include,
+			canonicalVersion,
+			checkCanonicalVersion,
+			forceCanonicalVersion,
+			count != null ? count.getValue() : null,
+			offset != null ? offset.getValue() : null,
+			contentEndpoint,
+			terminologyEndpoint,
+			packageOnly != null ? packageOnly.getValue() : null
+		);
 	}
 
-
 	@Operation(name = "$crmi.revise", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
+	@Description(shortDefinition = "$crmi.revise", value = "Update an existing artifact in 'draft' status")
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
 
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
 		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
 	}
+
+	@Operation(name = "$validate", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$validate", value = "Validate a bundle")
+	public OperationOutcome validateOperation(RequestDetails requestDetails, 
+		@OperationParam(name = "resource") IBaseResource resource,
+		@OperationParam(name = "mode") CodeType mode,
+		@OperationParam(name = "profile") String profile
+	)
+		throws FHIRException {
+		if (mode != null) {
+			throw new NotImplementedOperationException("'mode' Parameter not implemented yet.");
+		}
+		if (profile != null) {
+			throw new NotImplementedOperationException("'profile' Parameter not implemented yet.");
+		}
+		if (resource == null) {
+			throw new UnprocessableEntityException("A FHIR resource must be provided for validation");
+		}
+		FhirContext ctx = this.getFhirContext();
+		if (ctx != null) {
+			FhirValidator fhirValidator = ctx.newValidator();
+			fhirValidator.setValidateAgainstStandardSchema(false);
+			fhirValidator.setValidateAgainstStandardSchematron(false);
+			NpmPackageValidationSupport npm = new NpmPackageValidationSupport(ctx);
+			try {
+				npm.loadPackageFromClasspath("classpath:hl7.fhir.us.ecr-2.1.0.tgz");
+			} catch (IOException e) {
+				throw new InternalErrorException("Could not load package");
+			}
+			ValidationSupportChain chain = new ValidationSupportChain(
+				npm,
+				new DefaultProfileValidationSupport(ctx),
+				new InMemoryTerminologyServerValidationSupport(ctx),
+				new CommonCodeSystemsTerminologyService(ctx)
+			);
+			FhirInstanceValidator instanceValidatorModule = new FhirInstanceValidator(chain);
+			instanceValidatorModule.setValidatorResourceFetcher(new ValidatorResourceFetcher(ctx, chain, getDaoRegistry()));
+			fhirValidator.registerValidatorModule(instanceValidatorModule);
+			return (OperationOutcome) fhirValidator.validateWithResult(resource, null).toOperationOutcome();
+		} else {
+			throw new InternalErrorException("Could not load FHIR Context");
+		}
+	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
-				.setResource((Resource) theResource)
-				.setRequest(createRequest(theResource));
+			.setResource((Resource) theResource)
+			.setRequest(createRequest(theResource));
 	}
+
 	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
 		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
 		if (theResource.getIdElement().hasValue()) {
 			request
-					.setMethod(Bundle.HTTPVerb.PUT)
-					.setUrl(theResource.getIdElement().getValue());
+				.setMethod(Bundle.HTTPVerb.PUT)
+				.setUrl(theResource.getIdElement().getValue());
 		} else {
 			request
-					.setMethod(Bundle.HTTPVerb.POST)
-					.setUrl(theResource.fhirType());
+				.setMethod(Bundle.HTTPVerb.POST)
+				.setUrl(theResource.fhirType());
 		}
 
 		return request;

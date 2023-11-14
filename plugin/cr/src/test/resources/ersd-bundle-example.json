@@ -74,9 +74,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -84,9 +84,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1204,9 +1204,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1214,9 +1214,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/ostc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1224,9 +1224,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lotc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1234,9 +1234,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1244,9 +1244,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
@@ -1254,9 +1254,9 @@
 					{
 						"type": "composed-of",
 						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc",
-						"extension":[
+						"extension": [
 							{
-								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
