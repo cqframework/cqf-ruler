@@ -780,6 +780,7 @@ public class KnowledgeArtifactProcessor {
 		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
+
 	private void pageBundleBasedOnCountAndOffset(Integer count, Integer offset, Bundle bundle) {
 		if (offset != null) {
 			List<BundleEntryComponent> entries = bundle.getEntry();
@@ -801,6 +802,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
+	
 	private void setCorrectBundleType(Integer count, Integer offset, Bundle bundle) {
 		// if the bundle is paged then it must be of type = collection and modified to follow bundle.type constraints
 		// if not, set type = transaction
@@ -823,7 +825,7 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
-
+	
 	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		List<ValueSet> valueSets = bundleEntries.stream()
