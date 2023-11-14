@@ -44,7 +44,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * Applies an approval to an existing artifact, regardless of status.
 	 *
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
-	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param theId					the {@link IdType IdType}, always an argument for instance level operations
 	 * @param approvalDate        Optional Date parameter for indicating the date of approval
 	 *                            for an approval submission. If approvalDate is not
 	 *                           	provided, the current date will be used.
@@ -77,29 +77,29 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
-		if(artifactCommentTarget != null){
-			if(Canonicals.getUrl(artifactCommentTarget) != null
-			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())){
+		if (artifactCommentTarget != null) {
+			if (Canonicals.getUrl(artifactCommentTarget) != null
+			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())) {
 				throw new UnprocessableEntityException("ArtifactCommentTarget URL does not match URL of resource being approved.");
 			}
-			if(Canonicals.getVersion(artifactCommentTarget) != null
-			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())){
+			if (Canonicals.getVersion(artifactCommentTarget) != null
+			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())) {
 				throw new UnprocessableEntityException("ArtifactCommentTarget version does not match version of resource being approved.");
 			}
-		} else if(artifactCommentTarget == null){
+		} else if (artifactCommentTarget == null) {
 			String target = "";
 			String url = resource.getUrl();
 			String version = resource.getVersion();
 			if (url != null) {
 				target += url;
 			}
-			if (version!=null) {
-				if (url!=null) {
+			if (version != null) {
+				if (url != null) {
 					target += "|";
 				}
 				target += version;
 			}
-			if(target!=null){
+			if (target != null) {
 				artifactCommentTarget = new CanonicalType(target);
 			}
 		}
@@ -112,9 +112,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			artifactCommentUser);
 		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, newAssessment);
 		Bundle transactionBundle = new Bundle()
-		.setType(Bundle.BundleType.TRANSACTION)
-		.addEntry(createEntry(approvedResource));
-		if(newAssessment != null && newAssessment.isValidArtifactComment()){
+			.setType(Bundle.BundleType.TRANSACTION)
+			.addEntry(createEntry(approvedResource));
+		if (newAssessment != null && newAssessment.isValidArtifactComment()) {
 			transactionBundle.addEntry(createEntry(newAssessment));
 		}
 		return transaction(transactionBundle, requestDetails);
@@ -123,7 +123,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	 * Creates a draft of an existing artifact if it has status Active.
 	 *
 	 * @param requestDetails      the {@link RequestDetails RequestDetails}
-	 * @param theId					      the {@link IdType IdType}, always an argument for instance level operations
+	 * @param theId					the {@link IdType IdType}, always an argument for instance level operations
 	 * @param version             new version in the form MAJOR.MINOR.PATCH
 	 * @return A transaction bundle result of the newly created resources
 	 */
@@ -169,7 +169,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			releaseLabel, 
 			version,
 			versionBehaviorCode,
-			latestFromTxServer != null && latestFromTxServer.getValue(), 
+			latestFromTxServer != null && latestFromTxServer.getValue(),
 			experimentalBehaviorCode,
 			fhirDal));
 	}
@@ -192,25 +192,23 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "packageOnly", typeName = "Boolean") IPrimitiveType<Boolean> packageOnly,
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
-		)
-		throws FHIRException {
+		) throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		return this.artifactProcessor.createPackageBundle(
-				theId,
-				fhirDal,
-				capability,
-				include,
-				canonicalVersion,
-				checkCanonicalVersion,
-				forceCanonicalVersion,
-				count != null ? count.getValue() : null,
-				offset != null ? offset.getValue() : null,
-				contentEndpoint,
-				terminologyEndpoint,
-				packageOnly != null ? packageOnly.getValue() : null
-			);
+			theId,
+			fhirDal,
+			capability,
+			include,
+			canonicalVersion,
+			checkCanonicalVersion,
+			forceCanonicalVersion,
+			count != null ? count.getValue() : null,
+			offset != null ? offset.getValue() : null,
+			contentEndpoint,
+			terminologyEndpoint,
+			packageOnly != null ? packageOnly.getValue() : null
+		);
 	}
-
 
 	@Operation(name = "$crmi.revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
@@ -220,21 +218,23 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
 		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
 	}
+
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
-				.setResource((Resource) theResource)
-				.setRequest(createRequest(theResource));
+			.setResource((Resource) theResource)
+			.setRequest(createRequest(theResource));
 	}
+
 	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
 		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
 		if (theResource.getIdElement().hasValue()) {
 			request
-					.setMethod(Bundle.HTTPVerb.PUT)
-					.setUrl(theResource.getIdElement().getValue());
+				.setMethod(Bundle.HTTPVerb.PUT)
+				.setUrl(theResource.getIdElement().getValue());
 		} else {
 			request
-					.setMethod(Bundle.HTTPVerb.POST)
-					.setUrl(theResource.fhirType());
+				.setMethod(Bundle.HTTPVerb.POST)
+				.setUrl(theResource.fhirType());
 		}
 
 		return request;

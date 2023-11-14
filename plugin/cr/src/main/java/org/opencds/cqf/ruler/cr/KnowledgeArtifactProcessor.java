@@ -153,20 +153,20 @@ public class KnowledgeArtifactProcessor {
 
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
-				.setResource((Resource) theResource)
-				.setRequest(createRequest(theResource));
+			.setResource((Resource) theResource)
+			.setRequest(createRequest(theResource));
 	}
 
 	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
 		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
 		if (theResource.getIdElement().hasValue() && !theResource.getIdElement().getValue().contains("urn:uuid")) {
 			request
-					.setMethod(Bundle.HTTPVerb.PUT)
-					.setUrl(theResource.getIdElement().getValue());
+				.setMethod(Bundle.HTTPVerb.PUT)
+				.setUrl(theResource.getIdElement().getValue());
 		} else {
 			request
-					.setMethod(Bundle.HTTPVerb.POST)
-					.setUrl(theResource.fhirType());
+				.setMethod(Bundle.HTTPVerb.POST)
+				.setUrl(theResource.fhirType());
 		}
 		return request;
 	}
@@ -216,7 +216,7 @@ public class KnowledgeArtifactProcessor {
 		statusList.add(new TokenParam(status));
 		searchParams.put("status", List.of(statusList));
 
-		Bundle searchResultsBundle = (Bundle) fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
 		return searchResultsBundle;
 	}
 
@@ -231,27 +231,24 @@ public class KnowledgeArtifactProcessor {
 
 	/* approve */
 	/*
-	 * The operation sets the date and approvalDate elements of the approved
-	 * artifact, and is otherwise only allowed to add artifactComment elements
-	 * to the artifact and to add or update an endorser.
+	 * The operation sets the date and approvalDate elements of the approved artifact, and is otherwise only
+	 * allowed to add artifactComment elements to the artifact and to add or update an endorser.
 	 */
 	public MetadataResource approve(MetadataResource resource, IPrimitiveType<Date> approvalDate, ArtifactAssessment assessment) {
-
 		KnowledgeArtifactAdapter<MetadataResource> targetResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		Date currentDate = new Date();
 
-		// 1. Set approvalDate
 		if (approvalDate == null){
 			targetResourceAdapter.setApprovalDate(currentDate);
 		} else {
 			targetResourceAdapter.setApprovalDate(approvalDate.getValue());
 		}
 
-		// 2. Set date
 		DateTimeType theDate = new DateTimeType(currentDate, TemporalPrecisionEnum.DAY);
 		resource.setDateElement(theDate);
 		return resource;
 	}
+
 	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
 	Reference artifactCommentUser) throws UnprocessableEntityException {
@@ -324,7 +321,7 @@ public class KnowledgeArtifactProcessor {
 		Bundle transactionBundle = new Bundle()
 			.setType(Bundle.BundleType.TRANSACTION);
 		List<IdType> urnList = resourcesToCreate.stream().map(res -> new IdType("urn:uuid:" + UUID.randomUUID().toString())).collect(Collectors.toList());
-		for(int i = 0; i < resourcesToCreate.size(); i++){
+		for (int i = 0; i < resourcesToCreate.size(); i++) {
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
 			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getOwnedRelatedArtifacts(), draftVersion);
@@ -335,13 +332,13 @@ public class KnowledgeArtifactProcessor {
 		return transactionBundle;
 	}
 
-	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle){
+	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle) {
 		List<UsageContext> useContexts = newResource.getUseContext();
-		for(UsageContext useContext : useContexts){
+		for (UsageContext useContext : useContexts) {
 			// TODO: will we ever need to resolve these references?
-			if(useContext.hasValueReference()){
+			if (useContext.hasValueReference()) {
 				Reference useContextRef = useContext.getValueReference();
-				if(useContextRef != null){
+				if (useContextRef != null) {
 					resourceListWithOriginalIds.stream()
 						.filter(resource -> (resource.getClass().getSimpleName() + "/" + resource.getIdElement().getIdPart()).equals(useContextRef.getReference()))
 						.findAny()
@@ -355,26 +352,26 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
-			// For each  relatedArtifact, update the version of the reference.
-			relatedArtifactList.stream()
-				.filter(ra -> ra.hasResource())
-				.collect(Collectors.toList())
-				.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
+		// For each  relatedArtifact, update the version of the reference.
+		relatedArtifactList.stream()
+			.filter(ra -> ra.hasResource())
+			.collect(Collectors.toList())
+			.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
 
-	private void checkVersionValidSemver(String version) throws UnprocessableEntityException{
+	private void checkVersionValidSemver(String version) throws UnprocessableEntityException {
 		if (version == null || version.isEmpty()) {
 			throw new UnprocessableEntityException("The version argument is required");
 		}
-		if(version.contains("draft")){
+		if (version.contains("draft")) {
 			throw new UnprocessableEntityException("The version cannot contain 'draft'");
 		}
-		if(version.contains("/") || version.contains("\\") || version.contains("|")){
+		if (version.contains("/") || version.contains("\\") || version.contains("|")) {
 			throw new UnprocessableEntityException("The version contains illegal characters");
 		}
 		Pattern pattern = Pattern.compile("^(\\d+\\.)(\\d+\\.)(\\d+\\.)?(\\*|\\d+)$", Pattern.CASE_INSENSITIVE);
-    Matcher matcher = pattern.matcher(version);
-    boolean matchFound = matcher.find();
+    	Matcher matcher = pattern.matcher(version);
+    	boolean matchFound = matcher.find();
 		if (!matchFound) {
 			throw new UnprocessableEntityException("The version must be in the format MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.REVISION");
 		}
@@ -390,7 +387,7 @@ public class KnowledgeArtifactProcessor {
 		MetadataResource newResource = null;
 		if (existingArtifactsWithMatchingUrl.isPresent()) {
 			newResource = existingArtifactsWithMatchingUrl.get();
-		} else if(draftVersionAlreadyInBundle.isPresent()){
+		} else if(draftVersionAlreadyInBundle.isPresent()) {
 			newResource = draftVersionAlreadyInBundle.get();
 		}
 
@@ -438,7 +435,7 @@ public class KnowledgeArtifactProcessor {
 		String replaceDraftInExisting = existingVersion.replace("-draft","");
 
 		if (CRMIReleaseVersionBehaviorCodes.DEFAULT == versionBehavior) {
-			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()){
+			if(replaceDraftInExisting != null && !replaceDraftInExisting.isEmpty()) {
 				releaseVersion = Optional.of(replaceDraftInExisting);
 			} else {
 				releaseVersion = Optional.ofNullable(version);
@@ -495,7 +492,7 @@ public class KnowledgeArtifactProcessor {
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
-	  List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList()); 
+	  	List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList());
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -506,23 +503,18 @@ public class KnowledgeArtifactProcessor {
 
 			KnowledgeArtifactAdapter<MetadataResource> artifactAdapter = new KnowledgeArtifactAdapter<MetadataResource>(artifact);
 			List<RelatedArtifact> components = artifactAdapter.getComponents();
-			// add all root artifact components
-			// and child artifact components recursively
-			// as root artifact dependencies
+			// add all root artifact components and child artifact components recursively as root artifact dependencies
 			for (RelatedArtifact component : components) {
 				MetadataResource resource;
-				// if the relatedArtifact is Owned, need to update
-				// the reference to the new Version
+				// if the relatedArtifact is Owned, need to update the reference to the new Version
 				if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(component)) {
 					resource = checkIfReferenceInList(component, releasedResources)
-					// should never happen since we check all references
-					// as part of `internalRelease`
+					// should never happen since we check all references as part of `internalRelease`
 					.orElseThrow(() -> new InternalErrorException("Owned resource reference not found during release"));
 					String reference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
 					component.setResource(reference);
 				} else if (Canonicals.getVersion(component.getResourceElement()) == null || Canonicals.getVersion(component.getResourceElement()).isEmpty()) {
-					// if the not Owned component doesn't have a version,
-					// try to find the latest version
+					// if the not Owned component doesn't have a version, try to find the latest version
 					String updatedReference = tryUpdateReferenceToLatestActiveVersion(component.getResource(), fhirDal, artifact.getUrl());
 					component.setResource(updatedReference);
 				}
@@ -532,26 +524,22 @@ public class KnowledgeArtifactProcessor {
 
 			List<RelatedArtifact> dependencies = artifactAdapter.getDependencies();
 			for (RelatedArtifact dependency : dependencies) {
-				// if the dependency gets updated as part of $release
-				// then update the reference as well
+				// if the dependency gets updated as part of $release then update the reference as well
 				checkIfReferenceInList(dependency, releasedResources)
 					.ifPresentOrElse((resource) -> {
 						String updatedReference = String.format("%s|%s", resource.getUrl(), resource.getVersion());
 						dependency.setResource(updatedReference);
 					},
-					// not present implies that
-					// the dependency wasn't updated as part of $release
+					// not present implies that the dependency wasn't updated as part of $release
 					() -> {
-						// if the dependency doesn't have a version,
-						// try to find the latest version
+						// if the dependency doesn't have a version, try to find the latest version
 						if (Canonicals.getVersion(dependency.getResourceElement()) == null || Canonicals.getVersion(dependency.getResourceElement()).isEmpty()) {
 							// TODO: update when we support expansionParameters and requireVersionedDependencies
 							String updatedReference = tryUpdateReferenceToLatestActiveVersion(dependency.getResource(), fhirDal, artifact.getUrl());
 							dependency.setResource(updatedReference);
 						}
 					});
-				// only add the dependency to the manifest if it is
-				// from a leaf artifact
+				// only add the dependency to the manifest if it is from a leaf artifact
 				if (!artifact.getUrl().equals(rootArtifact.getUrl())) {
 					rootArtifactAdapter.getRelatedArtifact().add(dependency);
 				}
@@ -659,7 +647,6 @@ public class KnowledgeArtifactProcessor {
 		resourcesToUpdate.add(artifactAdapter.resource);
 
 		// Step 3 : Get all the OWNED relatedArtifacts
-
 		for (RelatedArtifact ownedRelatedArtifact : artifactAdapter.getOwnedRelatedArtifacts()) {
 			if (ownedRelatedArtifact.hasResource()) {
 				MetadataResource referencedResource;
@@ -723,9 +710,10 @@ public class KnowledgeArtifactProcessor {
 
 		return resourceList;
 	}
+
 	private Optional<MetadataResource> checkIfReferenceInList(RelatedArtifact artifactToUpdate, List<MetadataResource> resourceList){
 		Optional<MetadataResource> updatedReference = Optional.ofNullable(null);
-		for (MetadataResource resource : resourceList){
+		for (MetadataResource resource : resourceList) {
 			String referenceURL = Canonicals.getUrl(artifactToUpdate.getResourceElement());
 			String currentResourceURL = resource.getUrl();
 			if (artifactToUpdate.hasResource() && referenceURL.equals(currentResourceURL)) {
@@ -734,6 +722,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return updatedReference;
 	}
+
 	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
@@ -742,8 +731,7 @@ public class KnowledgeArtifactProcessor {
 		} else if (CRMIReleaseExperimentalBehaviorCodes.ERROR == experimentalBehavior && resource.getExperimental()) {
 			throw new UnprocessableEntityException(nonExperimentalError);
 		}
-		// for ValueSets need to check recursively if any chldren are experimental
-		// since we don't own these
+		// for ValueSets need to check recursively if any chldren are experimental since we don't own these
 		if (resource.getResourceType().equals(ResourceType.ValueSet)) {
 			ValueSet valueSet = (ValueSet) resource;
 			List<CanonicalType> valueSets = valueSet
@@ -757,6 +745,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
+
 	/* $package */
 	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
 		if (contentEndpoint != null || terminologyEndpoint != null) {
@@ -791,6 +780,7 @@ public class KnowledgeArtifactProcessor {
 		handlePriority(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
+
 	private void pageBundleBasedOnCountAndOffset(Integer count, Integer offset, Bundle bundle) {
 		if (offset != null) {
 			List<BundleEntryComponent> entries = bundle.getEntry();
@@ -802,22 +792,20 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 		if (count != null) {
-			// repeat these two from earlier because we might modify / replace
-			// the entries list at any time
+			// repeat these two from earlier because we might modify / replace the entries list at any time
 			List<BundleEntryComponent> entries = bundle.getEntry();
 			Integer bundleSize = entries.size();
 			if (count < bundleSize){
 				bundle.setEntry(entries.subList(0, count));
 			} else {
-				// there are not enough entries in the bundle to page, so
-				// we return all of them no change
+				// there are not enough entries in the bundle to page, so we return all of them no change
 			}
 		}
 	}
+	
 	private void setCorrectBundleType(Integer count, Integer offset, Bundle bundle) {
-		// if the bundle is paged then it must be of type = collection
-		// and modified to follow bundle.type constraints
-		// if not, set type =  transaction
+		// if the bundle is paged then it must be of type = collection and modified to follow bundle.type constraints
+		// if not, set type = transaction
 		// special case of count = 0 -> set type = searchset so we can display bundle.total
 		if (count != null && count == 0) {
 			bundle.setType(BundleType.SEARCHSET);
@@ -837,6 +825,7 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
+	
 	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 		List<ValueSet> valueSets = bundleEntries.stream()
@@ -1048,5 +1037,4 @@ public class KnowledgeArtifactProcessor {
 
 		return resource;
 	}
-	
 }
