@@ -1329,4 +1329,31 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
 		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
 	}
+
+	@Test
+	void artifactDiffOperation() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters params = parameters(part("version", "1.2.3.4") );
+		Bundle returnedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		assertNotNull(returnedBundle);
+		Optional<BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		assertTrue(maybeLib.isPresent());
+		String target = maybeLib.get().getResponse().getLocation();
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", target)
+			 );
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$crmi.artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		assertTrue(returnedParams.getParameter().size() > 0);
+	}
 }
