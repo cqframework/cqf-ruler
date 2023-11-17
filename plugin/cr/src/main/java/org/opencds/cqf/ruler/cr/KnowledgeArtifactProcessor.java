@@ -76,6 +76,11 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
+	public static final String useContextExtensionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-useContext";
+	public final List<String> preservedExtensionUrls = List.of(
+			valueSetPriorityUrl,
+			useContextExtensionUrl
+		);
 	public static final String contextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
@@ -504,7 +509,11 @@ public class KnowledgeArtifactProcessor {
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
-	  	List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList());
+		// Get list of extensions which need to be preserved
+		List<RelatedArtifact> originalDependenciesWithPreservedExtensions = rootArtifactOriginalDependencies
+			.stream()
+			.filter(ra -> preservedExtensionUrls.stream().anyMatch(url -> ra.getExtensionByUrl(url) != null))
+			.collect(Collectors.toList());
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -562,12 +571,21 @@ public class KnowledgeArtifactProcessor {
 		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
 			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
 				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
-				// add priority Extension if found
-				originalDependenciesWithPriorityExtension.stream()
+				// add preserved Extensions if found
+				originalDependenciesWithPreservedExtensions
+				.stream()
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
-					.map(originalDep -> originalDep.getExtensionByUrl(valueSetPriorityUrl))
+					.map(originalDep -> {
+						List<Extension> extensionsToAdd = new ArrayList<Extension>();
+						Optional.ofNullable(originalDep.getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
+						Optional.ofNullable(originalDep.getExtensionByUrl(useContextExtensionUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
+						return extensionsToAdd;
+					})
 					.findFirst()
-					.ifPresent(priorityExt -> resolvedRelatedArtifact.addExtension(priorityExt));
+					.ifPresent(exts -> {
+						resolvedRelatedArtifact.getExtension().addAll(exts);
+						originalDependenciesWithPreservedExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
+					});
 			}
 		}
 		// update ArtifactComments referencing the old Canonical Reference

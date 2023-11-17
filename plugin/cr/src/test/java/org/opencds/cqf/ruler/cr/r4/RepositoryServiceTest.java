@@ -642,7 +642,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 	}
 	@Test
-	void release_preserve_vsm_priority_extension() {
+	void release_preserve_extensions() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters params = parameters(
@@ -660,10 +660,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		Optional<RelatedArtifact> maybeRelatedArtifactWithPriorityExtension = releasedLibrary.getRelatedArtifact().stream().filter(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl) != null).findAny();
+		Optional<RelatedArtifact> maybeRelatedArtifactWithUseContextExtension = releasedLibrary.getRelatedArtifact().stream().filter(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.useContextExtensionUrl) != null).findAny();
+		assertTrue(maybeRelatedArtifactWithUseContextExtension.isPresent());
+		assertTrue(maybeRelatedArtifactWithUseContextExtension.get().getResource().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"));
 		assertTrue(maybeRelatedArtifactWithPriorityExtension.isPresent());
 		assertTrue(maybeRelatedArtifactWithPriorityExtension.get().getResource().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"));
-		Extension priority = maybeRelatedArtifactWithPriorityExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
+		Extension priority = maybeRelatedArtifactWithUseContextExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
 		assertTrue(((CodeableConcept) priority.getValue()).getCoding().get(0).getCode().equals("emergent"));
+		Extension useContext = maybeRelatedArtifactWithUseContextExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.useContextExtensionUrl);
+		assertTrue(((UsageContext) useContext.getValue()).getCode().getCode().equals("focus"));
 	}
 	@Test
 	void release_test_artifactComment_updated() {

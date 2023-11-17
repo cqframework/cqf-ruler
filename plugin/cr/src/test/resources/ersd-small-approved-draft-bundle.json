@@ -47,6 +47,23 @@
                           ],
                           "text": "Emergent"
                         }
+                      },{
+                        "url": "http://hl7.org/fhir/StructureDefinition/artifact-useContext",          
+                        "valueUsageContext" :{
+                            "code": {
+                                "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+                                "code": "focus"
+                            },
+                            "valueCodeableConcept": {
+                                "coding": [
+                                    {
+                                        "system": "http://snomed.info/sct",
+                                        "code": "49649001"
+                                    }
+                                ],
+                                "text": "Infection caused by Acanthamoeba (disorder)"
+                            }
+                        }
                       }
                     ],
                     "type": "depends-on",
