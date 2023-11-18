@@ -1168,6 +1168,30 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	
 	@Test
+	void packageOperation_should_be_aware_of_useContext_extension() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<ValueSet> shouldHaveFocusSetToNewValue = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.filter(vs -> vs.getUrl().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6") && vs.getVersion().equals("20210526"))
+			.findFirst();
+		assertTrue(shouldHaveFocusSetToNewValue.isPresent());
+		Optional<UsageContext> focus = shouldHaveFocusSetToNewValue.get().getUseContext().stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals("http://terminology.hl7.org/CodeSystem/usage-context-type") && useContext.getCode().getCode().equals("focus"))
+			.findFirst();
+		assertTrue(focus.isPresent());
+		assertTrue(((CodeableConcept) focus.get().getValue()).getCoding().get(0).getCode().equals("49649001"));
+		assertTrue(((CodeableConcept) focus.get().getValue()).getCoding().get(0).getSystem().equals("http://snomed.info/sct"));
+	}
+
+	@Test
 	void packageOperation_should_respect_include() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Map<String, List<String>> includeOptions = new HashMap<String,List<String>>();

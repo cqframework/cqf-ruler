@@ -510,10 +510,7 @@ public class KnowledgeArtifactProcessor {
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
 		// Get list of extensions which need to be preserved
-		List<RelatedArtifact> originalDependenciesWithPreservedExtensions = rootArtifactOriginalDependencies
-			.stream()
-			.filter(ra -> preservedExtensionUrls.stream().anyMatch(url -> ra.getExtensionByUrl(url) != null))
-			.collect(Collectors.toList());
+		List<RelatedArtifact> originalDependenciesWithPreservedExtensions = getRelatedArtifactsWithPreservedExtensions(rootArtifactOriginalDependencies);
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -593,6 +590,11 @@ public class KnowledgeArtifactProcessor {
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
 
 		return transactionBundle;
+	}
+	private List<RelatedArtifact> getRelatedArtifactsWithPreservedExtensions(List<RelatedArtifact> deps) {
+		return deps.stream()
+			.filter(ra -> preservedExtensionUrls.stream().anyMatch(url -> ra.getExtensionByUrl(url) != null))
+			.collect(Collectors.toList());
 	}
 	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
 		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
@@ -807,7 +809,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		handlePriority(resource, packagedBundle.getEntry());
+		packagedBundle.setEntry(handleValueSetReferenceExtensions(resource, packagedBundle.getEntry()));
 		return packagedBundle;
 	}
 
@@ -855,44 +857,53 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
-	
-	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
+	private List<BundleEntryComponent> handleValueSetReferenceExtensions(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-		List<ValueSet> valueSets = bundleEntries.stream()
-			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
-			.map(entry -> (ValueSet) entry.getResource())
-			.collect(Collectors.toList());
-		List<RelatedArtifact> relatedArtifactsWithPriorityExtension = adapter.getDependencies().stream()
-			.filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null)
-			.collect(Collectors.toList());
-		valueSets.stream().forEach(valueSet -> {
-			UsageContext priority = valueSet.getUseContext().stream()
-				.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
-				.findFirst().orElseGet(()-> {
-					// create the priority UseContext if it doesn't exist
-					Coding contextType = new Coding(contextTypeUrl, "priority", null);
-					UsageContext newPriority = new UsageContext(contextType, null);
-					// add it to the ValueSet before returning
-					valueSet.getUseContext().add(newPriority);
-					return newPriority;
-				});
-			relatedArtifactsWithPriorityExtension.stream()
-				.filter(relatedArtifactWithPriorityExtension -> valueSet.getUrl().equals(Canonicals.getUrl(relatedArtifactWithPriorityExtension.getResource())) && valueSet.getVersion().equals(Canonicals.getVersion(relatedArtifactWithPriorityExtension.getResource())))
-				.findFirst()
-				.ifPresentOrElse(
-					// set priority to author-assigned value if possible
-					relatedArtifactWithPriorityExtension -> {
-						priority.setValue(relatedArtifactWithPriorityExtension.getExtensionByUrl(valueSetPriorityUrl).getValue());
-					},
-					// otherwise set it to routine 
-					() -> {
+		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
+		List<BundleEntryComponent> conditionsUpdated = new ArrayList<BundleEntryComponent>(bundleEntries);
+		conditionsUpdated.stream()
+			.forEach(entry -> {
+				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
+					ValueSet vs = (ValueSet) entry.getResource();
+					Optional<RelatedArtifact> maybeVSReferenceRA = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(vs.getUrl())).findFirst();
+					List<UsageContext> usageContexts = vs.getUseContext();
+					UsageContext priority = getOrCreatePriorityUsageContext(usageContexts);
+					if (maybeVSReferenceRA.isPresent()) {
+						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(useContextExtensionUrl)).ifPresent(ext -> tryAddCondition(ext,usageContexts));
+						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> priority.setValue(ext.getValue()));
+					} else {
 						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
 						priority.setValue(routine);
 					}
-				);
-		});
+				}
+			});
+		return conditionsUpdated;
 	}
-
+	private void tryAddCondition(Extension ext, List<UsageContext> usageContexts) {
+		UsageContext condition = (UsageContext) ext.getValue();
+		usageContexts.stream()
+			.filter(u -> 
+				u.getCode().getCode().equals(condition.getCode().getCode()) 
+				&& u.getValueCodeableConcept().getCoding().get(0).getSystem().equals(condition.getValueCodeableConcept().getCoding().get(0).getSystem())
+				&& u.getValueCodeableConcept().getCoding().get(0).getCode().equals(condition.getValueCodeableConcept().getCoding().get(0).getCode())
+			).findAny().ifPresentOrElse(
+				// do nothing if it already exists
+				null, 
+				// add it to the list if it doesn't
+				() -> usageContexts.add(condition));
+	}
+	private UsageContext getOrCreatePriorityUsageContext(List<UsageContext> usageContexts) {
+		return usageContexts.stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.findFirst().orElseGet(()-> {
+				// create the priority UseContext if it doesn't exist
+				Coding contextType = new Coding(contextTypeUrl, "priority", null);
+				UsageContext newPriority = new UsageContext(contextType, null);
+				// add it to the ValueSet before returning
+				usageContexts.add(newPriority);
+				return newPriority;
+			});
+	}
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
