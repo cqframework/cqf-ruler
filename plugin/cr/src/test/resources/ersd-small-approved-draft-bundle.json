@@ -48,24 +48,17 @@
                           "text": "Emergent"
                         }
                       },{
-                        "url": "http://hl7.org/fhir/StructureDefinition/artifact-useContext",          
-                        "valueUsageContext" :{
-                            "code": {
-                                "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
-                                "code": "focus"
-                            },
-                            "valueCodeableConcept": {
-                                "coding": [
-                                    {
-                                        "system": "http://snomed.info/sct",
-                                        "code": "49649001"
-                                    }
-                                ],
-                                "text": "Infection caused by Acanthamoeba (disorder)"
-                            }
+                        "url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+                        "valueCodeableConcept": {
+                            "coding": [
+                                {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "49649001"
+                                }
+                            ],
+                            "text": "Infection caused by Acanthamoeba (disorder)"
                         }
-                      }
-                    ],
+                    }],
                     "type": "depends-on",
                     "resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
                   }

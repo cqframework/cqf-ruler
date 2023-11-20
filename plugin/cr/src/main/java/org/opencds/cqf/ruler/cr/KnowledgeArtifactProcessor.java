@@ -76,12 +76,13 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
-	public static final String useContextExtensionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-useContext";
+	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
 	public final List<String> preservedExtensionUrls = List.of(
 			valueSetPriorityUrl,
-			useContextExtensionUrl
+			valueSetConditionUrl
 		);
-	public static final String contextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
@@ -575,7 +576,7 @@ public class KnowledgeArtifactProcessor {
 					.map(originalDep -> {
 						List<Extension> extensionsToAdd = new ArrayList<Extension>();
 						Optional.ofNullable(originalDep.getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
-						Optional.ofNullable(originalDep.getExtensionByUrl(useContextExtensionUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
+						Optional.ofNullable(originalDep.getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
 						return extensionsToAdd;
 					})
 					.findFirst()
@@ -812,7 +813,12 @@ public class KnowledgeArtifactProcessor {
 		packagedBundle.setEntry(handleValueSetReferenceExtensions(resource, packagedBundle.getEntry()));
 		return packagedBundle;
 	}
-
+/**
+ * $crmi.package allows for a bundle to be paged
+ * @param count the maximum number of resources to be returned
+ * @param offset the number of resources to skip beginning from the start of the bundle (starts from 1)
+ * @param bundle the bundle to page
+ */
 	private void pageBundleBasedOnCountAndOffset(Integer count, Integer offset, Bundle bundle) {
 		if (offset != null) {
 			List<BundleEntryComponent> entries = bundle.getEntry();
@@ -857,8 +863,14 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
-	private List<BundleEntryComponent> handleValueSetReferenceExtensions(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
-		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+	/**
+	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $crmi.package time
+	 * @param manifest the manifest
+	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
+	 * @return an updated list of resources to be returned the user
+	 */
+	private List<BundleEntryComponent> handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) {
+		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
 		List<BundleEntryComponent> conditionsUpdated = new ArrayList<BundleEntryComponent>(bundleEntries);
 		conditionsUpdated.stream()
@@ -867,9 +879,10 @@ public class KnowledgeArtifactProcessor {
 					ValueSet vs = (ValueSet) entry.getResource();
 					Optional<RelatedArtifact> maybeVSReferenceRA = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(vs.getUrl())).findFirst();
 					List<UsageContext> usageContexts = vs.getUseContext();
-					UsageContext priority = getOrCreatePriorityUsageContext(usageContexts);
+					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");
+					UsageContext condition = getOrCreateUsageContext(usageContexts, contextTypeUrl, "focus");
 					if (maybeVSReferenceRA.isPresent()) {
-						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(useContextExtensionUrl)).ifPresent(ext -> tryAddCondition(ext,usageContexts));
+						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> condition.setValue(ext.getValue()));
 						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> priority.setValue(ext.getValue()));
 					} else {
 						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
@@ -879,29 +892,26 @@ public class KnowledgeArtifactProcessor {
 			});
 		return conditionsUpdated;
 	}
-	private void tryAddCondition(Extension ext, List<UsageContext> usageContexts) {
-		UsageContext condition = (UsageContext) ext.getValue();
-		usageContexts.stream()
-			.filter(u -> 
-				u.getCode().getCode().equals(condition.getCode().getCode()) 
-				&& u.getValueCodeableConcept().getCoding().get(0).getSystem().equals(condition.getValueCodeableConcept().getCoding().get(0).getSystem())
-				&& u.getValueCodeableConcept().getCoding().get(0).getCode().equals(condition.getValueCodeableConcept().getCoding().get(0).getCode())
-			).findAny().ifPresentOrElse(
-				// do nothing if it already exists
-				null, 
-				// add it to the list if it doesn't
-				() -> usageContexts.add(condition));
-	}
-	private UsageContext getOrCreatePriorityUsageContext(List<UsageContext> usageContexts) {
+	/**
+	 * 
+	 * Either finds a usageContext with the same system and code or creates an empty one
+	 * and appends it
+	 * 
+	 * @param usageContexts the list of usageContexts to search and/or append to
+	 * @param system the usageContext.code.system to find / create
+	 * @param code the usage.code.code to find / create
+	 * @return the found / created usageContext
+	 */
+	private UsageContext getOrCreateUsageContext(List<UsageContext> usageContexts, String system, String code) {
 		return usageContexts.stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(system) && useContext.getCode().getCode().equals(code))
 			.findFirst().orElseGet(()-> {
-				// create the priority UseContext if it doesn't exist
-				Coding contextType = new Coding(contextTypeUrl, "priority", null);
-				UsageContext newPriority = new UsageContext(contextType, null);
+				// create the UseContext if it doesn't exist
+				Coding c = new Coding(system, code, null);
+				UsageContext n = new UsageContext(c, null);
 				// add it to the ValueSet before returning
-				usageContexts.add(newPriority);
-				return newPriority;
+				usageContexts.add(n);
+				return n;
 			});
 	}
 	void recursivePackage(
