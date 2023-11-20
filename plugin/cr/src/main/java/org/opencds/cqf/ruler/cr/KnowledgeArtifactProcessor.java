@@ -880,9 +880,11 @@ public class KnowledgeArtifactProcessor {
 					Optional<RelatedArtifact> maybeVSReferenceRA = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(vs.getUrl())).findFirst();
 					List<UsageContext> usageContexts = vs.getUseContext();
 					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");
-					UsageContext condition = getOrCreateUsageContext(usageContexts, contextTypeUrl, "focus");
 					if (maybeVSReferenceRA.isPresent()) {
-						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> condition.setValue(ext.getValue()));
+						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> {
+							UsageContext condition = getOrCreateUsageContext(usageContexts, contextTypeUrl, "focus");
+							condition.setValue(ext.getValue());
+						});
 						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> priority.setValue(ext.getValue()));
 					} else {
 						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
