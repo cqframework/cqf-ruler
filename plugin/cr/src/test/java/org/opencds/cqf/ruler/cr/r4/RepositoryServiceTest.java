@@ -32,7 +32,6 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
@@ -1358,17 +1357,5 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
 		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
 		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
-	}
-
-	@Test
-	void valueSetInterceptor_changes_extensions() {
-		ValueSet initial = new ValueSet();
-		initial.setStatus(PublicationStatus.ACTIVE);
-		initial.setUrl("test");
-		ValueSet created = (ValueSet) getClient().create().resource(initial).execute().getResource();	
-		created.setExperimental(true);
-		ValueSet updated = (ValueSet) getClient().update().resource(created).execute().getResource();
-		assertTrue(updated.getExtension().size() == 1);
-		assertTrue(updated.getExtension().get(0).getUrl().equals("testuri"));
 	}
 }

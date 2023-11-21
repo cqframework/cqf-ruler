@@ -573,15 +573,9 @@ public class KnowledgeArtifactProcessor {
 				originalDependenciesWithPreservedExtensions
 				.stream()
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
-					.map(originalDep -> {
-						List<Extension> extensionsToAdd = new ArrayList<Extension>();
-						Optional.ofNullable(originalDep.getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
-						Optional.ofNullable(originalDep.getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> extensionsToAdd.add(ext));
-						return extensionsToAdd;
-					})
 					.findFirst()
-					.ifPresent(exts -> {
-						resolvedRelatedArtifact.getExtension().addAll(exts);
+					.ifPresent(dep -> {
+						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
 						originalDependenciesWithPreservedExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
 					});
 			}
@@ -810,7 +804,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		packagedBundle.setEntry(handleValueSetReferenceExtensions(resource, packagedBundle.getEntry()));
+		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
 /**
@@ -867,32 +861,57 @@ public class KnowledgeArtifactProcessor {
 	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $crmi.package time
 	 * @param manifest the manifest
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
-	 * @return an updated list of resources to be returned the user
 	 */
-	private List<BundleEntryComponent> handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) {
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
-		List<BundleEntryComponent> conditionsUpdated = new ArrayList<BundleEntryComponent>(bundleEntries);
-		conditionsUpdated.stream()
+		bundleEntries.stream()
 			.forEach(entry -> {
 				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
-					ValueSet vs = (ValueSet) entry.getResource();
-					Optional<RelatedArtifact> maybeVSReferenceRA = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(vs.getUrl())).findFirst();
-					List<UsageContext> usageContexts = vs.getUseContext();
-					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");
-					if (maybeVSReferenceRA.isPresent()) {
-						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetConditionUrl)).ifPresent(ext -> {
-							UsageContext condition = getOrCreateUsageContext(usageContexts, contextTypeUrl, "focus");
-							condition.setValue(ext.getValue());
-						});
-						Optional.ofNullable(maybeVSReferenceRA.get().getExtensionByUrl(valueSetPriorityUrl)).ifPresent(ext -> priority.setValue(ext.getValue()));
-					} else {
-						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
-						priority.setValue(routine);
+					ValueSet valueSet = (ValueSet) entry.getResource();
+					List<UsageContext> usageContexts = valueSet.getUseContext();
+					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
+					// If leaf valueset
+					if (!valueSet.hasCompose()
+					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
+						// If Condition extension is present
+						if (maybeVSRelatedArtifact.isPresent() 
+							&& maybeVSRelatedArtifact.get().getExtensionByUrl(valueSetConditionUrl) != null) {
+						// update Condition(s)
+						maybeVSRelatedArtifact.get().getExtension().stream()
+							.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
+							.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
+						} else {
+							// Throw error for missing Condition
+							throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
+						}						
 					}
+					// update Priority
+					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");
+					maybeVSRelatedArtifact
+						.map(ra -> ra.getExtensionByUrl(valueSetPriorityUrl))
+						.ifPresentOrElse(
+							// set value as per extension
+							ext -> priority.setValue(ext.getValue()),
+							// set to "routine" if missing
+							() -> {
+								CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
+								priority.setValue(routine);
+						});
 				}
 			});
-		return conditionsUpdated;
+	}
+	private void tryAddCondition(List<UsageContext> usageContexts, CodeableConcept condition) {
+		boolean focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
+			u.getCode().getSystem().equals(contextTypeUrl) 
+			&& u.getCode().getCode().equals("focus") 
+			&& u.getValueCodeableConcept().hasCoding(condition.getCoding().get(0).getSystem(), condition.getCoding().get(0).getCode())
+		);
+		if (!focusAlreadyExists) {
+			UsageContext newFocus = new UsageContext(new Coding(contextTypeUrl,"focus",null),condition);
+			newFocus.setValue(condition);
+			usageContexts.add(newFocus);
+		}
 	}
 	/**
 	 * 
