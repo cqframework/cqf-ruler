@@ -1352,10 +1352,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(OperationOutcome.class)
 			.execute();
 		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-		assertTrue(errors.size() == 3);
+		assertTrue(errors.size() == 4);
 		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
 		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
-		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(1).getDiagnostics().contains("'depends-on' but must be 'composed-of'"));
 		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(3).getDiagnostics().contains("variable"));
 	}
 }

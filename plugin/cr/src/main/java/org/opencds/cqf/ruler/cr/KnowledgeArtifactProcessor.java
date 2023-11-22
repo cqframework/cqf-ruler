@@ -588,7 +588,9 @@ public class KnowledgeArtifactProcessor {
 	}
 	private List<RelatedArtifact> getRelatedArtifactsWithPreservedExtensions(List<RelatedArtifact> deps) {
 		return deps.stream()
-			.filter(ra -> preservedExtensionUrls.stream().anyMatch(url -> ra.getExtensionByUrl(url) != null))
+			.filter(ra -> preservedExtensionUrls
+				.stream().anyMatch(url -> ra.getExtension()
+					.stream().anyMatch(ext -> ext.getUrl().equalsIgnoreCase(url))))
 			.collect(Collectors.toList());
 	}
 	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
@@ -619,7 +621,7 @@ public class KnowledgeArtifactProcessor {
 			});
 			return returnEntries;
 	}
-	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) {
+	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) throws IllegalArgumentException {
 		if (releaseLabel != null) {
 			Extension releaseLabelExtension = artifact.getExtensionByUrl(releaseLabel);
 			if (releaseLabelExtension == null) {
@@ -774,7 +776,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
 		if (contentEndpoint != null || terminologyEndpoint != null) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
@@ -862,7 +864,7 @@ public class KnowledgeArtifactProcessor {
 	 * @param manifest the manifest
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
-	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException {
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException, IllegalArgumentException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
 		bundleEntries.stream()
@@ -875,16 +877,19 @@ public class KnowledgeArtifactProcessor {
 					if (!valueSet.hasCompose()
 					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
 						// If Condition extension is present
-						if (maybeVSRelatedArtifact.isPresent() 
-							&& maybeVSRelatedArtifact.get().getExtensionByUrl(valueSetConditionUrl) != null) {
-						// update Condition(s)
-						maybeVSRelatedArtifact.get().getExtension().stream()
-							.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
-							.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
-						} else {
-							// Throw error for missing Condition
-							throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
-						}						
+						maybeVSRelatedArtifact
+							.map(ra -> ra.getExtension())
+							.ifPresentOrElse(
+								// add Conditions
+								exts -> {
+									exts.stream()
+										.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
+										.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
+								}, 
+								// else throw error
+								() -> {
+									throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
+								});		
 					}
 					// update Priority
 					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");

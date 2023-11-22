@@ -62,6 +62,17 @@
 									],
 									"text": "Infection caused by Acanthamoeba (disorder)"
 								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "767146004"
+										}
+									]
+								}
 							}
 						],
 						"type": "depends-on",
