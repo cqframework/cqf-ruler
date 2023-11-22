@@ -1146,7 +1146,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(shouldBeUpdatedToEmergent.isPresent());
 		Optional<UsageContext> priority = shouldBeUpdatedToEmergent.get().getUseContext().stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetPriorityCode))
 			.findFirst();
 		assertTrue(priority.isPresent());
 		assertTrue(((CodeableConcept) priority.get().getValue()).getCoding().get(0).getCode().equals("emergent"));
@@ -1159,7 +1159,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(shouldBeUpdatedToRoutine.isPresent());
 		Optional<UsageContext> priority2 = shouldBeUpdatedToRoutine.get().getUseContext().stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetPriorityCode))
 			.findFirst();
 		assertTrue(priority2.isPresent());
 		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getCode().equals("routine"));
@@ -1183,7 +1183,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(shouldHaveFocusSetToNewValue.isPresent());
 		Optional<UsageContext> focus = shouldHaveFocusSetToNewValue.get().getUseContext().stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals("focus"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetConditionCode))
 			.findFirst();
 		assertTrue(focus.isPresent());
 		assertTrue(((CodeableConcept) focus.get().getValue()).getCoding().get(0).getCode().equals("49649001"));
