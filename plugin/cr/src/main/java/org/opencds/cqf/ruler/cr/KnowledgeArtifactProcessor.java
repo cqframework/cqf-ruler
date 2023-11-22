@@ -875,7 +875,7 @@ public class KnowledgeArtifactProcessor {
 					ValueSet valueSet = (ValueSet) entry.getResource();
 					List<UsageContext> usageContexts = valueSet.getUseContext();
 					// remove any existing Priority and Conditions
-					removeExistingReferenceExtensionData(usageContexts);
+					usageContexts = removeExistingReferenceExtensionData(usageContexts);
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
 					// If leaf valueset
 					if (!valueSet.hasCompose()
@@ -914,9 +914,9 @@ public class KnowledgeArtifactProcessor {
 	 * Removes any existing UsageContexts corresponding the the VSM specific extensions
 	 * @param usageContexts the list of usage contexts to modify
 	 */
-	private void removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
+	private List<UsageContext> removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
 		List<String> useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
-		usageContexts = usageContexts.stream()
+		return usageContexts.stream()
 		// remove any useContexts which need to be replaced
 			.filter(useContext -> !useContextCodesToReplace.stream()
 				.anyMatch(code -> useContext.getCode().getCode().equals(code)))
