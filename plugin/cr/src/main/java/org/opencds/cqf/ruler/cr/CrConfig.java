@@ -112,12 +112,6 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public ValueSetInterceptor valueSetInterceptor() {
-		return new ValueSetInterceptor();
-	}
-
-	@Bean
-	@Conditional(OnR4Condition.class)
 	public KnowledgeArtifactProcessor knowledgeArtifactProcessor() {
 		return new KnowledgeArtifactProcessor();
 	}
