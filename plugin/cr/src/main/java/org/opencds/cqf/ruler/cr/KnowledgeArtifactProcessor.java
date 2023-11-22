@@ -896,7 +896,7 @@ public class KnowledgeArtifactProcessor {
 								});		
 					}
 					// update Priority
-					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, "priority");
+					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, valueSetPriorityCode);
 					maybeVSRelatedArtifact
 						.map(ra -> ra.getExtensionByUrl(valueSetPriorityUrl))
 						.ifPresentOrElse(
@@ -926,11 +926,11 @@ public class KnowledgeArtifactProcessor {
 	private void tryAddCondition(List<UsageContext> usageContexts, CodeableConcept condition) {
 		boolean focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
 			u.getCode().getSystem().equals(contextTypeUrl) 
-			&& u.getCode().getCode().equals("focus") 
+			&& u.getCode().getCode().equals(valueSetConditionCode) 
 			&& u.getValueCodeableConcept().hasCoding(condition.getCoding().get(0).getSystem(), condition.getCoding().get(0).getCode())
 		);
 		if (!focusAlreadyExists) {
-			UsageContext newFocus = new UsageContext(new Coding(contextTypeUrl,"focus",null),condition);
+			UsageContext newFocus = new UsageContext(new Coding(contextTypeUrl,valueSetConditionCode,null),condition);
 			newFocus.setValue(condition);
 			usageContexts.add(newFocus);
 		}
