@@ -863,7 +863,7 @@ public class KnowledgeArtifactProcessor {
 	}
 	/**
 	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $crmi.package time
-	 * @param manifest the manifest
+	 * @param manifest the resource containing all RelatedArtifact references
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
 	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException, IllegalArgumentException {
@@ -874,6 +874,7 @@ public class KnowledgeArtifactProcessor {
 				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
 					ValueSet valueSet = (ValueSet) entry.getResource();
 					List<UsageContext> usageContexts = valueSet.getUseContext();
+					// remove any existing Priority and Conditions
 					removeExistingReferenceExtensionData(usageContexts);
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
 					// If leaf valueset
@@ -909,6 +910,10 @@ public class KnowledgeArtifactProcessor {
 				}
 			});
 	}
+	/**
+	 * Removes any existing UsageContexts corresponding the the VSM specific extensions
+	 * @param usageContexts the list of usage contexts to modify
+	 */
 	private void removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
 		List<String> useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
 		usageContexts = usageContexts.stream()
