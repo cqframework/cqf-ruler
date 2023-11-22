@@ -74,14 +74,21 @@ public class TransformProvider implements OperationProvider {
 			entry.setResource(v1PlanDefinition);
 		}
 	}
+	/**
+	 * Remove all instances of an old profile and add one instance of a new profile
+	 * @param meta the meta object to update
+	 * @param oldProfile the profile URL to remove
+	 * @param newProfile the profile URL to add
+	 */
 	private void replaceProfile(Meta meta, String oldProfile, String newProfile) {
-		meta.getProfile().replaceAll(profile -> {
-			if (profile.getValue().equals(oldProfile)) {
-				return new CanonicalType(newProfile);
-			} else {
-				return profile;
-			}
-		});
+		// remove all instances of old profile
+		List<CanonicalType> updatedProfiles = meta.getProfile().stream()
+			.filter(profile -> !profile.getValue().equals(oldProfile)).collect(Collectors.toList());
+		// add the new profile if it doesn't exist
+		if (!updatedProfiles.stream().anyMatch(profile -> profile.getValue().equals(newProfile))) {
+			updatedProfiles.add(new CanonicalType(newProfile));
+		}
+		meta.setProfile(updatedProfiles);
 	}
 	private void updateV2TriggeringValueSetLibrary(MetadataResource resource) {
 		if (resource.getResourceType() == ResourceType.Library
