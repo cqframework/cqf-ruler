@@ -511,7 +511,7 @@ public class KnowledgeArtifactProcessor {
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
 		// Get list of extensions which need to be preserved
-		List<RelatedArtifact> originalDependenciesWithPreservedExtensions = getRelatedArtifactsWithPreservedExtensions(rootArtifactOriginalDependencies);
+		List<RelatedArtifact> originalDependenciesWithExtensions = rootArtifactOriginalDependencies.stream().filter(dep -> dep.getExtension() != null && dep.getExtension().size() > 0).collect(Collectors.toList());
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -569,14 +569,14 @@ public class KnowledgeArtifactProcessor {
 		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
 			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
 				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
-				// add preserved Extensions if found
-				originalDependenciesWithPreservedExtensions
+				// preserve Extensions if found
+				originalDependenciesWithExtensions
 				.stream()
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
 					.findFirst()
 					.ifPresent(dep -> {
 						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
-						originalDependenciesWithPreservedExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
+						originalDependenciesWithExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
 					});
 			}
 		}
