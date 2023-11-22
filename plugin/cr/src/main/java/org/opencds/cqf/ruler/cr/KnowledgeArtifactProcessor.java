@@ -77,6 +77,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
+	public static final String valueSetPriorityCode = "priority";
+	public static final String valueSetConditionCode = "focus";
 	public final List<String> preservedExtensionUrls = List.of(
 			valueSetPriorityUrl,
 			valueSetConditionUrl
@@ -872,6 +874,7 @@ public class KnowledgeArtifactProcessor {
 				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
 					ValueSet valueSet = (ValueSet) entry.getResource();
 					List<UsageContext> usageContexts = valueSet.getUseContext();
+					removeExistingReferenceExtensionData(usageContexts);
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
 					// If leaf valueset
 					if (!valueSet.hasCompose()
@@ -906,6 +909,15 @@ public class KnowledgeArtifactProcessor {
 				}
 			});
 	}
+	private void removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
+		List<String> useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
+		usageContexts = usageContexts.stream()
+		// remove any useContexts which need to be replaced
+			.filter(useContext -> !useContextCodesToReplace.stream()
+				.anyMatch(code -> useContext.getCode().getCode().equals(code)))
+			.collect(Collectors.toList());
+	}
+
 	private void tryAddCondition(List<UsageContext> usageContexts, CodeableConcept condition) {
 		boolean focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
 			u.getCode().getSystem().equals(contextTypeUrl) 
