@@ -6,15 +6,18 @@ import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.UsageContext;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,12 +57,30 @@ public class TransformProvider implements OperationProvider {
 				if (entry.getResource() instanceof MetadataResource) {
 					MetadataResource resource = (MetadataResource) entry.getResource();
 					checkAndUpdateV2PlanDefinition(entry, v1PlanDefinition);
+					updateV2GroupersUseContext(resource,v1PlanDefinition.getIdElement());
 					updateV2TriggeringValueSets(resource, v1PlanDefinition.getUrl());
 					updateV2TriggeringValueSetLibrary(resource);
 					resource.setExperimentalElement(null);
 				}
 			});
 		return v2;
+	}
+	private void updateV2GroupersUseContext(MetadataResource resource, IIdType planDefinitionId) {
+		// if resourc is a vs
+		if (resource.getResourceType() == ResourceType.ValueSet) {
+			ValueSet valueSet = (ValueSet) resource;
+			// if vs is a grouper
+			if (valueSet.hasCompose()
+			&& valueSet.getCompose().getIncludeFirstRep().getValueSet().size() > 0) {
+				List<UsageContext> usageContexts = valueSet.getUseContext();
+				UsageContext program = usageContexts.stream().filter(useContext -> useContext.getCode().getSystem().equals(TransformProperties.hl7UsageContextType) && useContext.getCode().getCode().equals("program")).findFirst().orElseGet(() -> {
+					UsageContext retval = new UsageContext(new Coding(TransformProperties.hl7UsageContextType, "program", null), null);
+					usageContexts.add(retval);
+					return retval;
+				});
+				program.setValue(new Reference(planDefinitionId));
+			}
+		 }
 	}
 	private void removeRootSpecificationLibrary(Bundle v2) {
 		List<BundleEntryComponent> filteredRootLib = v2.getEntry().stream()
@@ -114,11 +135,6 @@ public class TransformProvider implements OperationProvider {
 		 && resource.hasMeta() 
 		 && resource.getMeta().hasProfile(TransformProperties.usPHTriggeringVSProfile)) {
 			replaceProfile(resource.getMeta(), TransformProperties.usPHTriggeringVSProfile, TransformProperties.ersdVSProfile);
-			resource.getUseContext().stream().forEach(useContext -> {
-				if (useContext.getCode().getCode().equals("program")) {
-					useContext.setValue(new Reference(v1PlanDefinitionUrl));
-				}
-			});
 			List<UsageContext> filteredUseContexts = resource.getUseContext().stream()
 				.filter(useContext -> 
 					 !(useContext.getCode().getCode().equals("reporting")
