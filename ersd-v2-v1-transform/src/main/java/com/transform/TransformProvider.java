@@ -46,7 +46,8 @@ public class TransformProvider implements OperationProvider {
 	public Bundle convert_v1(
 		RequestDetails requestDetails,
 		@OperationParam(name = "bundle") IBaseResource maybeBundle,
-		@OperationParam(name = "planDefinition") IBaseResource maybePlanDefinition
+		@OperationParam(name = "planDefinition") IBaseResource maybePlanDefinition,
+		@OperationParam(name = "targetVersion") String targetVersion
 		) throws UnprocessableEntityException {
 		if (maybeBundle == null) {
 			throw new UnprocessableEntityException("Resource is missing");
@@ -58,8 +59,8 @@ public class TransformProvider implements OperationProvider {
 			throw new UnprocessableEntityException("Provided v1 PlanDefinition is not a PlanDefinition resource");
 		}
 		Bundle v2 = (Bundle) maybeBundle;
-		removeRootSpecificationLibrary(v2);
 		final PlanDefinition v1PlanDefinition = maybePlanDefinition != null ? (PlanDefinition) maybePlanDefinition : getV1PlanDefinition(requestDetails);
+		removeRootSpecificationLibrary(v2);
 		v2.getEntry().stream()
 			.forEach(entry -> {
 				if (entry.getResource() instanceof MetadataResource) {
@@ -69,6 +70,9 @@ public class TransformProvider implements OperationProvider {
 					updateV2TriggeringValueSets(resource, v1PlanDefinition.getUrl());
 					updateV2TriggeringValueSetLibrary(resource);
 					resource.setExperimentalElement(null);
+					if (targetVersion != null) {
+						resource.setVersion(targetVersion);
+					}
 				}
 			});
 		return v2;
