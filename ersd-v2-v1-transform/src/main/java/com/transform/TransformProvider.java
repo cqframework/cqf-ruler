@@ -67,11 +67,14 @@ public class TransformProvider implements OperationProvider {
 			.filter(entry -> !(entry.getResource().hasMeta() && entry.getResource().getMeta().hasProfile(TransformProperties.usPHSpecLibProfile))).collect(Collectors.toList());
 		v2.setEntry(filteredRootLib);
 	}
-	private void checkAndUpdateV2PlanDefinition(BundleEntryComponent entry, PlanDefinition v1PlanDefinition) {
+	private void checkAndUpdateV2PlanDefinition(BundleEntryComponent entry, PlanDefinition v1PlanDefinition) throws UnprocessableEntityException{
 		if (entry.getResource().getResourceType() == ResourceType.PlanDefinition
 			&& entry.getResource().hasMeta()
 			&& entry.getResource().getMeta().getProfile().stream().anyMatch(canonical -> canonical.getValue().contains("/ersd-plandefinition"))) {
 			entry.setResource(v1PlanDefinition);
+			String url = Optional.ofNullable(v1PlanDefinition.getUrl()).orElseThrow(() -> new UnprocessableEntityException("URL missing from PlanDefinition"));
+			String version = Optional.ofNullable(v1PlanDefinition.getVersion()).orElseThrow(() -> new UnprocessableEntityException("Version missing from PlanDefinition"));
+			entry.setFullUrl(url + "|" + version);
 		}
 	}
 	/**
