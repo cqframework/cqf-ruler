@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
-import ca.uhn.fhir.jpa.patch.FhirPatch;
 import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -296,9 +295,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (theSourceResource.getClass() != theTargetResource.getClass()) {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
-		FhirPatch patch = new FhirPatch(this.getFhirContext());
-		patch.setIncludePreviousValueInDiff(true);
-		return (Parameters) patch.diff(theSourceResource,theTargetResource);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal);
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()

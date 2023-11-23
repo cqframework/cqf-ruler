@@ -37,6 +37,8 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -55,6 +57,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.patch.FhirPatch;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -900,15 +904,15 @@ public class KnowledgeArtifactProcessor {
 				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 				bundle.addEntry(entry);
 			}
-			List<RelatedArtifact> components = adapter.getComponents();
-			List<RelatedArtifact> dependencies = adapter.getDependencies();
-			Stream.concat(components.stream(), dependencies.stream())
+			combineComponentsAndDependencies(adapter).stream()
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
 		}
 	}
-
+	private List<RelatedArtifact> combineComponentsAndDependencies(KnowledgeArtifactAdapter<MetadataResource> adapter) {
+		return Stream.concat(adapter.getComponents().stream(), adapter.getDependencies().stream()).collect(Collectors.toList());
+	}
 	private Optional<String> findVersionInListMatchingResource(List<CanonicalType> list, MetadataResource resource){
 		return list.stream()
 					.filter((canonical) -> Canonicals.getUrl(canonical).equals(resource.getUrl()))
@@ -1029,7 +1033,46 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, FhirDal fhirDal) {
+		// setup
+		FhirPatch patch = new FhirPatch(theContext);
+		patch.setIncludePreviousValueInDiff(true);
+		// First get difference between the two base libraries
+		Parameters libraryDiff = (Parameters) patch.diff(theSourceLibrary,theTargetLibrary);
+		// then send check for references and add those to the base Parameters object
+		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch);
+		return libraryDiff;
+	}
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch) {
+		// get the references in both the source and target
+		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
+		targetRefs.sort((ref1, ref2) -> ref1.getResource().compareTo(ref2.getResource()));
+		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
+		sourceRefs.sort((ref1, ref2) -> ref1.getResource().compareTo(ref2.getResource()));
+		// need to fill gaps if we're going to compare
+		// use "add" "remove" ops in the baseDiff to fill gaps
+		if (sourceRefs.size() > 0 || targetRefs.size() > 0) {
+			for(int i = 0; i < sourceRefs.size(); i++) {
+				MetadataResource source = null;
+				MetadataResource target = null;
+				try {
+					source = (MetadataResource)searchResourceByUrl(sourceRefs.get(i).getResource(),fhirDal).getEntry().get(0).getResource();
+				 	target = (MetadataResource)searchResourceByUrl(targetRefs.get(i).getResource(),fhirDal).getEntry().get(0).getResource();
+				} catch (IndexOutOfBoundsException e) {
+					// TODO: handle exception
+				}
+				// need to maintain a url:Parameters map to remove duplication
+				if (source != null && target != null) {
+					Parameters diffToAppend = (Parameters) patch.diff(source, target);
+					ParametersParameterComponent component = baseDiff.addParameter();
+					component.setName(Canonicals.getUrl(sourceRefs.get(i).getResource()));
+					component.setResource(diffToAppend);
+					// check for changes in the children of those as well
+					checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch);
+				}
+			}
+		}
+	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
 		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
