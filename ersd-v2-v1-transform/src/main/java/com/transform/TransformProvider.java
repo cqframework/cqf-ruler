@@ -36,22 +36,30 @@ public class TransformProvider implements OperationProvider {
 	/**
 	 * Implements the $ersd-v2-to-v1-transform operation which transforms an ersd v2 Bundle
 	 * into an ersd v1 compatible bundle
-	 * @return a greeting
+	 * @param requestDetails the incoming request details
+	 * @param maybeBundle the v2 bundle to transform
+	 * @param maybePlanDefinition the v1 PlanDefinition to include
+	 * @return the v1 compatible bundle
 	 */
 	@Description(shortDefinition = "Converts a v2 ERSD bundle into a v1 ERSD bundle", value = "Converts a v2 ERSD bundle into a v1 ERSD bundle")
 	@Operation(idempotent = true, name = "$ersd-v2-to-v1-transform")
 	public Bundle convert_v1(
 		RequestDetails requestDetails,
-		@OperationParam(name = "resource") IBaseResource maybeBundle) throws UnprocessableEntityException {
+		@OperationParam(name = "bundle") IBaseResource maybeBundle,
+		@OperationParam(name = "planDefinition") IBaseResource maybePlanDefinition
+		) throws UnprocessableEntityException {
 		if (maybeBundle == null) {
 			throw new UnprocessableEntityException("Resource is missing");
 		}
 		if (!(maybeBundle instanceof IBaseBundle )) {
 			throw new UnprocessableEntityException("Resource is not a bundle");
 		}
+		if (maybePlanDefinition != null && !(maybePlanDefinition instanceof PlanDefinition)) {
+			throw new UnprocessableEntityException("Provided v1 PlanDefinition is not a PlanDefinition resource");
+		}
 		Bundle v2 = (Bundle) maybeBundle;
 		removeRootSpecificationLibrary(v2);
-		final PlanDefinition v1PlanDefinition = getV1PlanDefinition(requestDetails);
+		final PlanDefinition v1PlanDefinition = maybePlanDefinition != null ? (PlanDefinition) maybePlanDefinition : getV1PlanDefinition(requestDetails);
 		v2.getEntry().stream()
 			.forEach(entry -> {
 				if (entry.getResource() instanceof MetadataResource) {

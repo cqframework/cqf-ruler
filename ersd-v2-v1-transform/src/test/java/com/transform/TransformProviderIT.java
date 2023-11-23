@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -79,5 +80,26 @@ class TransformProviderIT extends RestIntegrationTest {
 		assertTrue(hasV2TriggeringVSUseContexts.size() == 0);
 		assertTrue(hasUSPHProfiles.size() == 0);
 		assertTrue(hasExperimental.size() == 0);
+	}
+	@Test
+	void testTransform_alternate_v1_skeleton() {
+		PlanDefinition planDef = (PlanDefinition) loadResource("ersd-v1-plandefinition-alternate.json");
+		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
+		Parameters v2BundleParams = new Parameters();
+		v2BundleParams.addParameter()
+			.setName("bundle")
+			.setResource(v2Bundle);
+		v2BundleParams.addParameter()
+			.setName("planDefinition")
+			.setResource(planDef);
+		Bundle v1Bundle = getClient()
+				.operation()
+				.onServer()
+				.named("$ersd-v2-to-v1-transform")
+				.withParameters(v2BundleParams)
+				.returnResourceType(Bundle.class)
+				.execute();
+		List<BundleEntryComponent> bundleContainsAlternatePlanDef = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton-alternate|1.2.0.0")).collect(Collectors.toList());
+		assertTrue(bundleContainsAlternatePlanDef.size() == 1);
 	}
 }
