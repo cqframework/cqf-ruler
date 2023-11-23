@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -23,7 +24,7 @@ class TransformProviderIT extends RestIntegrationTest {
 		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
 		Parameters v2BundleParams = new Parameters();
 		v2BundleParams.addParameter()
-			.setName("resource")
+			.setName("bundle")
 			.setResource(v2Bundle);
 		Bundle v1Bundle = getClient()
 				.operation()
@@ -49,6 +50,7 @@ class TransformProviderIT extends RestIntegrationTest {
 			&& entry.getUseContext().stream().anyMatch(useContext -> useContext.getCode().getCode().equals("program") && !useContext.getValueReference().getReference().equals("PlanDefinition/plandefinition-ersd-skeleton"))).collect(Collectors.toList());
 		List<MetadataResource> containsV1PlanDefinition = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta() 
 			&& entry.getMeta().hasProfile(TransformProperties.ersdPlanDefinitionProfile) && entry.getName().equals("PlanDefinition_eRSD_Skeleton_Instance")).collect(Collectors.toList());
+		List<BundleEntryComponent> planDefFullUrlUpdated = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton|1.2.0.0")).collect(Collectors.toList());
 		List<MetadataResource> hasV2TriggeringVSLibUseContexts = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.Library && entry.hasMeta() && entry.getMeta().hasProfile(TransformProperties.ersdVSLibProfile) 
 			&& entry.getUseContext().stream().anyMatch(useContext -> 
 					  (useContext.getCode().getCode().equals("reporting")
@@ -71,6 +73,7 @@ class TransformProviderIT extends RestIntegrationTest {
 		assertTrue(containsSpecificationLibrary.size() == 0);
 		assertTrue(containsV2PlanDefinition.size() == 0);
 		assertTrue(containsV1PlanDefinition.size() == 1);
+		assertTrue(planDefFullUrlUpdated.size() == 1);
 		assertTrue(VSTriggeringUseContextsMissingV1PlanDefinitionReference.size() == 0);
 		assertTrue(hasV2TriggeringVSLibUseContexts.size() == 0);
 		assertTrue(hasV2TriggeringVSUseContexts.size() == 0);
