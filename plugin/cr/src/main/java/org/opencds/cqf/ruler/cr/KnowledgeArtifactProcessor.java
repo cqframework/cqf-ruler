@@ -186,7 +186,12 @@ public class KnowledgeArtifactProcessor {
 		}
 		return request;
 	}
-
+/**
+ * search by versioned Canonical URL
+ * @param url canonical URL of the form www.example.com/Patient/123|0.1
+ * @param fhirDal to do the searching
+ * @return a bundle of results
+ */
 	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
 		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
 
@@ -340,7 +345,7 @@ public class KnowledgeArtifactProcessor {
 		for (int i = 0; i < resourcesToCreate.size(); i++) {
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
-			updateRelatedArtifactUrlsWithNewVersions(newResourceAdapter.getOwnedRelatedArtifacts(), draftVersion);
+			updateRelatedArtifactUrlsWithNewVersions(combineComponentsAndDependencies(newResourceAdapter), draftVersion);
 			MetadataResource updateIdForBundle = newResourceAdapter.copy();
 			updateIdForBundle.setId(urnList.get(i));
 			transactionBundle.addEntry(createEntry(updateIdForBundle));
@@ -1037,13 +1042,35 @@ public class KnowledgeArtifactProcessor {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
+		patch.addIgnorePath("*.meta");
 		// First get difference between the two base libraries
 		Parameters libraryDiff = (Parameters) patch.diff(theSourceLibrary,theTargetLibrary);
 		// then send check for references and add those to the base Parameters object
-		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch);
+		diffCache cache = new diffCache();
+		cache.addDiff(theSourceLibrary.getUrl()+"|"+theSourceLibrary.getVersion(), theTargetLibrary.getUrl()+"|"+theTargetLibrary.getVersion(), libraryDiff);
+		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch, cache);
 		return libraryDiff;
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch) {
+	private class diffCache {
+		private final Map<String,Parameters> diffs = new HashMap<String,Parameters>();
+		private final Map<String,MetadataResource> resources = new HashMap<String,MetadataResource>();
+		public diffCache() {
+			super();
+		}
+		public void addDiff(String sourceUrl, String targetUrl, Parameters diff) {
+			this.diffs.put(sourceUrl+"-"+targetUrl, diff);
+		}
+		public Parameters getDiff(String sourceUrl, String targetUrl) {
+			return this.diffs.get(sourceUrl+"-"+targetUrl);
+		}
+		public void addResource(String url, MetadataResource resource) {
+			this.resources.put(url, resource);
+		}
+		public MetadataResource getResource(String url) {
+			return this.resources.get(url);
+		}
+	}
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch, diffCache cache) {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		targetRefs.sort((ref1, ref2) -> ref1.getResource().compareTo(ref2.getResource()));
@@ -1053,25 +1080,47 @@ public class KnowledgeArtifactProcessor {
 		// use "add" "remove" ops in the baseDiff to fill gaps
 		if (sourceRefs.size() > 0 || targetRefs.size() > 0) {
 			for(int i = 0; i < sourceRefs.size(); i++) {
-				MetadataResource source = null;
-				MetadataResource target = null;
-				try {
-					source = (MetadataResource)searchResourceByUrl(sourceRefs.get(i).getResource(),fhirDal).getEntry().get(0).getResource();
-				 	target = (MetadataResource)searchResourceByUrl(targetRefs.get(i).getResource(),fhirDal).getEntry().get(0).getResource();
-				} catch (IndexOutOfBoundsException e) {
-					// TODO: handle exception
-				}
-				// need to maintain a url:Parameters map to remove duplication
-				if (source != null && target != null) {
-					Parameters diffToAppend = (Parameters) patch.diff(source, target);
-					ParametersParameterComponent component = baseDiff.addParameter();
-					component.setName(Canonicals.getUrl(sourceRefs.get(i).getResource()));
-					component.setResource(diffToAppend);
-					// check for changes in the children of those as well
-					checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch);
+				String sourceCanonical = sourceRefs.get(i).getResource();
+				String targetCanonical = targetRefs.get(i).getResource();
+				// check for duplicates
+				if (baseDiff.getParameter(Canonicals.getUrl(sourceCanonical)) == null){
+					// check if diff has already been computed
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal);
+					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache)
+						.ifPresent(diffToAppend -> {
+							ParametersParameterComponent component = baseDiff.addParameter();
+							component.setName(Canonicals.getUrl(sourceCanonical));
+							component.setResource(diffToAppend);
+							// check for changes in the children of those as well
+							checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch, cache);
+						});
 				}
 			}
 		}
+	}
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal) {
+		MetadataResource resource = cache.getResource(url);
+		if (resource == null) {
+			try {
+				resource = retrieveResourcesByCanonical(url, fhirDal);
+			} catch (ResourceNotFoundException e) {
+			}
+			if (resource != null) {
+				cache.addResource(url, resource);
+			}
+		}
+		return resource;
+	}
+	private Optional<Parameters> checkOrUpdateDiffCache(String sourceCanonical, String targetCanonical, MetadataResource source, MetadataResource target, FhirPatch patch, diffCache cache) {
+		Parameters diffToAppend = cache.getDiff(sourceCanonical, targetCanonical);
+		if (diffToAppend == null) {
+			if (source != null && target != null) {
+				diffToAppend = (Parameters) patch.diff(source, target);
+				cache.addDiff(sourceCanonical, targetCanonical, diffToAppend);
+			}
+		}
+		return Optional.ofNullable(diffToAppend);
 	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
