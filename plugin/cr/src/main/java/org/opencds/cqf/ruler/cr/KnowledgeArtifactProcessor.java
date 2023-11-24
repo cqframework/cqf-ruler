@@ -373,9 +373,17 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
+		// first find "owned" resource canonicals
+		List<String> ownedResourceUrls = relatedArtifactList.stream()
+			.filter(ra -> KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(ra))
+			.map(RelatedArtifact::getResource)
+			.filter(url -> url != null)
+			.collect(Collectors.toList());
 		// For each  relatedArtifact, update the version of the reference.
 		relatedArtifactList.stream()
-			.filter(ra -> ra.hasResource())
+			.filter(RelatedArtifact::hasResource)
+			// only update the references to owned resources (including dependencies)
+			.filter(ra -> ownedResourceUrls.contains(ra.getResource()))
 			.collect(Collectors.toList())
 			.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}
