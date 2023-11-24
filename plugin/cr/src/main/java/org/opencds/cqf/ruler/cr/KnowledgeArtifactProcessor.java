@@ -875,6 +875,8 @@ public class KnowledgeArtifactProcessor {
 					ValueSet valueSet = (ValueSet) entry.getResource();
 					// remove any existing Priority and Conditions
 					List<UsageContext> usageContexts = removeExistingReferenceExtensionData(valueSet.getUseContext());
+					valueSet.setUseContext(usageContexts);
+					// List<UsageContext> usageContexts = valueSet.getUseContext();
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
 					// If leaf valueset
 					if (!valueSet.hasCompose()
