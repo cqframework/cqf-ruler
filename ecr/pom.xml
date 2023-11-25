@@ -8,8 +8,8 @@
 		<relativePath>../</relativePath>
 	</parent>
 
-	<groupId>com.transform</groupId>
-	<artifactId>cqf-ruler-ersd-v2-v1-transform-plugin</artifactId>
+	<groupId>com.ecr</groupId>
+	<artifactId>cqf-ruler-ecr</artifactId>
 	<version>1.0.0</version>
 	<dependencies>
 		<dependency>
