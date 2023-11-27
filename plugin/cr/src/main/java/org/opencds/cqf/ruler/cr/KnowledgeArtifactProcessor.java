@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -342,17 +343,27 @@ public class KnowledgeArtifactProcessor {
 		Bundle transactionBundle = new Bundle()
 			.setType(Bundle.BundleType.TRANSACTION);
 		List<IdType> urnList = resourcesToCreate.stream().map(res -> new IdType("urn:uuid:" + UUID.randomUUID().toString())).collect(Collectors.toList());
+		TreeSet<String> ownedResourceUrls = createOwnedResourceUrlCache(resourcesToCreate);
 		for (int i = 0; i < resourcesToCreate.size(); i++) {
 			KnowledgeArtifactAdapter<MetadataResource> newResourceAdapter = new KnowledgeArtifactAdapter<MetadataResource>(resourcesToCreate.get(i));
 			updateUsageContextReferencesWithUrns(resourcesToCreate.get(i), resourcesToCreate, urnList);
-			updateRelatedArtifactUrlsWithNewVersions(combineComponentsAndDependencies(newResourceAdapter), draftVersion);
+			updateRelatedArtifactUrlsWithNewVersions(combineComponentsAndDependencies(newResourceAdapter), draftVersion, ownedResourceUrls);
 			MetadataResource updateIdForBundle = newResourceAdapter.copy();
 			updateIdForBundle.setId(urnList.get(i));
 			transactionBundle.addEntry(createEntry(updateIdForBundle));
 		}
 		return transactionBundle;
 	}
-
+	private TreeSet<String> createOwnedResourceUrlCache(List<MetadataResource> resources) {
+		TreeSet<String> retval = new TreeSet<String>();
+		resources.stream()
+			.map(KnowledgeArtifactAdapter::new)
+			.map(KnowledgeArtifactAdapter::getOwnedRelatedArtifacts).flatMap(List::stream)
+			.map(RelatedArtifact::getResource)
+			.map(Canonicals::getUrl)
+			.forEach(retval::add);
+		return retval;
+	}
 	private void updateUsageContextReferencesWithUrns(MetadataResource newResource, List<MetadataResource> resourceListWithOriginalIds, List<IdType> idListForTransactionBundle) {
 		List<UsageContext> useContexts = newResource.getUseContext();
 		for (UsageContext useContext : useContexts) {
@@ -372,18 +383,12 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion){
-		// first find "owned" resource canonicals
-		List<String> ownedResourceUrls = relatedArtifactList.stream()
-			.filter(ra -> KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(ra))
-			.map(RelatedArtifact::getResource)
-			.filter(url -> url != null)
-			.collect(Collectors.toList());
+	private void updateRelatedArtifactUrlsWithNewVersions(List<RelatedArtifact> relatedArtifactList, String updatedVersion, TreeSet<String> ownedUrlCache){
 		// For each  relatedArtifact, update the version of the reference.
 		relatedArtifactList.stream()
 			.filter(RelatedArtifact::hasResource)
 			// only update the references to owned resources (including dependencies)
-			.filter(ra -> ownedResourceUrls.contains(ra.getResource()))
+			.filter(ra -> ownedUrlCache.contains(Canonicals.getUrl(ra.getResource())))
 			.collect(Collectors.toList())
 			.replaceAll(ra -> ra.setResource(Canonicals.getUrl(ra.getResource()) + "|" + updatedVersion));
 	}

@@ -142,10 +142,10 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 	private List<RelatedArtifact> getOwnedRelatedArtifactsOfKnowledgeArtifact() {
 		return getRelatedArtifact().stream()
-			.filter(ra -> checkIfRelatedArtifactIsOwned(ra))
+			.filter(KnowledgeArtifactAdapter::checkIfRelatedArtifactIsOwned)
 			.collect(Collectors.toList());
 	}
-	static Boolean checkIfRelatedArtifactIsOwned(RelatedArtifact ra){
+	public static Boolean checkIfRelatedArtifactIsOwned(RelatedArtifact ra){
 		return ra.getExtension()
 					.stream()
 					.filter(ext -> ext.getUrl().equals("http://hl7.org/fhir/StructureDefinition/crmi-isOwned"))

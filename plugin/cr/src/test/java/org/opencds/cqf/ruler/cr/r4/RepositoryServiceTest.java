@@ -125,8 +125,18 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()).equals(draftedVersion));
+		for (BundleEntryComponent entry : returnedBundle.getEntry()) {
+			String ref = entry.getResponse().getLocation();
+			MetadataResource resource = getClient().fetchResourceFromUrl(MetadataResource.class,ref);
+			List<RelatedArtifact> relatedArtifacts2 = new KnowledgeArtifactAdapter<MetadataResource>(resource).getRelatedArtifact();
+			if (relatedArtifacts2 != null && relatedArtifacts2.size() > 0) {
+				for (RelatedArtifact relatedArtifact : relatedArtifacts2) {
+					if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(relatedArtifact)) {
+						assertTrue(Canonicals.getVersion(relatedArtifact.getResource()).equals(draftedVersion));
+					}
+				}
+			}
+		}
 	}
 	@Test
 	void draftOperation_version_conflict_test() {
@@ -1332,21 +1342,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void artifactDiffOperation() {
+		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadTransaction("ersd-small-active-bundle.json");
-		Parameters params = parameters(part("version", "1.2.3.4") );
-		Bundle returnedBundle = getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$crmi.draft")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
-		assertNotNull(returnedBundle);
-		Optional<BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
-		assertTrue(maybeLib.isPresent());
-		String target = maybeLib.get().getResponse().getLocation();
 		Parameters diffParams = parameters(
 			part("source", specificationLibReference),
-			part("target", target)
+			part("target", "Library/8")
 			 );
 		Parameters returnedParams = getClient().operation()
 			.onServer()
