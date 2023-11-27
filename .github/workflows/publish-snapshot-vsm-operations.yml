@@ -29,9 +29,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          load: true
           tags: alphora/cqf-ruler:cqf-ruler-vsm-base
-          cache-to: type=registry,ref=alphora/cqf-ruler:cqf-ruler-vsm-base
+          cache-to: type=inline
           outputs: type=docker,dest=/tmp/myimage.tar
       - name: Build and push with transform plugin 
         uses: docker/build-push-action@v4
