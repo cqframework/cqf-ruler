@@ -34,11 +34,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push with transform plugin 
-        uses: docker/build-push-action@v4
-        with:
-          context: ./ecr
-          push: true
-          tags: alphora/cqf-ruler:cqf-ruler-vsm-test
-          build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: |
+          cd ecr && docker buildx build --build-arg COMMIT_HASH=${{ env.SHORT_SHA }} --push --platform=linux/amd64,linux/arm64 -t alphora/cqf-ruler:cqf-ruler-vsm-test
