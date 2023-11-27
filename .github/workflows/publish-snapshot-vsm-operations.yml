@@ -1,8 +1,5 @@
 name: Publish Snapshot VSM Operations
-on:
-  push:
-    branches:
-      - vsm_operations
+on: pull_request
 jobs:
   maven:
     runs-on: ubuntu-latest
