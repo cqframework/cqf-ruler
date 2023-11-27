@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: alphora/cqf-ruler:cqf-ruler-vsm-base
+          tags: cqf-ruler:cqf-ruler-vsm-base
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push with transform plugin 
