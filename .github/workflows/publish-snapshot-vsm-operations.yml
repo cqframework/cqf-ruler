@@ -25,7 +25,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Install
         run: ./scripts/install.sh
-      - name: Build and push
+      - name: Build base image
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -33,12 +33,23 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           outputs: type=docker,dest=/tmp/myimage.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: myimage
+          path: /tmp/myimage.tar
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: myimage
+          path: /tmp
       - name: Build and push with transform plugin 
         uses: docker/build-push-action@v4
         with:
           context: ./ecr
           push: true
           tags: alphora/cqf-ruler:cqf-ruler-vsm-test
+          platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
