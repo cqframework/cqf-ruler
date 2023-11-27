@@ -47,8 +47,18 @@
                           ],
                           "text": "Emergent"
                         }
-                      }
-                    ],
+                      },{
+                        "url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+                        "valueCodeableConcept": {
+                            "coding": [
+                                {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "49649001"
+                                }
+                            ],
+                            "text": "Infection caused by Acanthamoeba (disorder)"
+                        }
+                    }],
                     "type": "depends-on",
                     "resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
                   }

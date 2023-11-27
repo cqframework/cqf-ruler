@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.cr;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -14,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.cr.common.ILibraryManagerFactory;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.rulercr", name = "enabled", havingValue = "true", matchIfMissing = true)

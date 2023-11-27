@@ -641,7 +641,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 	}
 	@Test
-	void release_preserve_vsm_priority_extension() {
+	void release_preserve_extensions() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters params = parameters(
@@ -659,10 +659,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		Optional<RelatedArtifact> maybeRelatedArtifactWithPriorityExtension = releasedLibrary.getRelatedArtifact().stream().filter(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl) != null).findAny();
+		Optional<RelatedArtifact> maybeRelatedArtifactWithUseContextExtension = releasedLibrary.getRelatedArtifact().stream().filter(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl) != null).findAny();
+		assertTrue(maybeRelatedArtifactWithUseContextExtension.isPresent());
+		assertTrue(maybeRelatedArtifactWithUseContextExtension.get().getResource().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"));
 		assertTrue(maybeRelatedArtifactWithPriorityExtension.isPresent());
 		assertTrue(maybeRelatedArtifactWithPriorityExtension.get().getResource().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"));
-		Extension priority = maybeRelatedArtifactWithPriorityExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
+		Extension priority = maybeRelatedArtifactWithUseContextExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
 		assertTrue(((CodeableConcept) priority.getValue()).getCoding().get(0).getCode().equals("emergent"));
+		Extension condition = maybeRelatedArtifactWithUseContextExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
+		assertTrue(((CodeableConcept) condition.getValue()).getCoding().get(0).getCode().equals("49649001"));
 	}
 	@Test
 	void release_test_artifactComment_updated() {
@@ -1141,7 +1146,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(shouldBeUpdatedToEmergent.isPresent());
 		Optional<UsageContext> priority = shouldBeUpdatedToEmergent.get().getUseContext().stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetPriorityCode))
 			.findFirst();
 		assertTrue(priority.isPresent());
 		assertTrue(((CodeableConcept) priority.get().getValue()).getCoding().get(0).getCode().equals("emergent"));
@@ -1154,13 +1159,37 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.findFirst();
 		assertTrue(shouldBeUpdatedToRoutine.isPresent());
 		Optional<UsageContext> priority2 = shouldBeUpdatedToRoutine.get().getUseContext().stream()
-			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.usPhContextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetPriorityCode))
 			.findFirst();
 		assertTrue(priority2.isPresent());
 		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getCode().equals("routine"));
 		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getSystem().equals(KnowledgeArtifactProcessor.contextUrl));
 	}
 	
+	@Test
+	void packageOperation_should_be_aware_of_useContext_extension() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<ValueSet> shouldHaveFocusSetToNewValue = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
+			.map(entry -> (ValueSet) entry.getResource())
+			.filter(vs -> vs.getUrl().equals("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6") && vs.getVersion().equals("20210526"))
+			.findFirst();
+		assertTrue(shouldHaveFocusSetToNewValue.isPresent());
+		Optional<UsageContext> focus = shouldHaveFocusSetToNewValue.get().getUseContext().stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals(KnowledgeArtifactProcessor.contextTypeUrl) && useContext.getCode().getCode().equals(KnowledgeArtifactProcessor.valueSetConditionCode))
+			.findFirst();
+		assertTrue(focus.isPresent());
+		assertTrue(((CodeableConcept) focus.get().getValue()).getCoding().get(0).getCode().equals("49649001"));
+		assertTrue(((CodeableConcept) focus.get().getValue()).getCoding().get(0).getSystem().equals("http://snomed.info/sct"));
+	}
+
 	@Test
 	void packageOperation_should_respect_include() {
 		loadTransaction("ersd-small-active-bundle.json");
@@ -1323,10 +1352,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(OperationOutcome.class)
 			.execute();
 		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
-		assertTrue(errors.size() == 3);
+		assertTrue(errors.size() == 4);
 		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
 		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
-		assertTrue(errors.get(1).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(1).getDiagnostics().contains("'depends-on' but must be 'composed-of'"));
 		assertTrue(errors.get(2).getDiagnostics().contains("variable"));
+		assertTrue(errors.get(3).getDiagnostics().contains("variable"));
 	}
 }
