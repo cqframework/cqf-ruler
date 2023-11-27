@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.transform.TransformConfig
+com.ecr.TransformConfig
