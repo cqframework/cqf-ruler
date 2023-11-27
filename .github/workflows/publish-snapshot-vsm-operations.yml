@@ -29,6 +29,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          load: true
           tags: alphora/cqf-ruler:cqf-ruler-vsm-base
           cache-to: type=registry,ref=alphora/cqf-ruler:cqf-ruler-vsm-base
           outputs: type=docker,dest=/tmp/myimage.tar
@@ -38,5 +39,6 @@ jobs:
           context: ./ecr
           push: true
           tags: alphora/cqf-ruler:cqf-ruler-vsm-test
+          platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
           cache-from: type=registry,ref=alphora/cqf-ruler:cqf-ruler-vsm-base
