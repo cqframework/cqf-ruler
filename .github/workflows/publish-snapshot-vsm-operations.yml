@@ -30,19 +30,8 @@ jobs:
         with:
           context: .
           tags: cqf-ruler:cqf-ruler-vsm-base
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=registry,ref=cqf-ruler:cqf-ruler-vsm-base
           outputs: type=docker,dest=/tmp/myimage.tar
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: myimage
-          path: /tmp/myimage.tar
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: myimage
-          path: /tmp
       - name: Build and push with transform plugin 
         uses: docker/build-push-action@v4
         with:
@@ -51,7 +40,6 @@ jobs:
           tags: alphora/cqf-ruler:cqf-ruler-vsm-test
           platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=cqf-ruler:cqf-ruler-vsm-base
           build-contexts: |
             cqf-ruler:cqf-ruler-vsm-base=/tmp/myimage.tar
