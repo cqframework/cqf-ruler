@@ -38,6 +38,5 @@ jobs:
           context: ./ecr
           push: true
           tags: alphora/cqf-ruler:cqf-ruler-vsm-test
-          platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
           cache-from: type=registry,ref=alphora/cqf-ruler:cqf-ruler-vsm-base
