@@ -1,6 +1,6 @@
 name: Publish Snapshot VSM Operations
 on:
-  push:
+  pull_request:
     branches:
       - vsm_operations
 jobs:
