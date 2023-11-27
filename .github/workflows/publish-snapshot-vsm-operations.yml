@@ -43,4 +43,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-contexts: |
-            cqf-ruler:cqf-ruler-vsm-base=./tmp/myimage.tar
+            cqf-ruler:cqf-ruler-vsm-base=/tmp/myimage.tar
