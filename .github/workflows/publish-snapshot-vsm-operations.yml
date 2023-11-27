@@ -1,8 +1,5 @@
 name: Publish Snapshot VSM Operations
-on:
-  push:
-    branches:
-      - vsm_operations
+on: pull_request
 jobs:
   maven:
     runs-on: ubuntu-latest
@@ -33,7 +30,6 @@ jobs:
         with:
           context: .
           load: true
-          platforms: linux/amd64,linux/arm64
           tags: alphora/cqf-ruler:cqf-ruler-vsm-base
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -43,7 +39,7 @@ jobs:
           context: ./ecr
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: alphora/cqf-ruler:cqf-ruler-vsm
+          tags: alphora/cqf-ruler:cqf-ruler-vsm-test
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
