@@ -1,5 +1,8 @@
 name: Publish Snapshot VSM Operations
-on: pull_request
+on:
+  push:
+    branches:
+      - vsm_operations
 jobs:
   maven:
     runs-on: ubuntu-latest
@@ -47,7 +50,7 @@ jobs:
           context: ./ecr
           file: ./ecr/Dockerfile_local
           push: true
-          tags: alphora/cqf-ruler:cqf-ruler-vsm-test
+          tags: alphora/cqf-ruler:cqf-ruler-vsm
           platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
           cache-from: type=gha
