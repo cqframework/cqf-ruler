@@ -1,46 +1,39 @@
 {
 	"resourceType": "Bundle",
+	"id": "rctc-release-2022-10-19-Bundle-rctc",
 	"type": "transaction",
+	"timestamp": "2022-10-21T15:18:28.504-04:00",
 	"entry": [
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary|8.7.23.12-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
 			"resource": {
 				"resourceType": "Library",
-				"id": "8",
-				"meta": {
-					"versionId": "2",
-					"lastUpdated": "2023-11-24T18:05:14.453-05:00",
-					"source": "#QmYak16ID87PBtuh"
-				},
+				"id": "SpecificationLibrary",
 				"url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
-				"version": "8.7.23.12-draft",
+				"version": "1.2.3-draft",
 				"status": "draft",
-				"date": "2023-11-24",
-				"approvalDate": "2023-12-01",
+				"date": "2023-06-30",
+				"approvalDate": "2023-06-30",
 				"relatedArtifact": [
 					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.2.3-draft",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
-						],
-						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|8.7.23.12-draft"
+						]
 					},
 					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.3-draft",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
-						],
-						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|8.7.23.12-draft"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
+						]
 					},
 					{
 						"extension": [
@@ -55,6 +48,18 @@
 									],
 									"text": "Emergent"
 								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "49649001"
+										}
+									],
+									"text": "Infection caused by Acanthamoeba (disorder)"
+								}
 							}
 						],
 						"type": "depends-on",
@@ -63,113 +68,70 @@
 				]
 			},
 			"request": {
-				"method": "POST",
-				"url": "Library/8",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary&version=8.7.23.12-draft"
+				"method": "PUT",
+				"url": "Library/SpecificationLibrary"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|8.7.23.12-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
 			"resource": {
 				"resourceType": "PlanDefinition",
-				"id": "9",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:05:07.820-05:00"
-				},
+				"id": "us-ecr-specification",
 				"url": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
-				"version": "8.7.23.12-draft",
+				"version": "1.2.3-draft",
 				"status": "draft",
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
 						"label": "RCTC Value Set Library of Trigger Codes",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.3-draft"
 					}
 				]
 			},
 			"request": {
-				"method": "POST",
-				"url": "PlanDefinition/9",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=8.7.23.12-draft"
+				"method": "PUT",
+				"url": "PlanDefinition/us-ecr-specification"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc",
 			"resource": {
 				"resourceType": "Library",
 				"id": "rctc",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:04:46.071-05:00",
-					"source": "#4gsJ1B9nJVpciH2z"
-				},
 				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
-				"version": "2022-10-19",
-				"status": "active",
+				"version": "1.2.3-draft",
+				"status": "draft",
 				"relatedArtifact": [
 					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.3-draft",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
-						],
-						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
+						]
 					}
 				]
 			},
 			"request": {
-				"method": "POST",
-				"url": "Library/rctc",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/rctc&version=2022-10-19"
+				"method": "PUT",
+				"url": "Library/rctc"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "dxtc",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:04:46.071-05:00",
-					"source": "#4gsJ1B9nJVpciH2z"
-				},
 				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-				"version": "2022-10-19",
-				"status": "active",
-				"useContext": [
-					{
-						"code": {
-							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
-							"code": "priority"
-						},
-						"valueCodeableConcept": {
-							"coding": [
-								{
-									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-									"code": "routine"
-								}
-							],
-							"text": "Routine"
-						}
-					}
-				],
+				"version": "1.2.3-draft",
+				"status": "draft",
 				"compose": {
 					"include": [
 						{
 							"valueSet": [
-								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526",
-								"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526"
+								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
 							]
 						}
 					]
@@ -196,21 +158,15 @@
 				}
 			},
 			"request": {
-				"method": "POST",
-				"url": "ValueSet/dxtc",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/ValueSet/dxtc&version=2022-10-19"
+				"method": "PUT",
+				"url": "ValueSet/dxtc"
 			}
 		},
 		{
-			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526",
+			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "2.16.840.1.113762.1.4.1146.6",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:04:46.071-05:00",
-					"source": "#4gsJ1B9nJVpciH2z"
-				},
 				"url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
 				"identifier": [
 					{
@@ -220,23 +176,6 @@
 				],
 				"version": "20210526",
 				"status": "active",
-				"useContext": [
-					{
-						"code": {
-							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
-							"code": "priority"
-						},
-						"valueCodeableConcept": {
-							"coding": [
-								{
-									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-									"code": "emergent"
-								}
-							],
-							"text": "Emergent"
-						}
-					}
-				],
 				"compose": {
 					"include": [
 						{
@@ -361,275 +300,8 @@
 				}
 			},
 			"request": {
-				"method": "POST",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.6",
-				"ifNoneExist": "url=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6&version=20210526"
-			}
-		},
-		{
-			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526",
-			"resource": {
-				"resourceType": "ValueSet",
-				"id": "123-this-will-be-routine",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:04:46.071-05:00",
-					"source": "#4gsJ1B9nJVpciH2z"
-				},
-				"url": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
-				"identifier": [
-					{
-						"system": "urn:ietf:rfc:3986",
-						"value": "urn:oid:123-this-will-be-routine"
-					}
-				],
-				"version": "20210526",
-				"status": "active",
-				"useContext": [
-					{
-						"code": {
-							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
-							"code": "priority"
-						},
-						"valueCodeableConcept": {
-							"coding": [
-								{
-									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-									"code": "routine"
-								}
-							],
-							"text": "Routine"
-						}
-					}
-				],
-				"compose": {
-					"include": [
-						{
-							"system": "http://snomed.info/sct",
-							"version": "Provisional_2022-04-25",
-							"concept": [
-								{
-									"code": "1086051000119107",
-									"display": "Cardiomyopathy due to diphtheria (disorder)"
-								},
-								{
-									"code": "1086061000119109",
-									"display": "Diphtheria radiculomyelitis (disorder)"
-								},
-								{
-									"code": "1086071000119103",
-									"display": "Diphtheria tubulointerstitial nephropathy (disorder)"
-								},
-								{
-									"code": "1090211000119102",
-									"display": "Pharyngeal diphtheria (disorder)"
-								},
-								{
-									"code": "129667001",
-									"display": "Diphtheritic peripheral neuritis (disorder)"
-								},
-								{
-									"code": "13596001",
-									"display": "Diphtheritic peritonitis (disorder)"
-								},
-								{
-									"code": "15682004",
-									"display": "Anterior nasal diphtheria (disorder)"
-								},
-								{
-									"code": "186347006",
-									"display": "Diphtheria of penis (disorder)"
-								},
-								{
-									"code": "18901009",
-									"display": "Cutaneous diphtheria (disorder)"
-								},
-								{
-									"code": "194945009",
-									"display": "Acute myocarditis - diphtheritic (disorder)"
-								},
-								{
-									"code": "230596007",
-									"display": "Diphtheritic neuropathy (disorder)"
-								},
-								{
-									"code": "240422004",
-									"display": "Tracheobronchial diphtheria (disorder)"
-								},
-								{
-									"code": "26117009",
-									"display": "Diphtheritic myocarditis (disorder)"
-								},
-								{
-									"code": "276197005",
-									"display": "Infection caused by Corynebacterium diphtheriae (disorder)"
-								},
-								{
-									"code": "3419005",
-									"display": "Faucial diphtheria (disorder)"
-								},
-								{
-									"code": "397428000",
-									"display": "Diphtheria (disorder)"
-								},
-								{
-									"code": "397430003",
-									"display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
-								},
-								{
-									"code": "48278001",
-									"display": "Diphtheritic cystitis (disorder)"
-								},
-								{
-									"code": "50215002",
-									"display": "Laryngeal diphtheria (disorder)"
-								},
-								{
-									"code": "715659006",
-									"display": "Diphtheria of respiratory system (disorder)"
-								},
-								{
-									"code": "75589004",
-									"display": "Nasopharyngeal diphtheria (disorder)"
-								},
-								{
-									"code": "7773002",
-									"display": "Conjunctival diphtheria (disorder)"
-								},
-								{
-									"code": "789005009",
-									"display": "Paralysis of uvula after diphtheria (disorder)"
-								}
-							]
-						}
-					]
-				},
-				"expansion": {
-					"timestamp": "2022-10-21T15:18:29-04:00",
-					"contains": [
-						{
-							"system": "http://snomed.info/sct",
-							"version": "Provisional_2022-04-25",
-							"code": "1086051000119107"
-						},
-						{
-							"system": "http://snomed.info/sct",
-							"version": "Provisional_2022-04-25",
-							"code": "1086061000119109"
-						},
-						{
-							"system": "http://snomed.info/sct",
-							"version": "Provisional_2022-04-25",
-							"code": "1086071000119103"
-						}
-					]
-				}
-			},
-			"request": {
-				"method": "POST",
-				"url": "ValueSet/123-this-will-be-routine",
-				"ifNoneExist": "url=http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine&version=20210526"
-			}
-		},
-		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc|8.7.23.12-draft",
-			"resource": {
-				"resourceType": "Library",
-				"id": "10",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:05:07.820-05:00"
-				},
-				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
-				"version": "8.7.23.12-draft",
-				"status": "draft",
-				"relatedArtifact": [
-					{
-						"extension": [
-							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
-								"valueBoolean": true
-							}
-						],
-						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|8.7.23.12-draft"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
-					}
-				]
-			},
-			"request": {
-				"method": "POST",
-				"url": "Library/10",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/rctc&version=8.7.23.12-draft"
-			}
-		},
-		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|8.7.23.12-draft",
-			"resource": {
-				"resourceType": "ValueSet",
-				"id": "11",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-11-24T18:05:07.820-05:00"
-				},
-				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-				"version": "8.7.23.12-draft",
-				"status": "draft",
-				"useContext": [
-					{
-						"code": {
-							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
-							"code": "priority"
-						},
-						"valueCodeableConcept": {
-							"coding": [
-								{
-									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-									"code": "routine"
-								}
-							],
-							"text": "Routine"
-						}
-					}
-				],
-				"compose": {
-					"include": [
-						{
-							"valueSet": [
-								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526",
-								"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526"
-							]
-						}
-					]
-				},
-				"expansion": {
-					"timestamp": "2022-10-21T15:18:29-04:00",
-					"contains": [
-						{
-							"system": "http://hl7.org/fhir/sid/icd-10-cm",
-							"version": "Provisional_2022-01-12",
-							"code": "T40.0X1A"
-						},
-						{
-							"system": "http://hl7.org/fhir/sid/icd-10-cm",
-							"version": "Provisional_2022-01-12",
-							"code": "T40.0X2A"
-						},
-						{
-							"system": "http://hl7.org/fhir/sid/icd-10-cm",
-							"version": "Provisional_2022-01-12",
-							"code": "T40.0X3A"
-						}
-					]
-				}
-			},
-			"request": {
-				"method": "POST",
-				"url": "ValueSet/11",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/ValueSet/dxtc&version=8.7.23.12-draft"
+				"method": "PUT",
+				"url": "ValueSet/2.16.840.1.113762.1.4.1146.6"
 			}
 		}
 	]

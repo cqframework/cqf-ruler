@@ -6,11 +6,11 @@
 		"lastUpdated": "2022-04-15T18:26:27.000+00:00",
 		"source": "#8zRKOv2AelmrnTVL"
 	},
-	"type": "transaction",
+	"type": "collection",
 	"timestamp": "2022-04-05T10:06:42.482-04:00",
 	"entry": [
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
 			"resource": {
 				"resourceType": "Library",
 				"id": "SpecificationLibrary",
@@ -25,18 +25,7 @@
 					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Library</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Library \"SpecificationLibrary\" Version \"1.0.0\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-us-ph-specification-library.html\">US Public Health Specification Library</a></p></div><p><b>url</b>: <code>http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary</code></p><p><b>version</b>: 1.0.0</p><p><b>name</b>: SpecificationLibrary</p><p><b>title</b>: Specification Library</p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>type</b>: Asset Collection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-library-type.html\">LibraryType</a>#asset-collection)</span></p><p><b>publisher</b>: eCR</p><p><b>description</b>: Defines the asset-collection library containing the US Public Health specification assets.</p></div>"
 				},
 				"url": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
-				"version": "1.0.0.23",
-				"approvalDate": "1990-01-01",
-				"extension": [
-					{
-						"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel",
-						"valueString": "Sample release label"
-					},
-					{
-						"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription",
-						"valueMarkdown": "Sample release description"
-					}
-				],
+				"version": "1.0.0",
 				"name": "SpecificationLibrary",
 				"title": "Specification Library",
 				"status": "active",
@@ -83,578 +72,26 @@
 				],
 				"relatedArtifact": [
 					{
-						"extension": [
+						"type": "composed-of",
+						"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
-						],
-						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example|0.1"
+						]
 					},
 					{
-						"extension": [
+						"type": "composed-of",
+						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
-						],
-						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2019-06-17"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example|0.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2019-06-17"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/ostc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc|1.0.0"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-											"code": "emergent"
-										}
-									],
-									"text": "Emergent"
-								}
-							},
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "49649001"
-										}
-									],
-									"text": "Infection caused by Acanthamoeba (disorder)"
-								}
-							},
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1506|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1505|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1508|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1507|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.528|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.408|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.409|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1469|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1468|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.480|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.481|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.761|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1223|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.762|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1182|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1181|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1184|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1601|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1600|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1603|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1602|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1082|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1439|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1436|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1435|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1446|1.0.0"
-					},
-					{
-						"extension": [
-							{
-								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
-								"valueCodeableConcept": {
-									"coding": [
-										{
-											"system": "http://snomed.info/sct",
-											"code": "767146004"
-										}
-									]
-								}
-							}
-						],
-						"type": "depends-on",
-						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|1.0.0"
+						]
 					}
 				]
-			},
-			"request": {
-				"method": "PUT",
-				"url": "Library/SpecificationLibrary"
 			}
 		},
 		{
@@ -718,11 +155,7 @@
 					{
 						"type": "depends-on",
 						"label": "RCTC Value Set Library of Trigger Codes",
-						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2019-06-17"
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
+						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2022-01-01"
 					}
 				],
 				"action": [
@@ -857,7 +290,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc"
 											}
 										]
 									},
@@ -873,7 +306,7 @@
 										"codeFilter": [
 											{
 												"path": "value",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc"
 											}
 										]
 									},
@@ -889,7 +322,7 @@
 										"codeFilter": [
 											{
 												"path": "medication",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc"
 											}
 										]
 									}
@@ -1008,7 +441,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc"
 											}
 										]
 									},
@@ -1024,7 +457,7 @@
 										"codeFilter": [
 											{
 												"path": "reasonCode",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc"
 											}
 										]
 									},
@@ -1040,7 +473,7 @@
 										"codeFilter": [
 											{
 												"path": "vaccineCode",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc"
 											}
 										]
 									},
@@ -1056,7 +489,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc"
 											}
 										]
 									},
@@ -1072,7 +505,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc"
 											}
 										]
 									},
@@ -1088,7 +521,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/lotc"
 											}
 										]
 									},
@@ -1104,7 +537,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/pctc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-pctc-example"
 											}
 										]
 									},
@@ -1120,7 +553,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/pctc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-pctc-example"
 											}
 										]
 									},
@@ -1136,7 +569,7 @@
 										"codeFilter": [
 											{
 												"path": "medication",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc"
 											}
 										]
 									},
@@ -1152,7 +585,7 @@
 										"codeFilter": [
 											{
 												"path": "medication",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc"
 											}
 										]
 									},
@@ -1168,7 +601,7 @@
 										"codeFilter": [
 											{
 												"path": "medication",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc"
 											}
 										]
 									},
@@ -1184,7 +617,7 @@
 										"codeFilter": [
 											{
 												"path": "value",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/ostc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/ostc"
 											}
 										]
 									},
@@ -1200,7 +633,7 @@
 										"codeFilter": [
 											{
 												"path": "code",
-												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/ostc|1.0.0"
+												"valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/ostc"
 											}
 										]
 									}
@@ -1676,14 +1109,10 @@
 						]
 					}
 				]
-			},
-			"request": {
-				"method": "PUT",
-				"url": "PlanDefinition/plandefinition-ersd-instance-example"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|2019-06-17",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
 			"resource": {
 				"resourceType": "Library",
 				"id": "library-rctc-example",
@@ -1697,7 +1126,7 @@
 				},
 				"text": {
 					"status": "generated",
-					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Library</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Library \"library-rctc-example\" Version \"2\" Updated \"2021-08-20 01:12:21-0600\" </p><p style=\"margin-bottom: 0px\">Information Source: #zJ5jHSo1bnD4qTAW!</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-us-ph-triggering-valueset-library.html\">US Public Health Triggering ValueSet Library</a></p></div><p><b>url</b>: <code>http://hl7.org/fhir/us/ecr/Library/library-rctc-example</code></p><p><b>identifier</b>: id: urn:oid:2.16.840.1.114222.4.11.7508</p><p><b>version</b>: 2019-06-17</p><p><b>name</b>: Reportable_Condition_Trigger_Codes</p><p><b>title</b>: Reportable Condition Trigger Codes (RCTC) Example Library</p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>type</b>: Asset Collection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-library-type.html\">LibraryType</a>#asset-collection)</span></p><p><b>publisher</b>: {site.data.fhir.ig.publisher}</p><p><b>description</b>: This release includes code updates for the existing conditions and adds codes for Parkinson’s disease and 13 enteric conditions. Medication codes have also been added to this version.</p><p><b>jurisdiction</b>: United States of America <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#US)</span></p><p><b>purpose</b>: Triggers for initiating decision support for electronic case reports</p><p><b>effectivePeriod</b>: 2019-11-01 --&gt; (ongoing)</p></div>"
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Library</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Library \"library-rctc-example\" Version \"2\" Updated \"2021-08-20 01:12:21-0600\" </p><p style=\"margin-bottom: 0px\">Information Source: #zJ5jHSo1bnD4qTAW!</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-us-ph-triggering-valueset-library.html\">US Public Health Triggering ValueSet Library</a></p></div><p><b>url</b>: <code>http://hl7.org/fhir/us/ecr/Library/library-rctc-example</code></p><p><b>identifier</b>: id: urn:oid:2.16.840.1.114222.4.11.7508</p><p><b>version</b>: 2019-06-17</p><p><b>name</b>: Reportable_Condition_Trigger_Codes</p><p><b>title</b>: Reportable Condition Trigger Codes (RCTC) Example Library</p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>type</b>: Asset Collection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-library-type.html\">LibraryType</a>#asset-collection)</span></p><p><b>publisher</b>: {site.data.fhir.ig.publisher}</p><p><b>description</b>: This release includes code updates for the existing conditions and adds codes for Parkinsonâ€™s disease and 13 enteric conditions. Medication codes have also been added to this version.</p><p><b>jurisdiction</b>: United States of America <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#US)</span></p><p><b>purpose</b>: Triggers for initiating decision support for electronic case reports</p><p><b>effectivePeriod</b>: 2019-11-01 --&gt; (ongoing)</p></div>"
 				},
 				"url": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
 				"identifier": [
@@ -1720,7 +1149,7 @@
 					]
 				},
 				"publisher": "{site.data.fhir.ig.publisher}",
-				"description": "This release includes code updates for the existing conditions and adds codes for Parkinson’s disease and 13 enteric conditions. Medication codes have also been added to this version.",
+				"description": "This release includes code updates for the existing conditions and adds codes for Parkinsonâ€™s disease and 13 enteric conditions. Medication codes have also been added to this version.",
 				"useContext": [
 					{
 						"code": {
@@ -1774,77 +1203,69 @@
 				"relatedArtifact": [
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/ostc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/ostc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lotc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc|1.0.0",
-						"extension": [
+						"resource": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc",
+						"extension":[
 							{
-								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
 								"valueBoolean": true
 							}
 						]
-					},
-					{
-						"type": "composed-of",
-						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1"
 					}
 				]
-			},
-			"request": {
-				"method": "PUT",
-				"url": "Library/library-rctc-example"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "dxtc",
@@ -2279,14 +1700,10 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/dxtc"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/lotc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/lotc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "lotc",
@@ -2531,14 +1948,10 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/lotc"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/lrtc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "lrtc",
@@ -3363,14 +2776,10 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/lrtc"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/mrtc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "mrtc",
@@ -3675,14 +3084,10 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/mrtc"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/ostc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/ostc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "ostc",
@@ -4207,14 +3612,10 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/ostc"
 			}
 		},
 		{
-			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc|1.0.0",
+			"fullUrl": "http://hl7.org/fhir/us/ecr/ValueSet/sdtc",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "sdtc",
@@ -4359,10 +3760,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/sdtc"
 			}
 		},
 		{
@@ -4485,10 +3882,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1506"
 			}
 		},
 		{
@@ -4683,10 +4076,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1505"
 			}
 		},
 		{
@@ -4872,10 +4261,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1508"
 			}
 		},
 		{
@@ -5160,10 +4545,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1507"
 			}
 		},
 		{
@@ -5475,10 +4856,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.6"
 			}
 		},
 		{
@@ -5637,10 +5014,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.480"
 			}
 		},
 		{
@@ -5853,10 +5226,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.481"
 			}
 		},
 		{
@@ -5979,10 +5348,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.761"
 			}
 		},
 		{
@@ -6105,10 +5470,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1223"
 			}
 		},
 		{
@@ -6249,10 +5610,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.762"
 			}
 		},
 		{
@@ -6492,10 +5849,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1182"
 			}
 		},
 		{
@@ -6843,10 +6196,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1181"
 			}
 		},
 		{
@@ -7689,10 +7038,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1184"
 			}
 		},
 		{
@@ -7887,10 +7232,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1601"
 			}
 		},
 		{
@@ -8193,10 +7534,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1600"
 			}
 		},
 		{
@@ -8319,10 +7656,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1603"
 			}
 		},
 		{
@@ -8445,10 +7778,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1602"
 			}
 		},
 		{
@@ -8571,10 +7900,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1082"
 			}
 		},
 		{
@@ -8805,10 +8130,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.528"
 			}
 		},
 		{
@@ -9117,10 +8438,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.408"
 			}
 		},
 		{
@@ -9495,10 +8812,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.409"
 			}
 		},
 		{
@@ -9729,10 +9042,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1469"
 			}
 		},
 		{
@@ -9864,10 +9173,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1468"
 			}
 		},
 		{
@@ -9990,10 +9295,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1439"
 			}
 		},
 		{
@@ -10107,10 +9408,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1436"
 			}
 		},
 		{
@@ -10224,10 +9521,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1435"
 			}
 		},
 		{
@@ -10341,10 +9634,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1446"
 			}
 		},
 		{
@@ -10458,10 +9747,6 @@
 						}
 					]
 				}
-			},
-			"request": {
-				"method": "PUT",
-				"url": "ValueSet/2.16.840.1.113762.1.4.1146.1438"
 			}
 		}
 	]

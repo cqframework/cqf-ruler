@@ -81,7 +81,15 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
-	public static final String contextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
+	public static final String valueSetPriorityCode = "priority";
+	public static final String valueSetConditionCode = "focus";
+	public final List<String> preservedExtensionUrls = List.of(
+			valueSetPriorityUrl,
+			valueSetConditionUrl
+		);
+	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
+	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
@@ -526,7 +534,8 @@ public class KnowledgeArtifactProcessor {
 		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
-	  	List<RelatedArtifact> originalDependenciesWithPriorityExtension = rootArtifactOriginalDependencies.stream().filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null).collect(Collectors.toList());
+		// Get list of extensions which need to be preserved
+		List<RelatedArtifact> originalDependenciesWithExtensions = rootArtifactOriginalDependencies.stream().filter(dep -> dep.getExtension() != null && dep.getExtension().size() > 0).collect(Collectors.toList());
 		// once iteration is complete, delete all depends-on RAs in the root artifact
 		rootArtifactAdapter.getRelatedArtifact().removeIf(ra -> ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON);
 
@@ -584,12 +593,15 @@ public class KnowledgeArtifactProcessor {
 		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
 			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
 				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
-				// add priority Extension if found
-				originalDependenciesWithPriorityExtension.stream()
+				// preserve Extensions if found
+				originalDependenciesWithExtensions
+				.stream()
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
-					.map(originalDep -> originalDep.getExtensionByUrl(valueSetPriorityUrl))
 					.findFirst()
-					.ifPresent(priorityExt -> resolvedRelatedArtifact.addExtension(priorityExt));
+					.ifPresent(dep -> {
+						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
+						originalDependenciesWithExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
+					});
 			}
 		}
 		// update ArtifactComments referencing the old Canonical Reference
@@ -597,6 +609,13 @@ public class KnowledgeArtifactProcessor {
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
 
 		return transactionBundle;
+	}
+	private List<RelatedArtifact> getRelatedArtifactsWithPreservedExtensions(List<RelatedArtifact> deps) {
+		return deps.stream()
+			.filter(ra -> preservedExtensionUrls
+				.stream().anyMatch(url -> ra.getExtension()
+					.stream().anyMatch(ext -> ext.getUrl().equalsIgnoreCase(url))))
+			.collect(Collectors.toList());
 	}
 	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
 		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
@@ -626,7 +645,7 @@ public class KnowledgeArtifactProcessor {
 			});
 			return returnEntries;
 	}
-	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) {
+	private void updateReleaseLabel(MetadataResource artifact,String releaseLabel) throws IllegalArgumentException {
 		if (releaseLabel != null) {
 			Extension releaseLabelExtension = artifact.getExtensionByUrl(releaseLabel);
 			if (releaseLabelExtension == null) {
@@ -781,7 +800,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException {
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
 		if (contentEndpoint != null || terminologyEndpoint != null) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
@@ -811,10 +830,15 @@ public class KnowledgeArtifactProcessor {
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		handlePriority(resource, packagedBundle.getEntry());
+		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry());
 		return packagedBundle;
 	}
-
+/**
+ * $crmi.package allows for a bundle to be paged
+ * @param count the maximum number of resources to be returned
+ * @param offset the number of resources to skip beginning from the start of the bundle (starts from 1)
+ * @param bundle the bundle to page
+ */
 	private void pageBundleBasedOnCountAndOffset(Integer count, Integer offset, Bundle bundle) {
 		if (offset != null) {
 			List<BundleEntryComponent> entries = bundle.getEntry();
@@ -859,44 +883,103 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
-	
-	private void handlePriority(MetadataResource resource, List<BundleEntryComponent> bundleEntries) {
-		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-		List<ValueSet> valueSets = bundleEntries.stream()
-			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.ValueSet))
-			.map(entry -> (ValueSet) entry.getResource())
-			.collect(Collectors.toList());
-		List<RelatedArtifact> relatedArtifactsWithPriorityExtension = adapter.getDependencies().stream()
-			.filter(ra -> ra.getExtensionByUrl(valueSetPriorityUrl) != null)
-			.collect(Collectors.toList());
-		valueSets.stream().forEach(valueSet -> {
-			UsageContext priority = valueSet.getUseContext().stream()
-				.filter(useContext -> useContext.getCode().getSystem().equals(contextTypeUrl) && useContext.getCode().getCode().equals("priority"))
-				.findFirst().orElseGet(()-> {
-					// create the priority UseContext if it doesn't exist
-					Coding contextType = new Coding(contextTypeUrl, "priority", null);
-					UsageContext newPriority = new UsageContext(contextType, null);
-					// add it to the ValueSet before returning
-					valueSet.getUseContext().add(newPriority);
-					return newPriority;
-				});
-			relatedArtifactsWithPriorityExtension.stream()
-				.filter(relatedArtifactWithPriorityExtension -> valueSet.getUrl().equals(Canonicals.getUrl(relatedArtifactWithPriorityExtension.getResource())) && valueSet.getVersion().equals(Canonicals.getVersion(relatedArtifactWithPriorityExtension.getResource())))
-				.findFirst()
-				.ifPresentOrElse(
-					// set priority to author-assigned value if possible
-					relatedArtifactWithPriorityExtension -> {
-						priority.setValue(relatedArtifactWithPriorityExtension.getExtensionByUrl(valueSetPriorityUrl).getValue());
-					},
-					// otherwise set it to routine 
-					() -> {
-						CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
-						priority.setValue(routine);
+	/**
+	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $crmi.package time
+	 * @param manifest the resource containing all RelatedArtifact references
+	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
+	 */
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException, IllegalArgumentException {
+		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
+		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
+		bundleEntries.stream()
+			.forEach(entry -> {
+				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
+					ValueSet valueSet = (ValueSet) entry.getResource();
+					// remove any existing Priority and Conditions
+					List<UsageContext> usageContexts = removeExistingReferenceExtensionData(valueSet.getUseContext());
+					valueSet.setUseContext(usageContexts);
+					// List<UsageContext> usageContexts = valueSet.getUseContext();
+					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
+					// If leaf valueset
+					if (!valueSet.hasCompose()
+					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
+						// If Condition extension is present
+						maybeVSRelatedArtifact
+							.map(ra -> ra.getExtension())
+							.ifPresentOrElse(
+								// add Conditions
+								exts -> {
+									exts.stream()
+										.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
+										.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
+								}, 
+								// else throw error
+								() -> {
+									throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
+								});		
 					}
-				);
-		});
+					// update Priority
+					UsageContext priority = getOrCreateUsageContext(usageContexts, usPhContextTypeUrl, valueSetPriorityCode);
+					maybeVSRelatedArtifact
+						.map(ra -> ra.getExtensionByUrl(valueSetPriorityUrl))
+						.ifPresentOrElse(
+							// set value as per extension
+							ext -> priority.setValue(ext.getValue()),
+							// set to "routine" if missing
+							() -> {
+								CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
+								priority.setValue(routine);
+						});
+				}
+			});
+	}
+	/**
+	 * Removes any existing UsageContexts corresponding the the VSM specific extensions
+	 * @param usageContexts the list of usage contexts to modify
+	 */
+	private List<UsageContext> removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
+		List<String> useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
+		return usageContexts.stream()
+		// remove any useContexts which need to be replaced
+			.filter(useContext -> !useContextCodesToReplace.stream()
+				.anyMatch(code -> useContext.getCode().getCode().equals(code)))
+			.collect(Collectors.toList());
 	}
 
+	private void tryAddCondition(List<UsageContext> usageContexts, CodeableConcept condition) {
+		boolean focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
+			u.getCode().getSystem().equals(contextTypeUrl) 
+			&& u.getCode().getCode().equals(valueSetConditionCode) 
+			&& u.getValueCodeableConcept().hasCoding(condition.getCoding().get(0).getSystem(), condition.getCoding().get(0).getCode())
+		);
+		if (!focusAlreadyExists) {
+			UsageContext newFocus = new UsageContext(new Coding(contextTypeUrl,valueSetConditionCode,null),condition);
+			newFocus.setValue(condition);
+			usageContexts.add(newFocus);
+		}
+	}
+	/**
+	 * 
+	 * Either finds a usageContext with the same system and code or creates an empty one
+	 * and appends it
+	 * 
+	 * @param usageContexts the list of usageContexts to search and/or append to
+	 * @param system the usageContext.code.system to find / create
+	 * @param code the usage.code.code to find / create
+	 * @return the found / created usageContext
+	 */
+	private UsageContext getOrCreateUsageContext(List<UsageContext> usageContexts, String system, String code) {
+		return usageContexts.stream()
+			.filter(useContext -> useContext.getCode().getSystem().equals(system) && useContext.getCode().getCode().equals(code))
+			.findFirst().orElseGet(()-> {
+				// create the UseContext if it doesn't exist
+				Coding c = new Coding(system, code, null);
+				UsageContext n = new UsageContext(c, null);
+				// add it to the ValueSet before returning
+				usageContexts.add(n);
+				return n;
+			});
+	}
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
