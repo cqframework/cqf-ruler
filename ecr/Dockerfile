@@ -1,3 +1,3 @@
-FROM localhost:5000/alphora/cqf-ruler:cqf-ruler-vsm-base
+FROM contentgroup/cqf-ruler:latest
 
 COPY ./target/cqf-ruler-*.jar plugin
