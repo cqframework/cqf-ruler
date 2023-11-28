@@ -3,6 +3,11 @@ on: pull_request
 jobs:
   maven:
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
@@ -29,9 +34,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          tags: alphora/cqf-ruler:cqf-ruler-vsm-base
-          cache-to: type=inline
-          outputs: type=docker,dest=/tmp/myimage.tar
+          tags: localhost:5000/alphora/cqf-ruler:cqf-ruler-vsm-base
+          platforms: linux/amd64,linux/arm64
+          push: true
       - name: Build and push with transform plugin 
         uses: docker/build-push-action@v4
         with:
@@ -40,4 +45,3 @@ jobs:
           tags: alphora/cqf-ruler:cqf-ruler-vsm-test
           platforms: linux/amd64,linux/arm64
           build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
-          cache-from: type=registry,ref=alphora/cqf-ruler:cqf-ruler-vsm-base
