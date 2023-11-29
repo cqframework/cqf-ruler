@@ -43,6 +43,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -1388,6 +1389,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.map(location -> new IdType(location))
 			.map(id -> id.getIdPart())
 			.findAny();
+		assertTrue(maybeLib.isPresent());
+		// allow cache to pick up changes
 		try {
 			Thread.sleep(61000);
 		} catch (Exception e) {
@@ -1403,6 +1406,35 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
-		assertTrue(returnedParams.getParameter().size() > 0);
+		assertTrue(returnedParams.getParameter().size() == 11);
+		List<ParametersParameterComponent> parameters = returnedParams.getParameter();
+		List<String> libraryReplacedProps = List.of(
+			"Library.id",
+			"Library.version",
+			"Library.status",
+			"Library.relatedArtifact[0].resource",
+			"Library.relatedArtifact[1].resource",
+			"Library.relatedArtifact[5].resource"
+		);
+		for (int i=0; i<libraryReplacedProps.size(); i++) {
+			assertTrue(parameters.get(i).getName().equals("operation"));
+			assertTrue(((StringType)parameters.get(i).getPart().get(0).getValue()).getValue().equals("replace"));
+			assertTrue(((StringType)parameters.get(i).getPart().get(1).getValue()).getValue().equals(libraryReplacedProps.get(i)));
+		}
+		List<String> libraryNestedChanges = List.of(
+			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc"
+		);
+		libraryNestedChanges.stream()
+			.forEach(nestedChangeUrl -> {
+				ParametersParameterComponent nestedChange = returnedParams.getParameter(nestedChangeUrl);
+				assertNotNull(nestedChange);
+				if (nestedChange.hasResource()) {
+					assertTrue(nestedChange.getResource() instanceof Parameters);
+				}
+			});
 	}
 }

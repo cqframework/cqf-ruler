@@ -95,6 +95,10 @@
 						],
 						"type": "depends-on",
 						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526"
+					},
+					{
+						"type": "depends-on",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19"
 					}
 				]
 			},

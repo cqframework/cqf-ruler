@@ -1184,12 +1184,23 @@ public class KnowledgeArtifactProcessor {
 					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal);
 					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal);
 					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache)
-						.ifPresent(diffToAppend -> {
+						.ifPresentOrElse(diffToAppend -> {
 							ParametersParameterComponent component = baseDiff.addParameter();
 							component.setName(Canonicals.getUrl(sourceCanonical));
 							component.setResource(diffToAppend);
 							// check for changes in the children of those as well
 							checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch, cache);
+						},
+						() -> {
+							if (source != null) {
+								ParametersParameterComponent component = baseDiff.addParameter();
+								component.setName(Canonicals.getUrl(sourceCanonical));
+								component.setValue(new StringType("Target missing"));
+							} else if (target != null) { 
+								ParametersParameterComponent component = baseDiff.addParameter();
+								component.setName(Canonicals.getUrl(targetCanonical));
+								component.setValue(new StringType("Source missing"));
+							}
 						});
 				}
 			}
