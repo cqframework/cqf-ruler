@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -33,6 +34,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
@@ -94,10 +96,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		Library baseLib = getClient()
-		.read()
-		.resource(Library.class)
-		.withId(specificationLibReference.split("/")[1])
-		.execute();
+			.read()
+			.resource(Library.class)
+			.withId(specificationLibReference.split("/")[1])
+			.execute();
 		// Root Artifact must have approval date, releaseLabel and releaseDescription for this test
 		assertTrue(baseLib.hasApprovalDate());
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
@@ -125,9 +127,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
-		for (BundleEntryComponent entry : returnedBundle.getEntry()) {
-			String ref = entry.getResponse().getLocation();
-			MetadataResource resource = getClient().fetchResourceFromUrl(MetadataResource.class,ref);
+		forEachMetadataResource(returnedBundle.getEntry(), resource -> {
 			List<RelatedArtifact> relatedArtifacts2 = new KnowledgeArtifactAdapter<MetadataResource>(resource).getRelatedArtifact();
 			if (relatedArtifacts2 != null && relatedArtifacts2.size() > 0) {
 				for (RelatedArtifact relatedArtifact : relatedArtifacts2) {
@@ -136,7 +136,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 					}
 				}
 			}
-		}
+		});
 	}
 	@Test
 	void draftOperation_version_conflict_test() {
@@ -451,8 +451,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-		returnResource.getEntry()
-			.stream()
+		forEachMetadataResource(returnResource.getEntry(), resource -> {
+			assertNotNull(resource);
+			if(!resource.getClass().getSimpleName().equals("ValueSet")){
+				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
+				assertTrue(adapter.getEffectivePeriod().hasStart());
+				Date start = adapter.getEffectivePeriod().getStart();
+				Calendar calendar = new GregorianCalendar();
+				calendar.setTime(start);
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH) + 1;
+				int day = calendar.get(Calendar.DAY_OF_MONTH);
+				String startString = year + "-" + month + "-" + day;
+				assertTrue(startString.equals(effectivePeriodToPropagate));
+			}
+		});
+	}
+	private void forEachMetadataResource(List<BundleEntryComponent> entries, Consumer<MetadataResource> callback) {
+		entries.stream()
 			.map(entry -> entry.getResponse().getLocation())
 			.map(location -> {
 				switch (location.split("/")[0]) {
@@ -470,23 +486,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 						return null;
 				}
 			})
-			.forEach(resource -> {
-				assertNotNull(resource);
-				if(!resource.getClass().getSimpleName().equals("ValueSet")){
-					KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
-					assertTrue(adapter.getEffectivePeriod().hasStart());
-					Date start = adapter.getEffectivePeriod().getStart();
-					Calendar calendar = new GregorianCalendar();
-					calendar.setTime(start);
-					int year = calendar.get(Calendar.YEAR);
-					int month = calendar.get(Calendar.MONTH) + 1;
-					int day = calendar.get(Calendar.DAY_OF_MONTH);
-					String startString = year + "-" + month + "-" + day;
-					assertTrue(startString.equals(effectivePeriodToPropagate));
-				}
-			});
+			.forEach(callback);
 	}
-
 	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
@@ -1372,11 +1373,29 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void artifactDiffOperation() {
-		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadTransaction("ersd-small-active-bundle.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters params = parameters(part("version", "1.2.3.4") );
+		Bundle returnedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$crmi.draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<String> maybeLib = returnedBundle.getEntry().stream()
+			.filter(entry -> entry.getResponse().getLocation().contains("Library"))
+			.map(entry -> entry.getResponse().getLocation())
+			.map(location -> new IdType(location))
+			.map(id -> id.getIdPart())
+			.findAny();
+		try {
+			Thread.sleep(61000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		Parameters diffParams = parameters(
 			part("source", specificationLibReference),
-			part("target", "Library/8")
+			part("target", "Library/"+maybeLib.get())
 			 );
 		Parameters returnedParams = getClient().operation()
 			.onServer()
