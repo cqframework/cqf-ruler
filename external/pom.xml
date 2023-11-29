@@ -68,28 +68,15 @@
 			<version>${hapi_version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.fhir</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr</artifactId>
+			<version>${clinical-reasoning.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.library</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.activitydefinition</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.plandefinition</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaire</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.questionnaireresponse</artifactId>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-jackson</artifactId>
+			<version>${clinical-reasoning.version}</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.simplejavamail</groupId>

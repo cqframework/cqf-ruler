@@ -90,6 +90,7 @@
 		<cqf-tooling.version>2.4.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
+		<cql.version>2.10.0</cql.version>
 		<clinical-reasoning.version>3.0.0-PRE12</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
@@ -274,49 +275,49 @@
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>cql</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>cql-formatter</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>cql-to-elm</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>elm</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>elm-fhir</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>model</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>qdm</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
 				<artifactId>quick</artifactId>
-				<version>${cqframework.version}</version>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
