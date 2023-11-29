@@ -90,13 +90,11 @@
 		<cqf-tooling.version>2.4.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cqframework.version>2.10.0</cqframework.version>
-		<cql-engine.version>2.10.0</cql-engine.version>
-		<cql-evaluator.version>3.0.0-PRE2</cql-evaluator.version>
+		<clinical-reasoning.version>3.0.0-PRE12</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.6.1</hapi_version>
+		<hapi_version>6.10.0</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -350,18 +348,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>engine</artifactId>
-				<version>${cql-engine.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>engine-fhir</artifactId>
-				<version>${cql-engine.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.activitydefinition</artifactId>
 				<version>${cql-evaluator.version}</version>
@@ -400,44 +386,14 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.library</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cr</artifactId>
+				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure-hapi</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.plandefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaire</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaireresponse</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.spring</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.jackson-deps</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-jackson</artifactId>
+				<version>${clinical-reasoning.version}</version>
 				<type>pom</type>
 			</dependency>
 
