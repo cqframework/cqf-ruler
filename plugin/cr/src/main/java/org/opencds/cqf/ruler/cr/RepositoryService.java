@@ -280,7 +280,9 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$crmi.artifact-diff", value = "Diff two artifacts")
 	public Parameters crmiArtifactDiff(RequestDetails requestDetails, 
 		@OperationParam(name = "source") String source,
-		@OperationParam(name = "target") String target
+		@OperationParam(name = "target") String target,
+		@OperationParam(name = "expandExecutable", typeName = "Boolean") IPrimitiveType<Boolean> expandExecutable,
+		@OperationParam(name = "expandComputable", typeName = "Boolean") IPrimitiveType<Boolean> expandComputable
 		// @OperationParam(name = "checkDependencies") boolean checkDependencies
 	) throws UnprocessableEntityException, ResourceNotFoundException{
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
@@ -295,7 +297,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (theSourceResource.getClass() != theTargetResource.getClass()) {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
-		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,expandComputable == null ? false : expandComputable.getValue(), expandExecutable == null ? false : expandExecutable.getValue());
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
