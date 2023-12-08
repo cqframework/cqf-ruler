@@ -25,6 +25,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -281,8 +283,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public Parameters crmiArtifactDiff(RequestDetails requestDetails, 
 		@OperationParam(name = "source") String source,
 		@OperationParam(name = "target") String target,
-		@OperationParam(name = "expandExecutable", typeName = "Boolean") IPrimitiveType<Boolean> expandExecutable,
-		@OperationParam(name = "expandComputable", typeName = "Boolean") IPrimitiveType<Boolean> expandComputable
+		@OperationParam(name = "compareExecutable", typeName = "Boolean") IPrimitiveType<Boolean> compareExecutable,
+		@OperationParam(name = "compareComputable", typeName = "Boolean") IPrimitiveType<Boolean> compareComputable
 		// @OperationParam(name = "checkDependencies") boolean checkDependencies
 	) throws UnprocessableEntityException, ResourceNotFoundException{
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
@@ -297,7 +299,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		if (theSourceResource.getClass() != theTargetResource.getClass()) {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
-		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,expandComputable == null ? false : expandComputable.getValue(), expandExecutable == null ? false : expandExecutable.getValue());
+		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(),dao);
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
