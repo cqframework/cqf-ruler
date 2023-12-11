@@ -52,6 +52,8 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
+import org.hl7.fhir.r4.model.ValueSet.ValueSetComposeComponent;
+import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
@@ -1146,13 +1148,7 @@ public class KnowledgeArtifactProcessor {
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
 		patch.addIgnorePath("*.meta");
-		// --------- ONLY FOR TESTING ----------------
-		Library s = (Library) theSourceLibrary;
-		s.getRelatedArtifact().remove(5);
-		Library t = (Library) theTargetLibrary;
-		t.getRelatedArtifact().remove(3);
-		// --------------------------------------------
-		Parameters libraryDiff = advancedLibraryOrPlanDefinitionDiff(theSourceLibrary,theTargetLibrary,patch);
+		Parameters libraryDiff = handleRelatedArtifactArrayElementsDiff(theSourceLibrary,theTargetLibrary,patch);
 
 		// then send check for references and add those to the base Parameters object
 		diffCache cache = new diffCache();
@@ -1160,85 +1156,35 @@ public class KnowledgeArtifactProcessor {
 		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch, cache, theContext, compareComputable, compareExecutable,dao);
 		return libraryDiff;
 	}
-	private Parameters advancedLibraryOrPlanDefinitionDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
-		KnowledgeArtifactAdapter<MetadataResource> artifact = new KnowledgeArtifactAdapter<MetadataResource>(theSourceLibrary);
-		KnowledgeArtifactAdapter<MetadataResource> artifact2 = new KnowledgeArtifactAdapter<MetadataResource>(theTargetLibrary);
-		KnowledgeArtifactAdapter<MetadataResource> s_update = new KnowledgeArtifactAdapter<MetadataResource>(artifact.copy());
-		KnowledgeArtifactAdapter<MetadataResource> t_update = new KnowledgeArtifactAdapter<MetadataResource>( artifact2.copy());
-		KnowledgeArtifactAdapter<MetadataResource> s_insert = new KnowledgeArtifactAdapter<MetadataResource>( artifact2.copy());
-		KnowledgeArtifactAdapter<MetadataResource> t_insert = new KnowledgeArtifactAdapter<MetadataResource>( artifact2.copy());
-		KnowledgeArtifactAdapter<MetadataResource> s_delete = new KnowledgeArtifactAdapter<MetadataResource>( artifact2.copy());
-		KnowledgeArtifactAdapter<MetadataResource> t_delete = new KnowledgeArtifactAdapter<MetadataResource>( artifact2.copy());
-		List<List<RelatedArtifact>> fixed = extractAdditionsAndDeletions(s_update.getRelatedArtifact(), t_update.getRelatedArtifact());
-		// first match the ones which are just updated
-		s_update.setRelatedArtifact(fixed.get(0));
-		t_update.setRelatedArtifact(fixed.get(1));
-		Parameters libraryOrPlanDefDiff = (Parameters) patch.diff(s_update.copy(),t_update.copy());
-		
-		// then get all the delete entries
-		t_delete.setRelatedArtifact(new ArrayList<RelatedArtifact>());
-		s_delete.setRelatedArtifact(fixed.get(3));
-		Parameters library_deletes = (Parameters) patch.diff(s_delete.copy(),t_delete.copy());
-		fixDeletePathIndexes(library_deletes.getParameter(), s_update.getRelatedArtifact().size());
-		libraryOrPlanDefDiff.getParameter().addAll(library_deletes.getParameter());
-
-		//then get all the insert entries
-		s_insert.setRelatedArtifact(new ArrayList<RelatedArtifact>());
-		t_insert.setRelatedArtifact(fixed.get(2));
-		Parameters library_inserts = (Parameters) patch.diff(s_insert.copy(), t_insert.copy());
-		fixInsertPathIndexes(library_inserts.getParameter(), s_update.getRelatedArtifact().size() + s_delete.getRelatedArtifact().size());
-		libraryOrPlanDefDiff.getParameter().addAll(library_inserts.getParameter());
-		
-		return libraryOrPlanDefDiff;
+	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
+		KnowledgeArtifactAdapter<MetadataResource> updateSource = new KnowledgeArtifactAdapter<MetadataResource>(theSourceLibrary.copy());
+		KnowledgeArtifactAdapter<MetadataResource> updateTarget = new KnowledgeArtifactAdapter<MetadataResource>(theTargetLibrary.copy());
+		// need a way to avoid messing up the indexes here
+		additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
+		updateSource.setRelatedArtifact(processedRelatedArtifacts.getSourceMatches());
+		updateTarget.setRelatedArtifact(processedRelatedArtifacts.getTargetMatches());
+		Parameters updateOperations = (Parameters) patch.diff(updateSource.copy(),updateTarget.copy());
+		processedRelatedArtifacts.appendInsertOperations(updateOperations, patch, updateSource.getRelatedArtifact().size());
+		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, updateSource.getRelatedArtifact().size());
+		return updateOperations;
 	}
-	private Parameters advancedValueSetDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch, FhirContext context, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
-		doesValueSetNeedExpansion((ValueSet)theSourceLibrary, dao);
-		doesValueSetNeedExpansion((ValueSet)theTargetLibrary, dao);
+	private Parameters advancedValueSetDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch, boolean compareComputable, boolean compareExecutable) {
 		KnowledgeArtifactAdapter<MetadataResource> artifact = new KnowledgeArtifactAdapter<MetadataResource>(theSourceLibrary);
 		KnowledgeArtifactAdapter<MetadataResource> artifact2 = new KnowledgeArtifactAdapter<MetadataResource>(theTargetLibrary);
 		ValueSet s_update = (ValueSet) artifact.copy();
 		ValueSet t_update = (ValueSet) artifact2.copy();
-		// t_update.setExpansion(null);
-		// ValueSetExpansionOptions options = new ValueSetExpansionOptions();
-		// options.setIncludeHierarchy(true);
-		// ValueSet updated = dao.expand(t_update,options);
-		// 	// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
-		// 	// `copy` creates the superclass again
-		// t_update.setExpansion(updated.getExpansion().copy());
-		// ValueSetExpansionComponent x = s_update.getExpansion();
-		// List<ValueSetExpansionContainsComponent> y = x.getContains();
-		// if (y.size() > 0) {
-		// 	y.remove(y.size()-1);
-		// }
-		// figure out how to expand ValueSets
-		// ValueSetExpansionOutcome outcome = null;
-		// ValidationSupportChain chain = new ValidationSupportChain(
-		// 		new DefaultProfileValidationSupport(context),
-		// 		new InMemoryTerminologyServerValidationSupport(context),
-		// 		new CommonCodeSystemsTerminologyService(context)
-		// );
-		// try {
-		// 		outcome = (new ValueSetExpanderSimple(new HapiWorkerContext(context, chain))).doExpand((ValueSet) artifact2.copy(), null);
-		// } catch (ETooCostly e) {
-		// 	// TODO: handle exception
-		// } catch (FileNotFoundException e) {
-
-		// } catch (IOException e) {
-
-		// }
-
-		List<List<ConceptSetComponent>> vsComposeIncludeFixed = extractAdditionsAndDeletions(s_update.getCompose().getInclude(), t_update.getCompose().getInclude());
-		List<List<ValueSetExpansionContainsComponent>> vsExpansionContainsFixed = extractAdditionsAndDeletions(s_update.getExpansion().getContains(), t_update.getExpansion().getContains());
+		additionsAndDeletions<ConceptSetComponent> vsComposeIncludeFixed = extractAdditionsAndDeletions(s_update.getCompose().getInclude(), t_update.getCompose().getInclude(), ConceptSetComponent.class);
+		additionsAndDeletions<ValueSetExpansionContainsComponent> vsExpansionContainsFixed = extractAdditionsAndDeletions(s_update.getExpansion().getContains(), t_update.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
 		if (compareComputable) {
-			s_update.getCompose().setInclude(vsComposeIncludeFixed.get(0));
-			t_update.getCompose().setInclude(vsComposeIncludeFixed.get(1));
+			s_update.getCompose().setInclude(vsComposeIncludeFixed.getSourceMatches());
+			t_update.getCompose().setInclude(vsComposeIncludeFixed.getTargetMatches());
 		} else {
 			s_update.getCompose().setInclude(new ArrayList<>());
 			t_update.getCompose().setInclude(new ArrayList<>());
 		}
 		if (compareExecutable) {
-			s_update.getExpansion().setContains(vsExpansionContainsFixed.get(0));
-			t_update.getExpansion().setContains(vsExpansionContainsFixed.get(1));
+			s_update.getExpansion().setContains(vsExpansionContainsFixed.getSourceMatches());
+			t_update.getExpansion().setContains(vsExpansionContainsFixed.getTargetMatches());
 		} else {
 			s_update.getExpansion().setContains(new ArrayList<>());
 			t_update.getExpansion().setContains(new ArrayList<>());
@@ -1252,11 +1198,11 @@ public class KnowledgeArtifactProcessor {
 			ValueSet t_delete = (ValueSet) artifact2.copy();	
 			// then get all the delete entries
 			if (compareComputable) {
-				s_delete.getCompose().setInclude(vsComposeIncludeFixed.get(3));
+				s_delete.getCompose().setInclude(vsComposeIncludeFixed.getDeletions());
 				t_delete.getCompose().setInclude(new ArrayList<ConceptSetComponent>());
 			}
 			if (compareExecutable) {
-				s_delete.getExpansion().setContains(vsExpansionContainsFixed.get(3));
+				s_delete.getExpansion().setContains(vsExpansionContainsFixed.getDeletions());
 				t_delete.getExpansion().setContains(new ArrayList<ValueSetExpansionContainsComponent>());
 			}
 			Parameters library_deletes = (Parameters) patch.diff(s_delete,t_delete);
@@ -1267,11 +1213,11 @@ public class KnowledgeArtifactProcessor {
 			//then get all the insert entries
 			if (compareComputable) {
 				s_insert.getCompose().setInclude(new ArrayList<ConceptSetComponent>());
-				t_insert.getCompose().setInclude(vsComposeIncludeFixed.get(2));
+				t_insert.getCompose().setInclude(vsComposeIncludeFixed.getInsertions());
 			}
 			if (compareExecutable) {
 				s_insert.getExpansion().setContains(new ArrayList<ValueSetExpansionContainsComponent>());
-				t_insert.getExpansion().setContains(vsExpansionContainsFixed.get(2));
+				t_insert.getExpansion().setContains(vsExpansionContainsFixed.getInsertions());
 			}
 			Parameters library_inserts = (Parameters) patch.diff(s_insert, t_insert);
 			// AAAAAAAAAAHHHHHHHHHHHH
@@ -1350,20 +1296,15 @@ public class KnowledgeArtifactProcessor {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
-		List<List<RelatedArtifact>> fixed = extractAdditionsAndDeletions(sourceRefs, targetRefs);
-		List<RelatedArtifact> sourceMatchingRefs = fixed.get(0);
-		List<RelatedArtifact> targetMatchingRefs = fixed.get(1);
-		// Need to handle these two
-		List<RelatedArtifact> additions = fixed.get(2);
-		List<RelatedArtifact> deletions = fixed.get(3);
-		if (sourceMatchingRefs.size() > 0) {
-			for(int i = 0; i < sourceMatchingRefs.size(); i++) {
-				String sourceCanonical = sourceMatchingRefs.get(i).getResource();
-				String targetCanonical = targetMatchingRefs.get(i).getResource();
+		additionsAndDeletions<RelatedArtifact> fixed = extractAdditionsAndDeletions(sourceRefs, targetRefs, RelatedArtifact.class);
+		if (fixed.getSourceMatches().size() > 0) {
+			for(int i = 0; i < fixed.getSourceMatches().size(); i++) {
+				String sourceCanonical = fixed.getSourceMatches().get(i).getResource();
+				String targetCanonical = fixed.getTargetMatches().get(i).getResource();
 				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(targetCanonical)) == null;
 				if (diffNotAlreadyComputedAndPresent) {
-					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal);
-					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal);
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal, dao);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal, dao);
 					// need to do something smart here to expand the executable or computable resources
 					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable, dao)
 						.ifPresentOrElse(diffToAppend -> {
@@ -1387,29 +1328,26 @@ public class KnowledgeArtifactProcessor {
 				}
 			}
 		}
+		for (RelatedArtifact addition : fixed.getInsertions() ) {
+			if (addition.hasResource()) {
+				ParametersParameterComponent component = baseDiff.addParameter();
+				component.setName(Canonicals.getUrl(addition.getResource()));
+				component.setValue(new StringType("Related artifact was inserted"));
+			}
+		}
+		for (RelatedArtifact deletion : fixed.getDeletions() ) {
+			if (deletion.hasResource()) {
+				ParametersParameterComponent component = baseDiff.addParameter();
+				component.setName(Canonicals.getUrl(deletion.getResource()));
+				component.setValue(new StringType("Related artifact was deleted"));
+			}
+		}
 	}
-	/**
-	 * [
-	 * <p>
-	 * sourceMatches - source relatedArtifacts which are updated
-	 * <p>
-	 * targetMatches - target relatedArtifacts which are updated
-	 * <p>
-	 * additions - relatedArtifacts which are in the target but not the source
-	 * <p>
-	 * deletions - relatedArtifacts which are in the source but not the target
-	 * <p>
-	 * ]
-	 * @param source
-	 * @param target
-	 * @return [sourceMatches, targetMatches, additions, deletions]
-	 */
-	private <T> List<List<T>> extractAdditionsAndDeletions(List<T> source, List<T> target) {
+	private <T> additionsAndDeletions<T> extractAdditionsAndDeletions(List<T> source, List<T> target, Class<T> t) {
 		List<T> sourceCopy = new ArrayList<T>(source);
 		// this is n^2 with Lists but can be nlog(n) if we use TreeSets
-
 		// check for matches and additions
-		List<T> additions = new ArrayList<T>();
+		List<T> insertions = new ArrayList<T>();
 		List<T> deletions = new ArrayList<T>();
 		List<T> sourceMatches = new ArrayList<T>();
 		List<T> targetMatches = new ArrayList<T>();
@@ -1430,7 +1368,7 @@ public class KnowledgeArtifactProcessor {
 				targetMatches.add(targetObj);
 				sourceCopy.remove(isInSource.get());
 			} else {
-				additions.add(targetObj);
+				insertions.add(targetObj);
 			}
 		});
 		// check for deletions
@@ -1450,7 +1388,7 @@ public class KnowledgeArtifactProcessor {
 				deletions.add(sourceObj);
 			}
 		});
-		return List.of(sourceMatches,targetMatches,additions,deletions);
+		return new additionsAndDeletions<T>(sourceMatches,targetMatches,insertions,deletions,t);
 	}
 	private boolean relatedArtifactEquals(RelatedArtifact ref1, RelatedArtifact ref2) {
 		return Canonicals.getUrl(ref1.getResource()).equals(Canonicals.getUrl(ref2.getResource())) && ref1.getType() == ref2.getType();
@@ -1475,7 +1413,7 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal) {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
@@ -1483,27 +1421,29 @@ public class KnowledgeArtifactProcessor {
 			} catch (ResourceNotFoundException e) {
 			}
 			if (resource != null) {
+				if (resource instanceof ValueSet) {
+					doesValueSetNeedExpansion((ValueSet)resource, dao);
+				}
 				cache.addResource(url, resource);
 			}
 		}
 		return resource;
 	}
 	private Optional<Parameters> checkOrUpdateDiffCache(String sourceCanonical, String targetCanonical, MetadataResource source, MetadataResource target, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
-		Parameters diffToAppend = cache.getDiff(sourceCanonical, targetCanonical);
-		if (diffToAppend == null) {
+		Parameters retval = cache.getDiff(sourceCanonical, targetCanonical);
+		if (retval == null) {
 			if (target != null) {
-				// Need an advanced diff for ValueSets too
 				if (source instanceof Library || source instanceof PlanDefinition) {
-					diffToAppend = advancedLibraryOrPlanDefinitionDiff(source, target, patch);
+					retval = handleRelatedArtifactArrayElementsDiff(source, target, patch);
 				} else if (source instanceof ValueSet) {
-					diffToAppend = advancedValueSetDiff(source, target, patch, ctx, compareComputable, compareExecutable,dao);
+					retval = advancedValueSetDiff(source, target, patch, compareComputable, compareExecutable);
 				} else {
-					diffToAppend = (Parameters) patch.diff(source, target);
+					retval = (Parameters) patch.diff(source, target);
 				}
-				cache.addDiff(sourceCanonical, targetCanonical, diffToAppend);
+				cache.addDiff(sourceCanonical, targetCanonical, retval);
 			}
 		}
-		return Optional.ofNullable(diffToAppend);
+		return Optional.ofNullable(retval);
 	}
 	/* $revise */
 	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
@@ -1523,5 +1463,75 @@ public class KnowledgeArtifactProcessor {
 		fhirDal.update(resource);
 
 		return resource;
+	}
+	private class additionsAndDeletions<T> {
+		private List<T> mySourceMatches;
+		private List<T> myTargetMatches;
+		private List<T> myInsertions;
+		private List<T> myDeletions;
+		private Class<T> t;
+		public additionsAndDeletions(List<T> sourceMatches,List<T> targetMatches,List<T> additions,List<T> deletions, Class<T> t) {
+			this.mySourceMatches = sourceMatches;
+			this.myTargetMatches = targetMatches;
+			this.myInsertions = additions;
+			this.myDeletions = deletions;
+			this.t = t;
+		}
+    public List<T> getSourceMatches() { return this.mySourceMatches; }
+    public List<T> getTargetMatches() { return this.myTargetMatches; }
+    public List<T> getInsertions() { return this.myInsertions; }
+    public List<T> getDeletions() { return this.myDeletions; }
+		public void appendInsertOperations	(Parameters theBase, FhirPatch thePatch, int theStartIndex) throws UnprocessableEntityException {
+			prepareForComparison	( theBase,  thePatch,  theStartIndex,  true, this.myInsertions);
+		}
+		public void appendDeleteOperations	(Parameters theBase, FhirPatch thePatch, int theStartIndex) throws UnprocessableEntityException {
+			prepareForComparison	( theBase,  thePatch,  theStartIndex,  false, this.myDeletions);
+		}
+		/**
+		 * 
+		 * @param theBase base diff to append to
+		 * @param thePatch patch instance which performs the diff
+		 * @param theStartIndex where the start numbering the operations
+		 * @param theInsertOrDelete true = insert, false = delete
+		 * @param theResourcesToAdd list of insertions or deletions
+		 * @throws UnprocessableEntityException
+		 */
+		private void prepareForComparison	(Parameters theBase, FhirPatch thePatch, int theStartIndex, boolean theInsertOrDelete, List<T> theResourcesToAdd) throws UnprocessableEntityException {
+			if (this.myInsertions.size() > 0) {
+				MetadataResource empty;
+				MetadataResource hasNewResources;
+				if (this.t.isAssignableFrom(RelatedArtifact.class)) {
+					empty = new Library();
+					hasNewResources = new Library();
+					((Library)hasNewResources).setRelatedArtifact((List<RelatedArtifact>)theResourcesToAdd);
+				} else if (this.t.isAssignableFrom(ConceptSetComponent.class)) {
+					empty = new ValueSet();
+					hasNewResources = new ValueSet();
+					((ValueSet)hasNewResources).setCompose(new ValueSetComposeComponent().setInclude((List<ConceptSetComponent>)theResourcesToAdd));
+				} else if (this.t.isAssignableFrom(ValueSetExpansionContainsComponent.class)) {
+					empty = new ValueSet();
+					hasNewResources = new ValueSet();
+					((ValueSet)hasNewResources).setExpansion(new ValueSetExpansionComponent().setContains((List<ValueSetExpansionContainsComponent>)theResourcesToAdd));
+				} else {
+					throw new UnprocessableEntityException("Could not process object");
+				}
+				if (theInsertOrDelete) {
+					appendInsertOperations(theBase, empty, hasNewResources, thePatch, theStartIndex);
+				} else {
+					// swap source and target for deletions
+					appendDeleteOperations(theBase, hasNewResources, empty, thePatch, theStartIndex);
+				}
+			}
+		}
+		private void appendInsertOperations(Parameters theBase, IBaseResource theSource,IBaseResource theTarget, FhirPatch thePatch, int theStartIndex) {
+			Parameters insertions = (Parameters) thePatch.diff(theSource,theTarget);
+			fixInsertPathIndexes(insertions.getParameter(), theStartIndex);
+			theBase.getParameter().addAll(insertions.getParameter());
+		}
+		private void appendDeleteOperations(Parameters theBase, IBaseResource theSource,IBaseResource theTarget, FhirPatch thePatch, int theStartIndex) {
+			Parameters deletions = (Parameters) thePatch.diff(theSource,theTarget);
+			fixDeletePathIndexes(deletions.getParameter(), theStartIndex);
+			theBase.getParameter().addAll(deletions.getParameter());
+		}
 	}
 }

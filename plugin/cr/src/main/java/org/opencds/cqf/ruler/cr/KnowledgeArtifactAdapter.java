@@ -27,7 +27,9 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	public KnowledgeArtifactAdapter(T resource) {
 		this.resource = resource;
 	}
-
+	public KnowledgeArtifactAdapter<MetadataResource> clone() {
+		return new KnowledgeArtifactAdapter<MetadataResource>(this.copy());
+	}
 	public Date getApprovalDate() {
 		switch (resource.getClass().getSimpleName()) {
 			case "ActivityDefinition":
