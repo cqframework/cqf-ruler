@@ -1168,61 +1168,37 @@ public class KnowledgeArtifactProcessor {
 		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, updateSource.getRelatedArtifact().size());
 		return updateOperations;
 	}
-	private Parameters advancedValueSetDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch, boolean compareComputable, boolean compareExecutable) {
-		KnowledgeArtifactAdapter<MetadataResource> artifact = new KnowledgeArtifactAdapter<MetadataResource>(theSourceLibrary);
-		KnowledgeArtifactAdapter<MetadataResource> artifact2 = new KnowledgeArtifactAdapter<MetadataResource>(theTargetLibrary);
-		ValueSet s_update = (ValueSet) artifact.copy();
-		ValueSet t_update = (ValueSet) artifact2.copy();
-		additionsAndDeletions<ConceptSetComponent> vsComposeIncludeFixed = extractAdditionsAndDeletions(s_update.getCompose().getInclude(), t_update.getCompose().getInclude(), ConceptSetComponent.class);
-		additionsAndDeletions<ValueSetExpansionContainsComponent> vsExpansionContainsFixed = extractAdditionsAndDeletions(s_update.getExpansion().getContains(), t_update.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
+	private Parameters advancedValueSetDiff(MetadataResource theSourceValueSet,MetadataResource theTargetValueSet, FhirPatch patch, boolean compareComputable, boolean compareExecutable) {
+		ValueSet updateSource = (ValueSet)theSourceValueSet.copy();
+		ValueSet updateTarget = (ValueSet)theTargetValueSet.copy();
+		additionsAndDeletions<ConceptSetComponent> composeIncludeProcessed = extractAdditionsAndDeletions(updateSource.getCompose().getInclude(), updateTarget.getCompose().getInclude(), ConceptSetComponent.class);
+		additionsAndDeletions<ValueSetExpansionContainsComponent> expansionContainsProcessed = extractAdditionsAndDeletions(updateSource.getExpansion().getContains(), updateTarget.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
 		if (compareComputable) {
-			s_update.getCompose().setInclude(vsComposeIncludeFixed.getSourceMatches());
-			t_update.getCompose().setInclude(vsComposeIncludeFixed.getTargetMatches());
+			updateSource.getCompose().setInclude(composeIncludeProcessed.getSourceMatches());
+			updateTarget.getCompose().setInclude(composeIncludeProcessed.getTargetMatches());
 		} else {
-			s_update.getCompose().setInclude(new ArrayList<>());
-			t_update.getCompose().setInclude(new ArrayList<>());
+			// don't generate any Parameters
+			updateSource.getCompose().setInclude(new ArrayList<>());
+			updateTarget.getCompose().setInclude(new ArrayList<>());
 		}
 		if (compareExecutable) {
-			s_update.getExpansion().setContains(vsExpansionContainsFixed.getSourceMatches());
-			t_update.getExpansion().setContains(vsExpansionContainsFixed.getTargetMatches());
+			updateSource.getExpansion().setContains(expansionContainsProcessed.getSourceMatches());
+			updateTarget.getExpansion().setContains(expansionContainsProcessed.getTargetMatches());
 		} else {
-			s_update.getExpansion().setContains(new ArrayList<>());
-			t_update.getExpansion().setContains(new ArrayList<>());
+			// don't generate any Parameters
+			updateSource.getExpansion().setContains(new ArrayList<>());
+			updateTarget.getExpansion().setContains(new ArrayList<>());
 		}
 		// first match the ones which are just updated
-		Parameters vsDiff = (Parameters) patch.diff(s_update,t_update);
-		if (compareComputable || compareExecutable) {
-			ValueSet s_insert = 	(ValueSet) artifact2.copy();
-			ValueSet t_insert = (ValueSet) artifact2.copy();
-			ValueSet s_delete = (ValueSet) artifact2.copy();
-			ValueSet t_delete = (ValueSet) artifact2.copy();	
-			// then get all the delete entries
-			if (compareComputable) {
-				s_delete.getCompose().setInclude(vsComposeIncludeFixed.getDeletions());
-				t_delete.getCompose().setInclude(new ArrayList<ConceptSetComponent>());
-			}
-			if (compareExecutable) {
-				s_delete.getExpansion().setContains(vsExpansionContainsFixed.getDeletions());
-				t_delete.getExpansion().setContains(new ArrayList<ValueSetExpansionContainsComponent>());
-			}
-			Parameters library_deletes = (Parameters) patch.diff(s_delete,t_delete);
-			// AAAHHHHHHHAAAHHHHHHHHHH
-			//fixDeletePathIndexes(library_deletes.getParameter(), s_update.getCompose().getInclude().size());
-			vsDiff.getParameter().addAll(library_deletes.getParameter());
-
-			//then get all the insert entries
-			if (compareComputable) {
-				s_insert.getCompose().setInclude(new ArrayList<ConceptSetComponent>());
-				t_insert.getCompose().setInclude(vsComposeIncludeFixed.getInsertions());
-			}
-			if (compareExecutable) {
-				s_insert.getExpansion().setContains(new ArrayList<ValueSetExpansionContainsComponent>());
-				t_insert.getExpansion().setContains(vsExpansionContainsFixed.getInsertions());
-			}
-			Parameters library_inserts = (Parameters) patch.diff(s_insert, t_insert);
-			// AAAAAAAAAAHHHHHHHHHHHH
-			//fixInsertPathIndexes(library_inserts.getParameter(), s_update.getCompose().getInclude().size() + s_delete.getCompose().getInclude().size());
-			vsDiff.getParameter().addAll(library_inserts.getParameter());
+		Parameters vsDiff = (Parameters) patch.diff(updateSource,updateTarget);
+		// then get all the delete entries
+		if (compareComputable) {
+			composeIncludeProcessed.appendInsertOperations(vsDiff, patch, updateTarget.getCompose().getInclude().size());
+			composeIncludeProcessed.appendDeleteOperations(vsDiff, patch, updateTarget.getCompose().getInclude().size());
+		}
+		if (compareExecutable) {
+			expansionContainsProcessed.appendInsertOperations(vsDiff, patch, updateTarget.getExpansion().getContains().size());	
+			expansionContainsProcessed.appendDeleteOperations(vsDiff, patch, updateTarget.getExpansion().getContains().size());	
 		}
 		return vsDiff;
 	}
@@ -1282,13 +1258,143 @@ public class KnowledgeArtifactProcessor {
 		};
 	}
 	private void fixInsertPathIndexes (List<ParametersParameterComponent> parameters, int newStart) {
-		for (int i = 0; i < parameters.size(); i++) {
-			ParametersParameterComponent parameter = parameters.get(i);
+		int opCounter = 0;
+		for (ParametersParameterComponent parameter:parameters) {
+			// ParametersParameterComponent parameter = parameters.get(i);
+			// need to check for more than index here
+			/**
+			 * {
+							"name": "operation",
+							"part": [
+									{
+											"name": "type",
+											"valueCode": "insert"
+									},
+									{
+											"name": "path",
+											"valueString": "ValueSet.expansion"
+									},
+									{
+											"name": "index",
+											"valueInteger": 64
+									}
+							]
+					},
+					{
+							"name": "operation",
+							"part": [
+									{
+											"name": "type",
+											"valueCode": "insert"
+									},
+									{
+											"name": "path",
+											"valueString": "ValueSet.expansion.contains"
+									},
+									{
+											"name": "index",
+											"valueInteger": 65
+									}
+							]
+					},
+					{
+							"name": "operation",
+							"part": [
+									{
+											"name": "type",
+											"valueCode": "insert"
+									},
+									{
+											"name": "path",
+											"valueString": "ValueSet.expansion.contains[0].system"
+									},
+									{
+											"name": "index",
+											"valueInteger": 66
+									},
+									{
+											"name": "value",
+											"valueUri": "http://loinc.org"
+									}
+							]
+					},
+					{
+							"name": "operation",
+							"part": [
+									{
+											"name": "type",
+											"valueCode": "insert"
+									},
+									{
+											"name": "path",
+											"valueString": "ValueSet.expansion.contains[0].code"
+									},
+									{
+											"name": "index",
+											"valueInteger": 67
+									},
+									{
+											"name": "value",
+											"valueCode": "39297-7"
+									}
+							]
+					},
+					{
+							"name": "operation",
+							"part": [
+									{
+											"name": "type",
+											"valueCode": "insert"
+									},
+									{
+											"name": "path",
+											"valueString": "ValueSet.expansion.contains[0].display"
+									},
+									{
+											"name": "index",
+											"valueInteger": 68
+									},
+									{
+											"name": "value",
+											"valueString": "Influenza virus A H10 Ab [Titer] in Serum by Hemagglutination inhibition"
+									}
+							]
+					}
+			 */
+			
 			Optional<ParametersParameterComponent> index = parameter.getPart().stream()
 				.filter(part -> part.getName().equals("index"))
 				.findFirst();
-			if (index.isPresent()) {
-				index.get().setValue(new IntegerType(i + newStart));
+			Optional<ParametersParameterComponent> value = parameter.getPart().stream()
+				.filter(part -> part.getName().equals("value"))
+				.findFirst();
+			Optional<ParametersParameterComponent> path = parameter.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.findFirst();
+			if (path.isPresent()) {
+				String pathString = ((StringType)path.get().getValue()).getValue();
+				EncodeContextPath e = new EncodeContextPath(pathString);
+				String elementName = e.getLeafElementName();
+				// for contains / include, we want to update the second last index and the 
+				if (elementName.equals("contains") 
+				|| elementName.equals("include") 
+				|| elementName.equals("relatedArtifact")) {
+					if ((index.isPresent() && !value.isPresent())
+					|| (elementName.equals("relatedArtifact") && index.isPresent())) {
+						index.get().setValue(new IntegerType(opCounter + newStart));
+						opCounter+=1;
+					}
+				}
+				if (pathString.contains("expansion.contains") || pathString.contains("compose.include")) {
+					if(value.isPresent()) {
+						// subtract 1 here because the opcounter has already been incremented
+						// maybe separate out the contains / include / relatedartifact rules a little more?
+						// refactor into specific methods linked to specific signatures?
+						String newIndex = "[" + String.valueOf(opCounter - 1 + newStart) + "]"; // Replace with your desired string
+						String result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
+						path.get().setValue(new StringType(result));
+					}
+				}
 			}
 		};
 	}
@@ -1330,16 +1436,22 @@ public class KnowledgeArtifactProcessor {
 		}
 		for (RelatedArtifact addition : fixed.getInsertions() ) {
 			if (addition.hasResource()) {
-				ParametersParameterComponent component = baseDiff.addParameter();
-				component.setName(Canonicals.getUrl(addition.getResource()));
-				component.setValue(new StringType("Related artifact was inserted"));
+				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(addition.getResource())) == null;
+				if (diffNotAlreadyComputedAndPresent) {
+					ParametersParameterComponent component = baseDiff.addParameter();
+					component.setName(Canonicals.getUrl(addition.getResource()));
+					component.setValue(new StringType("Related artifact was inserted"));
+				}
 			}
 		}
 		for (RelatedArtifact deletion : fixed.getDeletions() ) {
 			if (deletion.hasResource()) {
-				ParametersParameterComponent component = baseDiff.addParameter();
-				component.setName(Canonicals.getUrl(deletion.getResource()));
-				component.setValue(new StringType("Related artifact was deleted"));
+				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(deletion.getResource())) == null;
+				if (diffNotAlreadyComputedAndPresent) {
+					ParametersParameterComponent component = baseDiff.addParameter();
+					component.setName(Canonicals.getUrl(deletion.getResource()));
+					component.setValue(new StringType("Related artifact was deleted"));
+				}
 			}
 		}
 	}
@@ -1506,10 +1618,12 @@ public class KnowledgeArtifactProcessor {
 					((Library)hasNewResources).setRelatedArtifact((List<RelatedArtifact>)theResourcesToAdd);
 				} else if (this.t.isAssignableFrom(ConceptSetComponent.class)) {
 					empty = new ValueSet();
+					((ValueSet)empty).setCompose(new ValueSetComposeComponent().setInclude(new ArrayList<>()));
 					hasNewResources = new ValueSet();
 					((ValueSet)hasNewResources).setCompose(new ValueSetComposeComponent().setInclude((List<ConceptSetComponent>)theResourcesToAdd));
 				} else if (this.t.isAssignableFrom(ValueSetExpansionContainsComponent.class)) {
 					empty = new ValueSet();
+					((ValueSet)empty).setExpansion(new ValueSetExpansionComponent().setContains(new ArrayList<>()));
 					hasNewResources = new ValueSet();
 					((ValueSet)hasNewResources).setExpansion(new ValueSetExpansionComponent().setContains((List<ValueSetExpansionContainsComponent>)theResourcesToAdd));
 				} else {
