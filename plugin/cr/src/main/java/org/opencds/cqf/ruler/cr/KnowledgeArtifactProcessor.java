@@ -1248,12 +1248,9 @@ public class KnowledgeArtifactProcessor {
 			if (path.isPresent()) {
 				String pathString = ((StringType)path.get().getValue()).getValue();
 				EncodeContextPath e = new EncodeContextPath(pathString);
-				String relatedArtifactPath = e.getLeafResourcePathFirstField();
         String newIndex = "[" + String.valueOf(i + newStart) + "]"; // Replace with your desired string
-				String result = relatedArtifactPath.replaceAll("\\[([^\\]]+)\\]", newIndex);
-				e.popPath();
-				e.pushPath(result.toString(), false);
-				path.get().setValue(new StringType(e.getPath().stream().map(t -> t.getName()).collect(Collectors.joining("."))));
+				String result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
+				path.get().setValue(new StringType(result));
 			}
 		};
 	}

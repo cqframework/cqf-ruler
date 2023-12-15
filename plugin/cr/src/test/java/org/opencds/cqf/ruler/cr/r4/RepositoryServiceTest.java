@@ -1372,15 +1372,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void artifactDiffOperation() {
+	void basic_artifact_diff() {
 		loadTransaction("ersd-small-active-bundle.json");
-		Bundle bundle = (Bundle) loadTransaction("new-drafted-ersd-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
 		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = parameters(
 			part("source", specificationLibReference),
 			part("target", maybeLib.get().getResponse().getLocation())
-			 );
+		);
 		Parameters returnedParams = getClient().operation()
 			.onServer()
 			.named("$crmi.artifact-diff")
@@ -1389,25 +1389,52 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		// assertTrue(returnedParams.getParameter().size() == 11);
 		List<ParametersParameterComponent> parameters = returnedParams.getParameter();
-		List<String> libraryReplacedProps = List.of(
+		List<ParametersParameterComponent> libraryReplaceOperations = getOperationsByType(parameters, "replace");
+		List<ParametersParameterComponent> libraryInsertOperations = getOperationsByType(parameters, "insert");
+		List<ParametersParameterComponent> libraryDeleteOperations = getOperationsByType(parameters, "delete");
+		List<String> libraryReplacedPaths = List.of(
 			"Library.id",
 			"Library.version",
 			"Library.status",
-			"Library.relatedArtifact[0].resource",
-			"Library.relatedArtifact[1].resource",
-			"Library.relatedArtifact[5].resource"
+			"Library.relatedArtifact[0].resource", // planDefinition version update
+			"Library.relatedArtifact[1].resource", // RCTC lib version update
+			"Library.relatedArtifact[4].resource"  // DXTC Grouper version update
 		);
-		for (int i=0; i<libraryReplacedProps.size(); i++) {
-			assertTrue(parameters.get(i).getName().equals("operation"));
-			assertTrue(((StringType)parameters.get(i).getPart().get(0).getValue()).getValue().equals("replace"));
-			assertTrue(((StringType)parameters.get(i).getPart().get(1).getValue()).getValue().equals(libraryReplacedProps.get(i)));
+		List<String> libraryDeletedPaths = List.of(
+			"Library.relatedArtifact[5]"  // deleted DXTC leaf VS
+		);
+		List<String> libraryInsertedPaths = List.of(
+			"Library.relatedArtifact"  // new DXTC leaf VS
+		);
+		for (ParametersParameterComponent param: libraryReplaceOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryReplacedPaths.contains(path));
+		}
+		for (ParametersParameterComponent param: libraryInsertOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryInsertedPaths.contains(path));
+		}
+		for (ParametersParameterComponent param: libraryDeleteOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryDeletedPaths.contains(path));
 		}
 		List<String> libraryNestedChanges = List.of(
-			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
-			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
-			"http://ersd.aimsplatform.org/fhir/Library/rctc",
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
-			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc"
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://notOwnedTest.com/Library/notOwnedRoot", // will be empty / unable to retrieve
+			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163", // the new VS added to the DXTC
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6" // the VS deleted from the DXTC
 		);
 		libraryNestedChanges.stream()
 			.forEach(nestedChangeUrl -> {
@@ -1417,5 +1444,81 @@ class RepositoryServiceTest extends RestIntegrationTest {
 					assertTrue(nestedChange.getResource() instanceof Parameters);
 				}
 			});
+			// within the nested changes need to check for valueset.expansion.contains and valueset.compose.include changes
+	}
+	@Test
+	void artifact_diff_compare_computable() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation()),
+			part("compareComputable", new BooleanType(true))
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$crmi.artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		// check that VS has the right output
+		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
+			.filter(p -> !p.getName().equals("operation"))
+			.map(p -> (Parameters)p.getResource())
+			.filter(p -> p != null)
+			.collect(Collectors.toList());
+		assertTrue(nestedChanges.size() == 3);
+		Parameters ValueSetChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(ValueSetChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(ValueSetChanges.getParameter(), "insert");
+		// delete the old leaf
+		assertTrue(deleteOperations.size() == 1);
+		// there aren't actually 2 operations here
+		assertTrue(insertOperations.size() == 2);
+		String path1 = insertOperations.get(0).getPart().stream().filter(p -> p.getName().equals("path")).map(p -> ((StringType)p.getValue()).getValue()).findFirst().get();
+		String path2 = insertOperations.get(1).getPart().stream().filter(p -> p.getName().equals("path")).map(p -> ((StringType)p.getValue()).getValue()).findFirst().get();
+		// insert the new leaf; adding a node takes multiple operations if
+		// the thing being added isn't a defined complex FHIR type
+		assertTrue(path1.equals("ValueSet.compose.include"));
+		assertTrue(path2.equals("ValueSet.compose.include[1].valueSet"));
+	}
+	@Test
+	void artifact_diff_compare_executable() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation()),
+			part("compareExecutable", new BooleanType(true))
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$crmi.artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
+			.filter(p -> !p.getName().equals("operation"))
+			.map(p -> (Parameters)p.getResource())
+			.filter(p -> p != null)
+			.collect(Collectors.toList());
+		assertTrue(nestedChanges.size() == 3);
+		Parameters ValueSetChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(ValueSetChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(ValueSetChanges.getParameter(), "insert");
+		// delete the old leaf
+		assertTrue(deleteOperations.size() == 2);
+		// there aren't actually 2 operations here
+		assertTrue(insertOperations.size() == 32);
+	}
+	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
+		return parameters.stream().filter(
+			p -> p.getName().equals("operation")
+		    && p.getPart().stream().anyMatch(part -> part.getName().equals("type") && ((CodeType)part.getValue()).getCode().equals(type))
+			).collect(Collectors.toList());
 	}
 }
