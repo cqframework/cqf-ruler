@@ -1387,7 +1387,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
-		// assertTrue(returnedParams.getParameter().size() == 11);
 		List<ParametersParameterComponent> parameters = returnedParams.getParameter();
 		List<ParametersParameterComponent> libraryReplaceOperations = getOperationsByType(parameters, "replace");
 		List<ParametersParameterComponent> libraryInsertOperations = getOperationsByType(parameters, "insert");
@@ -1444,7 +1443,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 					assertTrue(nestedChange.getResource() instanceof Parameters);
 				}
 			});
-			// within the nested changes need to check for valueset.expansion.contains and valueset.compose.include changes
 	}
 	@Test
 	void artifact_diff_compare_computable() {
@@ -1463,16 +1461,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
-		// check that VS has the right output
 		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
 			.filter(p -> !p.getName().equals("operation"))
 			.map(p -> (Parameters)p.getResource())
 			.filter(p -> p != null)
 			.collect(Collectors.toList());
 		assertTrue(nestedChanges.size() == 3);
-		Parameters ValueSetChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
-		List<ParametersParameterComponent> deleteOperations = getOperationsByType(ValueSetChanges.getParameter(), "delete");
-		List<ParametersParameterComponent> insertOperations = getOperationsByType(ValueSetChanges.getParameter(), "insert");
+		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
 		// delete the old leaf
 		assertTrue(deleteOperations.size() == 1);
 		// there aren't actually 2 operations here
@@ -1507,9 +1504,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.filter(p -> p != null)
 			.collect(Collectors.toList());
 		assertTrue(nestedChanges.size() == 3);
-		Parameters ValueSetChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
-		List<ParametersParameterComponent> deleteOperations = getOperationsByType(ValueSetChanges.getParameter(), "delete");
-		List<ParametersParameterComponent> insertOperations = getOperationsByType(ValueSetChanges.getParameter(), "insert");
+		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
 		// delete the old leaf
 		assertTrue(deleteOperations.size() == 23);
 		// there aren't actually 2 operations here
