@@ -285,7 +285,6 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "target") String target,
 		@OperationParam(name = "compareExecutable", typeName = "Boolean") IPrimitiveType<Boolean> compareExecutable,
 		@OperationParam(name = "compareComputable", typeName = "Boolean") IPrimitiveType<Boolean> compareComputable
-		// @OperationParam(name = "checkDependencies") boolean checkDependencies
 	) throws UnprocessableEntityException, ResourceNotFoundException{
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
 		IBaseResource theSourceResource = fhirDal.read(new IdType(source));

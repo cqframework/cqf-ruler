@@ -1507,9 +1507,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
 		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
 		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
-		// delete the old leaf
+		// old codes removed
 		assertTrue(deleteOperations.size() == 23);
-		// there aren't actually 2 operations here
+		// new codes added
 		assertTrue(insertOperations.size() == 32);
 	}
 	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {

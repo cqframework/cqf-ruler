@@ -1147,10 +1147,11 @@ public class KnowledgeArtifactProcessor {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
+		// ignore meta changes
 		patch.addIgnorePath("*.meta");
 		Parameters libraryDiff = handleRelatedArtifactArrayElementsDiff(theSourceLibrary,theTargetLibrary,patch);
 
-		// then send check for references and add those to the base Parameters object
+		// then check for references and add those to the base Parameters object
 		diffCache cache = new diffCache();
 		cache.addDiff(theSourceLibrary.getUrl()+"|"+theSourceLibrary.getVersion(), theTargetLibrary.getUrl()+"|"+theTargetLibrary.getVersion(), libraryDiff);
 		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch, cache, theContext, compareComputable, compareExecutable,dao);
@@ -1159,7 +1160,6 @@ public class KnowledgeArtifactProcessor {
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
 		KnowledgeArtifactAdapter<MetadataResource> updateSource = new KnowledgeArtifactAdapter<MetadataResource>(theSourceLibrary.copy());
 		KnowledgeArtifactAdapter<MetadataResource> updateTarget = new KnowledgeArtifactAdapter<MetadataResource>(theTargetLibrary.copy());
-		// need a way to avoid messing up the indexes here
 		additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
 		updateSource.setRelatedArtifact(processedRelatedArtifacts.getSourceMatches());
 		updateTarget.setRelatedArtifact(processedRelatedArtifacts.getTargetMatches());
