@@ -1143,7 +1143,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, FhirDal fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, FhirDal fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
@@ -1213,6 +1213,7 @@ public class KnowledgeArtifactProcessor {
 			vset.setExpansion(null);
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
+			
 			ValueSet e = dao.expand(vset,options);
 			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
 			// `copy` creates the superclass again
@@ -1395,7 +1396,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
@@ -1454,13 +1455,14 @@ public class KnowledgeArtifactProcessor {
 	}
 	private <T> additionsAndDeletions<T> extractAdditionsAndDeletions(List<T> source, List<T> target, Class<T> t) {
 		List<T> sourceCopy = new ArrayList<T>(source);
+		List<T> targetCopy = new ArrayList<T>(target);
 		// this is n^2 with Lists but can be nlog(n) if we use TreeSets
 		// check for matches and additions
 		List<T> insertions = new ArrayList<T>();
 		List<T> deletions = new ArrayList<T>();
 		List<T> sourceMatches = new ArrayList<T>();
 		List<T> targetMatches = new ArrayList<T>();
-		target.forEach(targetObj -> {
+		targetCopy.forEach(targetObj -> {
 			Optional<T> isInSource = sourceCopy.stream().filter(sourceObj -> {
 				if (sourceObj instanceof RelatedArtifact && targetObj instanceof RelatedArtifact) {
 					return relatedArtifactEquals((RelatedArtifact) sourceObj, (RelatedArtifact) targetObj);
@@ -1482,7 +1484,7 @@ public class KnowledgeArtifactProcessor {
 		});
 		// check for deletions
 		sourceCopy.forEach(sourceObj -> {
-			boolean isInTarget = target.stream().anyMatch(targetObj -> {
+			boolean isInTarget = targetCopy.stream().anyMatch(targetObj -> {
 				if (sourceObj instanceof RelatedArtifact && targetObj instanceof RelatedArtifact) {
 					return relatedArtifactEquals((RelatedArtifact) sourceObj, (RelatedArtifact) targetObj);
 				} else if (sourceObj instanceof ConceptSetComponent && targetObj instanceof ConceptSetComponent) {
@@ -1522,16 +1524,21 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
 				resource = retrieveResourcesByCanonical(url, fhirDal);
 			} catch (ResourceNotFoundException e) {
+				// ignore
 			}
 			if (resource != null) {
 				if (resource instanceof ValueSet) {
-					doesValueSetNeedExpansion((ValueSet)resource, dao);
+					try {
+						doesValueSetNeedExpansion((ValueSet)resource, dao);
+					} catch (Exception e) {
+						throw new UnprocessableEntityException("Could not expand ValueSet: " + e.getMessage());
+					}
 				}
 				cache.addResource(url, resource);
 			}

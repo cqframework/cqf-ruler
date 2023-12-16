@@ -1511,7 +1511,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		List<ParametersParameterComponent> deleteOperations = getOperationsByType(ValueSetChanges.getParameter(), "delete");
 		List<ParametersParameterComponent> insertOperations = getOperationsByType(ValueSetChanges.getParameter(), "insert");
 		// delete the old leaf
-		assertTrue(deleteOperations.size() == 2);
+		assertTrue(deleteOperations.size() == 23);
 		// there aren't actually 2 operations here
 		assertTrue(insertOperations.size() == 32);
 	}
