@@ -82,6 +82,7 @@ class TransformProviderIT extends RestIntegrationTest {
 		assertTrue(hasUSPHProfiles.size() == 0);
 		assertTrue(hasExperimental.size() == 0);
 	}
+
 	@Test
 	void testTransform_alternate_v1_skeleton() {
 		PlanDefinition planDef = (PlanDefinition) loadResource("ersd-v1-plandefinition-alternate.json");
@@ -100,9 +101,10 @@ class TransformProviderIT extends RestIntegrationTest {
 				.withParameters(v2BundleParams)
 				.returnResourceType(Bundle.class)
 				.execute();
-		List<BundleEntryComponent> bundleContainsAlternatePlanDef = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton-alternate|test-version")).collect(Collectors.toList());
+		List<BundleEntryComponent> bundleContainsAlternatePlanDef = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton-alternate|1.2.0.0")).collect(Collectors.toList());
 		assertTrue(bundleContainsAlternatePlanDef.size() == 1);
 	}
+
 	@Test
 	void testTransform_set_targetVersion() {
 		PlanDefinition planDef = (PlanDefinition) loadResource("ersd-v1-plandefinition-testversion.json");

@@ -843,7 +843,7 @@ public class KnowledgeArtifactProcessor {
 		return packagedBundle;
 	}
 /**
- * $crmi.package allows for a bundle to be paged
+ * $package allows for a bundle to be paged
  * @param count the maximum number of resources to be returned
  * @param offset the number of resources to skip beginning from the start of the bundle (starts from 1)
  * @param bundle the bundle to page
@@ -893,7 +893,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	/**
-	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $crmi.package time
+	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $package time
 	 * @param manifest the resource containing all RelatedArtifact references
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
