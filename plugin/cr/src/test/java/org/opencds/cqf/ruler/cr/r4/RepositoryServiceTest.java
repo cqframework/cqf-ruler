@@ -1383,7 +1383,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Parameters returnedParams = getClient().operation()
 			.onServer()
-			.named("$crmi.artifact-diff")
+			.named("artifact-diff")
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
@@ -1457,7 +1457,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Parameters returnedParams = getClient().operation()
 			.onServer()
-			.named("$crmi.artifact-diff")
+			.named("$artifact-diff")
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
@@ -1494,7 +1494,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		Parameters returnedParams = getClient().operation()
 			.onServer()
-			.named("$crmi.artifact-diff")
+			.named("$artifact-diff")
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
