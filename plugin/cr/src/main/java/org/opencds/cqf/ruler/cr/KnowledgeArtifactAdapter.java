@@ -21,7 +21,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.utility.SemanticVersion;
 
-public class KnowledgeArtifactAdapter<T extends MetadataResource> {
+public class KnowledgeArtifactAdapter<T extends MetadataResource> implements Cloneable {
 	protected T resource;
 
 	public KnowledgeArtifactAdapter(T resource) {
