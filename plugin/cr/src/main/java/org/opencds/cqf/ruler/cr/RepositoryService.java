@@ -278,8 +278,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		}
 	}
 
-	@Operation(name = "$crmi.artifact-diff", idempotent = true, global = true, type = MetadataResource.class)
-	@Description(shortDefinition = "$crmi.artifact-diff", value = "Diff two artifacts")
+	@Operation(name = "$artifact-diff", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$artifact-diff", value = "Diff two knowledge artifacts")
 	public Parameters crmiArtifactDiff(RequestDetails requestDetails, 
 		@OperationParam(name = "source") String source,
 		@OperationParam(name = "target") String target,
