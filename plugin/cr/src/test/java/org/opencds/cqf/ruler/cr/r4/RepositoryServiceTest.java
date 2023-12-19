@@ -1283,7 +1283,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void package_test_condition_missing() {
 		loadTransaction("ersd-small-approved-draft-no-conditions.json");
 		loadResource("artifactAssessment-search-parameter.json");
-		Exception noConditionExtension = null;
+		UnprocessableEntityException noConditionExtension = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -1291,11 +1291,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withNoParameters(Parameters.class)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (Exception e) {
+		} catch (UnprocessableEntityException e) {
 			// TODO: handle exception
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test
