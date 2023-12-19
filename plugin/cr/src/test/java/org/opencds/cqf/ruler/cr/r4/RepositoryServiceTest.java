@@ -678,7 +678,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			part("version", new StringType("1.2.3.23")),
 			part("versionBehavior", new StringType("default"))
 		);
-		Exception noConditionExtension = null;
+		UnprocessableEntityException noConditionExtension = null;
 		try {
 			getClient().operation()
 			.onInstance(specificationLibReference)
@@ -686,7 +686,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		} catch (Exception e) {
+		} catch (UnprocessableEntityException e) {
 			// TODO: handle exception
 			noConditionExtension = e;
 		}
