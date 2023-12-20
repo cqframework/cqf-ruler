@@ -8,8 +8,7 @@
 
 ---
 
-The cqf-ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](
-http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
+The cqf-ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
 knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. The cqf-ruler provides an [extensibility API](#plugins) to allow adding custom FHIR operations without the need to fork or clone the entire project.
 
 See the [wiki](https://github.com/DBCG/cqf-ruler/wiki/Home) for more information
@@ -30,6 +29,7 @@ The public sandbox is not persistent, has no authentication, and is regularly re
 
 The easiest way to get started with the cqf-ruler is to pull and run the docker image.
 For avoiding to run docker container by default root user permission, the container from this image will run with a user named `cqfruler`
+
 ```bash
 docker pull alphora/cqf-ruler
 docker run -p 8080:8080 alphora/cqf-ruler
@@ -75,8 +75,7 @@ to clean up any unneeded or unused files, use:
 
 #### Java
 
-Go to [http://www.oracle.com/technetwork/java/javase/downloads/](
-http://www.oracle.com/technetwork/java/javase/downloads/) and download the
+Go to [http://www.oracle.com/technetwork/java/javase/downloads/](http://www.oracle.com/technetwork/java/javase/downloads/) and download the
 latest (version 11 or higher) JDK for your platform, and install it.
 
 #### Apache Maven
