@@ -691,7 +691,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition "));
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test
