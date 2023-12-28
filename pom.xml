@@ -87,15 +87,15 @@
 	</distributionManagement>
 
 	<properties>
+		<clinical-reasoning.version>3.0.0-PRE14</clinical-reasoning.version>
 		<cqf-tooling.version>2.4.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cql.version>2.10.0</cql.version>
-		<clinical-reasoning.version>3.0.0-PRE12</clinical-reasoning.version>
+		<cql.version>3.4.1</cql.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.10.0</hapi_version>
+		<hapi_version>6.11.8-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -217,6 +217,11 @@
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-server-cds-hooks</artifactId>
+				<version>${hapi_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-testpage-overlay</artifactId>
 				<version>${hapi_version}</version>
 				<classifier>classes</classifier>
@@ -270,6 +275,12 @@
 				<groupId>commons-validator</groupId>
 				<artifactId>commons-validator</artifactId>
 				<version>1.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>engine</artifactId>
+				<version>${cql.version}</version>
 			</dependency>
 
 			<dependency>
@@ -347,48 +358,14 @@
 				<artifactId>tooling</artifactId>
 				<version>${cqf-tooling.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.activitydefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.expression</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.builder</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.fhir</artifactId>
-				<version>${cql-evaluator.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>org.hl7.fhir.convertors</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>org.hl7.fhir.utilities</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>hapi-fhir-structures-r5</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>hapi-fhir-validation-resources-r5</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-cr</artifactId>
+				<version>${clinical-reasoning.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cql</artifactId>
 				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>
@@ -577,7 +554,7 @@
 					<version>3.3.1</version>
 					<configuration>
 						<source>11</source>
-						<failOnWarnings>true</failOnWarnings>
+						<failOnWarnings>false</failOnWarnings>
 						<failOnErrors>true</failOnErrors>
 						<doclint>-missing</doclint>
 						<quiet>true</quiet>

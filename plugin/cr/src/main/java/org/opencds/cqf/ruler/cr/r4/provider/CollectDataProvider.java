@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,9 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 public class CollectDataProvider extends DaoRegistryOperationProvider {
 

@@ -9,7 +9,7 @@ import java.util.Set;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.model.CompiledLibrary;
-import org.cqframework.cql.elm.requirements.fhir.DataRequirementsProcessor;
+
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_30_50;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
 import org.hl7.fhir.convertors.conv30_50.VersionConvertor_30_50;
@@ -25,7 +25,8 @@ import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.CqlOptions;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,8 @@ public class DataRequirements {
 	}
 
 	private static org.hl7.fhir.r4.model.Library addDataRequirementFhirQueries(org.hl7.fhir.r4.model.Library library,
-			SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider, ModelResolver modelResolver,
-			CqlOptions cqlOptions, IBaseConformance capStatement) {
+																										SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider, ModelResolver modelResolver,
+																										CqlCompilerOptions cqlOptions, IBaseConformance capStatement) {
 		List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = library.getDataRequirement();
 
 		try {

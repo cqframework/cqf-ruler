@@ -78,7 +78,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSimpleLibraryWithBundle() {
-		loadResource(packagePrefix + "SimpleR4Library.json");
+
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
 		Parameters params = parameters(
 				stringPart("subject", "SimplePatient"),

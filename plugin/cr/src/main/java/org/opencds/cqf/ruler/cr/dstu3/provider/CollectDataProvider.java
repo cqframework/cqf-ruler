@@ -1,8 +1,5 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.dstu3.Parameters.part;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +13,6 @@ import org.hl7.fhir.dstu3.model.MeasureReport.MeasureReportType;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;

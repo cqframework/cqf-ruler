@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.cr.r4.cqlexecution.CqlExecutionOperationProvider;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -27,9 +28,9 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.external.AppProperties;
+import org.opencds.cqf.fhir.utility.Canonicals;
+import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -37,8 +38,6 @@ import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
-import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
-import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ca.uhn.fhir.cr.config.CrProperties;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -60,19 +58,16 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	private CrProperties.CqlProperties cqlProperties;
 	@Autowired
 	private DaoRegistry daoRegistry;
 	@Autowired
 	private AppProperties myAppProperties;
 	@Autowired
-	private CqlExecutionProvider cqlExecution;
+	private CqlExecutionOperationProvider cqlExecution;
 	@Autowired
-	private LibraryEvaluationProvider libraryExecution;
+	private LibraryEvaluationOperationProvider libraryExecution;
 	@Autowired
-	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider applyEvaluator;
+	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
@@ -357,10 +352,25 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			IdType definitionId = new IdType(
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
-			suggAction.setResource(applyEvaluator.apply(definitionId,
-					patientId, null, patientId, null, null,
-					null, null, null, null, null,
-					null, null, null, null, null, requestDetails));
+			suggAction.setResource(applyEvaluator.apply(
+				null,
+				definitionId,
+				patientId,
+				patientId,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				requestDetails));
 			hasAction = true;
 		}
 		if (hasAction)

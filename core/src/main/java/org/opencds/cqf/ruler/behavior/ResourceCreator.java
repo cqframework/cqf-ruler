@@ -5,7 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+import org.opencds.cqf.fhir.utility.Ids;
+
 
 public interface ResourceCreator extends FhirContextUser {
 	@SuppressWarnings("unchecked")

@@ -1,9 +1,11 @@
 package org.opencds.cqf.ruler.cr;
 
 import ca.uhn.fhir.rest.param.TokenParam;
+
+import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+//import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;

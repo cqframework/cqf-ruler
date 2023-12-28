@@ -68,14 +68,20 @@
 			<version>${hapi_version}</version>
 		</dependency>
 		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-server-cds-hooks</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-cr</artifactId>
-			<version>${clinical-reasoning.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>info.cqframework</groupId>
+			<artifactId>cql-to-elm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-jackson</artifactId>
-			<version>${clinical-reasoning.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
@@ -158,7 +164,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
 					<additionalOptions>-Xdoclint:none</additionalOptions>
 					<additionalJOption>-Xdoclint:none</additionalJOption>
 				</configuration>
