@@ -129,7 +129,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()).equals(draftedVersion));
 	}
 	@Test
-	void draft_operation_no_effectivePeriod_test() {
+	void draftOperation_no_effectivePeriod_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		Library baseLib = getClient()
 			.read()
@@ -143,7 +143,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withId("plandefinition-ersd-instance-example")
 			.execute();
 		assertTrue(planDef.hasEffectivePeriod());
-		String version = "1.0.1.23";
+		String version = "1.01.21.273";
 		Parameters params = parameters(part("version", version) );
 		Bundle returnedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
