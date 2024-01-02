@@ -103,6 +103,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		assertTrue(baseLib.hasApprovalDate());
+		assertTrue(baseLib.hasEffectivePeriod());
 		String version = "1.0.1.23";
 		String draftedVersion = version + "-draft";
 		Parameters params = parameters(part("version", version) );
@@ -123,6 +124,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertFalse(lib.hasApprovalDate());
 		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
 		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
+		assertFalse(lib.hasEffectivePeriod());
 		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
 		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));

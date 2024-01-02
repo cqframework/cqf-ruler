@@ -27,6 +27,10 @@
 				"url": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
 				"version": "1.0.0.23",
 				"approvalDate": "1990-01-01",
+				"effectivePeriod": {
+					"start": "2023-01-01",
+					"end": "2023-12-01"
+				},
 				"extension": [
 					{
 						"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel",
