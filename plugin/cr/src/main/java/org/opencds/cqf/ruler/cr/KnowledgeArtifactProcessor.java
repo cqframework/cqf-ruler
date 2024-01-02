@@ -965,13 +965,13 @@ public class KnowledgeArtifactProcessor {
 		List<String> capability,
 		List<String> include,
 		List<CanonicalType> canonicalVersion,
-		List<CanonicalType> checkCanonicalVersion,
-		List<CanonicalType> forceCanonicalVersion
+		List<CanonicalType> checkArtifactVersion,
+		List<CanonicalType> forceArtifactVersion
 		) throws PreconditionFailedException{
 		if (resource != null) {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 			findUnsupportedCapability(resource, capability);
-			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			processCanonicals(resource, canonicalVersion, checkArtifactVersion, forceArtifactVersion);
 			boolean entryExists = bundle.getEntry().stream()
 				.map(e -> (MetadataResource)e.getResource())
 				.filter(mr -> mr.getUrl() != null && mr.getVersion() != null)
@@ -988,7 +988,7 @@ public class KnowledgeArtifactProcessor {
 			Stream.concat(components.stream(), dependencies.stream())
 				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkArtifactVersion, forceArtifactVersion));
 		}
 	}
 
@@ -1019,10 +1019,10 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws PreconditionFailedException {
-		if (checkCanonicalVersion != null) {
+	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkArtifactVersion,  List<CanonicalType> forceArtifactVersion) throws PreconditionFailedException {
+		if (checkArtifactVersion != null) {
 			// check throws an error
-			findVersionInListMatchingResource(checkCanonicalVersion, resource)
+			findVersionInListMatchingResource(checkArtifactVersion, resource)
 				.ifPresent((version) -> {
 					if (!resource.getVersion().equals(version)) {
 						throw new PreconditionFailedException(String.format("Resource with url '%s' has version '%s' but checkVersion specifies '%s'",
@@ -1032,9 +1032,9 @@ public class KnowledgeArtifactProcessor {
 						));
 					}
 				});
-		} else if (forceCanonicalVersion != null) {
+		} else if (forceArtifactVersion != null) {
 			// force just does a silent override
-			findVersionInListMatchingResource(forceCanonicalVersion, resource)
+			findVersionInListMatchingResource(forceArtifactVersion, resource)
 				.ifPresent((version) -> resource.setVersion(version));
 		} else if (canonicalVersion != null && !resource.hasVersion()) {
 			// canonicalVersion adds a version if it's missing
