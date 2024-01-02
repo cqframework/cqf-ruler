@@ -320,7 +320,6 @@ public class KnowledgeArtifactProcessor {
 			.collect(Collectors.toList());
 		baseArtifact.setExtension(removeReleaseLabelAndDescription);
 		baseArtifactAdapter.setApprovalDate(null);
-		baseArtifactAdapter.setEffectivePeriod(null);
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(baseArtifact.getUrl()) + "|" + draftVersion;
 
@@ -414,6 +413,7 @@ public class KnowledgeArtifactProcessor {
 
 		if (newResource == null) {
 			KnowledgeArtifactAdapter<MetadataResource> sourceResourceAdapter = new KnowledgeArtifactAdapter<>(resourceToDraft);
+			sourceResourceAdapter.setEffectivePeriod(null);
 			newResource = sourceResourceAdapter.copy();
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(draftVersion);
