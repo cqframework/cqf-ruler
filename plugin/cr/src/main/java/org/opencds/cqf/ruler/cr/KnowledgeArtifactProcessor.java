@@ -778,9 +778,9 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
-		if (contentEndpoint != null || terminologyEndpoint != null) {
-			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
+	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> artifactVersion, List<CanonicalType> checkArtifactVersion, List<CanonicalType> forceArtifactVersion, Integer count, Integer offset, String artifactRoute, String endpointUri, Endpoint artifactEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
+		if (artifactRoute != null || endpointUri != null || artifactEndpoint != null || terminologyEndpoint != null) {
+			throw new NotImplementedOperationException("This repository is not implementing custom Artifact and Terminology endpoints at this time");
 		}
 		if (packageOnly != null) {
 			throw new NotImplementedOperationException("This repository is not implementing packageOnly at this time");
@@ -795,14 +795,14 @@ public class KnowledgeArtifactProcessor {
 			&& include.size() == 1
 			&& include.stream().anyMatch((includedType) -> includedType.equals("artifact"))) {
 			findUnsupportedCapability(resource, capability);
-			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			processCanonicals(resource, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			BundleEntryComponent entry = createEntry(resource);
 			entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());
 			entry.getRequest().setMethod(HTTPVerb.POST);
 			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 			packagedBundle.addEntry(entry);
 		} else {
-			recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			recursivePackage(resource, packagedBundle, fhirDal, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
 			packagedBundle.setEntry(included);
 		}

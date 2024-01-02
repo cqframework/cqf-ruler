@@ -1,8 +1,10 @@
 package org.opencds.cqf.ruler.cr;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
@@ -22,8 +24,10 @@ import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
@@ -194,30 +198,36 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@IdParam IdType theId,
 		// TODO: $package - should capability be CodeType?
 		@OperationParam(name = "capability") List<String> capability,
-		@OperationParam(name = "canonicalVersion") List<CanonicalType> canonicalVersion,
-		@OperationParam(name = "checkCanonicalVersion") List<CanonicalType> checkCanonicalVersion,
-		@OperationParam(name = "forceCanonicalVersion") List<CanonicalType> forceCanonicalVersion,
+		@OperationParam(name = "artifactVersion") List<CanonicalType> artifactVersion,
+		@OperationParam(name = "checkArtifactVersion") List<CanonicalType> checkArtifactVersion,
+		@OperationParam(name = "forceArtifactVersion") List<CanonicalType> forceArtifactVersion,
 		// TODO: $package - should include be CodeType?
 		@OperationParam(name = "include") List<String> include,
 		@OperationParam(name = "manifest") CanonicalType manifest,
 		@OperationParam(name = "offset", typeName = "Integer") IPrimitiveType<Integer> offset,
 		@OperationParam(name = "count", typeName = "Integer") IPrimitiveType<Integer> count,
 		@OperationParam(name = "packageOnly", typeName = "Boolean") IPrimitiveType<Boolean> packageOnly,
-		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
+		@OperationParam(name = "artifactEndpointConfiguration") ParametersParameterComponent artifactEndpointConfiguration,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
 		) throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		List<ParametersParameterComponent> artifactEndpointParts = Optional.ofNullable(artifactEndpointConfiguration).map(config -> config.getPart()).orElse(new ArrayList<ParametersParameterComponent>());
+		String artifactRoute = artifactEndpointParts.stream().filter(part -> part.getName().equals("artifactRoute")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
+		String endpointUri = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpointUri")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
+		Endpoint artifactEndpoint = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpoint")).map(part -> (Endpoint)part.getResource()).findAny().orElse(null);
 		return this.artifactProcessor.createPackageBundle(
 			theId,
 			fhirDal,
 			capability,
 			include,
-			canonicalVersion,
-			checkCanonicalVersion,
-			forceCanonicalVersion,
+			artifactVersion,
+			checkArtifactVersion,
+			forceArtifactVersion,
 			count != null ? count.getValue() : null,
 			offset != null ? offset.getValue() : null,
-			contentEndpoint,
+			artifactRoute,
+			endpointUri,
+			artifactEndpoint,
 			terminologyEndpoint,
 			packageOnly != null ? packageOnly.getValue() : null
 		);
