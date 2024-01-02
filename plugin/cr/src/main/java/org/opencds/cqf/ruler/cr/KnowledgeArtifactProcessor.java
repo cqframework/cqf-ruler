@@ -320,6 +320,7 @@ public class KnowledgeArtifactProcessor {
 			.collect(Collectors.toList());
 		baseArtifact.setExtension(removeReleaseLabelAndDescription);
 		baseArtifactAdapter.setApprovalDate(null);
+		baseArtifactAdapter.setEffectivePeriod(null);
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(baseArtifact.getUrl()) + "|" + draftVersion;
 
