@@ -69,12 +69,12 @@
 			<artifactId>cqf-fhir-jackson</artifactId>
 			<type>pom</type>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>8.0.1</version>
 		</dependency>
-
+		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -105,6 +105,27 @@
 			<artifactId>woodstox-core</artifactId>
 			<version>6.4.0</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10</groupId>
+			<artifactId>jetty-ee10-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -137,6 +158,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!--
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<scope>test</scope>
@@ -167,6 +194,7 @@
 			<artifactId>websocket-server</artifactId>
 			<scope>test</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>

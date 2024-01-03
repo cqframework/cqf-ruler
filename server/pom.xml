@@ -52,7 +52,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-client</artifactId>
+		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-api</artifactId>
@@ -61,6 +69,7 @@
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-client</artifactId>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-core</artifactId>
@@ -219,6 +228,14 @@
 			</exclusions>
 		</dependency>
 
+		<!--
+        For some reason JavaDoc crashed during site generation unless we have this dependency
+        -->
+		<dependency>
+			<groupId>jakarta.interceptor</groupId>
+			<artifactId>jakarta.interceptor-api</artifactId>
+		</dependency>
+
 		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -226,22 +243,12 @@
 			<type>war</type>
 			<scope>provided</scope>
 		</dependency>
-
-		<!--
-        For some reason JavaDoc crashed during site generation unless we have this dependency
-        -->
 		<dependency>
-			<groupId>javax.interceptor</groupId>
-			<artifactId>javax.interceptor-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<!-- Needed for JEE/Servlet support -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-case-reporting</artifactId>

@@ -1,5 +1,12 @@
 package org.opencds.cqf.ruler;
 
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
+import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
+import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
+import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
+import ca.uhn.fhir.rest.server.RestfulServer;
 import org.opencds.cqf.external.annotations.OnEitherVersion;
 import org.opencds.cqf.external.mdm.MdmConfig;
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
@@ -10,20 +17,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
-
-import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
-import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
-import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
-import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
-import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
-import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
-import ca.uhn.fhir.rest.server.RestfulServer;
 
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 @Import({
@@ -44,10 +42,10 @@ public class Application extends SpringBootServletInitializer {
 		// UI (if enabled) is now accessible at http://localhost:8080/
 	}
 
-	@Override
+	/*@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder.sources(Application.class);
-	}
+	}*/
 
 	@Autowired
 	AutowireCapableBeanFactory beanFactory;

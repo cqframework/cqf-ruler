@@ -4,14 +4,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Base64;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opencds.cqf.ruler.security.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;

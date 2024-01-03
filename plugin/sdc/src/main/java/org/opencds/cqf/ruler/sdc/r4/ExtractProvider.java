@@ -17,9 +17,9 @@ import org.hl7.fhir.r4.model.Questionnaire;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
+import org.opencds.cqf.fhir.utility.client.Clients;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.cql.evaluator.fhir.util.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;

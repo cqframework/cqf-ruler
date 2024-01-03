@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.elasticsearch.common.Strings;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.fhir.utility.Resources;
 

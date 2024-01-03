@@ -2,9 +2,9 @@ package org.opencds.cqf.ruler.capability;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 
 import ca.uhn.fhir.jpa.api.config.JpaStorageSettings;
+import jakarta.servlet.http.HttpServletRequest;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;

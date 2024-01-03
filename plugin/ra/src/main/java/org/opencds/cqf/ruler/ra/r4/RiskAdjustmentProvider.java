@@ -1,8 +1,5 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +15,7 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
+
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Resource;
@@ -32,6 +30,9 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 @Configurable
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
@@ -62,7 +63,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(
 				theId, periodStart.getValueAsString(), periodEnd.getValueAsString(), null, subject,
-				null, null, null, null, null, requestDetails);
+				null, null, null, null, null, null, requestDetails);
 
 		Parameters riskAdjustmentParameters = new Parameters();
 

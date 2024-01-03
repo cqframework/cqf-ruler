@@ -27,5 +27,10 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-storage-cr</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
