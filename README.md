@@ -129,6 +129,36 @@ Inquires for commercial support can be directed to [info@alphora.com](info@alpho
 
 [CQL Support for VS Code](https://marketplace.visualstudio.com/items?itemName=cqframework.cql) - CQL IDE plugin with syntax highlighting, linting, and local CQL evaluation.
 
+## Operation Migration
+
+Several operations that once were built and exposed in the cqf-ruler have since migrated upstream into [Clinical-Reasoning](https://github.com/cqframework/clinical-reasoning) 
+and exposed in versions of [Hapi-Fhir](https://github.com/hapifhir/hapi-fhir) & [Hapi-Fhir-JpaServer-Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter). 
+
+This table maintains a current view of what operations have migrated out of this project and which are remaining. 
+
+- Migrated = source code in Clinical-Reasoning
+- To Do = source code in Cqf-Ruler
+
+|     Plugin            |     ResourceType             |     Operation                       |     Status      |
+|-----------------------|------------------------------|-------------------------------------|-----------------|
+|     CR                |     Measure                  |     $evaluate-measure               |     migrated    |
+|     CR                |     Measure                  |     $submit-data                    |     migrated    |
+|     CR                |     Measure                  |     $care-gaps                      |     migrated    |
+|     CR                |     Measure                  |     $data-requirements              |     To do       |
+|     CR                |     Measure                  |     $collect-data                   |     To do       |
+|     CR                |     PlanDefinition           |     $apply                          |     migrated    |
+|     CR                |     PlanDefinition           |     $package                        |     migrated    |
+|     CR                |     ActivityDefinition       |     $apply                          |     migrated    |
+|     CPG               |     NA                       |     $cql                            |     migrated    |
+|     CPG               |     Library                  |     $evaluate                       |     migrated    |
+|     SDC               |     Questionnaire            |     $package                        |     migrated    |
+|     SDC               |     Questionnaire            |     $populate                       |     migrated    |
+|     SDC               |     QuestionnaireResponse    |     $extract                        |     migrated    |
+|     SDC               |     Observation              |     $transform                      |     To do       |
+|     RA                |     Measure                  |     $davinci-ra.evaluate-measure    |     To do       |
+|     Case-Reporting    |     MeasureReport            |     $extract-line-list-data         |     To do       |
+|     Case-Reporting    |     NA                       |     $process-message-bundle         |     To do       |
+
 ## License
 
 Copyright 2019+ Dynamic Content Group, LLC (dba Alphora)
