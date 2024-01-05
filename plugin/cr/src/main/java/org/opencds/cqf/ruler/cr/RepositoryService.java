@@ -83,8 +83,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
-				HapiFhirRepository fhirDal = this.getRepository(requestDetails);
-				MetadataResource resource = (MetadataResource)fhirDal.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
+				HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+				MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
@@ -142,8 +142,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
-		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
-		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		return transaction(this.artifactProcessor.createDraftBundle(theId, hapiFhirRepository, version));
 	}
 	/**
 	 * Sets the status of an existing artifact to Active if it has status Draft.
@@ -174,7 +174,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		} catch (FHIRException e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
-		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
 		return transaction(this.artifactProcessor.createReleaseBundle(
 			theId, 
 			releaseLabel, 
@@ -182,7 +182,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			versionBehaviorCode,
 			latestFromTxServer != null && latestFromTxServer.getValue(),
 			experimentalBehaviorCode,
-			fhirDal));
+			hapiFhirRepository));
 	}
 
 	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
@@ -204,10 +204,10 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
 		) throws FHIRException {
-		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
 		return this.artifactProcessor.createPackageBundle(
 			theId,
-			fhirDal,
+			hapiFhirRepository,
 			capability,
 			include,
 			canonicalVersion,
@@ -226,8 +226,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
 
-		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
-		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		return (IBaseResource)this.artifactProcessor.revise(hapiFhirRepository, (MetadataResource) resource);
 	}
 
 	@Operation(name = "$validate", idempotent = true, global = true, type = MetadataResource.class)
