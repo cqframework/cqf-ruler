@@ -18,7 +18,6 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
-import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -27,49 +26,24 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.ChargeItemDefinition;
-import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.CompartmentDefinition;
-import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.EffectEvidenceSynthesis;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.EventDefinition;
-import org.hl7.fhir.r4.model.Evidence;
-import org.hl7.fhir.r4.model.EvidenceVariable;
-import org.hl7.fhir.r4.model.ExampleScenario;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.GraphDefinition;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.ImplementationGuide;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MessageDefinition;
 import org.hl7.fhir.r4.model.MetadataResource;
-import org.hl7.fhir.r4.model.NamingSystem;
-import org.hl7.fhir.r4.model.OperationDefinition;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.Questionnaire;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.ResearchDefinition;
-import org.hl7.fhir.r4.model.ResearchElementDefinition;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.RiskEvidenceSynthesis;
-import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.r4.model.StructureMap;
-import org.hl7.fhir.r4.model.TerminologyCapabilities;
-import org.hl7.fhir.r4.model.TestScript;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -77,6 +51,7 @@ import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -185,37 +160,6 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-	public static Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
-		put(ResourceType.ActivityDefinition, ActivityDefinition.class);
-		put(ResourceType.CapabilityStatement, CapabilityStatement.class);
-		put(ResourceType.ChargeItemDefinition, ChargeItemDefinition.class);
-		put(ResourceType.CompartmentDefinition, CompartmentDefinition.class);
-		put(ResourceType.ConceptMap, ConceptMap.class);
-		put(ResourceType.EffectEvidenceSynthesis, EffectEvidenceSynthesis.class);
-		put(ResourceType.EventDefinition, EventDefinition.class);
-		put(ResourceType.Evidence, Evidence.class);
-		put(ResourceType.EvidenceVariable, EvidenceVariable.class);
-		put(ResourceType.ExampleScenario, ExampleScenario.class);
-		put(ResourceType.GraphDefinition, GraphDefinition.class);
-		put(ResourceType.ImplementationGuide, ImplementationGuide.class);
-		put(ResourceType.Library, Library.class);
-		put(ResourceType.Measure, Measure.class);
-		put(ResourceType.MessageDefinition, MessageDefinition.class);
-		put(ResourceType.NamingSystem, NamingSystem.class);
-		put(ResourceType.OperationDefinition, OperationDefinition.class);
-		put(ResourceType.PlanDefinition, PlanDefinition.class);
-		put(ResourceType.Questionnaire, Questionnaire.class);
-		put(ResourceType.ResearchDefinition, ResearchDefinition.class);
-		put(ResourceType.ResearchElementDefinition, ResearchElementDefinition.class);
-		put(ResourceType.RiskEvidenceSynthesis, RiskEvidenceSynthesis.class);
-		put(ResourceType.SearchParameter, SearchParameter.class);
-		put(ResourceType.StructureDefinition, StructureDefinition.class);
-		put(ResourceType.StructureMap, StructureMap.class);
-		put(ResourceType.TerminologyCapabilities, TerminologyCapabilities.class);
-		put(ResourceType.TestScript, TestScript.class);
-		put(ResourceType.ValueSet, ValueSet.class);
-		put(ResourceType.CodeSystem, CodeSystem.class);
-	}};
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		BundleEntryComponent entry = new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
@@ -366,7 +310,7 @@ public class KnowledgeArtifactProcessor {
 	 */
 	public Bundle createDraftBundle(IdType baseArtifactId, HapiFhirRepository fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
-		MetadataResource baseArtifact = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(baseArtifactId.getResourceType())), baseArtifactId);
+		MetadataResource baseArtifact = (MetadataResource)fhirDal.read(ResourceClassMapHelper.getClass(baseArtifactId.getResourceType()), baseArtifactId);
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
@@ -553,7 +497,7 @@ public class KnowledgeArtifactProcessor {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
 		checkReleaseVersion(version, versionBehavior);
-		MetadataResource rootArtifact = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(idType.getResourceType())),idType);
+		MetadataResource rootArtifact = (MetadataResource)fhirDal.read(ResourceClassMapHelper.getClass(idType.getResourceType()),idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		checkReleasePreconditions(rootArtifact, currentApprovalDate);
@@ -846,7 +790,7 @@ public class KnowledgeArtifactProcessor {
 		if (count != null && count < 0) {
 			throw new UnprocessableEntityException("'count' must be non-negative");
 		}
-		MetadataResource resource = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(id.getResourceType())), id);
+		MetadataResource resource = (MetadataResource)fhirDal.read(ResourceClassMapHelper.getClass(id.getResourceType()), id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
 		Bundle packagedBundle = new Bundle();
 		if (include != null
@@ -1173,7 +1117,7 @@ public class KnowledgeArtifactProcessor {
 	
 	/* $revise */
 	public MetadataResource revise(HapiFhirRepository fhirDal, MetadataResource resource) {
-		MetadataResource existingResource = (MetadataResource)fhirDal.read(resourceTypeToClass.get(resource.getResourceType()),resource.getIdElement());
+		MetadataResource existingResource = (MetadataResource)fhirDal.read(ResourceClassMapHelper.resourceTypeToClass.get(resource.getResourceType()), resource.getIdElement());
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}

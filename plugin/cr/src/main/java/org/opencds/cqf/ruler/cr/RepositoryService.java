@@ -23,11 +23,11 @@ import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
 import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -84,7 +84,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
 				HapiFhirRepository fhirDal = this.getRepository(requestDetails);
-				MetadataResource resource = (MetadataResource)fhirDal.read(KnowledgeArtifactProcessor.resourceTypeToClass.get(ResourceType.fromCode(theId.getResourceType())), theId);
+				MetadataResource resource = (MetadataResource)fhirDal.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
