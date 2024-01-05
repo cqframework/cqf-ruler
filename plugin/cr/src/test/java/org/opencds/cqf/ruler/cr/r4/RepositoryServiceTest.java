@@ -139,6 +139,36 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		});
 	}
 	@Test
+	void draftOperation_no_effectivePeriod_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Library baseLib = getClient()
+			.read()
+			.resource(Library.class)
+			.withId(specificationLibReference.split("/")[1])
+			.execute();
+		assertTrue(baseLib.hasEffectivePeriod());
+		PlanDefinition planDef = getClient()
+			.read()
+			.resource(PlanDefinition.class)
+			.withId("plandefinition-ersd-instance-example")
+			.execute();
+		assertTrue(planDef.hasEffectivePeriod());
+		String version = "1.01.21.273";
+		Parameters params = parameters(part("version", version) );
+		Bundle returnedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		getMetadataResourcesFromBundle(returnedBundle)
+			.stream()
+			.forEach(resource -> {
+				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+				assertFalse(adapter.getEffectivePeriod().hasStart() || adapter.getEffectivePeriod().hasEnd());
+			});
+ 	}
+	@Test
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");

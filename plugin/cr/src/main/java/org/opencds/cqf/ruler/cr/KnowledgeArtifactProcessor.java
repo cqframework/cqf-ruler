@@ -444,6 +444,7 @@ public class KnowledgeArtifactProcessor {
 
 		if (newResource == null) {
 			KnowledgeArtifactAdapter<MetadataResource> sourceResourceAdapter = new KnowledgeArtifactAdapter<>(resourceToDraft);
+			sourceResourceAdapter.setEffectivePeriod(null);
 			newResource = sourceResourceAdapter.copy();
 			newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 			newResource.setVersion(draftVersion);
