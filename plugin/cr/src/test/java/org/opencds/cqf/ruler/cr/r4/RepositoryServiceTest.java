@@ -161,12 +161,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(params)
 			.returnResourceType(Bundle.class)
 			.execute();
-		getMetadataResourcesFromBundle(returnedBundle)
-			.stream()
-			.forEach(resource -> {
-				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
-				assertFalse(adapter.getEffectivePeriod().hasStart() || adapter.getEffectivePeriod().hasEnd());
-			});
+
+		forEachMetadataResource(returnedBundle.getEntry(), resource -> {
+			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+			assertFalse(adapter.getEffectivePeriod().hasStart() || adapter.getEffectivePeriod().hasEnd());
+		});
  	}
 	@Test
 	void draftOperation_version_conflict_test() {
