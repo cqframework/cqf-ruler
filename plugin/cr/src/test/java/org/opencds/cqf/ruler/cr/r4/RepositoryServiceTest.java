@@ -1442,6 +1442,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.map(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
 			.filter(ext -> ext != null)
 			.collect(Collectors.toList());
+	}
+	
 	void basic_artifact_diff() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
