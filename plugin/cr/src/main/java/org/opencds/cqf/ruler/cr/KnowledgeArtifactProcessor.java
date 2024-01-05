@@ -185,7 +185,7 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-	Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
+	public static Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
 		put(ResourceType.ActivityDefinition, ActivityDefinition.class);
 		put(ResourceType.CapabilityStatement, CapabilityStatement.class);
 		put(ResourceType.ChargeItemDefinition, ChargeItemDefinition.class);
@@ -326,7 +326,7 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
-	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
+	ArtifactAssessment 	createApprovalAssessment(IdType id, String artifactCommentType,
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
 	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
@@ -366,7 +366,7 @@ public class KnowledgeArtifactProcessor {
 	 */
 	public Bundle createDraftBundle(IdType baseArtifactId, HapiFhirRepository fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
-		MetadataResource baseArtifact = fhirDal.read(MetadataResource.class, baseArtifactId);
+		MetadataResource baseArtifact = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(baseArtifactId.getResourceType())), baseArtifactId);
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
@@ -553,7 +553,7 @@ public class KnowledgeArtifactProcessor {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
 		checkReleaseVersion(version, versionBehavior);
-		MetadataResource rootArtifact = fhirDal.read(MetadataResource.class,idType);
+		MetadataResource rootArtifact = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(idType.getResourceType())),idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		checkReleasePreconditions(rootArtifact, currentApprovalDate);
@@ -846,7 +846,7 @@ public class KnowledgeArtifactProcessor {
 		if (count != null && count < 0) {
 			throw new UnprocessableEntityException("'count' must be non-negative");
 		}
-		MetadataResource resource = fhirDal.read(MetadataResource.class, id);
+		MetadataResource resource = (MetadataResource)fhirDal.read(resourceTypeToClass.get(ResourceType.fromCode(id.getResourceType())), id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
 		Bundle packagedBundle = new Bundle();
 		if (include != null
@@ -1173,7 +1173,7 @@ public class KnowledgeArtifactProcessor {
 	
 	/* $revise */
 	public MetadataResource revise(HapiFhirRepository fhirDal, MetadataResource resource) {
-		MetadataResource existingResource = fhirDal.read(MetadataResource.class,resource.getIdElement());
+		MetadataResource existingResource = (MetadataResource)fhirDal.read(resourceTypeToClass.get(resource.getResourceType()),resource.getIdElement());
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}
