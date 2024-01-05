@@ -1526,11 +1526,11 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
-				resource = retrieveResourcesByCanonical(url, fhirDal);
+				resource = retrieveResourcesByCanonical(url, hapiFhirRepository);
 			} catch (ResourceNotFoundException e) {
 				// ignore
 			}

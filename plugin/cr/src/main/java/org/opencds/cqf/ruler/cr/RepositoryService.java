@@ -284,12 +284,14 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		@OperationParam(name = "compareExecutable", typeName = "Boolean") IPrimitiveType<Boolean> compareExecutable,
 		@OperationParam(name = "compareComputable", typeName = "Boolean") IPrimitiveType<Boolean> compareComputable
 	) throws UnprocessableEntityException, ResourceNotFoundException{
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		IBaseResource theSourceResource = fhirDal.read(new IdType(source));
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		IdType sourceId = new IdType(source);
+		IBaseResource theSourceResource = hapiFhirRepository.read(ResourceClassMapHelper.getClass(sourceId.getResourceType()), sourceId);
 		if (theSourceResource == null || !(theSourceResource instanceof MetadataResource)) {
 			throw new UnprocessableEntityException("Source resource must exist and be a Knowledge Artifact type.");
 		}
-		IBaseResource theTargetResource = fhirDal.read(new IdType(target));
+		IdType targetId = new IdType(target);
+		IBaseResource theTargetResource = hapiFhirRepository.read(ResourceClassMapHelper.getClass(targetId.getResourceType()), targetId);
 		if (theTargetResource == null || !(theTargetResource instanceof MetadataResource)) {
 			throw new UnprocessableEntityException("Target resource must exist and be a Knowledge Artifact type.");
 		}
@@ -297,7 +299,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
 		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
-		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(),dao);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource, (MetadataResource)theTargetResource, this.getFhirContext(), hapiFhirRepository, compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(), dao);
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
