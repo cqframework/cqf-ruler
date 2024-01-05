@@ -77,6 +77,10 @@ public class ResourceClassMapHelper {
     } catch (FHIRException e) {
       throw new UnprocessableEntityException("Could not find resource type : " + resourceType);
     }
-    return resourceTypeToClass.get(type);
+    Class<? extends IBaseResource> retval = resourceTypeToClass.get(type);
+    if (retval == null) { 
+      throw new UnprocessableEntityException(resourceType + " is not a valid KnowledgeArtifact resource type");
+    }
+    return retval;
   } 
 }
