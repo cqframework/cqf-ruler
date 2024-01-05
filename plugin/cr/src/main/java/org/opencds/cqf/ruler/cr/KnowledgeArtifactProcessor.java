@@ -64,9 +64,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
+import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.patch.FhirPatch;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -1145,7 +1145,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, FhirDal fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
@@ -1398,7 +1398,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
@@ -1526,7 +1526,7 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
