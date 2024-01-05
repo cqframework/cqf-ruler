@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
@@ -28,11 +27,12 @@ import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -45,10 +45,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.FhirValidator;
 
-public class RepositoryService extends DaoRegistryOperationProvider {
-
-	@Autowired
-	private JpaFhirDalFactory fhirDalFactory;
+public class RepositoryService extends HapiFhirRepositoryProvider {
 
 	@Autowired
 	private KnowledgeArtifactProcessor artifactProcessor;
@@ -85,8 +82,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
-				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-				MetadataResource resource = (MetadataResource) fhirDal.read(theId);
+				HapiFhirRepository fhirDal = this.getRepository(requestDetails);
+				MetadataResource resource = fhirDal.read(MetadataResource.class, theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
@@ -144,7 +141,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
 		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
 	}
 	/**
@@ -176,7 +173,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		} catch (FHIRException e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
 		return transaction(this.artifactProcessor.createReleaseBundle(
 			theId, 
 			releaseLabel, 
@@ -206,7 +203,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
 		) throws FHIRException {
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
 		return this.artifactProcessor.createPackageBundle(
 			theId,
 			fhirDal,
@@ -228,7 +225,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
 
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
+		HapiFhirRepository fhirDal = this.getRepository(requestDetails);
 		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
 	}
 

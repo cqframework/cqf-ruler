@@ -18,6 +18,7 @@ import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Basic;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
@@ -26,24 +27,49 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.ChargeItemDefinition;
+import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.CompartmentDefinition;
+import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.EffectEvidenceSynthesis;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.EventDefinition;
+import org.hl7.fhir.r4.model.Evidence;
+import org.hl7.fhir.r4.model.EvidenceVariable;
+import org.hl7.fhir.r4.model.ExampleScenario;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.GraphDefinition;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.ImplementationGuide;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MessageDefinition;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.NamingSystem;
+import org.hl7.fhir.r4.model.OperationDefinition;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Questionnaire;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.ResearchDefinition;
+import org.hl7.fhir.r4.model.ResearchElementDefinition;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.RiskEvidenceSynthesis;
+import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r4.model.StructureMap;
+import org.hl7.fhir.r4.model.TerminologyCapabilities;
+import org.hl7.fhir.r4.model.TestScript;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -55,6 +81,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -158,7 +185,37 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-
+	Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
+		put(ResourceType.ActivityDefinition, ActivityDefinition.class);
+		put(ResourceType.CapabilityStatement, CapabilityStatement.class);
+		put(ResourceType.ChargeItemDefinition, ChargeItemDefinition.class);
+		put(ResourceType.CompartmentDefinition, CompartmentDefinition.class);
+		put(ResourceType.ConceptMap, ConceptMap.class);
+		put(ResourceType.EffectEvidenceSynthesis, EffectEvidenceSynthesis.class);
+		put(ResourceType.EventDefinition, EventDefinition.class);
+		put(ResourceType.Evidence, Evidence.class);
+		put(ResourceType.EvidenceVariable, EvidenceVariable.class);
+		put(ResourceType.ExampleScenario, ExampleScenario.class);
+		put(ResourceType.GraphDefinition, GraphDefinition.class);
+		put(ResourceType.ImplementationGuide, ImplementationGuide.class);
+		put(ResourceType.Library, Library.class);
+		put(ResourceType.Measure, Measure.class);
+		put(ResourceType.MessageDefinition, MessageDefinition.class);
+		put(ResourceType.NamingSystem, NamingSystem.class);
+		put(ResourceType.OperationDefinition, OperationDefinition.class);
+		put(ResourceType.PlanDefinition, PlanDefinition.class);
+		put(ResourceType.Questionnaire, Questionnaire.class);
+		put(ResourceType.ResearchDefinition, ResearchDefinition.class);
+		put(ResourceType.ResearchElementDefinition, ResearchElementDefinition.class);
+		put(ResourceType.RiskEvidenceSynthesis, RiskEvidenceSynthesis.class);
+		put(ResourceType.SearchParameter, SearchParameter.class);
+		put(ResourceType.StructureDefinition, StructureDefinition.class);
+		put(ResourceType.StructureMap, StructureMap.class);
+		put(ResourceType.TerminologyCapabilities, TerminologyCapabilities.class);
+		put(ResourceType.TestScript, TestScript.class);
+		put(ResourceType.ValueSet, ValueSet.class);
+		put(ResourceType.CodeSystem, CodeSystem.class);
+	}};
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		BundleEntryComponent entry = new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
@@ -191,30 +248,30 @@ public class KnowledgeArtifactProcessor {
 		return request;
 	}
 
-	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+	private Bundle searchResourceByUrl(String url, HapiFhirRepository fhirDal) {
+		Map<String, List<IQueryParameterType>> searchParams = new HashMap<>();
 
 		List<IQueryParameterType> urlList = new ArrayList<>();
 		urlList.add(new UriParam(Canonicals.getUrl(url)));
-		searchParams.put("url", List.of(urlList));
+		searchParams.put("url", urlList);
 
 		List<IQueryParameterType> versionList = new ArrayList<>();
 		String version = Canonicals.getVersion(url);
 		if (version != null && !version.isEmpty()) {
 			versionList.add(new TokenParam(Canonicals.getVersion((url))));
-			searchParams.put("version", List.of(versionList));
+			searchParams.put("version", versionList);
 		}
 
-		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		Bundle searchResultsBundle = (Bundle)fhirDal.search(Bundle.class,resourceTypeToClass.get(ResourceType.fromCode(Canonicals.getResourceType(url))), searchParams);
 		return searchResultsBundle;
 	}
 
-	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+	private Bundle searchArtifactAssessmentForArtifact(IdType reference, HapiFhirRepository fhirDal) {
+		Map<String, List<IQueryParameterType>> searchParams = new HashMap<>();
 		List<IQueryParameterType> urlList = new ArrayList<>();
 		urlList.add(new ReferenceParam(reference));
-		searchParams.put("artifact", List.of(urlList));
-		Bundle searchResultsBundle = (Bundle)fhirDal.search("Basic", searchParams);
+		searchParams.put("artifact", urlList);
+		Bundle searchResultsBundle = (Bundle)fhirDal.search(Bundle.class,Basic.class, searchParams);
 		return searchResultsBundle;
 	}
 
@@ -240,7 +297,7 @@ public class KnowledgeArtifactProcessor {
 		return searchResultsBundle;
 	}
 
-	private MetadataResource retrieveResourcesByCanonical(String reference, FhirDal fhirDal) throws ResourceNotFoundException {
+	private MetadataResource retrieveResourcesByCanonical(String reference, HapiFhirRepository fhirDal) throws ResourceNotFoundException {
 		Bundle referencedResourceBundle = searchResourceByUrl(reference, fhirDal);
 		Optional<MetadataResource> referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
 		if (referencedResource.isEmpty()) {
@@ -307,9 +364,9 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
+	public Bundle createDraftBundle(IdType baseArtifactId, HapiFhirRepository fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
-		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
+		MetadataResource baseArtifact = fhirDal.read(MetadataResource.class, baseArtifactId);
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
@@ -397,7 +454,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	
-	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
+	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, HapiFhirRepository fhirDal, String version, List<MetadataResource> resourcesToCreate) {
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(resourceToDraft.getUrl()) + "|" + draftVersion;
 
@@ -436,7 +493,7 @@ public class KnowledgeArtifactProcessor {
 		return resourcesToCreate;
 	}
 	
-	private void processReferencedResourceForDraft(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version, List<MetadataResource> transactionBundle) {
+	private void processReferencedResourceForDraft(HapiFhirRepository fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version, List<MetadataResource> transactionBundle) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
@@ -490,13 +547,13 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
 		checkReleaseVersion(version, versionBehavior);
-		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
+		MetadataResource rootArtifact = fhirDal.read(MetadataResource.class,idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		checkReleasePreconditions(rootArtifact, currentApprovalDate);
@@ -596,7 +653,7 @@ public class KnowledgeArtifactProcessor {
 					.stream().anyMatch(ext -> ext.getUrl().equalsIgnoreCase(url))))
 			.collect(Collectors.toList());
 	}
-	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
+	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, HapiFhirRepository fhirDal){
 		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
 		// find any artifact assessments and update those as part of the bundle
 		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
@@ -658,7 +715,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
-																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
 		// Step 1: Update the Date and the version
@@ -709,7 +766,7 @@ public class KnowledgeArtifactProcessor {
 
 		return resourcesToUpdate;
 	}
-	private String tryUpdateReferenceToLatestActiveVersion(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
+	private String tryUpdateReferenceToLatestActiveVersion(String inputReference, HapiFhirRepository fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
 		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", fhirDal));
 		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
 		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
@@ -755,7 +812,7 @@ public class KnowledgeArtifactProcessor {
 		return updatedReference;
 	}
 
-	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
+	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository fhirDal) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
 		if (CRMIReleaseExperimentalBehaviorCodes.WARN == experimentalBehavior && resource.getExperimental()) {
@@ -779,7 +836,7 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
+	public Bundle createPackageBundle(IdType id, HapiFhirRepository fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
 		if (contentEndpoint != null || terminologyEndpoint != null) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
@@ -789,7 +846,7 @@ public class KnowledgeArtifactProcessor {
 		if (count != null && count < 0) {
 			throw new UnprocessableEntityException("'count' must be non-negative");
 		}
-		MetadataResource resource = (MetadataResource) fhirDal.read(id);
+		MetadataResource resource = fhirDal.read(MetadataResource.class, id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
 		Bundle packagedBundle = new Bundle();
 		if (include != null
@@ -962,7 +1019,7 @@ public class KnowledgeArtifactProcessor {
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
-		FhirDal fhirDal,
+		HapiFhirRepository fhirDal,
 		List<String> capability,
 		List<String> include,
 		List<CanonicalType> canonicalVersion,
@@ -1115,8 +1172,8 @@ public class KnowledgeArtifactProcessor {
 	}
 	
 	/* $revise */
-	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
-		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+	public MetadataResource revise(HapiFhirRepository fhirDal, MetadataResource resource) {
+		MetadataResource existingResource = fhirDal.read(MetadataResource.class,resource.getIdElement());
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}
