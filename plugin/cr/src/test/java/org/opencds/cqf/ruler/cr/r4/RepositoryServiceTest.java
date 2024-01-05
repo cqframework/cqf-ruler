@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -42,6 +43,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -95,10 +97,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		Library baseLib = getClient()
-		.read()
-		.resource(Library.class)
-		.withId(specificationLibReference.split("/")[1])
-		.execute();
+			.read()
+			.resource(Library.class)
+			.withId(specificationLibReference.split("/")[1])
+			.execute();
 		// Root Artifact must have approval date, releaseLabel and releaseDescription for this test
 		assertTrue(baseLib.hasApprovalDate());
 		assertTrue(baseLib.hasExtension(KnowledgeArtifactProcessor.releaseDescriptionUrl));
@@ -126,9 +128,46 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertFalse(lib.hasExtension(KnowledgeArtifactProcessor.releaseLabelUrl));
 		List<RelatedArtifact> relatedArtifacts = lib.getRelatedArtifact();
 		assertTrue(!relatedArtifacts.isEmpty());
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(0).getResource()).equals(draftedVersion));
-		assertTrue(Canonicals.getVersion(relatedArtifacts.get(1).getResource()).equals(draftedVersion));
+		forEachMetadataResource(returnedBundle.getEntry(), resource -> {
+			List<RelatedArtifact> relatedArtifacts2 = new KnowledgeArtifactAdapter<MetadataResource>(resource).getRelatedArtifact();
+			if (relatedArtifacts2 != null && relatedArtifacts2.size() > 0) {
+				for (RelatedArtifact relatedArtifact : relatedArtifacts2) {
+					if (KnowledgeArtifactAdapter.checkIfRelatedArtifactIsOwned(relatedArtifact)) {
+						assertTrue(Canonicals.getVersion(relatedArtifact.getResource()).equals(draftedVersion));
+					}
+				}
+			}
+		});
 	}
+	@Test
+	void draftOperation_no_effectivePeriod_test() {
+		loadTransaction("ersd-active-transaction-bundle-example.json");
+		Library baseLib = getClient()
+			.read()
+			.resource(Library.class)
+			.withId(specificationLibReference.split("/")[1])
+			.execute();
+		assertTrue(baseLib.hasEffectivePeriod());
+		PlanDefinition planDef = getClient()
+			.read()
+			.resource(PlanDefinition.class)
+			.withId("plandefinition-ersd-instance-example")
+			.execute();
+		assertTrue(planDef.hasEffectivePeriod());
+		String version = "1.01.21.273";
+		Parameters params = parameters(part("version", version) );
+		Bundle returnedBundle = getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$draft")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+
+		forEachMetadataResource(returnedBundle.getEntry(), resource -> {
+			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
+			assertFalse(adapter.getEffectivePeriod().hasStart() || adapter.getEffectivePeriod().hasEnd());
+		});
+ 	}
 	@Test
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
@@ -442,8 +481,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-		returnResource.getEntry()
-			.stream()
+		forEachMetadataResource(returnResource.getEntry(), resource -> {
+			assertNotNull(resource);
+			if(!resource.getClass().getSimpleName().equals("ValueSet")){
+				KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
+				assertTrue(adapter.getEffectivePeriod().hasStart());
+				Date start = adapter.getEffectivePeriod().getStart();
+				Calendar calendar = new GregorianCalendar();
+				calendar.setTime(start);
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH) + 1;
+				int day = calendar.get(Calendar.DAY_OF_MONTH);
+				String startString = year + "-" + month + "-" + day;
+				assertTrue(startString.equals(effectivePeriodToPropagate));
+			}
+		});
+	}
+	private void forEachMetadataResource(List<BundleEntryComponent> entries, Consumer<MetadataResource> callback) {
+		entries.stream()
 			.map(entry -> entry.getResponse().getLocation())
 			.map(location -> {
 				switch (location.split("/")[0]) {
@@ -461,23 +516,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 						return null;
 				}
 			})
-			.forEach(resource -> {
-				assertNotNull(resource);
-				if(!resource.getClass().getSimpleName().equals("ValueSet")){
-					KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
-					assertTrue(adapter.getEffectivePeriod().hasStart());
-					Date start = adapter.getEffectivePeriod().getStart();
-					Calendar calendar = new GregorianCalendar();
-					calendar.setTime(start);
-					int year = calendar.get(Calendar.YEAR);
-					int month = calendar.get(Calendar.MONTH) + 1;
-					int day = calendar.get(Calendar.DAY_OF_MONTH);
-					String startString = year + "-" + month + "-" + day;
-					assertTrue(startString.equals(effectivePeriodToPropagate));
-				}
-			});
+			.forEach(callback);
 	}
-
 	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
@@ -1402,5 +1442,150 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.map(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
 			.filter(ext -> ext != null)
 			.collect(Collectors.toList());
+	void basic_artifact_diff() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation())
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		List<ParametersParameterComponent> parameters = returnedParams.getParameter();
+		List<ParametersParameterComponent> libraryReplaceOperations = getOperationsByType(parameters, "replace");
+		List<ParametersParameterComponent> libraryInsertOperations = getOperationsByType(parameters, "insert");
+		List<ParametersParameterComponent> libraryDeleteOperations = getOperationsByType(parameters, "delete");
+		List<String> libraryReplacedPaths = List.of(
+			"Library.id",
+			"Library.version",
+			"Library.status",
+			"Library.relatedArtifact[0].resource", // planDefinition version update
+			"Library.relatedArtifact[1].resource", // RCTC lib version update
+			"Library.relatedArtifact[4].resource"  // DXTC Grouper version update
+		);
+		List<String> libraryDeletedPaths = List.of(
+			"Library.relatedArtifact[5]"  // deleted DXTC leaf VS
+		);
+		List<String> libraryInsertedPaths = List.of(
+			"Library.relatedArtifact"  // new DXTC leaf VS
+		);
+		for (ParametersParameterComponent param: libraryReplaceOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryReplacedPaths.contains(path));
+		}
+		for (ParametersParameterComponent param: libraryInsertOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryInsertedPaths.contains(path));
+		}
+		for (ParametersParameterComponent param: libraryDeleteOperations) {
+			String path = param.getPart().stream()
+				.filter(part -> part.getName().equals("path"))
+				.map(part -> ((StringType)part.getValue()).getValue())
+				.findFirst().get();
+			assertTrue(libraryDeletedPaths.contains(path));
+		}
+		List<String> libraryNestedChanges = List.of(
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://notOwnedTest.com/Library/notOwnedRoot", // will be empty / unable to retrieve
+			"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163", // the new VS added to the DXTC
+			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6" // the VS deleted from the DXTC
+		);
+		libraryNestedChanges.stream()
+			.forEach(nestedChangeUrl -> {
+				ParametersParameterComponent nestedChange = returnedParams.getParameter(nestedChangeUrl);
+				assertNotNull(nestedChange);
+				if (nestedChange.hasResource()) {
+					assertTrue(nestedChange.getResource() instanceof Parameters);
+				}
+			});
+	}
+	@Test
+	void artifact_diff_compare_computable() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation()),
+			part("compareComputable", new BooleanType(true))
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
+			.filter(p -> !p.getName().equals("operation"))
+			.map(p -> (Parameters)p.getResource())
+			.filter(p -> p != null)
+			.collect(Collectors.toList());
+		assertTrue(nestedChanges.size() == 3);
+		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
+		// delete the old leaf
+		assertTrue(deleteOperations.size() == 1);
+		// there aren't actually 2 operations here
+		assertTrue(insertOperations.size() == 2);
+		String path1 = insertOperations.get(0).getPart().stream().filter(p -> p.getName().equals("path")).map(p -> ((StringType)p.getValue()).getValue()).findFirst().get();
+		String path2 = insertOperations.get(1).getPart().stream().filter(p -> p.getName().equals("path")).map(p -> ((StringType)p.getValue()).getValue()).findFirst().get();
+		// insert the new leaf; adding a node takes multiple operations if
+		// the thing being added isn't a defined complex FHIR type
+		assertTrue(path1.equals("ValueSet.compose.include"));
+		assertTrue(path2.equals("ValueSet.compose.include[1].valueSet"));
+	}
+	@Test
+	void artifact_diff_compare_executable() {
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation()),
+			part("compareExecutable", new BooleanType(true))
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
+			.filter(p -> !p.getName().equals("operation"))
+			.map(p -> (Parameters)p.getResource())
+			.filter(p -> p != null)
+			.collect(Collectors.toList());
+		assertTrue(nestedChanges.size() == 3);
+		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
+		// old codes removed
+		assertTrue(deleteOperations.size() == 23);
+		// new codes added
+		assertTrue(insertOperations.size() == 32);
+	}
+	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
+		return parameters.stream().filter(
+			p -> p.getName().equals("operation")
+		    && p.getPart().stream().anyMatch(part -> part.getName().equals("type") && ((CodeType)part.getValue()).getCode().equals(type))
+			).collect(Collectors.toList());
 	}
 }
