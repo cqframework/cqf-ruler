@@ -22,8 +22,10 @@ import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
@@ -33,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -273,6 +276,30 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		} else {
 			throw new InternalErrorException("Could not load FHIR Context");
 		}
+	}
+
+	@Operation(name = "$artifact-diff", idempotent = true, global = true, type = MetadataResource.class)
+	@Description(shortDefinition = "$artifact-diff", value = "Diff two knowledge artifacts")
+	public Parameters crmiArtifactDiff(RequestDetails requestDetails, 
+		@OperationParam(name = "source") String source,
+		@OperationParam(name = "target") String target,
+		@OperationParam(name = "compareExecutable", typeName = "Boolean") IPrimitiveType<Boolean> compareExecutable,
+		@OperationParam(name = "compareComputable", typeName = "Boolean") IPrimitiveType<Boolean> compareComputable
+	) throws UnprocessableEntityException, ResourceNotFoundException{
+		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
+		IBaseResource theSourceResource = fhirDal.read(new IdType(source));
+		if (theSourceResource == null || !(theSourceResource instanceof MetadataResource)) {
+			throw new UnprocessableEntityException("Source resource must exist and be a Knowledge Artifact type.");
+		}
+		IBaseResource theTargetResource = fhirDal.read(new IdType(target));
+		if (theTargetResource == null || !(theTargetResource instanceof MetadataResource)) {
+			throw new UnprocessableEntityException("Target resource must exist and be a Knowledge Artifact type.");
+		}
+		if (theSourceResource.getClass() != theTargetResource.getClass()) {
+			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
+		}
+		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(),dao);
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
