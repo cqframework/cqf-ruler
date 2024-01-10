@@ -39,7 +39,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
 public class ResourceClassMapHelper {
-  public static Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
+  public static final Map<ResourceType, Class<? extends IBaseResource>> resourceTypeToClass  = new HashMap<ResourceType, Class<? extends IBaseResource>>() {{
 		put(ResourceType.ActivityDefinition, ActivityDefinition.class);
 		put(ResourceType.CapabilityStatement, CapabilityStatement.class);
 		put(ResourceType.ChargeItemDefinition, ChargeItemDefinition.class);
@@ -70,6 +70,7 @@ public class ResourceClassMapHelper {
 		put(ResourceType.ValueSet, ValueSet.class);
 		put(ResourceType.CodeSystem, CodeSystem.class);
 	}};
+
   public static Class<? extends IBaseResource> getClass(String resourceType) throws UnprocessableEntityException {
     ResourceType type = null;
     try {
