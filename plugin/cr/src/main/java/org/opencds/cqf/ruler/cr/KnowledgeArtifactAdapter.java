@@ -21,13 +21,15 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.utility.SemanticVersion;
 
-public class KnowledgeArtifactAdapter<T extends MetadataResource> {
+public class KnowledgeArtifactAdapter<T extends MetadataResource> implements Cloneable {
 	protected T resource;
 
 	public KnowledgeArtifactAdapter(T resource) {
 		this.resource = resource;
 	}
-
+	public KnowledgeArtifactAdapter<MetadataResource> clone() {
+		return new KnowledgeArtifactAdapter<MetadataResource>(this.copy());
+	}
 	public Date getApprovalDate() {
 		switch (resource.getClass().getSimpleName()) {
 			case "ActivityDefinition":
@@ -142,10 +144,10 @@ public class KnowledgeArtifactAdapter<T extends MetadataResource> {
 	}
 	private List<RelatedArtifact> getOwnedRelatedArtifactsOfKnowledgeArtifact() {
 		return getRelatedArtifact().stream()
-			.filter(ra -> checkIfRelatedArtifactIsOwned(ra))
+			.filter(KnowledgeArtifactAdapter::checkIfRelatedArtifactIsOwned)
 			.collect(Collectors.toList());
 	}
-	static Boolean checkIfRelatedArtifactIsOwned(RelatedArtifact ra){
+	public static Boolean checkIfRelatedArtifactIsOwned(RelatedArtifact ra){
 		return ra.getExtension()
 					.stream()
 					.filter(ext -> ext.getUrl().equals("http://hl7.org/fhir/StructureDefinition/crmi-isOwned"))
