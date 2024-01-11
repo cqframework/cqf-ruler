@@ -3,7 +3,7 @@
 	"type": "transaction",
 	"entry": [
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary|1.0.0.0-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary|1.2.653.1123-draft",
 			"resource": {
 				"resourceType": "Library",
 				"id": "7",
@@ -13,7 +13,7 @@
 					"source": "#FNgLVm21fIyZMxwE"
 				},
 				"url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
-				"version": "1.0.0.0-draft",
+				"version": "1.2.653.1123-draft",
 				"status": "draft",
 				"useContext": [
 					{
@@ -54,7 +54,7 @@
 							}
 						],
 						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.0.0.0-draft"
+						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.2.653.1123-draft"
 					},
 					{
 						"extension": [
@@ -64,7 +64,7 @@
 							}
 						],
 						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft"
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.653.1123-draft"
 					},
 					{
 						"type": "composed-of",
@@ -131,18 +131,18 @@
 					},
 					{
 						"type": "depends-on",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft"
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.653.1123-draft"
 					}
 				]
 			},
 			"request": {
 				"method": "POST",
 				"url": "Library/7",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary&version=1.0.0.0-draft"
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary&version=1.2.653.1123-draft"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.0.0.0-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.2.653.1123-draft",
 			"resource": {
 				"resourceType": "PlanDefinition",
 				"id": "8",
@@ -152,13 +152,13 @@
 					"source": "#FNgLVm21fIyZMxwE"
 				},
 				"url": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
-				"version": "1.0.0.0-draft",
+				"version": "1.2.653.1123-draft",
 				"status": "draft",
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
 						"label": "RCTC Value Set Library of Trigger Codes",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft"
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.653.1123-draft"
 					},
 					{
 						"type": "composed-of",
@@ -169,11 +169,11 @@
 			"request": {
 				"method": "POST",
 				"url": "PlanDefinition/8",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=1.0.0.0-draft"
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=1.2.653.1123-draft"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.2.653.1123-draft",
 			"resource": {
 				"resourceType": "Library",
 				"id": "9",
@@ -183,7 +183,7 @@
 					"source": "#FNgLVm21fIyZMxwE"
 				},
 				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
-				"version": "1.0.0.0-draft",
+				"version": "1.2.653.1123-draft",
 				"status": "draft",
 				"relatedArtifact": [
 					{
@@ -194,7 +194,7 @@
 							}
 						],
 						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft"
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.653.1123-draft"
 					},
 					{
 						"type": "composed-of",
@@ -205,11 +205,11 @@
 			"request": {
 				"method": "POST",
 				"url": "Library/9",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/rctc&version=1.0.0.0-draft"
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/rctc&version=1.2.653.1123-draft"
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.2.653.1123-draft",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "10",
@@ -219,7 +219,7 @@
 					"source": "#YvcttWKq2KbM0Igj"
 				},
 				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-				"version": "1.0.0.0-draft",
+				"version": "1.2.653.1123-draft",
 				"status": "draft",
 				"compose": {
 					"include": [
@@ -230,7 +230,7 @@
 						},
 						{
 							"valueSet": [
-								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163"
+								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163|20220603"
 							]
 						}
 					]
@@ -259,7 +259,7 @@
 			"request": {
 				"method": "POST",
 				"url": "ValueSet/10",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/ValueSet/dxtc&version=1.0.0.0-draft"
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/ValueSet/dxtc&version=1.2.653.1123-draft"
 			}
 		},
 		{
@@ -384,21 +384,6 @@
 									"code": "767146004"
 								}
 							]
-						}
-					},
-					{
-						"code": {
-							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
-							"code": "priority"
-						},
-						"valueCodeableConcept": {
-							"coding": [
-								{
-									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
-									"code": "emergent"
-								}
-							],
-							"text": "Emergent"
 						}
 					}
 				],

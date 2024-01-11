@@ -1,6 +1,6 @@
 {
 	"resourceType": "Bundle",
-	"id": "rctc-release-2022-10-19-Bundle-rctc",
+	"id": "rctc-release-2022-11-19-Bundle-rctc",
 	"type": "transaction",
 	"timestamp": "2022-10-21T15:18:28.504-04:00",
 	"entry": [
@@ -10,7 +10,7 @@
 				"resourceType": "Library",
 				"id": "SpecificationLibrary",
 				"url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
-				"version": "2022-10-19",
+				"version": "2022-11-19",
 				"status": "active",
 				"useContext": [
 					{
@@ -55,7 +55,7 @@
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-11-19",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
@@ -128,7 +128,7 @@
 					},
 					{
 						"type": "depends-on",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19"
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-11-19"
 					}
 				]
 			},
@@ -149,7 +149,7 @@
 					{
 						"type": "depends-on",
 						"label": "RCTC Value Set Library of Trigger Codes",
-						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-10-19"
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|2022-11-19"
 					},
 					{
 						"type": "composed-of",
@@ -168,12 +168,12 @@
 				"resourceType": "Library",
 				"id": "rctc",
 				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
-				"version": "2022-10-19",
+				"version": "2022-11-19",
 				"status": "active",
 				"relatedArtifact": [
 					{
 						"type": "composed-of",
-						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-10-19",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-11-19",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
@@ -193,12 +193,12 @@
 			}
 		},
 		{
-			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|2022-11-19",
 			"resource": {
 				"resourceType": "ValueSet",
 				"id": "dxtc",
 				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
-				"version": "2022-10-19",
+				"version": "2022-11-19",
 				"status": "active",
 				"compose": {
 					"include": [
