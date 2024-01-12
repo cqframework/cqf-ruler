@@ -823,8 +823,8 @@ public class KnowledgeArtifactProcessor {
 												 Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly)
 			throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
 		if (
-				(!artifactRoute.isBlank() && !artifactRoute.isEmpty())
-					|| (!endpointUri.isBlank() && !endpointUri.isEmpty())
+				(artifactRoute != null && !artifactRoute.isBlank() && !artifactRoute.isEmpty())
+					|| (endpointUri != null && !endpointUri.isBlank() && !endpointUri.isEmpty())
 					|| contentEndpoint != null
 					|| terminologyEndpoint != null
 			) {
