@@ -709,6 +709,31 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Extension condition = maybeRelatedArtifactWithUseContextExtension.get().getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
 		assertTrue(((CodeableConcept) condition.getValue()).getCoding().get(0).getCode().equals("49649001"));
 	}
+
+	@Test
+	void release_test_condition_missing() {
+		loadTransaction("ersd-small-approved-draft-no-conditions.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3.23")),
+			part("versionBehavior", new StringType("default"))
+		);
+		UnprocessableEntityException noConditionExtension = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$release")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			// TODO: handle exception
+			noConditionExtension = e;
+		}
+		assertNotNull(noConditionExtension);
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
+	}
+
 	@Test
 	void release_test_artifactComment_updated() {
 		loadTransaction("ersd-release-missing-approvalDate-validation-bundle.json");
@@ -950,8 +975,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-active-transaction-no-versions.json");
 		String versionToUpdateTo = "1.3.1.23";
 		Parameters params = parameters(
-			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
-			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
+			part("artifactVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
+			part("artifactVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
 		);
 		Bundle updatedCanonicalVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -968,7 +993,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertTrue(updatedResource.getVersion().equals(versionToUpdateTo));
 		}
 		params = parameters(
-			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
+			part("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
 		);
 		String correctCheckVersion = "2022-10-19";
 		PreconditionFailedException checkCanonicalThrewError = null;
@@ -984,7 +1009,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertNotNull(checkCanonicalThrewError);
 		params = parameters(
-			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
+			part("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
 		);
 		Bundle noErrorCheckCanonicalPackage = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -1000,7 +1025,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
 		String versionToForceTo = "1.1.9.23";
 		params = parameters(
-			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
+			part("forceArtifactVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
 		);
 		Bundle forcedVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -1293,6 +1318,26 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
+	}
+
+	@Test
+	void package_test_condition_missing() {
+		loadTransaction("ersd-small-approved-draft-no-conditions.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		UnprocessableEntityException noConditionExtension = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withNoParameters(Parameters.class)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			// TODO: handle exception
+			noConditionExtension = e;
+		}
+		assertNotNull(noConditionExtension);
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test
