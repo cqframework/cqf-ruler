@@ -601,7 +601,12 @@ public class KnowledgeArtifactProcessor {
 		// removed duplicates and add
 		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
 		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
+			boolean isDistinct = !distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> {
+				boolean referenceNotInArray = distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource());
+				boolean typeMatches = distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType());
+				return referenceNotInArray && typeMatches;
+			});
+			if (isDistinct) {
 				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
 				// preserve Extensions if found
 				originalDependenciesWithExtensions
@@ -609,6 +614,7 @@ public class KnowledgeArtifactProcessor {
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
 					.findFirst()
 					.ifPresent(dep -> {
+						checkIfValueSetNeedsCondition(null, dep, fhirDal);
 						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
 						originalDependenciesWithExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
 					});
@@ -840,7 +846,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry());
+		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry(), fhirDal);
 		return packagedBundle;
 	}
 /**
@@ -893,12 +899,35 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
+	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, FhirDal fhirDal) throws UnprocessableEntityException {
+		if (resource == null 
+		&& relatedArtifact != null 
+		&& relatedArtifact.hasResource() 
+		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
+			List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(relatedArtifact.getResource(), fhirDal));
+			if (searchResults.size() > 0) {
+				resource = searchResults.get(0);
+			}
+		}
+		if (resource != null && resource.getResourceType() == ResourceType.ValueSet) {
+			ValueSet valueSet = (ValueSet)resource;
+			boolean isLeaf = !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0);
+			Optional<Extension> maybeConditionExtension = Optional.ofNullable(relatedArtifact)
+				.map(RelatedArtifact::getExtension)
+				.map(list -> {
+					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl)).findFirst().orElse(null);
+				});
+			if (isLeaf && !maybeConditionExtension.isPresent()) {
+				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
+			}
+		}
+	}
 	/**
 	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $package time
 	 * @param manifest the resource containing all RelatedArtifact references
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
-	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException, IllegalArgumentException {
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries, FhirDal fhirDal) throws UnprocessableEntityException, IllegalArgumentException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
 		bundleEntries.stream()
@@ -908,24 +937,20 @@ public class KnowledgeArtifactProcessor {
 					// remove any existing Priority and Conditions
 					List<UsageContext> usageContexts = removeExistingReferenceExtensionData(valueSet.getUseContext());
 					valueSet.setUseContext(usageContexts);
-					// List<UsageContext> usageContexts = valueSet.getUseContext();
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
+					checkIfValueSetNeedsCondition(valueSet, maybeVSRelatedArtifact.orElse(null), fhirDal);
 					// If leaf valueset
 					if (!valueSet.hasCompose()
 					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
 						// If Condition extension is present
 						maybeVSRelatedArtifact
 							.map(ra -> ra.getExtension())
-							.ifPresentOrElse(
+							.ifPresent(
 								// add Conditions
 								exts -> {
 									exts.stream()
 										.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
 										.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
-								}, 
-								// else throw error
-								() -> {
-									throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
 								});		
 					}
 					// update Priority
