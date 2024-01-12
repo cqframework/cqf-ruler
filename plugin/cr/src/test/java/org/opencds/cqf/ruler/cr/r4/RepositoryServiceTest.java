@@ -975,8 +975,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-active-transaction-no-versions.json");
 		String versionToUpdateTo = "1.3.1.23";
 		Parameters params = parameters(
-			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
-			part("canonicalVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
+			part("artifactVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo)),
+			part("artifactVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo))
 		);
 		Bundle updatedCanonicalVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -993,7 +993,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertTrue(updatedResource.getVersion().equals(versionToUpdateTo));
 		}
 		params = parameters(
-			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
+			part("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"))
 		);
 		String correctCheckVersion = "2022-10-19";
 		PreconditionFailedException checkCanonicalThrewError = null;
@@ -1009,7 +1009,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertNotNull(checkCanonicalThrewError);
 		params = parameters(
-			part("checkCanonicalVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
+			part("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion))
 		);
 		Bundle noErrorCheckCanonicalPackage = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -1025,7 +1025,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
 		String versionToForceTo = "1.1.9.23";
 		params = parameters(
-			part("forceCanonicalVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
+			part("forceArtifactVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo))
 		);
 		Bundle forcedVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
