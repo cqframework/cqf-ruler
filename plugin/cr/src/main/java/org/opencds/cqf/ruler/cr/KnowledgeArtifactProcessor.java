@@ -614,7 +614,7 @@ public class KnowledgeArtifactProcessor {
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
 					.findFirst()
 					.ifPresent(dep -> {
-						checkIfValueSetNeedsCondition(null, dep, fhirDal);
+						checkIfValueSetNeedsCondition(null, dep, hapiFhirRepository);
 						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
 						originalDependenciesWithExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
 					});
@@ -816,8 +816,18 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, HapiFhirRepository hapiFhirRepository, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
-		if (contentEndpoint != null || terminologyEndpoint != null) {
+	public Bundle createPackageBundle(IdType id, HapiFhirRepository hapiFhirRepository, List<String> capability,
+												 List<String> include, List<CanonicalType> artifactVersion,
+												 List<CanonicalType> checkArtifactVersion, List<CanonicalType> forceArtifactVersion,
+												 Integer count, Integer offset, String artifactRoute, String endpointUri,
+												 Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly)
+			throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
+		if (
+				(!artifactRoute.isBlank() && !artifactRoute.isEmpty())
+					|| (!endpointUri.isBlank() && !endpointUri.isEmpty())
+					|| contentEndpoint != null
+					|| terminologyEndpoint != null
+			) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
 		if (packageOnly != null) {
@@ -840,13 +850,13 @@ public class KnowledgeArtifactProcessor {
 			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 			packagedBundle.addEntry(entry);
 		} else {
-			recursivePackage(resource, packagedBundle, hapiFhirRepository, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			recursivePackage(resource, packagedBundle, hapiFhirRepository, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
 			packagedBundle.setEntry(included);
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry(), fhirDal);
+		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry(), hapiFhirRepository);
 		return packagedBundle;
 	}
 /**
@@ -899,12 +909,12 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
-	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, FhirDal fhirDal) throws UnprocessableEntityException {
+	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException {
 		if (resource == null 
 		&& relatedArtifact != null 
 		&& relatedArtifact.hasResource() 
 		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
-			List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(relatedArtifact.getResource(), fhirDal));
+			List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(relatedArtifact.getResource(), hapiFhirRepository));
 			if (searchResults.size() > 0) {
 				resource = searchResults.get(0);
 			}
@@ -927,7 +937,7 @@ public class KnowledgeArtifactProcessor {
 	 * @param manifest the resource containing all RelatedArtifact references
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
-	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries, FhirDal fhirDal) throws UnprocessableEntityException, IllegalArgumentException {
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException, IllegalArgumentException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
 		bundleEntries.stream()
@@ -938,7 +948,7 @@ public class KnowledgeArtifactProcessor {
 					List<UsageContext> usageContexts = removeExistingReferenceExtensionData(valueSet.getUseContext());
 					valueSet.setUseContext(usageContexts);
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
-					checkIfValueSetNeedsCondition(valueSet, maybeVSRelatedArtifact.orElse(null), fhirDal);
+					checkIfValueSetNeedsCondition(valueSet, maybeVSRelatedArtifact.orElse(null), hapiFhirRepository);
 					// If leaf valueset
 					if (!valueSet.hasCompose()
 					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
@@ -1021,14 +1031,14 @@ public class KnowledgeArtifactProcessor {
 		HapiFhirRepository hapiFhirRepository,
 		List<String> capability,
 		List<String> include,
-		List<CanonicalType> canonicalVersion,
+		List<CanonicalType> artifactVersion,
 		List<CanonicalType> checkArtifactVersion,
 		List<CanonicalType> forceArtifactVersion
 		) throws PreconditionFailedException{
 		if (resource != null) {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 			findUnsupportedCapability(resource, capability);
-			processCanonicals(resource, canonicalVersion, checkArtifactVersion, forceArtifactVersion);
+			processCanonicals(resource, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			boolean entryExists = bundle.getEntry().stream()
 				.map(e -> (MetadataResource)e.getResource())
 				.filter(mr -> mr.getUrl() != null && mr.getVersion() != null)
@@ -1044,7 +1054,7 @@ public class KnowledgeArtifactProcessor {
 			combineComponentsAndDependencies(adapter).stream()
 				.map(ra -> searchResourceByUrl(ra.getResource(), hapiFhirRepository))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, hapiFhirRepository, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, hapiFhirRepository, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion));
 		}
 	}
 	private List<RelatedArtifact> combineComponentsAndDependencies(KnowledgeArtifactAdapter<MetadataResource> adapter) {
@@ -1170,7 +1180,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository hapiFhirRepository, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
@@ -1181,7 +1191,7 @@ public class KnowledgeArtifactProcessor {
 		// then check for references and add those to the base Parameters object
 		diffCache cache = new diffCache();
 		cache.addDiff(theSourceLibrary.getUrl()+"|"+theSourceLibrary.getVersion(), theTargetLibrary.getUrl()+"|"+theTargetLibrary.getVersion(), libraryDiff);
-		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch, cache, theContext, compareComputable, compareExecutable,dao);
+		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, hapiFhirRepository, patch, cache, theContext, compareComputable, compareExecutable,dao);
 		return libraryDiff;
 	}
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
@@ -1423,7 +1433,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository hapiFhirRepository, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
@@ -1434,8 +1444,8 @@ public class KnowledgeArtifactProcessor {
 				String targetCanonical = fixed.getTargetMatches().get(i).getResource();
 				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(targetCanonical)) == null;
 				if (diffNotAlreadyComputedAndPresent) {
-					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal, dao);
-					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal, dao);
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, dao);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, dao);
 					// need to do something smart here to expand the executable or computable resources
 					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable, dao)
 						.ifPresentOrElse(diffToAppend -> {
@@ -1443,7 +1453,7 @@ public class KnowledgeArtifactProcessor {
 							component.setName(Canonicals.getUrl(sourceCanonical));
 							component.setResource(diffToAppend);
 							// check for changes in the children of those as well
-							checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch, cache, ctx, compareComputable, compareExecutable, dao);
+							checkForChangesInChildren(diffToAppend, source, target, hapiFhirRepository, patch, cache, ctx, compareComputable, compareExecutable, dao);
 						},
 						() -> {
 							if (target == null) {
