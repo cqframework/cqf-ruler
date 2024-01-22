@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uhn.fhir.util.BundleUtil;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -45,6 +47,25 @@ public class CdsHooksUtil {
 			parameters.getParameterFirstRep().addExtension(listExtension);
 		}
 		return parameters;
+	}
+
+	public static Parameters getParameters(List<MedicationRequest> draftOrders) {
+		Parameters parameters = parameters();
+		draftOrders.forEach(
+			x -> parameters.addParameter(part("ContextPrescriptions", x)));
+		if (parameters.getParameter().size() == 1) {
+			Extension listExtension = new Extension(
+				"http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+				new ParameterDefinition().setMax("*").setName("ContextPrescriptions"));
+			parameters.getParameterFirstRep().addExtension(listExtension);
+		}
+		return parameters;
+	}
+
+	public static List<MedicationRequest> getDraftOrders(JsonObject contextResources) {
+		Bundle contextBundle = new JsonParser(FhirContext.forR4Cached(), new LenientErrorHandler())
+			.parseResource(Bundle.class, contextResources.toString());
+		return BundleUtil.toListOfResourcesOfType(FhirContext.forR4Cached(), contextBundle, MedicationRequest.class);
 	}
 
 	public static Map<String, Resource> getResourcesFromBundle(Bundle bundle) {

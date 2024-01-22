@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cdshooks.response;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -92,6 +93,8 @@ public class Card {
      * @see Card.Link
      */
     private List<Card.Link> links;
+
+	 private Extension extension;
 
     // Getters and Setters
 
@@ -287,7 +290,17 @@ public class Card {
         this.links = links;
     }
 
-    public static class Source {
+	@JsonGetter
+	 public Extension getExtension() {
+		 return extension;
+	 }
+
+	@JsonSetter
+	public void setExtension(Extension extension) {
+		this.extension = extension;
+	}
+
+	public static class Source {
 
         // Member variables
 
@@ -780,4 +793,19 @@ public class Card {
             this.appContext = appContext;
         }
     }
+
+	 public static class Extension {
+		 @JsonProperty("com.epic.cdshooks.card.detail.content-type")
+		 private String mimeType;
+
+		 @JsonGetter
+		 public String getMimeType() {
+			 return mimeType;
+		 }
+
+		 @JsonSetter
+		 public void setMimeType(String mimeType) {
+			 this.mimeType = mimeType;
+		 }
+	 }
 }

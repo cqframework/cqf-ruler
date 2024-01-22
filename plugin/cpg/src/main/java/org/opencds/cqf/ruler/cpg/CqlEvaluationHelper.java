@@ -90,6 +90,11 @@ public class CqlEvaluationHelper {
 	private BaseFhirQueryGenerator queryGenerator;
 
 	private LibraryLoader libraryLoader;
+
+	public void setLibraryLoader(LibraryLoader libraryLoader) {
+		this.libraryLoader = libraryLoader;
+	}
+
 	private TerminologyProvider terminologyProvider;
 	private DataProvider dataProvider;
 
@@ -126,12 +131,12 @@ public class CqlEvaluationHelper {
 			DaoRegistry daoRegistry) {
 		setupLibraryLoader(libraryLoaderFactory, contentProvider, restContentProvider);
 		setupTerminologyProvider(terminologyProvider);
-		if (fhirContext.equals(FhirContext.forDstu3())) {
+		if (fhirContext.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 			this.queryGenerator = new Dstu3FhirQueryGenerator(
-					searchParameterResolver, (TerminologyProvider) terminologyProvider, (ModelResolver) modelResolver);
+					searchParameterResolver, terminologyProvider, modelResolver);
 		} else {
 			this.queryGenerator = new R4FhirQueryGenerator(
-					searchParameterResolver, (TerminologyProvider) terminologyProvider, (ModelResolver) modelResolver);
+					searchParameterResolver, terminologyProvider, modelResolver);
 		}
 		setupDataProvider(daoRegistry);
 	}
@@ -350,7 +355,7 @@ public class CqlEvaluationHelper {
 		return headerNameValuePairs;
 	}
 
-	static class HeaderInfo {
+	public static class HeaderInfo {
 		private final String name;
 		private final String value;
 

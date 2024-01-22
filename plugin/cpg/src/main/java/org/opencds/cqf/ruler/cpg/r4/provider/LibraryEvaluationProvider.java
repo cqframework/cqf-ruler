@@ -21,7 +21,9 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
@@ -54,6 +56,18 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 	ModelResolver myModelResolver;
 	@Autowired
 	Map<VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
+
+	private LibraryLoader libraryLoader;
+
+	public void setLibraryLoader(LibraryLoader libraryLoader) {
+		this.libraryLoader = libraryLoader;
+	}
+
+	private TerminologyProvider terminologyProvider;
+
+	public void setTerminologyProvider(TerminologyProvider terminologyProvider) {
+		this.terminologyProvider = terminologyProvider;
+	}
 
 	/**
 	 * Evaluates a CQL library and returns the results as a Parameters resource.
@@ -154,11 +168,19 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 				? fhirRestLibrarySourceProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;
 
+		if (terminologyProvider == null) {
+			terminologyProvider = myTerminologyProviderFactory.create(requestDetails);
+		}
+
 		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
 				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
 				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
 				myLibrarySourceProviderFactory.create(requestDetails), contentProvider,
-				myTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
+				terminologyProvider, getDaoRegistry());
+
+		if (libraryLoader != null) {
+			evaluationHelper.setLibraryLoader(libraryLoader);
+		}
 
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
 			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails,

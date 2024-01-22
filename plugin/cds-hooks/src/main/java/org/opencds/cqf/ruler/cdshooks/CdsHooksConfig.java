@@ -1,9 +1,16 @@
 package org.opencds.cqf.ruler.cdshooks;
 
+import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
 import ca.uhn.fhir.cr.config.CrProperties;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
+import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
+import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
+import org.opencds.cqf.ruler.cdshooks.providers.TranslatingLibraryLoader;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -18,6 +25,9 @@ import org.springframework.context.annotation.Import;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import org.springframework.context.annotation.Scope;
+
+import java.util.Map;
 
 @Configuration
 @Import({CpgConfig.class,
@@ -34,8 +44,31 @@ public class CdsHooksConfig {
 	}
 
 	@Bean
+	public CrProperties crProperties() {
+		CrProperties crProperties = new CrProperties();
+		crProperties.getCqlProperties().getCqlTranslatorOptions().setEnableCqlOnly(false);
+		return crProperties;
+	}
+
+	@Bean
 	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, CrProperties.CqlProperties cqlProperties) {
+		cqlProperties.getCqlTranslatorOptions().setEnableCqlOnly(false);
 		return new ProviderConfiguration(cdsProperties, cqlProperties);
+	}
+
+	@Bean
+	@Scope("prototype")
+	ILibraryLoaderFactory libraryLoaderFactory(
+		Map<VersionedIdentifier, Library> theGlobalLibraryCache,
+		ModelManager theModelManager, CqlTranslatorOptions theCqlTranslatorOptions, CrProperties.CqlProperties theCqlProperties) {
+		return lcp -> {
+
+			if (theCqlProperties.getCqlOptions().useEmbeddedLibraries()) {
+				lcp.add(new FhirLibrarySourceProvider());
+			}
+
+			return new TranslatingLibraryLoader(theModelManager, lcp, theCqlTranslatorOptions, theGlobalLibraryCache);
+		};
 	}
 
 	@Bean
@@ -44,6 +77,24 @@ public class CdsHooksConfig {
 		CdsServicesCache listener = new CdsServicesCache(daoRegistry);
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("PlanDefinition",
 				SearchParameterMap.newSynchronous(), listener, 1000);
+		return listener;
+	}
+
+	@Bean
+	public LibraryLoaderCache libraryInterceptor(IResourceChangeListenerRegistry resourceChangeListenerRegistry,
+																 DaoRegistry daoRegistry) {
+		LibraryLoaderCache listener = new LibraryLoaderCache(daoRegistry);
+		resourceChangeListenerRegistry.registerResourceResourceChangeListener("Library",
+			SearchParameterMap.newSynchronous(), listener, 1000);
+		return listener;
+	}
+
+	@Bean
+	public ValueSetCache valueSetInterceptor(IResourceChangeListenerRegistry resourceChangeListenerRegistry,
+																DaoRegistry daoRegistry) {
+		ValueSetCache listener = new ValueSetCache(daoRegistry);
+		resourceChangeListenerRegistry.registerResourceResourceChangeListener("ValueSet",
+			SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
 

@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.cr.common.HapiTerminologyProvider;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -26,12 +28,15 @@ import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
+import org.opencds.cqf.cql.engine.execution.InMemoryLibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.cdshooks.LibraryLoaderCache;
+import org.opencds.cqf.ruler.cdshooks.ValueSetCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Card;
@@ -80,7 +85,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
 	@Autowired
+	LibraryLoaderCache libraryCache;
+	@Autowired
+	ValueSetCache valueSetCache;
+	@Autowired
 	RestfulServer restfulServer;
+	@Autowired
+	IValidationSupport validationSupport;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -109,6 +120,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		}
 		ErrorHandling.setAccessControlHeaders(response, myAppProperties);
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
 	}
 
@@ -165,16 +177,25 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
 							cdsHooksRequest.fhirAuthorization.tokenType,
 							cdsHooksRequest.fhirAuthorization.accessToken));
-					if (cdsHooksRequest.fhirAuthorization.subject != null) {
-						remoteDataEndpoint.addHeader(this.getProviderConfiguration().getClientIdHeaderName()
-								+ ": " + cdsHooksRequest.fhirAuthorization.subject);
-					}
 				}
 			}
-			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
+
+			var libraries = libraryCache.getLibraryCache();
+			libraryExecution.setLibraryLoader(new InMemoryLibraryLoader(libraries.values()));
+			var valuesets = valueSetCache.getValueSetCache();
+			HapiTerminologyProvider terminologyProvider = new HapiTerminologyProvider(validationSupport, valuesets, requestDetails);
+			libraryExecution.setTerminologyProvider(terminologyProvider);
+
+			if (remoteDataEndpoint == null) {
+				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
+			}
+
+			ModuleConfigurationResolver moduleConfigurationResolver =
+				new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
+			Bundle data = moduleConfigurationResolver.getPrefetchBundle();
 
 			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
-					expressions, parameters, useServerData, data, remoteDataEndpoint);
+					expressions, parameters, useServerData, data, null);
 
 			List<Card.Link> links = resolvePlanLinks(servicePlan);
 			List<Card> cards = new ArrayList<>();
@@ -190,6 +211,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					.toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
 			logger.info(jsonResponse);
 			response.setContentType("text/json;charset=UTF-8");
+			response.setHeader("Access-Control-Allow-Origin", "*");
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
 			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);
@@ -283,6 +305,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (action.hasAction()) {
 							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
 						}
+						Card.Extension extension = new Card.Extension();
+						extension.setMimeType("text/html");
+						card.setExtension(extension);
 						cards.add(card);
 					}
 				});
@@ -327,9 +352,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		if (documentation.hasUrl()) {
 			source.setUri(documentation.getUrl());
 		}
-		if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
-			source.setIcon(documentation.getDocument().getUrl());
-		}
+//		if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
+//			source.setIcon(documentation.getDocument().getUrl());
+//		}
 		return source;
 	}
 
