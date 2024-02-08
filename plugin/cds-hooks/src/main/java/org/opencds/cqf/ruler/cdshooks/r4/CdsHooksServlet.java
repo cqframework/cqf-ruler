@@ -34,6 +34,7 @@ import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.cdshooks.CDSHooksTransactionInterceptor;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.LibraryLoaderCache;
 import org.opencds.cqf.ruler.cdshooks.ValueSetCache;
@@ -85,9 +86,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
 	@Autowired
-	LibraryLoaderCache libraryCache;
-	@Autowired
-	ValueSetCache valueSetCache;
+	CDSHooksTransactionInterceptor cache;
 	@Autowired
 	RestfulServer restfulServer;
 	@Autowired
@@ -180,9 +179,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				}
 			}
 
-			var libraries = libraryCache.getLibraryCache();
+			var libraries = cache.getLibraryCache();
 			libraryExecution.setLibraryLoader(new InMemoryLibraryLoader(libraries.values()));
-			var valuesets = valueSetCache.getValueSetCache();
+			var valuesets = cache.getValueSetCache();
 			HapiTerminologyProvider terminologyProvider = new HapiTerminologyProvider(validationSupport, valuesets, requestDetails);
 			libraryExecution.setTerminologyProvider(terminologyProvider);
 
@@ -190,12 +189,19 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 			}
 
-			ModuleConfigurationResolver moduleConfigurationResolver =
-				new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
-			Bundle data = moduleConfigurationResolver.getPrefetchBundle();
-
-			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
+			Bundle data;
+			Parameters evaluationResult;
+			if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign) {
+				ModuleConfigurationResolver moduleConfigurationResolver =
+					new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
+				data = moduleConfigurationResolver.getPrefetchBundle();
+				evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
 					expressions, parameters, useServerData, data, null);
+			} else {
+				data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
+				evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
+					expressions, parameters, useServerData, data, remoteDataEndpoint);
+			}
 
 			List<Card.Link> links = resolvePlanLinks(servicePlan);
 			List<Card> cards = new ArrayList<>();

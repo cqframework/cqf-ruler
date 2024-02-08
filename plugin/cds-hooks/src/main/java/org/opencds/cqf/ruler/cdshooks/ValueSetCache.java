@@ -12,27 +12,22 @@ import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ValueSetCache implements IResourceChangeListener {
 	private static final Logger logger = LoggerFactory.getLogger(ValueSetCache.class);
 	private IFhirResourceDao<?> valueSetDao;
-	private Map<VersionedIdentifier, List<Code>> valueSetCache;
+	@Autowired
+	CDSHooksTransactionInterceptor caches;
 
 	public ValueSetCache(DaoRegistry daoRegistry) {
 		this.valueSetDao = daoRegistry.getResourceDao("ValueSet");
-		this.valueSetCache = new HashMap<>();
-	}
-
-	public Map<VersionedIdentifier, List<Code>> getValueSetCache() {
-		return valueSetCache;
 	}
 
 	@Override
@@ -63,10 +58,10 @@ public class ValueSetCache implements IResourceChangeListener {
 		for (IIdType id : createdIds) {
 			try {
 				VersionedIdentifier identifier = new VersionedIdentifier().withId(id.getIdPart());
-				if (!valueSetCache.containsKey(identifier)) {
+				if (!caches.getValueSetCache().containsKey(identifier)) {
 					IBaseResource valueSet = valueSetDao.read(id);
 					if (valueSet instanceof ValueSet && ((ValueSet) valueSet).hasExpansion()) {
-						valueSetCache.put(identifier, ((ValueSet) valueSet).getExpansion().getContains().stream().map(
+						caches.getValueSetCache().put(identifier, ((ValueSet) valueSet).getExpansion().getContains().stream().map(
 							e -> new Code().withCode(e.getCode()).withSystem(e.getSystem())
 						).collect(Collectors.toList()));
 					}
@@ -88,7 +83,7 @@ public class ValueSetCache implements IResourceChangeListener {
 
 	private void delete(List<IIdType> deletedIds) {
 		for (IIdType id : deletedIds) {
-			valueSetCache.remove(new VersionedIdentifier().withId(id.getIdPart()));
+			caches.getValueSetCache().remove(new VersionedIdentifier().withId(id.getIdPart()));
 		}
 	}
 }

@@ -2,6 +2,8 @@ package org.opencds.cqf.ruler.cdshooks;
 
 import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
 import ca.uhn.fhir.cr.config.CrProperties;
+import ca.uhn.fhir.interceptor.api.IInterceptorService;
+import ca.uhn.fhir.jpa.dao.ITransactionProcessorVersionAdapter;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
@@ -78,6 +80,13 @@ public class CdsHooksConfig {
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("PlanDefinition",
 				SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
+	}
+
+	@Bean
+	public CDSHooksTransactionInterceptor cdsHooksTransactionInterceptor(DaoRegistry daoRegistry, IInterceptorService interceptorRegistry) {
+		CDSHooksTransactionInterceptor interceptor = new CDSHooksTransactionInterceptor(daoRegistry);
+		interceptorRegistry.registerInterceptor(interceptor);
+		return interceptor;
 	}
 
 	@Bean
