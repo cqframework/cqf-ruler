@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr;
 import static java.util.Comparator.comparing;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,13 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.Code;
+import org.hl7.fhir.ValueSetFilter;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
@@ -26,6 +32,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -84,6 +91,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	private final TerminologyServerClient terminologyServerClient = new TerminologyServerClient();
 	private Logger myLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
@@ -1250,7 +1258,7 @@ public class KnowledgeArtifactProcessor {
 			vset.setExpansion(null);
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
-			
+
 			ValueSet e = dao.expand(vset,options);
 			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
 			// `copy` creates the superclass again
@@ -1258,6 +1266,79 @@ public class KnowledgeArtifactProcessor {
 			return;
 		}
 	}
+
+	public void getExpansion(ValueSet valueSet) {
+		Extension authoritativeSource = valueSet
+			.getExtensionByUrl("http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource");
+		String urlToUse = authoritativeSource != null && authoritativeSource.hasValue() ? authoritativeSource.getValue().primitiveValue() : valueSet.getUrl();
+
+		ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
+		expansion.setTimestamp(Date.from(Instant.now()));
+
+		ValueSet expandedValueSet;
+		try {
+			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse);
+			valueSet.setExpansion(expandedValueSet.getExpansion());
+		} catch (Exception e) {
+			myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), e);
+
+			if (hasSimpleCompose(valueSet)) {
+				//Expansion run independent of terminology servers and should be flagged as such
+				ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParameters = new ArrayList<>();
+				ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
+				parameterNaive.setName("naive");
+				parameterNaive.setValue(new BooleanType(true));
+				expansionParameters.add(parameterNaive);
+				expansion.setParameter(expansionParameters);
+
+				for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+					for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
+						expansion.addContains()
+							.setCode(crc.getCode())
+							.setSystem(csc.getSystem())
+							.setVersion(csc.getVersion())
+							.setDisplay(crc.getDisplay());
+					}
+				}
+				valueSet.setExpansion(expansion);
+			}
+		}
+	}
+
+	public boolean hasSimpleCompose(ValueSet valueSet) {
+		if (valueSet.hasCompose()) {
+			if (valueSet.getCompose().hasExclude()) {
+				return false;
+			}
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				if (csc.hasValueSet()) {
+					// Cannot expand a compose that references a value set
+					return false;
+				}
+
+				if (!csc.hasSystem()) {
+					// Cannot expand a compose that does not have a system
+					return false;
+				}
+
+				if (csc.hasFilter()) {
+					// Cannot expand a compose that has a filter
+					return false;
+				}
+
+				if (!csc.hasConcept()) {
+					// Cannot expand a compose that does not enumerate concepts
+					return false;
+				}
+			}
+
+			// If all includes are simple, the compose can be expanded
+			return true;
+		}
+
+		return false;
+	}
+
 	private class diffCache {
 		private final Map<String,Parameters> diffs = new HashMap<String,Parameters>();
 		private final Map<String,MetadataResource> resources = new HashMap<String,MetadataResource>();
