@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.r4.model.ValueSet;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class TerminologyServerClient {
@@ -21,7 +22,7 @@ public class TerminologyServerClient {
 	private static final String VSAC_CREDENTIALS = StringUtils.join(VSAC_USERNAME, ":", VSAC_API_KEY);
 
 	private static final String VSAC_AUTH = StringUtils.join("Basic ", Base64.getEncoder()
-		.encodeToString(VSAC_CREDENTIALS.getBytes()));
+		.encodeToString(VSAC_CREDENTIALS.getBytes(StandardCharsets.UTF_8)));
 
 	private final FhirContext ctx;
 
