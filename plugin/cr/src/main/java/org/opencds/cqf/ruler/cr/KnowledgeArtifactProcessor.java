@@ -63,6 +63,7 @@ import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersion
 import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -85,6 +86,7 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	@Autowired
 	private TerminologyServerClient terminologyServerClient;
 	private Logger myLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
