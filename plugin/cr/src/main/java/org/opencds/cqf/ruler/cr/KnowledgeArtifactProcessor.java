@@ -94,6 +94,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+	public static final String authoritativeSourceUrl = "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource";
+	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
 	public static final String valueSetPriorityCode = "priority";
@@ -1263,9 +1265,9 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	public void getExpansion(ValueSet valueSet) {
+	public void getExpansion(ValueSet valueSet, String systemVersion, String username, String apiKey) {
 		Extension authoritativeSource = valueSet
-			.getExtensionByUrl("http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource");
+			.getExtensionByUrl(authoritativeSourceUrl);
 		String urlToUse = authoritativeSource != null && authoritativeSource.hasValue() ? authoritativeSource.getValue().primitiveValue() : valueSet.getUrl();
 
 		ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
@@ -1273,13 +1275,13 @@ public class KnowledgeArtifactProcessor {
 
 		ValueSet expandedValueSet;
 		try {
-			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse);
+			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, systemVersion, username, apiKey);
 			valueSet.setExpansion(expandedValueSet.getExpansion());
 		} catch (Exception e) {
 			myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), e);
 
 			if (hasSimpleCompose(valueSet)) {
-				//Expansion run independent of terminology servers and should be flagged as such
+				// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
 				ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParameters = new ArrayList<>();
 				ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
 				parameterNaive.setName("naive");

@@ -25,6 +25,10 @@ public class KnowledgeArtifactProcessorTest {
 	@Mock
 	TerminologyServerClient client;
 
+	private final String username = "testUser";
+
+	private final String apiKey = "714fb39f-1392-42ca-a3fd-9436796d1d8b";
+
 	@Test
 	void testGetExpansionVSAC() throws IOException {
 	    // given
@@ -34,14 +38,16 @@ public class KnowledgeArtifactProcessorTest {
 			.getResourceAsStream("r4/valueset/valueset-2.16.840.1.113762.1.4.1116.89.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
+		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
 
 		// when
 		String expandedValueSetString = new String(this.getClass()
 			.getResourceAsStream("r4/test/valueset-expanded.json").readAllBytes());
 		ValueSet expandedValueSet = parser.parseResource(ValueSet.class, expandedValueSetString);
-		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()))).thenReturn(expandedValueSet);
+		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(systemVersion),
+				Mockito.eq(username), Mockito.eq(apiKey))).thenReturn(expandedValueSet);
 
-		processor.getExpansion(valueSet);
+		processor.getExpansion(valueSet, systemVersion, username, apiKey);
 
 	   // then
       assertNotNull(valueSet.getExpansion());
@@ -56,12 +62,13 @@ public class KnowledgeArtifactProcessorTest {
 			.getResourceAsStream("r4/valueset/valueset-anc-a-de13.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
+		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
 
 		// when
-		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl())))
-			.thenThrow(new RuntimeException());
+		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(systemVersion),
+				Mockito.eq(username), Mockito.eq(apiKey))).thenThrow(new RuntimeException());
 
-		processor.getExpansion(valueSet);
+		processor.getExpansion(valueSet, systemVersion, username, apiKey);
 		// then
 		assertNotNull(valueSet.getExpansion());
 		assertNotNull(valueSet.getExpansion().getParameter().get(0));
