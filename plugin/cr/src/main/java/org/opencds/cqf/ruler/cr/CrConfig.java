@@ -118,6 +118,6 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public TerminologyServerClient terminologyServerClient() {return new TerminologyServerClient();}
+	public TerminologyServerClient terminologyServerClient() { return new TerminologyServerClient(); }
 
 }

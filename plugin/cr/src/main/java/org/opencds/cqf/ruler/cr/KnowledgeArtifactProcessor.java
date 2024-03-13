@@ -98,6 +98,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
+	public static final String vsmValueSetTagCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag";
+	public static final String vsmValueSetTagVSMAuthoredCode = "vsm-authored";
 	public static final String valueSetPriorityCode = "priority";
 	public static final String valueSetConditionCode = "focus";
 	public final List<String> preservedExtensionUrls = List.of(
@@ -1031,6 +1033,7 @@ public class KnowledgeArtifactProcessor {
 				return n;
 			});
 	}
+
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
@@ -1063,6 +1066,7 @@ public class KnowledgeArtifactProcessor {
 				.forEach(component -> recursivePackage((MetadataResource)component, bundle, hapiFhirRepository, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion));
 		}
 	}
+
 	private List<RelatedArtifact> combineComponentsAndDependencies(KnowledgeArtifactAdapter<MetadataResource> adapter) {
 		return Stream.concat(adapter.getComponents().stream(), adapter.getDependencies().stream()).collect(Collectors.toList());
 	}
@@ -1265,29 +1269,78 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	public void getExpansion(ValueSet valueSet, String systemVersion, String username, String apiKey) {
-		Extension authoritativeSource = valueSet
-			.getExtensionByUrl(authoritativeSourceUrl);
-		String urlToUse = authoritativeSource != null && authoritativeSource.hasValue() ? authoritativeSource.getValue().primitiveValue() : valueSet.getUrl();
+	public void getVSExpansion(ValueSet valueSet, Parameters expansionParameters) {
+		// Gather the Terminology Service from the valueSet's authoritativeSourceUrl.
+		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
+		String authoritativeSourceUrl = authoritativeSource != null && authoritativeSource.hasValue()
+			? authoritativeSource.getValue().primitiveValue()
+			: valueSet.getUrl();
+
+		// TODO: Given the authoritativeSourceUrl, lookup Tx Service connection configuration - is this possible? Problem is we can't reliably infer Tx Service from authSource
+//		terminologyServerClient.setUsername(config.getUsername(authoritativeSourceUrl));
+//		terminologyServerClient.setApiKey(config.getApiKey(authoritativeSourceUrl));
+
+		ValueSet expandedValueSet;
+		if (isVSMAuthoredValueSet(valueSet) && hasSimpleCompose(valueSet)) {
+			// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
+			ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
+			expansion.setTimestamp(Date.from(Instant.now()));
+
+			ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParams = new ArrayList<>();
+			ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
+			parameterNaive.setName("naive");
+			parameterNaive.setValue(new BooleanType(true));
+			expansionParams.add(parameterNaive);
+			expansion.setParameter(expansionParams);
+
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
+					expansion.addContains()
+						.setCode(crc.getCode())
+						.setSystem(csc.getSystem())
+						.setVersion(csc.getVersion())
+						.setDisplay(crc.getDisplay());
+				}
+			}
+			valueSet.setExpansion(expansion);
+		} else {
+			try {
+				expandedValueSet = terminologyServerClient.expand(valueSet, authoritativeSourceUrl, expansionParameters);
+				valueSet.setExpansion(expandedValueSet.getExpansion());
+			} catch (Exception ex) {
+				myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), ex);
+			}
+		}
+	}
+
+//	public void getValueSetExpansion(ValueSet valueSet, String systemVersion, String username, String apiKey) {
+	public void getValueSetExpansion(ValueSet valueSet, Parameters expansionParameters, String username, String apiKey) {
+		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
+		String urlToUse = authoritativeSource != null && authoritativeSource.hasValue()
+			? authoritativeSource.getValue().primitiveValue()
+			: valueSet.getUrl();
 
 		ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
 		expansion.setTimestamp(Date.from(Instant.now()));
 
 		ValueSet expandedValueSet;
 		try {
-			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, systemVersion, username, apiKey);
+//			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, systemVersion, username, apiKey);
+			terminologyServerClient.setUsername(username);
+			terminologyServerClient.setApiKey(apiKey);
+			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, expansionParameters);
 			valueSet.setExpansion(expandedValueSet.getExpansion());
 		} catch (Exception e) {
 			myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), e);
 
 			if (hasSimpleCompose(valueSet)) {
 				// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
-				ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParameters = new ArrayList<>();
+				ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParams = new ArrayList<>();
 				ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
 				parameterNaive.setName("naive");
 				parameterNaive.setValue(new BooleanType(true));
-				expansionParameters.add(parameterNaive);
-				expansion.setParameter(expansionParameters);
+				expansionParams.add(parameterNaive);
+				expansion.setParameter(expansionParams);
 
 				for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
 					for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
@@ -1301,6 +1354,12 @@ public class KnowledgeArtifactProcessor {
 				valueSet.setExpansion(expansion);
 			}
 		}
+	}
+
+	public boolean isVSMAuthoredValueSet(ValueSet valueSet) {
+		return valueSet.hasMeta()
+			&& valueSet.getMeta().hasTag()
+			&& valueSet.getMeta().getTag(vsmValueSetTagCodeSystemUrl, vsmValueSetTagVSMAuthoredCode) != null;
 	}
 
 	public boolean hasSimpleCompose(ValueSet valueSet) {

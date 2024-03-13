@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,20 +35,22 @@ public class KnowledgeArtifactProcessorTest {
 	    // given
 		FhirContext ctx = FhirContext.forR4();
 
-		String input = new String(this.getClass()
-			.getResourceAsStream("r4/valueset/valueset-2.16.840.1.113762.1.4.1116.89.json").readAllBytes());
+		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-2.16.840.1.113762.1.4.1116.89.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
-		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
+
+//		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
+		Parameters expansionParameters = new Parameters();
+		expansionParameters.addParameter("system-version", "http://snomed.info/sct|http://snomed.info/sct/731000124108/version/20230901");
 
 		// when
-		String expandedValueSetString = new String(this.getClass()
-			.getResourceAsStream("r4/test/valueset-expanded.json").readAllBytes());
+		String expandedValueSetString = new String(this.getClass().getResourceAsStream("r4/test/valueset-expanded.json").readAllBytes());
 		ValueSet expandedValueSet = parser.parseResource(ValueSet.class, expandedValueSetString);
-		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(systemVersion),
-				Mockito.eq(username), Mockito.eq(apiKey))).thenReturn(expandedValueSet);
+		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(expansionParameters))).thenReturn(expandedValueSet);
 
-		processor.getExpansion(valueSet, systemVersion, username, apiKey);
+//		processor.getValueSetExpansion(valueSet, expansionParameters, username, apiKey);
+		// TODO: How to pass auth creds
+		processor.getVSExpansion(valueSet, expansionParameters);
 
 	   // then
       assertNotNull(valueSet.getExpansion());
@@ -58,17 +61,20 @@ public class KnowledgeArtifactProcessorTest {
 	void testGetExpansionNaive() throws IOException {
 		FhirContext ctx = FhirContext.forR4();
 
-		String input = new String(this.getClass()
-			.getResourceAsStream("r4/valueset/valueset-anc-a-de13.json").readAllBytes());
+//		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-anc-a-de13.json").readAllBytes());
+		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-vsm-authored.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
-		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
+//		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
+		Parameters expansionParameters = new Parameters();
+		expansionParameters.addParameter("system-version", "http://snomed.info/sct|http://snomed.info/sct/731000124108/version/20230901");
 
 		// when
-		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(systemVersion),
-				Mockito.eq(username), Mockito.eq(apiKey))).thenThrow(new RuntimeException());
+		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(expansionParameters)))
+			.thenThrow(new RuntimeException());
 
-		processor.getExpansion(valueSet, systemVersion, username, apiKey);
+//		processor.getValueSetExpansion(valueSet, expansionParameters, username, apiKey);
+		processor.getVSExpansion(valueSet, expansionParameters);
 		// then
 		assertNotNull(valueSet.getExpansion());
 		assertNotNull(valueSet.getExpansion().getParameter().get(0));
@@ -78,5 +84,4 @@ public class KnowledgeArtifactProcessorTest {
 		assertEquals("ANC.A.DE13", valueSet.getExpansion().getContains().get(0).getCode());
 		assertEquals("Co-habitants", valueSet.getExpansion().getContains().get(0).getDisplay());
 	}
-
 }
