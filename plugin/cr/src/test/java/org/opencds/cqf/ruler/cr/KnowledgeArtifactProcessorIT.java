@@ -36,10 +36,9 @@ public class KnowledgeArtifactProcessorIT extends RestIntegrationTest {
 		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-2.16.840.1.113762.1.4.1116.89.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
+		String codeSystemVersion = valueSet.getCompose().getInclude().get(0).getVersion();
 
 		Parameters expansionParameters = new Parameters();
-		// TODO figure out suitable system-version for this test
-		//expansionParameters.addParameter("system-version", "http://hl7.org/fhir|http://hl7.org/fhir/sid/icd-9-cm/version/2013");
 
 		// when
 		processor.expandValueSet(valueSet, expansionParameters);
@@ -47,6 +46,9 @@ public class KnowledgeArtifactProcessorIT extends RestIntegrationTest {
 	   // then
       assertNotNull(valueSet.getExpansion());
 	  	assertEquals(16, valueSet.getExpansion().getTotal());
+		for (ValueSet.ValueSetExpansionContainsComponent contained: valueSet.getExpansion().getContains()) {
+			assertEquals(contained.getVersion(), codeSystemVersion);
+		}
 	}
 
 }

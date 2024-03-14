@@ -6,6 +6,8 @@ import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.jetbrains.annotations.NotNull;
+import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -44,11 +46,8 @@ public class TerminologyServerClient {
 	}
 
 	public ValueSet expand(ValueSet valueSet, String authoritativeSource, Parameters expansionParameters) {
-		// TODO why does it only work with this URL? when using authoritative source we get 400
-		String BASE_URL = "https://cts.nlm.nih.gov/fhir/";
-		IGenericClient fhirClient = ctx.newRestfulGenericClient(BASE_URL);
+		IGenericClient fhirClient = ctx.newRestfulGenericClient(getAuthoritativeSourceBase(authoritativeSource));
 		fhirClient.registerInterceptor(getAuthInterceptor(getUsername(), getApiKey()));
-
 
 		// Invoke by Value Set ID
 		return fhirClient
@@ -60,11 +59,21 @@ public class TerminologyServerClient {
 			.execute();
 	}
 
-	 private AdditionalRequestHeadersInterceptor getAuthInterceptor(String username, String apiKey) {
+	private AdditionalRequestHeadersInterceptor getAuthInterceptor(String username, String apiKey) {
 		String authString = StringUtils.join("Basic ", Base64.getEncoder()
 			 .encodeToString(StringUtils.join(username, ":", apiKey).getBytes(StandardCharsets.UTF_8)));
 		 AdditionalRequestHeadersInterceptor authInterceptor = new AdditionalRequestHeadersInterceptor();
 		 authInterceptor.addHeaderValue("Authorization", authString);
 		 return authInterceptor;
 	 }
+
+ 	// Strips resource and id from the authoritative source URL, these are not needed as the client constructs the URL.
+	// Converts http URLs to https
+	private String getAuthoritativeSourceBase(String authoritativeSource) {
+		authoritativeSource = authoritativeSource.substring(0, authoritativeSource.indexOf(Canonicals.getResourceType(authoritativeSource)));
+		if (authoritativeSource.startsWith("http://")) {
+			authoritativeSource = authoritativeSource.replaceFirst("http://", "https://");
+		}
+		return authoritativeSource;
+	}
 }

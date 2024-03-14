@@ -1305,6 +1305,12 @@ public class KnowledgeArtifactProcessor {
 			valueSet.setExpansion(expansion);
 		} else {
 			try {
+				for (ValueSet.ConceptSetComponent include: valueSet.getCompose().getInclude()) {
+					if (include.hasSystem() && include.hasVersion()) {
+						expansionParameters.addParameter("system-version", include.getSystem() + "|" + include.getVersion());
+					}
+				}
+
 				expandedValueSet = terminologyServerClient.expand(valueSet, authoritativeSourceUrl, expansionParameters);
 				valueSet.setExpansion(expandedValueSet.getExpansion());
 			} catch (Exception ex) {
