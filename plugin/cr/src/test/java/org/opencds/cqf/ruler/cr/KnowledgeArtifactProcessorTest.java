@@ -26,10 +26,6 @@ public class KnowledgeArtifactProcessorTest {
 	@Mock
 	TerminologyServerClient client;
 
-	private final String username = "testUser";
-
-	private final String apiKey = "714fb39f-1392-42ca-a3fd-9436796d1d8b";
-
 	@Test
 	void testGetExpansionVSAC() throws IOException {
 	    // given
@@ -39,7 +35,6 @@ public class KnowledgeArtifactProcessorTest {
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
 
-//		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
 		Parameters expansionParameters = new Parameters();
 		expansionParameters.addParameter("system-version", "http://snomed.info/sct|http://snomed.info/sct/731000124108/version/20230901");
 
@@ -48,9 +43,7 @@ public class KnowledgeArtifactProcessorTest {
 		ValueSet expandedValueSet = parser.parseResource(ValueSet.class, expandedValueSetString);
 		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(expansionParameters))).thenReturn(expandedValueSet);
 
-//		processor.getValueSetExpansion(valueSet, expansionParameters, username, apiKey);
-		// TODO: How to pass auth creds
-		processor.getVSExpansion(valueSet, expansionParameters);
+		processor.expandValueSet(valueSet, expansionParameters);
 
 	   // then
       assertNotNull(valueSet.getExpansion());
@@ -61,20 +54,15 @@ public class KnowledgeArtifactProcessorTest {
 	void testGetExpansionNaive() throws IOException {
 		FhirContext ctx = FhirContext.forR4();
 
-//		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-anc-a-de13.json").readAllBytes());
 		String input = new String(this.getClass().getResourceAsStream("r4/valueset/valueset-vsm-authored.json").readAllBytes());
 		IParser parser = ctx.newJsonParser();
 		ValueSet valueSet = parser.parseResource(ValueSet.class, input);
-//		String systemVersion = valueSet.getUrl() + "|" + valueSet.getUrl() + "/version/20230711";
 		Parameters expansionParameters = new Parameters();
 		expansionParameters.addParameter("system-version", "http://snomed.info/sct|http://snomed.info/sct/731000124108/version/20230901");
 
 		// when
-		Mockito.when(client.expand(Mockito.eq(valueSet), Mockito.eq(valueSet.getUrl()), Mockito.eq(expansionParameters)))
-			.thenThrow(new RuntimeException());
+		processor.expandValueSet(valueSet, expansionParameters);
 
-//		processor.getValueSetExpansion(valueSet, expansionParameters, username, apiKey);
-		processor.getVSExpansion(valueSet, expansionParameters);
 		// then
 		assertNotNull(valueSet.getExpansion());
 		assertNotNull(valueSet.getExpansion().getParameter().get(0));

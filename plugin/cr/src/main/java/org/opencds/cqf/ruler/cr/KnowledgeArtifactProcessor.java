@@ -1269,7 +1269,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	public void getVSExpansion(ValueSet valueSet, Parameters expansionParameters) {
+	public void expandValueSet(ValueSet valueSet, Parameters expansionParameters) {
 		// Gather the Terminology Service from the valueSet's authoritativeSourceUrl.
 		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
 		String authoritativeSourceUrl = authoritativeSource != null && authoritativeSource.hasValue()
@@ -1309,49 +1309,6 @@ public class KnowledgeArtifactProcessor {
 				valueSet.setExpansion(expandedValueSet.getExpansion());
 			} catch (Exception ex) {
 				myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), ex);
-			}
-		}
-	}
-
-//	public void getValueSetExpansion(ValueSet valueSet, String systemVersion, String username, String apiKey) {
-	public void getValueSetExpansion(ValueSet valueSet, Parameters expansionParameters, String username, String apiKey) {
-		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
-		String urlToUse = authoritativeSource != null && authoritativeSource.hasValue()
-			? authoritativeSource.getValue().primitiveValue()
-			: valueSet.getUrl();
-
-		ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
-		expansion.setTimestamp(Date.from(Instant.now()));
-
-		ValueSet expandedValueSet;
-		try {
-//			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, systemVersion, username, apiKey);
-			terminologyServerClient.setUsername(username);
-			terminologyServerClient.setApiKey(apiKey);
-			expandedValueSet = terminologyServerClient.expand(valueSet, urlToUse, expansionParameters);
-			valueSet.setExpansion(expandedValueSet.getExpansion());
-		} catch (Exception e) {
-			myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), e);
-
-			if (hasSimpleCompose(valueSet)) {
-				// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
-				ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParams = new ArrayList<>();
-				ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
-				parameterNaive.setName("naive");
-				parameterNaive.setValue(new BooleanType(true));
-				expansionParams.add(parameterNaive);
-				expansion.setParameter(expansionParams);
-
-				for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
-					for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
-						expansion.addContains()
-							.setCode(crc.getCode())
-							.setSystem(csc.getSystem())
-							.setVersion(csc.getVersion())
-							.setDisplay(crc.getDisplay());
-					}
-				}
-				valueSet.setExpansion(expansion);
 			}
 		}
 	}
