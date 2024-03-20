@@ -1,10 +1,13 @@
 package org.opencds.cqf.ruler.cr;
 
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
+import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -14,30 +17,43 @@ import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
+import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.IntegerType;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.UriType;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
-import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
-import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
+import org.opencds.cqf.fhir.api.Repository;
+import org.opencds.cqf.fhir.utility.adapter.AdapterFactory;
+import org.opencds.cqf.fhir.utility.visitor.KnowledgeArtifactApproveVisitor;
+import org.opencds.cqf.fhir.utility.visitor.KnowledgeArtifactDraftVisitor;
+import org.opencds.cqf.fhir.utility.visitor.KnowledgeArtifactPackageVisitor;
+import org.opencds.cqf.fhir.utility.visitor.KnowledgeArtifactReleaseVisitor;
 import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
 import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
@@ -58,6 +74,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 	@Autowired
 	private KnowledgeArtifactProcessor artifactProcessor;
 
+	private AdapterFactory adapterFactory = AdapterFactory.forFhirVersion(FhirVersionEnum.R4);
+
 	/**
 	 * Applies an approval to an existing artifact, regardless of status.
 	 *
@@ -66,11 +84,11 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 	 * @param approvalDate        Optional Date parameter for indicating the date of approval
 	 *                            for an approval submission. If approvalDate is not
 	 *                           	provided, the current date will be used.
-	 * @param artifactCommentType
-	 * @param artifactCommentText
-	 * @param artifactCommentTarget
-	 * @param artifactCommentReference
-	 * @param artifactCommentUser Optional ArtifactComment* arguments represent parts of a
+	 * @param artifactAssessmentType
+	 * @param artifactAssessmentSummary
+	 * @param artifactAssessmentTarget
+	 * @param artifactAssessmentRelatedArtifact
+	 * @param artifactAssessmentAuthor Optional ArtifactComment* arguments represent parts of a
 	 *                            comment to beincluded as part of the approval. The
 	 *                            artifactComment is a cqfm-artifactComment as defined here:
 	 *                            http://hl7.org/fhir/us/cqfmeasures/STU3/StructureDefinition-cqfm-artifactComment.html
@@ -85,26 +103,26 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
 			@OperationParam(name = "approvalDate", typeName = "Date") IPrimitiveType<Date> approvalDate,
-			@OperationParam(name = "artifactCommentType") String artifactCommentType,
-			@OperationParam(name = "artifactCommentText") String artifactCommentText,
-			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
-			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
-			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
+			@OperationParam(name = "artifactAssessmentType") String artifactAssessmentType,
+			@OperationParam(name = "artifactAssessmentSummary") String artifactAssessmentSummary,
+			@OperationParam(name = "artifactAssessmentTarget") CanonicalType artifactAssessmentTarget,
+			@OperationParam(name = "artifactAssessmentRelatedArtifact") CanonicalType artifactAssessmentRelatedArtifact,
+			@OperationParam(name = "artifactAssessmentAuthor") Reference artifactAssessmentAuthor) throws UnprocessableEntityException {
 				HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
 				MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
-		if (artifactCommentTarget != null) {
-			if (Canonicals.getUrl(artifactCommentTarget) != null
-			&& !Canonicals.getUrl(artifactCommentTarget).equals(resource.getUrl())) {
-				throw new UnprocessableEntityException("ArtifactCommentTarget URL does not match URL of resource being approved.");
+		if (artifactAssessmentTarget != null) {
+			if (Canonicals.getUrl(artifactAssessmentTarget) != null
+			&& !Canonicals.getUrl(artifactAssessmentTarget).equals(resource.getUrl())) {
+				throw new UnprocessableEntityException("ArtifactAssessmentTarget URL does not match URL of resource being approved.");
 			}
-			if (Canonicals.getVersion(artifactCommentTarget) != null
-			&& !Canonicals.getVersion(artifactCommentTarget).equals(resource.getVersion())) {
-				throw new UnprocessableEntityException("ArtifactCommentTarget version does not match version of resource being approved.");
+			if (Canonicals.getVersion(artifactAssessmentTarget) != null
+			&& !Canonicals.getVersion(artifactAssessmentTarget).equals(resource.getVersion())) {
+				throw new UnprocessableEntityException("ArtifactAssessmentTarget version does not match version of resource being approved.");
 			}
-		} else if (artifactCommentTarget == null) {
+		} else if (artifactAssessmentTarget == null) {
 			String target = "";
 			String url = resource.getUrl();
 			String version = resource.getVersion();
@@ -118,24 +136,31 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 				target += version;
 			}
 			if (target != null) {
-				artifactCommentTarget = new CanonicalType(target);
+				artifactAssessmentTarget = new CanonicalType(target);
 			}
 		}
-		ArtifactAssessment newAssessment = this.artifactProcessor.createApprovalAssessment(
-			theId,
-			artifactCommentType,
-			artifactCommentText,
-			artifactCommentTarget,
-			artifactCommentReference,
-			artifactCommentUser);
-		MetadataResource approvedResource =  this.artifactProcessor.approve(resource, approvalDate, newAssessment);
-		Bundle transactionBundle = new Bundle()
-			.setType(Bundle.BundleType.TRANSACTION)
-			.addEntry(createEntry(approvedResource));
-		if (newAssessment != null && newAssessment.isValidArtifactComment()) {
-			transactionBundle.addEntry(createEntry(newAssessment));
+		var params = parameters();
+		if (approvalDate != null && approvalDate.hasValue()) {
+			params.addParameter("approvalDate", new DateType(approvalDate.getValue()));
 		}
-		return transaction(transactionBundle, requestDetails);
+		if (artifactAssessmentType != null) {
+			params.addParameter("artifactAssessmentType", artifactAssessmentType);
+		}
+		if (artifactAssessmentTarget != null) {
+			params.addParameter("artifactAssessmentTarget", artifactAssessmentTarget);
+		}
+		if (artifactAssessmentSummary != null) {
+			params.addParameter("artifactAssessmentSummary", artifactAssessmentSummary);
+		}
+		if (artifactAssessmentRelatedArtifact != null) {
+			params.addParameter("artifactAssessmentRelatedArtifact", artifactAssessmentRelatedArtifact);
+		}
+		if (artifactAssessmentAuthor != null) {
+			params.addParameter("artifactAssessmentAuthor", artifactAssessmentAuthor);
+		}
+		var adapter = adapterFactory.createKnowledgeArtifactAdapter(resource);
+		var visitor = new KnowledgeArtifactApproveVisitor();
+		return((Bundle)adapter.accept(visitor, hapiFhirRepository, params));
 	}
 	/**
 	 * Creates a draft of an existing artifact if it has status Active.
@@ -150,7 +175,16 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
 		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
-		return transaction(this.artifactProcessor.createDraftBundle(theId, hapiFhirRepository, version));
+		MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
+		if (resource == null) {
+			throw new ResourceNotFoundException(theId);
+		}
+		var params = parameters(
+			part("version", new StringType(version))
+		);
+		var adapter = adapterFactory.createKnowledgeArtifactAdapter(resource);
+		var visitor = new KnowledgeArtifactDraftVisitor();
+		return((Bundle)adapter.accept(visitor, hapiFhirRepository, params));
 	}
 	/**
 	 * Sets the status of an existing artifact to Active if it has status Draft.
@@ -170,26 +204,93 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		@OperationParam(name = "version") String version,
 		@OperationParam(name = "versionBehavior") CodeType versionBehavior,
 		@OperationParam(name = "latestFromTxServer", typeName = "Boolean") IPrimitiveType<Boolean> latestFromTxServer,
-		@OperationParam(name = "requireNonExperimental") CodeType requireNonExpermimental,
+		@OperationParam(name = "requireNonExperimental") CodeType requireNonExperimental,
 		@OperationParam(name = "releaseLabel") String releaseLabel)
 		throws FHIRException {
-		CRMIReleaseVersionBehaviorCodes versionBehaviorCode;
-		CRMIReleaseExperimentalBehaviorCodes experimentalBehaviorCode;
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
+		if (resource == null) {
+			throw new ResourceNotFoundException(theId);
+		}
+		var params = parameters();
+		if (version != null) {
+			params.addParameter("version", version);
+		}
+		if (versionBehavior != null ) {
+			params.addParameter("versionBehavior", versionBehavior);
+		}
+		if (latestFromTxServer != null && latestFromTxServer.hasValue()) {
+			params.addParameter("latestFromTxServer", latestFromTxServer.getValue());
+		}
+		if (requireNonExperimental != null) {
+			params.addParameter("requireNonExperimental", requireNonExperimental);
+		}
+		if (releaseLabel != null ) {
+			params.addParameter("releaseLabel", releaseLabel);
+		}
+		var adapter = adapterFactory.createKnowledgeArtifactAdapter(resource);
 		try {
-			versionBehaviorCode = versionBehavior == null ? CRMIReleaseVersionBehaviorCodes.NULL : CRMIReleaseVersionBehaviorCodes.fromCode(versionBehavior.getCode());
-			experimentalBehaviorCode = requireNonExpermimental == null ? CRMIReleaseExperimentalBehaviorCodes.NULL : CRMIReleaseExperimentalBehaviorCodes.fromCode(requireNonExpermimental.getCode());
-		} catch (FHIRException e) {
+			var visitor = new KnowledgeArtifactReleaseVisitor();
+			var retval = (Bundle)adapter.accept(visitor, hapiFhirRepository, params);
+			forEachMetadataResource(
+				retval.getEntry(), 
+				(r) -> {
+					if (r != null) {
+						adapterFactory.createKnowledgeArtifactAdapter(r).getRelatedArtifact()
+						.forEach(ra -> {
+							checkIfValueSetNeedsCondition(null, (RelatedArtifact)ra, hapiFhirRepository);
+						});
+					}
+				}, 
+				hapiFhirRepository);
+			return retval;
+		} catch (Exception e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
-		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
-		return transaction(this.artifactProcessor.createReleaseBundle(
-			theId, 
-			releaseLabel, 
-			version,
-			versionBehaviorCode,
-			latestFromTxServer != null && latestFromTxServer.getValue(),
-			experimentalBehaviorCode,
-			hapiFhirRepository));
+	}
+	private void forEachMetadataResource(List<BundleEntryComponent> entries, Consumer<MetadataResource> callback, Repository repository) {
+		entries.stream()
+			.map(entry -> entry.getResponse().getLocation())
+			.map(location -> {
+				switch (location.split("/")[0]) {
+					case "ActivityDefinition":
+						return repository.read(ActivityDefinition.class, new IdType(location));
+					case "Library":
+						return repository.read(Library.class, new IdType(location));
+					case "Measure":
+						return repository.read(Measure.class, new IdType(location));
+					case "PlanDefinition":
+						return repository.read(PlanDefinition.class, new IdType(location));
+					case "ValueSet":
+						return repository.read(ValueSet.class, new IdType(location));
+					default:
+						return null;
+				}
+			})
+			.forEach(callback);
+	}
+	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException {
+		if (resource == null 
+		&& relatedArtifact != null 
+		&& relatedArtifact.hasResource() 
+		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
+			List<MetadataResource> searchResults = KnowledgeArtifactProcessor.getResourcesFromBundle(KnowledgeArtifactProcessor.searchResourceByUrl(relatedArtifact.getResource(), hapiFhirRepository));
+			if (searchResults.size() > 0) {
+				resource = searchResults.get(0);
+			}
+		}
+		if (resource != null && resource.getResourceType() == ResourceType.ValueSet) {
+			ValueSet valueSet = (ValueSet)resource;
+			boolean isLeaf = !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0);
+			Optional<Extension> maybeConditionExtension = Optional.ofNullable(relatedArtifact)
+				.map(RelatedArtifact::getExtension)
+				.map(list -> {
+					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(KnowledgeArtifactProcessor.valueSetConditionUrl)).findFirst().orElse(null);
+				});
+			if (isLeaf && !maybeConditionExtension.isPresent()) {
+				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
+			}
+		}
 	}
 
 	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
@@ -211,34 +312,66 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		@OperationParam(name = "artifactEndpointConfiguration") ParametersParameterComponent artifactEndpointConfiguration,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
 		) throws FHIRException {
-		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);		
-		List<ParametersParameterComponent> artifactEndpointParts = Optional.ofNullable(artifactEndpointConfiguration).map(config -> config.getPart()).orElse(new ArrayList<ParametersParameterComponent>());
-		String artifactRoute = artifactEndpointParts.stream().filter(part -> part.getName().equals("artifactRoute")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
-		String endpointUri = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpointUri")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
-		Endpoint artifactEndpoint = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpoint")).map(part -> (Endpoint)part.getResource()).findAny().orElse(null);
-		return this.artifactProcessor.createPackageBundle(
-			theId,
-			hapiFhirRepository,
-			capability,
-			include,
-			artifactVersion,
-			checkArtifactVersion,
-			forceArtifactVersion,
-			count != null ? count.getValue() : null,
-			offset != null ? offset.getValue() : null,
-			artifactRoute,
-			endpointUri,
-			artifactEndpoint,
-			terminologyEndpoint,
-			packageOnly != null ? packageOnly.getValue() : null
-		);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
+		if (resource == null) {
+			throw new ResourceNotFoundException(theId);
+		}
+		var params = parameters();
+		if (manifest != null) {
+			params.addParameter("manifest", manifest);
+		}
+		if (artifactEndpointConfiguration != null) {
+			params.addParameter().setName("artifactEndpointConfiguration").addPart(artifactEndpointConfiguration);
+		}
+		if (offset != null && offset.hasValue()) {
+			params.addParameter("offset", new IntegerType(offset.getValue()));
+		}
+		if (offset != null && offset.hasValue()) {
+			params.addParameter("offset", new IntegerType(offset.getValue()));
+		}
+		if (count != null && count.hasValue()) {
+			params.addParameter("count", new IntegerType(count.getValue()));
+		}
+		if (packageOnly != null && packageOnly.hasValue()) {
+			params.addParameter("packageOnly", packageOnly.getValue());
+		}
+		if (capability != null) {
+			capability.forEach(c -> params.addParameter("capability", c));
+		}
+		if (artifactVersion != null) {
+			artifactVersion.forEach(a -> params.addParameter("artifactVersion", a));
+		}
+		if (checkArtifactVersion != null) {
+			checkArtifactVersion.forEach(c -> params.addParameter("checkArtifactVersion", c));
+		}
+		if (forceArtifactVersion != null) {
+			forceArtifactVersion.forEach(f -> params.addParameter("forceArtifactVersion", f));
+		}
+		if (include != null) {
+			include.forEach(i -> params.addParameter("include", i));
+		}
+		var adapter = adapterFactory.createKnowledgeArtifactAdapter(resource);
+		var visitor = new KnowledgeArtifactPackageVisitor();
+		var retval = (Bundle)adapter.accept(visitor, hapiFhirRepository, params);
+		retval.getEntry().stream()
+			.map(e -> (MetadataResource)e.getResource())
+			.filter(r -> {
+				var id1 = r.getResourceType().toString() + "/" + r.getIdPart();
+				var id2 = theId.getValue();
+				return id1.equals(id2);
+			})
+			.findFirst()
+			.ifPresent(m -> {
+				KnowledgeArtifactProcessor.handleValueSetReferenceExtensions(m, retval.getEntry(), hapiFhirRepository);
+			});
+			return retval;
 	}
 
 	@Operation(name = "$revise", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$revise", value = "Update an existing artifact in 'draft' status")
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
-
 		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
 		return (IBaseResource)this.artifactProcessor.revise(hapiFhirRepository, (MetadataResource) resource);
 	}
