@@ -712,9 +712,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
-	void release_test_condition_missing() {
-		loadTransaction("ersd-small-approved-draft-no-conditions.json");
+	void release_and_package_test_condition_missing() {
 		loadResource("artifactAssessment-search-parameter.json");
+		loadTransaction("ersd-small-approved-draft-no-conditions.json");
 		Parameters params = parameters(
 			part("version", new StringType("1.2.3.23")),
 			part("versionBehavior", new StringType("default"))
@@ -725,6 +725,22 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.onInstance(specificationLibReference)
 			.named("$release")
 			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
+		} catch (UnprocessableEntityException e) {
+			// TODO: handle exception
+			noConditionExtension = e;
+		}
+		assertNotNull(noConditionExtension);
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
+		
+		//reset
+		noConditionExtension = null;
+		try {
+			getClient().operation()
+			.onInstance(specificationLibReference)
+			.named("$package")
+			.withNoParameters(Parameters.class)
 			.returnResourceType(Bundle.class)
 			.execute();
 		} catch (UnprocessableEntityException e) {
@@ -1319,26 +1335,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
-	}
-
-	@Test
-	void package_test_condition_missing() {
-		loadTransaction("ersd-small-approved-draft-no-conditions.json");
-		loadResource("artifactAssessment-search-parameter.json");
-		UnprocessableEntityException noConditionExtension = null;
-		try {
-			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$package")
-			.withNoParameters(Parameters.class)
-			.returnResourceType(Bundle.class)
-			.execute();
-		} catch (UnprocessableEntityException e) {
-			// TODO: handle exception
-			noConditionExtension = e;
-		}
-		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test

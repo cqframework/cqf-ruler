@@ -7,11 +7,6 @@
 			"resource": {
 				"resourceType": "Library",
 				"id": "SpecificationLibrary",
-				"meta": {
-					"versionId": "1",
-					"lastUpdated": "2023-12-14T15:38:56.845-05:00",
-					"source": "#FNgLVm21fIyZMxwE"
-				},
 				"url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
 				"date": "2023-06-30",
 				"approvalDate": "2023-06-30",
@@ -146,9 +141,8 @@
 				]
 			},
 			"request": {
-				"method": "POST",
-				"url": "PlanDefinition/8",
-				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=1.0.0.0-draft"
+				"method": "PUT",
+				"url": "PlanDefinition/8"
 			}
 		},
 		{
