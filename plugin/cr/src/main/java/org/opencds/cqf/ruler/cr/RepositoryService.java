@@ -6,7 +6,6 @@ import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
@@ -20,12 +19,10 @@ import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
@@ -37,8 +34,6 @@ import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
@@ -238,7 +233,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 					if (r != null) {
 						adapterFactory.createKnowledgeArtifactAdapter(r).getRelatedArtifact()
 						.forEach(ra -> {
-							checkIfValueSetNeedsCondition(null, (RelatedArtifact)ra, hapiFhirRepository);
+							KnowledgeArtifactProcessor.checkIfValueSetNeedsCondition(null, (RelatedArtifact)ra, hapiFhirRepository);
 						});
 					}
 				}, 
@@ -268,29 +263,6 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 				}
 			})
 			.forEach(callback);
-	}
-	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException {
-		if (resource == null 
-		&& relatedArtifact != null 
-		&& relatedArtifact.hasResource() 
-		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
-			List<MetadataResource> searchResults = KnowledgeArtifactProcessor.getResourcesFromBundle(KnowledgeArtifactProcessor.searchResourceByUrl(relatedArtifact.getResource(), hapiFhirRepository));
-			if (searchResults.size() > 0) {
-				resource = searchResults.get(0);
-			}
-		}
-		if (resource != null && resource.getResourceType() == ResourceType.ValueSet) {
-			ValueSet valueSet = (ValueSet)resource;
-			boolean isLeaf = !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0);
-			Optional<Extension> maybeConditionExtension = Optional.ofNullable(relatedArtifact)
-				.map(RelatedArtifact::getExtension)
-				.map(list -> {
-					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(KnowledgeArtifactProcessor.valueSetConditionUrl)).findFirst().orElse(null);
-				});
-			if (isLeaf && !maybeConditionExtension.isPresent()) {
-				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
-			}
-		}
 	}
 
 	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
@@ -444,24 +416,5 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
 		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource, (MetadataResource)theTargetResource, this.getFhirContext(), hapiFhirRepository, compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(), dao);
 	}
-	private BundleEntryComponent createEntry(IBaseResource theResource) {
-		return new Bundle.BundleEntryComponent()
-			.setResource((Resource) theResource)
-			.setRequest(createRequest(theResource));
-	}
-
-	private BundleEntryRequestComponent createRequest(IBaseResource theResource) {
-		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
-		if (theResource.getIdElement().hasValue()) {
-			request
-				.setMethod(Bundle.HTTPVerb.PUT)
-				.setUrl(theResource.getIdElement().getValue());
-		} else {
-			request
-				.setMethod(Bundle.HTTPVerb.POST)
-				.setUrl(theResource.fhirType());
-		}
-
-		return request;
-	}
+	
 }
