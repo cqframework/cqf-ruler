@@ -18,21 +18,21 @@ public class TerminologyServerClient {
 
 	private String username;
 
-	public String getUsername() {
+	private String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	private void setUsername(String username) {
 		this.username = username;
 	}
 
 	private String apiKey;
 
-	public String getApiKey() {
+	private String getApiKey() {
 		return apiKey;
 	}
 
-	public void setApiKey(String apiKey) {
+	private void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
 	public TerminologyServerClient() {

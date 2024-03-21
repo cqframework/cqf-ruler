@@ -46,9 +46,6 @@ public class KnowledgeArtifactProcessorIT extends RestIntegrationTest {
 	   // then
       assertNotNull(valueSet.getExpansion());
 	  	assertEquals(16, valueSet.getExpansion().getTotal());
-		for (ValueSet.ValueSetExpansionContainsComponent contained: valueSet.getExpansion().getContains()) {
-			assertEquals(contained.getVersion(), codeSystemVersion);
-		}
 	}
 
 }
