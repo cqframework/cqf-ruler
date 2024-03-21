@@ -141,8 +141,9 @@
 				]
 			},
 			"request": {
-				"method": "PUT",
-				"url": "PlanDefinition/8"
+				"method": "POST",
+				"url": "PlanDefinition/8",
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=1.0.0.0-draft"
 			}
 		},
 		{
