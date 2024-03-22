@@ -20,6 +20,12 @@ public class CrRulerProperties {
 		this.enabled = enabled;
 	}
 
+	private final String rckmsSynonymsUrl = "http://ersd.aimsplatform.org/fhir/ValueSet/rckms-condition-codes";
+
+	public String getRckmsSynonymsUrl() {
+		return this.rckmsSynonymsUrl;
+	}
+
 	private String vsacUsername;
 
 	public String getVsacUsername() { return vsacUsername; }
@@ -31,5 +37,6 @@ public class CrRulerProperties {
 	public String getVsacApiKey() { return vsacApiKey; }
 
 	public void setVsacApiKey(String vsacApiKey) { this.vsacApiKey = vsacApiKey; }
+
 
 }
