@@ -24,9 +24,15 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
-public class ValueSetInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
+public class ValueSetSynonymUpdateInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
   	@Autowired
 	  private DaoRegistry myDaoRegistry;
+
+    private String synonymUrl;
+
+    ValueSetSynonymUpdateInterceptor(String synonymUrl) {
+      this.synonymUrl = synonymUrl;
+    }
 
     public DaoRegistry getDaoRegistry() {
       return myDaoRegistry;
@@ -40,7 +46,7 @@ public class ValueSetInterceptor implements org.opencds.cqf.ruler.api.Intercepto
     RequestDetails theRequestDetails) throws UnprocessableEntityException {
       if (theResource.fhirType().equals(ResourceType.ValueSet.toString())) {
         ValueSet vs = (ValueSet) theResource;
-        if (vs.getUrl().equals("http://ersd.aimsplatform.org/fhir/ValueSet/rckms-condition-codes")) {
+        if (vs.getUrl().equals(this.synonymUrl)) {
           FhirDal fhirDal = new JpaFhirDal(myDaoRegistry,theRequestDetails);
           List<ConceptSetComponent> sets = vs.getCompose().getInclude();
           List<Library> librariesToUpdate = new ArrayList<Library>();

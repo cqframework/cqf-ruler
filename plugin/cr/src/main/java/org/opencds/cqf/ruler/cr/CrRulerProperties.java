@@ -20,5 +20,10 @@ public class CrRulerProperties {
 		this.enabled = enabled;
 	}
 
+	private final String rckmsSynonymsUrl = "http://ersd.aimsplatform.org/fhir/ValueSet/rckms-condition-codes";
+
+	public String getRckmsSynonymsUrl() {
+		return this.rckmsSynonymsUrl;
+	}
 
 }

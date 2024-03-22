@@ -112,8 +112,8 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public ValueSetInterceptor valueSetInterceptor() {
-		return new ValueSetInterceptor();
+	public ValueSetSynonymUpdateInterceptor valueSetInterceptor() {
+		return new ValueSetSynonymUpdateInterceptor(this.crRulerProperties().getRckmsSynonymsUrl());
 	}
 
 	@Bean
