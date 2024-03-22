@@ -116,4 +116,10 @@ public class CrConfig {
 		return new KnowledgeArtifactProcessor();
 	}
 
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public TerminologyServerClient terminologyServerClient() {
+		return new TerminologyServerClient(crRulerProperties().getVsacUsername(), crRulerProperties().getVsacApiKey());
+	}
+
 }

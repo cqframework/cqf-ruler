@@ -20,5 +20,16 @@ public class CrRulerProperties {
 		this.enabled = enabled;
 	}
 
+	private String vsacUsername;
+
+	public String getVsacUsername() { return vsacUsername; }
+
+	public void setVsacUsername(String vsacUsername) { this.vsacUsername = vsacUsername; }
+
+	private String vsacApiKey;
+
+	public String getVsacApiKey() { return vsacApiKey; }
+
+	public void setVsacApiKey(String vsacApiKey) { this.vsacApiKey = vsacApiKey; }
 
 }
