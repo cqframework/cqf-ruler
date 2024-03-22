@@ -1,0 +1,69 @@
+{
+	"resourceType": "Bundle",
+	"id": "bundle-ersd-specification-example",
+	"type": "transaction",
+	"entry": [
+		{
+			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
+			"resource": {
+				"resourceType": "Library",
+				"id": "lib1",
+				"relatedArtifact": [
+					{
+						"extension": [
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "767146004"
+										}
+									],
+									"text": "Infection caused by Acanthamoeba (disorder)"
+								}
+							}
+						],
+						"type": "depends-on",
+						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1506|1.0.0"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/lib1"
+			}
+		},
+		{
+			"fullUrl": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
+			"resource": {
+				"resourceType": "Library",
+				"id": "lib2",
+				"relatedArtifact": [
+					{
+						"extension": [
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "49649001"
+										}
+									],
+									"text": "Infection caused by Acanthamoeba (disorder)"
+								}
+							}
+						],
+						"type": "depends-on",
+						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1506|1.0.0"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/lib2"
+			}
+		}
+	]
+}

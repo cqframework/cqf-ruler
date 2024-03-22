@@ -34,6 +34,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
@@ -1443,6 +1444,48 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 
 	@Test
+	void update_rckms_valueset_updates_Libraries() {
+		// setup
+		ValueSet conditions = (ValueSet) loadResource("rckms-condition-codes.json");
+		IdType id = new IdType(conditions.getId());
+		// just remove the history part or it causes problems later
+		conditions.setId(id.getResourceType()+"/"+id.getIdPart());
+		loadResource("manifest-code-search-parameter.json");
+		loadTransaction("libraries-with-conditions-bundle.json");
+		
+		// if we update 2 synonyms
+		updateSynonym(conditions, "767146004", "testUpdate1");
+		updateSynonym(conditions, "49649001", "testUpdate2");
+		getClient().update().resource(conditions).execute();
+		String valueSetUrl = "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1506|1.0.0";
+		Library lib1 = (Library)getClient().read().resource("Library").withId("lib1").execute();
+		Library lib2 = (Library)getClient().read().resource("Library").withId("lib2").execute();
+		List<Extension> condition1 = getConditionExtensionForValueSet(valueSetUrl,lib1);
+		assertTrue(condition1.size() > 0);
+		// see a change in both libraries
+		assertTrue(((CodeableConcept)condition1.get(0).getValue()).getText().equals("testUpdate1"));
+		List<Extension> condition2 = getConditionExtensionForValueSet(valueSetUrl,lib2);
+		assertTrue(condition2.size() > 0);
+		// see a change in both libraries
+		assertTrue(((CodeableConcept)condition2.get(0).getValue()).getText().equals("testUpdate2"));
+
+	}
+	private void updateSynonym(ValueSet vs, String code, String newText) {
+		vs.getCompose()
+			.getInclude().get(0)
+			.getConcept()
+			.stream().filter(c -> c.getCode().equals(code)).findFirst().get()
+			.getDesignation().get(0)
+			.setValue(newText);
+	}
+	private List<Extension> getConditionExtensionForValueSet(String valueSetUrl, Library library) {
+		return library.getRelatedArtifact().stream()
+			.filter(ra -> ra.hasResource() && ra.getResource().equals(valueSetUrl))
+			.map(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
+			.filter(ext -> ext != null)
+			.collect(Collectors.toList());
+	}
+	
 	void basic_artifact_diff() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");

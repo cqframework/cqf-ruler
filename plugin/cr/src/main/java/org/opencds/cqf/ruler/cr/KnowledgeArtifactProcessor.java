@@ -1,4 +1,5 @@
 package org.opencds.cqf.ruler.cr;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -34,6 +36,9 @@ import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.fhir.api.Repository;
 import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -50,13 +55,20 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	@Autowired
+	private TerminologyServerClient terminologyServerClient;
+	private Logger myLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+	public static final String authoritativeSourceUrl = "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource";
+	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
+	public static final String vsmValueSetTagCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag";
+	public static final String vsmValueSetTagVSMAuthoredCode = "vsm-authored";
 	public static final String valueSetPriorityCode = "priority";
 	public static final String valueSetConditionCode = "focus";
 	public static final List<String> preservedExtensionUrls = List.of(
@@ -310,7 +322,7 @@ public class KnowledgeArtifactProcessor {
 			vset.setExpansion(null);
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
-			
+
 			ValueSet e = dao.expand(vset,options);
 			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
 			// `copy` creates the superclass again
@@ -318,6 +330,91 @@ public class KnowledgeArtifactProcessor {
 			return;
 		}
 	}
+
+	public void expandValueSet(ValueSet valueSet, Parameters expansionParameters) {
+		// Gather the Terminology Service from the valueSet's authoritativeSourceUrl.
+		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
+		String authoritativeSourceUrl = authoritativeSource != null && authoritativeSource.hasValue()
+			? authoritativeSource.getValue().primitiveValue()
+			: valueSet.getUrl();
+
+		// TODO: Given the authoritativeSourceUrl, lookup Tx Service connection configuration - is this possible? Problem is we can't reliably infer Tx Service from authSource
+//		terminologyServerClient.setUsername(config.getUsername(authoritativeSourceUrl));
+//		terminologyServerClient.setApiKey(config.getApiKey(authoritativeSourceUrl));
+
+		ValueSet expandedValueSet;
+		if (isVSMAuthoredValueSet(valueSet) && hasSimpleCompose(valueSet)) {
+			// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
+			ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
+			expansion.setTimestamp(Date.from(Instant.now()));
+
+			ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParams = new ArrayList<>();
+			ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
+			parameterNaive.setName("naive");
+			parameterNaive.setValue(new BooleanType(true));
+			expansionParams.add(parameterNaive);
+			expansion.setParameter(expansionParams);
+
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
+					expansion.addContains()
+						.setCode(crc.getCode())
+						.setSystem(csc.getSystem())
+						.setVersion(csc.getVersion())
+						.setDisplay(crc.getDisplay());
+				}
+			}
+			valueSet.setExpansion(expansion);
+		} else {
+			try {
+				expandedValueSet = terminologyServerClient.expand(valueSet, authoritativeSourceUrl, expansionParameters);
+				valueSet.setExpansion(expandedValueSet.getExpansion());
+			} catch (Exception ex) {
+				myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), ex);
+			}
+		}
+	}
+
+	public boolean isVSMAuthoredValueSet(ValueSet valueSet) {
+		return valueSet.hasMeta()
+			&& valueSet.getMeta().hasTag()
+			&& valueSet.getMeta().getTag(vsmValueSetTagCodeSystemUrl, vsmValueSetTagVSMAuthoredCode) != null;
+	}
+
+	public boolean hasSimpleCompose(ValueSet valueSet) {
+		if (valueSet.hasCompose()) {
+			if (valueSet.getCompose().hasExclude()) {
+				return false;
+			}
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				if (csc.hasValueSet()) {
+					// Cannot expand a compose that references a value set
+					return false;
+				}
+
+				if (!csc.hasSystem()) {
+					// Cannot expand a compose that does not have a system
+					return false;
+				}
+
+				if (csc.hasFilter()) {
+					// Cannot expand a compose that has a filter
+					return false;
+				}
+
+				if (!csc.hasConcept()) {
+					// Cannot expand a compose that does not enumerate concepts
+					return false;
+				}
+			}
+
+			// If all includes are simple, the compose can be expanded
+			return true;
+		}
+
+		return false;
+	}
+
 	private class diffCache {
 		private final Map<String,Parameters> diffs = new HashMap<String,Parameters>();
 		private final Map<String,MetadataResource> resources = new HashMap<String,MetadataResource>();

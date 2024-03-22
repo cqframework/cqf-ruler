@@ -112,8 +112,20 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
+	public ValueSetSynonymUpdateInterceptor valueSetInterceptor() {
+		return new ValueSetSynonymUpdateInterceptor(this.crRulerProperties().getRckmsSynonymsUrl());
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
 	public KnowledgeArtifactProcessor knowledgeArtifactProcessor() {
 		return new KnowledgeArtifactProcessor();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public TerminologyServerClient terminologyServerClient() {
+		return new TerminologyServerClient(crRulerProperties().getVsacUsername(), crRulerProperties().getVsacApiKey());
 	}
 
 }
