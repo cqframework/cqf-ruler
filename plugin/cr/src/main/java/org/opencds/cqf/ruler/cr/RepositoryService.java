@@ -1,10 +1,11 @@
 package org.opencds.cqf.ruler.cr;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
@@ -23,18 +24,22 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
+import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.validation.ValidatorResourceFetcher;
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -48,10 +53,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.validation.FhirValidator;
 
-public class RepositoryService extends DaoRegistryOperationProvider {
-
-	@Autowired
-	private JpaFhirDalFactory fhirDalFactory;
+public class RepositoryService extends HapiFhirRepositoryProvider {
 
 	@Autowired
 	private KnowledgeArtifactProcessor artifactProcessor;
@@ -88,8 +90,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			@OperationParam(name = "artifactCommentTarget") CanonicalType artifactCommentTarget,
 			@OperationParam(name = "artifactCommentReference") CanonicalType artifactCommentReference,
 			@OperationParam(name = "artifactCommentUser") Reference artifactCommentUser) throws UnprocessableEntityException {
-				FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-				MetadataResource resource = (MetadataResource) fhirDal.read(theId);
+				HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+				MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(theId.getResourceType()), theId);
 		if (resource == null) {
 			throw new ResourceNotFoundException(theId);
 		}
@@ -147,8 +149,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$draft", value = "Create a new draft version of the reference artifact")
 	public Bundle draftOperation(RequestDetails requestDetails, @IdParam IdType theId, @OperationParam(name = "version") String version)
 		throws FHIRException {
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return transaction(this.artifactProcessor.createDraftBundle(theId, fhirDal, version));
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		return transaction(this.artifactProcessor.createDraftBundle(theId, hapiFhirRepository, version));
 	}
 	/**
 	 * Sets the status of an existing artifact to Active if it has status Draft.
@@ -179,7 +181,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		} catch (FHIRException e) {
 			throw new UnprocessableEntityException(e.getMessage());
 		}
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
 		return transaction(this.artifactProcessor.createReleaseBundle(
 			theId, 
 			releaseLabel, 
@@ -187,7 +189,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			versionBehaviorCode,
 			latestFromTxServer != null && latestFromTxServer.getValue(),
 			experimentalBehaviorCode,
-			fhirDal));
+			hapiFhirRepository));
 	}
 
 	@Operation(name = "$package", idempotent = true, global = true, type = MetadataResource.class)
@@ -197,30 +199,36 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@IdParam IdType theId,
 		// TODO: $package - should capability be CodeType?
 		@OperationParam(name = "capability") List<String> capability,
-		@OperationParam(name = "canonicalVersion") List<CanonicalType> canonicalVersion,
-		@OperationParam(name = "checkCanonicalVersion") List<CanonicalType> checkCanonicalVersion,
-		@OperationParam(name = "forceCanonicalVersion") List<CanonicalType> forceCanonicalVersion,
+		@OperationParam(name = "artifactVersion") List<CanonicalType> artifactVersion,
+		@OperationParam(name = "checkArtifactVersion") List<CanonicalType> checkArtifactVersion,
+		@OperationParam(name = "forceArtifactVersion") List<CanonicalType> forceArtifactVersion,
 		// TODO: $package - should include be CodeType?
 		@OperationParam(name = "include") List<String> include,
 		@OperationParam(name = "manifest") CanonicalType manifest,
 		@OperationParam(name = "offset", typeName = "Integer") IPrimitiveType<Integer> offset,
 		@OperationParam(name = "count", typeName = "Integer") IPrimitiveType<Integer> count,
 		@OperationParam(name = "packageOnly", typeName = "Boolean") IPrimitiveType<Boolean> packageOnly,
-		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
+		@OperationParam(name = "artifactEndpointConfiguration") ParametersParameterComponent artifactEndpointConfiguration,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint
 		) throws FHIRException {
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);		
+		List<ParametersParameterComponent> artifactEndpointParts = Optional.ofNullable(artifactEndpointConfiguration).map(config -> config.getPart()).orElse(new ArrayList<ParametersParameterComponent>());
+		String artifactRoute = artifactEndpointParts.stream().filter(part -> part.getName().equals("artifactRoute")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
+		String endpointUri = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpointUri")).map(part -> ((UriType)part.getValue()).getValue()).findAny().orElse(null);
+		Endpoint artifactEndpoint = artifactEndpointParts.stream().filter(part -> part.getName().equals("endpoint")).map(part -> (Endpoint)part.getResource()).findAny().orElse(null);
 		return this.artifactProcessor.createPackageBundle(
 			theId,
-			fhirDal,
+			hapiFhirRepository,
 			capability,
 			include,
-			canonicalVersion,
-			checkCanonicalVersion,
-			forceCanonicalVersion,
+			artifactVersion,
+			checkArtifactVersion,
+			forceArtifactVersion,
 			count != null ? count.getValue() : null,
 			offset != null ? offset.getValue() : null,
-			contentEndpoint,
+			artifactRoute,
+			endpointUri,
+			artifactEndpoint,
 			terminologyEndpoint,
 			packageOnly != null ? packageOnly.getValue() : null
 		);
@@ -231,8 +239,8 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 	public IBaseResource reviseOperation(RequestDetails requestDetails, @OperationParam(name = "resource") IBaseResource resource)
 		throws FHIRException {
 
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return (IBaseResource)this.artifactProcessor.revise(fhirDal, (MetadataResource) resource);
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		return (IBaseResource)this.artifactProcessor.revise(hapiFhirRepository, (MetadataResource) resource);
 	}
 
 	@Operation(name = "$validate", idempotent = true, global = true, type = MetadataResource.class)
@@ -286,12 +294,14 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 		@OperationParam(name = "compareExecutable", typeName = "Boolean") IPrimitiveType<Boolean> compareExecutable,
 		@OperationParam(name = "compareComputable", typeName = "Boolean") IPrimitiveType<Boolean> compareComputable
 	) throws UnprocessableEntityException, ResourceNotFoundException{
-		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		IBaseResource theSourceResource = fhirDal.read(new IdType(source));
+		HapiFhirRepository hapiFhirRepository = this.getRepository(requestDetails);
+		IdType sourceId = new IdType(source);
+		IBaseResource theSourceResource = hapiFhirRepository.read(ResourceClassMapHelper.getClass(sourceId.getResourceType()), sourceId);
 		if (theSourceResource == null || !(theSourceResource instanceof MetadataResource)) {
 			throw new UnprocessableEntityException("Source resource must exist and be a Knowledge Artifact type.");
 		}
-		IBaseResource theTargetResource = fhirDal.read(new IdType(target));
+		IdType targetId = new IdType(target);
+		IBaseResource theTargetResource = hapiFhirRepository.read(ResourceClassMapHelper.getClass(targetId.getResourceType()), targetId);
 		if (theTargetResource == null || !(theTargetResource instanceof MetadataResource)) {
 			throw new UnprocessableEntityException("Target resource must exist and be a Knowledge Artifact type.");
 		}
@@ -299,7 +309,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
 		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
-		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource,(MetadataResource)theTargetResource,this.getFhirContext(),fhirDal,compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(),dao);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource, (MetadataResource)theTargetResource, this.getFhirContext(), hapiFhirRepository, compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(), dao);
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()

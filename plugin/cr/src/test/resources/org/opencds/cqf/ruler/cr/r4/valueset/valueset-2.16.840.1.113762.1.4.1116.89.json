@@ -10,37 +10,7 @@
   "compose": {
     "include": [
       {
-        "system": "http://hl7.org/fhir/sid/icd-9-cm",
-        "version": "2013",
-        "concept": [
-          {
-            "code": "162.2",
-            "display": "Malignant neoplasm of main bronchus"
-          },
-          {
-            "code": "162.3",
-            "display": "Malignant neoplasm of upper lobe, bronchus or lung"
-          },
-          {
-            "code": "162.4",
-            "display": "Malignant neoplasm of middle lobe, bronchus or lung"
-          },
-          {
-            "code": "162.5",
-            "display": "Malignant neoplasm of lower lobe, bronchus or lung"
-          },
-          {
-            "code": "162.8",
-            "display": "Malignant neoplasm of other parts of bronchus or lung"
-          },
-          {
-            "code": "162.9",
-            "display": "Malignant neoplasm of bronchus and lung, unspecified"
-          }
-        ]
-      },
-      {
-        "system": "http://hl7.org/fhir/sid/icd-10",
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
         "version": "2020",
         "concept": [
           {

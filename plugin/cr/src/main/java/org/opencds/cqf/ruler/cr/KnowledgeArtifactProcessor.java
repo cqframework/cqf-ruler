@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr;
 import static java.util.Comparator.comparing;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -15,7 +16,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
@@ -60,12 +60,15 @@ import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment;
 import org.opencds.cqf.ruler.cr.r4.ArtifactAssessment.ArtifactAssessmentContentInformationType;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseExperimentalBehavior.CRMIReleaseExperimentalBehaviorCodes;
 import org.opencds.cqf.ruler.cr.r4.CRMIReleaseVersionBehavior.CRMIReleaseVersionBehaviorCodes;
+import org.opencds.cqf.ruler.cr.r4.helper.ResourceClassMapHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
+import ca.uhn.fhir.cr.repo.HapiFhirRepository;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.patch.FhirPatch;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -83,14 +86,20 @@ import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 @Configurable
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
+	@Autowired
+	private TerminologyServerClient terminologyServerClient;
 	private Logger myLog = LoggerFactory.getLogger(KnowledgeArtifactProcessor.class);
 	public static final String CPG_INFERENCEEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-inferenceExpression";
 	public static final String CPG_ASSERTIONEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-assertionExpression";
 	public static final String CPG_FEATUREEXPRESSION = "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-featureExpression";
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
+	public static final String authoritativeSourceUrl = "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource";
+	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
+	public static final String vsmValueSetTagCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag";
+	public static final String vsmValueSetTagVSMAuthoredCode = "vsm-authored";
 	public static final String valueSetPriorityCode = "priority";
 	public static final String valueSetConditionCode = "focus";
 	public final List<String> preservedExtensionUrls = List.of(
@@ -172,7 +181,6 @@ public class KnowledgeArtifactProcessor {
 				ResourceType.TerminologyCapabilities
 			)
 		);
-
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		BundleEntryComponent entry = new Bundle.BundleEntryComponent()
 				.setResource((Resource) theResource)
@@ -207,60 +215,60 @@ public class KnowledgeArtifactProcessor {
 /**
  * search by versioned Canonical URL
  * @param url canonical URL of the form www.example.com/Patient/123|0.1
- * @param fhirDal to do the searching
+ * @param hapiFhirRepository to do the searching
  * @return a bundle of results
  */
-	private Bundle searchResourceByUrl(String url, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+	private Bundle searchResourceByUrl(String url, HapiFhirRepository hapiFhirRepository) {
+		Map<String, List<IQueryParameterType>> searchParams = new HashMap<>();
 
 		List<IQueryParameterType> urlList = new ArrayList<>();
 		urlList.add(new UriParam(Canonicals.getUrl(url)));
-		searchParams.put("url", List.of(urlList));
+		searchParams.put("url", urlList);
 
 		List<IQueryParameterType> versionList = new ArrayList<>();
 		String version = Canonicals.getVersion(url);
 		if (version != null && !version.isEmpty()) {
 			versionList.add(new TokenParam(Canonicals.getVersion((url))));
-			searchParams.put("version", List.of(versionList));
+			searchParams.put("version", versionList);
 		}
 
-		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		Bundle searchResultsBundle = (Bundle)hapiFhirRepository.search(Bundle.class, ResourceClassMapHelper.getClass(Canonicals.getResourceType(url)), searchParams);
 		return searchResultsBundle;
 	}
 
-	private Bundle searchArtifactAssessmentForArtifact(IdType reference, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+	private Bundle searchArtifactAssessmentForArtifact(IdType reference, HapiFhirRepository hapiFhirRepository) {
+		Map<String, List<IQueryParameterType>> searchParams = new HashMap<>();
 		List<IQueryParameterType> urlList = new ArrayList<>();
 		urlList.add(new ReferenceParam(reference));
-		searchParams.put("artifact", List.of(urlList));
-		Bundle searchResultsBundle = (Bundle)fhirDal.search("Basic", searchParams);
+		searchParams.put("artifact", urlList);
+		Bundle searchResultsBundle = (Bundle)hapiFhirRepository.search(Bundle.class,Basic.class, searchParams);
 		return searchResultsBundle;
 	}
 
-	private Bundle searchResourceByUrlAndStatus(String url, String status, FhirDal fhirDal) {
-		Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<>();
+	private Bundle searchResourceByUrlAndStatus(String url, String status, HapiFhirRepository hapiFhirRepository) {
+		Map<String, List<IQueryParameterType>> searchParams = new HashMap<>();
 
 		List<IQueryParameterType> urlList = new ArrayList<>();
 		urlList.add(new UriParam(Canonicals.getUrl(url)));
-		searchParams.put("url", List.of(urlList));
+		searchParams.put("url", urlList);
 
 		List<IQueryParameterType> versionList = new ArrayList<>();
 		String version = Canonicals.getVersion(url);
 		if (version != null && !version.isEmpty()) {
 			versionList.add(new TokenParam(Canonicals.getVersion((url))));
-			searchParams.put("version", List.of(versionList));
+			searchParams.put("version", versionList);
 		}
 
 		List<IQueryParameterType> statusList = new ArrayList<>();
 		statusList.add(new TokenParam(status));
-		searchParams.put("status", List.of(statusList));
+		searchParams.put("status", statusList);
 
-		Bundle searchResultsBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(url), searchParams);
+		Bundle searchResultsBundle = hapiFhirRepository.search(Bundle.class, ResourceClassMapHelper.getClass(Canonicals.getResourceType(url)), searchParams);
 		return searchResultsBundle;
 	}
 
-	private MetadataResource retrieveResourcesByCanonical(String reference, FhirDal fhirDal) throws ResourceNotFoundException {
-		Bundle referencedResourceBundle = searchResourceByUrl(reference, fhirDal);
+	private MetadataResource retrieveResourcesByCanonical(String reference, HapiFhirRepository hapiFhirRepository) throws ResourceNotFoundException {
+		Bundle referencedResourceBundle = searchResourceByUrl(reference, hapiFhirRepository);
 		Optional<MetadataResource> referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
 		if (referencedResource.isEmpty()) {
 			throw new ResourceNotFoundException(String.format("Resource for Canonical '%s' not found.", reference));
@@ -288,7 +296,7 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 
-	ArtifactAssessment createApprovalAssessment(IdType id, String artifactCommentType,
+	ArtifactAssessment 	createApprovalAssessment(IdType id, String artifactCommentType,
 	String artifactCommentText, CanonicalType artifactCommentTarget, CanonicalType artifactCommentReference,
 	Reference artifactCommentUser) throws UnprocessableEntityException {
 		// TODO: check for existing matching comment?
@@ -326,9 +334,9 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createDraftBundle(IdType baseArtifactId, FhirDal fhirDal, String version) throws ResourceNotFoundException, UnprocessableEntityException {
+	public Bundle createDraftBundle(IdType baseArtifactId, HapiFhirRepository hapiFhirRepository, String version) throws ResourceNotFoundException, UnprocessableEntityException {
 		checkVersionValidSemver(version);
-		MetadataResource baseArtifact = (MetadataResource) fhirDal.read(baseArtifactId);
+		MetadataResource baseArtifact = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(baseArtifactId.getResourceType()), baseArtifactId);
 		if (baseArtifact == null) {
 			throw new ResourceNotFoundException(baseArtifactId);
 		}
@@ -351,12 +359,12 @@ public class KnowledgeArtifactProcessor {
 				String.format("Drafts can only be created from artifacts with status of 'active'. Resource '%s' has a status of: %s", baseArtifact.getUrl(), String.valueOf(baseArtifact.getStatus())));
 		}
 		// Ensure only one resource exists with this URL
-		Bundle existingArtifactsForUrl = searchResourceByUrl(draftVersionUrl, fhirDal);
+		Bundle existingArtifactsForUrl = searchResourceByUrl(draftVersionUrl, hapiFhirRepository);
 		if(existingArtifactsForUrl.getEntry().size() != 0){
 			throw new PreconditionFailedException(
 				String.format("A draft of Program '%s' already exists with version: '%s'. Only one draft of a program version can exist at a time.", baseArtifact.getUrl(), draftVersionUrl));
 		}
-		List<MetadataResource> resourcesToCreate = createDraftsOfArtifactAndRelated(baseArtifact, fhirDal, version, new ArrayList<MetadataResource>());
+		List<MetadataResource> resourcesToCreate = createDraftsOfArtifactAndRelated(baseArtifact, hapiFhirRepository, version, new ArrayList<MetadataResource>());
 		Bundle transactionBundle = new Bundle()
 			.setType(Bundle.BundleType.TRANSACTION);
 		List<IdType> urnList = resourcesToCreate.stream().map(res -> new IdType("urn:uuid:" + UUID.randomUUID().toString())).collect(Collectors.toList());
@@ -428,12 +436,12 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	
-	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, FhirDal fhirDal, String version, List<MetadataResource> resourcesToCreate) {
+	private List<MetadataResource> createDraftsOfArtifactAndRelated(MetadataResource resourceToDraft, HapiFhirRepository hapiFhirRepository, String version, List<MetadataResource> resourcesToCreate) {
 		String draftVersion = version + "-draft";
 		String draftVersionUrl = Canonicals.getUrl(resourceToDraft.getUrl()) + "|" + draftVersion;
 
 		// TODO: Decide if we need both of these checks
-		Optional<MetadataResource> existingArtifactsWithMatchingUrl = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(draftVersionUrl, fhirDal));
+		Optional<MetadataResource> existingArtifactsWithMatchingUrl = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(draftVersionUrl, hapiFhirRepository));
 		Optional<MetadataResource> draftVersionAlreadyInBundle = resourcesToCreate.stream().filter(res -> res.getUrl().equals(Canonicals.getUrl(draftVersionUrl)) && res.getVersion().equals(draftVersion)).findAny();
 		MetadataResource newResource = null;
 		if (existingArtifactsWithMatchingUrl.isPresent()) {
@@ -455,11 +463,11 @@ public class KnowledgeArtifactProcessor {
 				// (references are updated in createDraftBundle before adding to the bundle
 				// hence they are ignored here)
 				if (ra.hasUrl()) {
-					Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), fhirDal);
-					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
+					Bundle referencedResourceBundle = searchResourceByUrl(ra.getUrl(), hapiFhirRepository);
+					processReferencedResourceForDraft(hapiFhirRepository, referencedResourceBundle, ra, version, resourcesToCreate);
 				} else if (ra.hasResource()) {
-					Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), fhirDal);
-					processReferencedResourceForDraft(fhirDal, referencedResourceBundle, ra, version, resourcesToCreate);
+					Bundle referencedResourceBundle = searchResourceByUrl(ra.getResourceElement().getValueAsString(), hapiFhirRepository);
+					processReferencedResourceForDraft(hapiFhirRepository, referencedResourceBundle, ra, version, resourcesToCreate);
 				}
 			}
 		}
@@ -467,13 +475,13 @@ public class KnowledgeArtifactProcessor {
 		return resourcesToCreate;
 	}
 	
-	private void processReferencedResourceForDraft(FhirDal fhirDal, Bundle referencedResourceBundle, RelatedArtifact ra, String version, List<MetadataResource> transactionBundle) {
+	private void processReferencedResourceForDraft(HapiFhirRepository hapiFhirRepository, Bundle referencedResourceBundle, RelatedArtifact ra, String version, List<MetadataResource> transactionBundle) {
 		if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 			Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 			if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 				MetadataResource referencedResource = (MetadataResource) referencedResourceEntry.getResource();
 
-				createDraftsOfArtifactAndRelated(referencedResource, fhirDal, version, transactionBundle);
+				createDraftsOfArtifactAndRelated(referencedResource, hapiFhirRepository, version, transactionBundle);
 			}
 		}
 	}
@@ -521,13 +529,13 @@ public class KnowledgeArtifactProcessor {
 	 * Links and references between Bundle resources are updated to point to
 	 * the new versions.
 	 */
-	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
+	public Bundle createReleaseBundle(IdType idType, String releaseLabel, String version, CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException, ResourceNotFoundException, PreconditionFailedException {
 		// TODO: This check is to avoid partial releases and should be removed once the argument is supported.
 		if (latestFromTxServer) {
 			throw new NotImplementedOperationException("Support for 'latestFromTxServer' is not yet implemented.");
 		}
 		checkReleaseVersion(version, versionBehavior);
-		MetadataResource rootArtifact = (MetadataResource) fhirDal.read(idType);
+		MetadataResource rootArtifact = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(idType.getResourceType()),idType);
 		KnowledgeArtifactAdapter<MetadataResource> rootArtifactAdapter = new KnowledgeArtifactAdapter<>(rootArtifact);
 		Date currentApprovalDate = rootArtifactAdapter.getApprovalDate();
 		checkReleasePreconditions(rootArtifact, currentApprovalDate);
@@ -541,7 +549,7 @@ public class KnowledgeArtifactProcessor {
 		if (rootArtifact.getExperimental()) {
 			experimentalBehavior = CRMIReleaseExperimentalBehaviorCodes.NONE;
 		}
-		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal);
+		List<MetadataResource> releasedResources = internalRelease(rootArtifactAdapter, releaseVersion, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, hapiFhirRepository);
 		updateReleaseLabel(rootArtifact, releaseLabel);
 		List<RelatedArtifact> rootArtifactOriginalDependencies = new ArrayList<RelatedArtifact>(rootArtifactAdapter.getDependencies());
 		// Get list of extensions which need to be preserved
@@ -568,7 +576,7 @@ public class KnowledgeArtifactProcessor {
 					component.setResource(reference);
 				} else if (Canonicals.getVersion(component.getResourceElement()) == null || Canonicals.getVersion(component.getResourceElement()).isEmpty()) {
 					// if the not Owned component doesn't have a version, try to find the latest version
-					String updatedReference = tryUpdateReferenceToLatestActiveVersion(component.getResource(), fhirDal, artifact.getUrl());
+					String updatedReference = tryUpdateReferenceToLatestActiveVersion(component.getResource(), hapiFhirRepository, artifact.getUrl());
 					component.setResource(updatedReference);
 				}
 				RelatedArtifact componentToDependency = new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON).setResource(component.getResourceElement().getValueAsString());
@@ -588,7 +596,7 @@ public class KnowledgeArtifactProcessor {
 						// if the dependency doesn't have a version, try to find the latest version
 						if (Canonicals.getVersion(dependency.getResourceElement()) == null || Canonicals.getVersion(dependency.getResourceElement()).isEmpty()) {
 							// TODO: update when we support expansionParameters and requireVersionedDependencies
-							String updatedReference = tryUpdateReferenceToLatestActiveVersion(dependency.getResource(), fhirDal, artifact.getUrl());
+							String updatedReference = tryUpdateReferenceToLatestActiveVersion(dependency.getResource(), hapiFhirRepository, artifact.getUrl());
 							dependency.setResource(updatedReference);
 						}
 					});
@@ -601,7 +609,12 @@ public class KnowledgeArtifactProcessor {
 		// removed duplicates and add
 		List<RelatedArtifact> distinctResolvedRelatedArtifacts = new ArrayList<>();
 		for (RelatedArtifact resolvedRelatedArtifact: rootArtifactAdapter.getRelatedArtifact()) {
-			if (!distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource()) && distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType()))) {
+			boolean isDistinct = !distinctResolvedRelatedArtifacts.stream().anyMatch(distinctRelatedArtifact -> {
+				boolean referenceNotInArray = distinctRelatedArtifact.getResource().equals(resolvedRelatedArtifact.getResource());
+				boolean typeMatches = distinctRelatedArtifact.getType().equals(resolvedRelatedArtifact.getType());
+				return referenceNotInArray && typeMatches;
+			});
+			if (isDistinct) {
 				distinctResolvedRelatedArtifacts.add(resolvedRelatedArtifact);
 				// preserve Extensions if found
 				originalDependenciesWithExtensions
@@ -609,13 +622,14 @@ public class KnowledgeArtifactProcessor {
 					.filter(originalDep -> originalDep.getResource().equals(resolvedRelatedArtifact.getResource()))
 					.findFirst()
 					.ifPresent(dep -> {
+						checkIfValueSetNeedsCondition(null, dep, hapiFhirRepository);
 						resolvedRelatedArtifact.getExtension().addAll(dep.getExtension());
 						originalDependenciesWithExtensions.removeIf(ra -> ra.getResource().equals(resolvedRelatedArtifact.getResource()));
 					});
 			}
 		}
 		// update ArtifactComments referencing the old Canonical Reference
-		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, releaseVersion, fhirDal));
+		transactionBundle.getEntry().addAll(findArtifactCommentsToUpdate(rootArtifact, releaseVersion, hapiFhirRepository));
 		rootArtifactAdapter.setRelatedArtifact(distinctResolvedRelatedArtifacts);
 
 		return transactionBundle;
@@ -627,10 +641,10 @@ public class KnowledgeArtifactProcessor {
 					.stream().anyMatch(ext -> ext.getUrl().equalsIgnoreCase(url))))
 			.collect(Collectors.toList());
 	}
-	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, FhirDal fhirDal){
+	private List<BundleEntryComponent> findArtifactCommentsToUpdate(MetadataResource rootArtifact,String releaseVersion, HapiFhirRepository hapiFhirRepository){
 		List<BundleEntryComponent> returnEntries = new ArrayList<BundleEntryComponent>();
 		// find any artifact assessments and update those as part of the bundle
-		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), fhirDal)
+		this.searchArtifactAssessmentForArtifact(rootArtifact.getIdElement(), hapiFhirRepository)
 			.getEntry()
 			.stream()
 			// The search is on Basic resources only unless we can register the ArtifactAssessment class
@@ -689,7 +703,7 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private List<MetadataResource> internalRelease(KnowledgeArtifactAdapter<MetadataResource> artifactAdapter, String version, Period rootEffectivePeriod,
-																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws NotImplementedOperationException, ResourceNotFoundException {
+																 CRMIReleaseVersionBehaviorCodes versionBehavior, boolean latestFromTxServer, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository hapiFhirRepository) throws NotImplementedOperationException, ResourceNotFoundException {
 		List<MetadataResource> resourcesToUpdate = new ArrayList<MetadataResource>();
 
 		// Step 1: Update the Date and the version
@@ -723,7 +737,7 @@ public class KnowledgeArtifactProcessor {
 					// For composition references, if a version is not specified in the reference then the latest version
 					// of the referenced artifact should be used. If a version is specified then `searchResourceByUrl` will
 					// return that version.
-					referencedResource = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(ownedResourceReference.getValueAsString(), fhirDal))
+					referencedResource = KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(ownedResourceReference.getValueAsString(), hapiFhirRepository))
 					.orElseThrow(()-> new ResourceNotFoundException(
 							String.format("Resource with URL '%s' is Owned by this repository and referenced by resource '%s', but was not found on the server.",
 								ownedResourceReference.getValueAsString(),
@@ -731,19 +745,19 @@ public class KnowledgeArtifactProcessor {
 					);
 					KnowledgeArtifactAdapter<MetadataResource> searchResultAdapter = new KnowledgeArtifactAdapter<>(referencedResource);
 					if (CRMIReleaseExperimentalBehaviorCodes.NULL != experimentalBehavior && CRMIReleaseExperimentalBehaviorCodes.NONE != experimentalBehavior) {
-						checkNonExperimental(referencedResource, experimentalBehavior, fhirDal);
+						checkNonExperimental(referencedResource, experimentalBehavior, hapiFhirRepository);
 					}
-					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, fhirDal));
+					resourcesToUpdate.addAll(internalRelease(searchResultAdapter, version, rootEffectivePeriod, versionBehavior, latestFromTxServer, experimentalBehavior, hapiFhirRepository));
 				}
 			}
 		}
 
 		return resourcesToUpdate;
 	}
-	private String tryUpdateReferenceToLatestActiveVersion(String inputReference, FhirDal fhirDal, String sourceArtifactUrl) throws ResourceNotFoundException {
-		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", fhirDal));
+	private String tryUpdateReferenceToLatestActiveVersion(String inputReference, HapiFhirRepository hapiFhirRepository, String sourceArtifactUrl) throws ResourceNotFoundException {
+		// List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrlAndStatus(inputReference, "active", hapiFhirRepository));
 		// using filtered list until APHL-601 (searchResourceByUrlAndStatus bug) resolved
-		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, fhirDal))
+		List<MetadataResource> matchingResources = getResourcesFromBundle(searchResourceByUrl(inputReference, hapiFhirRepository))
 			.stream()
 			.filter(r -> r.getStatus().equals(Enumerations.PublicationStatus.ACTIVE))
 			.collect(Collectors.toList());
@@ -786,7 +800,7 @@ public class KnowledgeArtifactProcessor {
 		return updatedReference;
 	}
 
-	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, FhirDal fhirDal) throws UnprocessableEntityException {
+	private void checkNonExperimental(MetadataResource resource, CRMIReleaseExperimentalBehaviorCodes experimentalBehavior, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException {
 		String nonExperimentalError = String.format("Root artifact is not Experimental, but references an Experimental resource with URL '%s'.",
 								resource.getUrl());
 		if (CRMIReleaseExperimentalBehaviorCodes.WARN == experimentalBehavior && resource.getExperimental()) {
@@ -803,15 +817,25 @@ public class KnowledgeArtifactProcessor {
 				.stream().flatMap(include -> include.getValueSet().stream())
 				.collect(Collectors.toList());
 			for (CanonicalType value: valueSets) {
-				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), fhirDal))
-				.ifPresent(childVs -> checkNonExperimental(childVs, experimentalBehavior, fhirDal));
+				KnowledgeArtifactAdapter.findLatestVersion(searchResourceByUrl(value.getValueAsString(), hapiFhirRepository))
+				.ifPresent(childVs -> checkNonExperimental(childVs, experimentalBehavior, hapiFhirRepository));
 			}
 		}
 	}
 
 	/* $package */
-	public Bundle createPackageBundle(IdType id, FhirDal fhirDal, List<String> capability, List<String> include, List<CanonicalType> canonicalVersion, List<CanonicalType> checkCanonicalVersion, List<CanonicalType> forceCanonicalVersion, Integer count, Integer offset, Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly) throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
-		if (contentEndpoint != null || terminologyEndpoint != null) {
+	public Bundle createPackageBundle(IdType id, HapiFhirRepository hapiFhirRepository, List<String> capability,
+												 List<String> include, List<CanonicalType> artifactVersion,
+												 List<CanonicalType> checkArtifactVersion, List<CanonicalType> forceArtifactVersion,
+												 Integer count, Integer offset, String artifactRoute, String endpointUri,
+												 Endpoint contentEndpoint, Endpoint terminologyEndpoint, Boolean packageOnly)
+			throws NotImplementedOperationException, UnprocessableEntityException, IllegalArgumentException {
+		if (
+				(artifactRoute != null && !artifactRoute.isBlank() && !artifactRoute.isEmpty())
+					|| (endpointUri != null && !endpointUri.isBlank() && !endpointUri.isEmpty())
+					|| contentEndpoint != null
+					|| terminologyEndpoint != null
+			) {
 			throw new NotImplementedOperationException("This repository is not implementing custom Content and Terminology endpoints at this time");
 		}
 		if (packageOnly != null) {
@@ -820,27 +844,27 @@ public class KnowledgeArtifactProcessor {
 		if (count != null && count < 0) {
 			throw new UnprocessableEntityException("'count' must be non-negative");
 		}
-		MetadataResource resource = (MetadataResource) fhirDal.read(id);
+		MetadataResource resource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(id.getResourceType()), id);
 		// TODO: In the case of a released (active) root Library we can depend on the relatedArtifacts as a comprehensive manifest
 		Bundle packagedBundle = new Bundle();
 		if (include != null
 			&& include.size() == 1
 			&& include.stream().anyMatch((includedType) -> includedType.equals("artifact"))) {
 			findUnsupportedCapability(resource, capability);
-			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			processCanonicals(resource, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			BundleEntryComponent entry = createEntry(resource);
 			entry.getRequest().setUrl(resource.getResourceType() + "/" + resource.getIdElement().getIdPart());
 			entry.getRequest().setMethod(HTTPVerb.POST);
 			entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 			packagedBundle.addEntry(entry);
 		} else {
-			recursivePackage(resource, packagedBundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			recursivePackage(resource, packagedBundle, hapiFhirRepository, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			List<BundleEntryComponent> included = findUnsupportedInclude(packagedBundle.getEntry(),include);
 			packagedBundle.setEntry(included);
 		}
 		setCorrectBundleType(count,offset,packagedBundle);
 		pageBundleBasedOnCountAndOffset(count, offset, packagedBundle);
-		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry());
+		handleValueSetReferenceExtensions(resource, packagedBundle.getEntry(), hapiFhirRepository);
 		return packagedBundle;
 	}
 /**
@@ -893,12 +917,35 @@ public class KnowledgeArtifactProcessor {
 			bundle.setType(BundleType.TRANSACTION);
 		}
 	}
+	private void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException {
+		if (resource == null 
+		&& relatedArtifact != null 
+		&& relatedArtifact.hasResource() 
+		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
+			List<MetadataResource> searchResults = getResourcesFromBundle(searchResourceByUrl(relatedArtifact.getResource(), hapiFhirRepository));
+			if (searchResults.size() > 0) {
+				resource = searchResults.get(0);
+			}
+		}
+		if (resource != null && resource.getResourceType() == ResourceType.ValueSet) {
+			ValueSet valueSet = (ValueSet)resource;
+			boolean isLeaf = !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0);
+			Optional<Extension> maybeConditionExtension = Optional.ofNullable(relatedArtifact)
+				.map(RelatedArtifact::getExtension)
+				.map(list -> {
+					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl)).findFirst().orElse(null);
+				});
+			if (isLeaf && !maybeConditionExtension.isPresent()) {
+				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
+			}
+		}
+	}
 	/**
 	 * ValueSets can be part of multiple artifacts at the same time. Certain properties are tracked/managed in the manifest to avoid conflicts with other artifacts. This function sets those properties on the ValueSets themselves at export / $package time
 	 * @param manifest the resource containing all RelatedArtifact references
 	 * @param bundleEntries the list of packaged resources to modify according to the extensions on the manifest relatedArtifact references
 	 */
-	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries) throws UnprocessableEntityException, IllegalArgumentException {
+	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException, IllegalArgumentException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
 		bundleEntries.stream()
@@ -908,24 +955,20 @@ public class KnowledgeArtifactProcessor {
 					// remove any existing Priority and Conditions
 					List<UsageContext> usageContexts = removeExistingReferenceExtensionData(valueSet.getUseContext());
 					valueSet.setUseContext(usageContexts);
-					// List<UsageContext> usageContexts = valueSet.getUseContext();
 					Optional<RelatedArtifact> maybeVSRelatedArtifact = relatedArtifactsWithPreservedExtension.stream().filter(ra -> Canonicals.getUrl(ra.getResource()).equals(valueSet.getUrl())).findFirst();
+					checkIfValueSetNeedsCondition(valueSet, maybeVSRelatedArtifact.orElse(null), hapiFhirRepository);
 					// If leaf valueset
 					if (!valueSet.hasCompose()
 					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
 						// If Condition extension is present
 						maybeVSRelatedArtifact
 							.map(ra -> ra.getExtension())
-							.ifPresentOrElse(
+							.ifPresent(
 								// add Conditions
 								exts -> {
 									exts.stream()
 										.filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl))
 										.forEach(ext -> tryAddCondition(usageContexts, (CodeableConcept) ext.getValue()));
-								}, 
-								// else throw error
-								() -> {
-									throw new UnprocessableEntityException("Missing condition for ValueSet : " + valueSet.getUrl());
 								});		
 					}
 					// update Priority
@@ -990,20 +1033,21 @@ public class KnowledgeArtifactProcessor {
 				return n;
 			});
 	}
+
 	void recursivePackage(
 		MetadataResource resource,
 		Bundle bundle,
-		FhirDal fhirDal,
+		HapiFhirRepository hapiFhirRepository,
 		List<String> capability,
 		List<String> include,
-		List<CanonicalType> canonicalVersion,
-		List<CanonicalType> checkCanonicalVersion,
-		List<CanonicalType> forceCanonicalVersion
+		List<CanonicalType> artifactVersion,
+		List<CanonicalType> checkArtifactVersion,
+		List<CanonicalType> forceArtifactVersion
 		) throws PreconditionFailedException{
 		if (resource != null) {
 			KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(resource);
 			findUnsupportedCapability(resource, capability);
-			processCanonicals(resource, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion);
+			processCanonicals(resource, artifactVersion, checkArtifactVersion, forceArtifactVersion);
 			boolean entryExists = bundle.getEntry().stream()
 				.map(e -> (MetadataResource)e.getResource())
 				.filter(mr -> mr.getUrl() != null && mr.getVersion() != null)
@@ -1015,12 +1059,14 @@ public class KnowledgeArtifactProcessor {
 				entry.getRequest().setIfNoneExist("url="+resource.getUrl()+"&version="+resource.getVersion());
 				bundle.addEntry(entry);
 			}
+
 			combineComponentsAndDependencies(adapter).stream()
-				.map(ra -> searchResourceByUrl(ra.getResource(), fhirDal))
+				.map(ra -> searchResourceByUrl(ra.getResource(), hapiFhirRepository))
 				.map(searchBundle -> searchBundle.getEntry().stream().findFirst().orElseGet(()-> new BundleEntryComponent()).getResource())
-				.forEach(component -> recursivePackage((MetadataResource)component, bundle, fhirDal, capability, include, canonicalVersion, checkCanonicalVersion, forceCanonicalVersion));
+				.forEach(component -> recursivePackage((MetadataResource)component, bundle, hapiFhirRepository, capability, include, artifactVersion, checkArtifactVersion, forceArtifactVersion));
 		}
 	}
+
 	private List<RelatedArtifact> combineComponentsAndDependencies(KnowledgeArtifactAdapter<MetadataResource> adapter) {
 		return Stream.concat(adapter.getComponents().stream(), adapter.getDependencies().stream()).collect(Collectors.toList());
 	}
@@ -1051,10 +1097,10 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 
-	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkCanonicalVersion,  List<CanonicalType> forceCanonicalVersion) throws PreconditionFailedException {
-		if (checkCanonicalVersion != null) {
+	private void processCanonicals(MetadataResource resource, List<CanonicalType> canonicalVersion,  List<CanonicalType> checkArtifactVersion,  List<CanonicalType> forceArtifactVersion) throws PreconditionFailedException {
+		if (checkArtifactVersion != null) {
 			// check throws an error
-			findVersionInListMatchingResource(checkCanonicalVersion, resource)
+			findVersionInListMatchingResource(checkArtifactVersion, resource)
 				.ifPresent((version) -> {
 					if (!resource.getVersion().equals(version)) {
 						throw new PreconditionFailedException(String.format("Resource with url '%s' has version '%s' but checkVersion specifies '%s'",
@@ -1064,9 +1110,9 @@ public class KnowledgeArtifactProcessor {
 						));
 					}
 				});
-		} else if (forceCanonicalVersion != null) {
+		} else if (forceArtifactVersion != null) {
 			// force just does a silent override
-			findVersionInListMatchingResource(forceCanonicalVersion, resource)
+			findVersionInListMatchingResource(forceArtifactVersion, resource)
 				.ifPresent((version) -> resource.setVersion(version));
 		} else if (canonicalVersion != null && !resource.hasVersion()) {
 			// canonicalVersion adds a version if it's missing
@@ -1144,7 +1190,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, FhirDal fhirDal, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository hapiFhirRepository, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
@@ -1155,7 +1201,7 @@ public class KnowledgeArtifactProcessor {
 		// then check for references and add those to the base Parameters object
 		diffCache cache = new diffCache();
 		cache.addDiff(theSourceLibrary.getUrl()+"|"+theSourceLibrary.getVersion(), theTargetLibrary.getUrl()+"|"+theTargetLibrary.getVersion(), libraryDiff);
-		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, fhirDal, patch, cache, theContext, compareComputable, compareExecutable,dao);
+		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, hapiFhirRepository, patch, cache, theContext, compareComputable, compareExecutable,dao);
 		return libraryDiff;
 	}
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
@@ -1214,7 +1260,7 @@ public class KnowledgeArtifactProcessor {
 			vset.setExpansion(null);
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
-			
+
 			ValueSet e = dao.expand(vset,options);
 			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
 			// `copy` creates the superclass again
@@ -1222,6 +1268,91 @@ public class KnowledgeArtifactProcessor {
 			return;
 		}
 	}
+
+	public void expandValueSet(ValueSet valueSet, Parameters expansionParameters) {
+		// Gather the Terminology Service from the valueSet's authoritativeSourceUrl.
+		Extension authoritativeSource = valueSet.getExtensionByUrl(authoritativeSourceUrl);
+		String authoritativeSourceUrl = authoritativeSource != null && authoritativeSource.hasValue()
+			? authoritativeSource.getValue().primitiveValue()
+			: valueSet.getUrl();
+
+		// TODO: Given the authoritativeSourceUrl, lookup Tx Service connection configuration - is this possible? Problem is we can't reliably infer Tx Service from authSource
+//		terminologyServerClient.setUsername(config.getUsername(authoritativeSourceUrl));
+//		terminologyServerClient.setApiKey(config.getApiKey(authoritativeSourceUrl));
+
+		ValueSet expandedValueSet;
+		if (isVSMAuthoredValueSet(valueSet) && hasSimpleCompose(valueSet)) {
+			// Perform naive expansion independent of terminology servers. Copy all codes from compose into expansion.
+			ValueSet.ValueSetExpansionComponent expansion = new ValueSet.ValueSetExpansionComponent();
+			expansion.setTimestamp(Date.from(Instant.now()));
+
+			ArrayList<ValueSet.ValueSetExpansionParameterComponent> expansionParams = new ArrayList<>();
+			ValueSet.ValueSetExpansionParameterComponent parameterNaive = new ValueSet.ValueSetExpansionParameterComponent();
+			parameterNaive.setName("naive");
+			parameterNaive.setValue(new BooleanType(true));
+			expansionParams.add(parameterNaive);
+			expansion.setParameter(expansionParams);
+
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				for (ValueSet.ConceptReferenceComponent crc : csc.getConcept()) {
+					expansion.addContains()
+						.setCode(crc.getCode())
+						.setSystem(csc.getSystem())
+						.setVersion(csc.getVersion())
+						.setDisplay(crc.getDisplay());
+				}
+			}
+			valueSet.setExpansion(expansion);
+		} else {
+			try {
+				expandedValueSet = terminologyServerClient.expand(valueSet, authoritativeSourceUrl, expansionParameters);
+				valueSet.setExpansion(expandedValueSet.getExpansion());
+			} catch (Exception ex) {
+				myLog.warn("Terminology Server expansion failed: {}", valueSet.getIdElement().getValue(), ex);
+			}
+		}
+	}
+
+	public boolean isVSMAuthoredValueSet(ValueSet valueSet) {
+		return valueSet.hasMeta()
+			&& valueSet.getMeta().hasTag()
+			&& valueSet.getMeta().getTag(vsmValueSetTagCodeSystemUrl, vsmValueSetTagVSMAuthoredCode) != null;
+	}
+
+	public boolean hasSimpleCompose(ValueSet valueSet) {
+		if (valueSet.hasCompose()) {
+			if (valueSet.getCompose().hasExclude()) {
+				return false;
+			}
+			for (ValueSet.ConceptSetComponent csc : valueSet.getCompose().getInclude()) {
+				if (csc.hasValueSet()) {
+					// Cannot expand a compose that references a value set
+					return false;
+				}
+
+				if (!csc.hasSystem()) {
+					// Cannot expand a compose that does not have a system
+					return false;
+				}
+
+				if (csc.hasFilter()) {
+					// Cannot expand a compose that has a filter
+					return false;
+				}
+
+				if (!csc.hasConcept()) {
+					// Cannot expand a compose that does not enumerate concepts
+					return false;
+				}
+			}
+
+			// If all includes are simple, the compose can be expanded
+			return true;
+		}
+
+		return false;
+	}
+
 	private class diffCache {
 		private final Map<String,Parameters> diffs = new HashMap<String,Parameters>();
 		private final Map<String,MetadataResource> resources = new HashMap<String,MetadataResource>();
@@ -1397,7 +1528,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, FhirDal fhirDal, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository hapiFhirRepository, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
@@ -1408,8 +1539,8 @@ public class KnowledgeArtifactProcessor {
 				String targetCanonical = fixed.getTargetMatches().get(i).getResource();
 				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(targetCanonical)) == null;
 				if (diffNotAlreadyComputedAndPresent) {
-					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, fhirDal, dao);
-					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, fhirDal, dao);
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, dao);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, dao);
 					// need to do something smart here to expand the executable or computable resources
 					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable, dao)
 						.ifPresentOrElse(diffToAppend -> {
@@ -1417,7 +1548,7 @@ public class KnowledgeArtifactProcessor {
 							component.setName(Canonicals.getUrl(sourceCanonical));
 							component.setResource(diffToAppend);
 							// check for changes in the children of those as well
-							checkForChangesInChildren(diffToAppend, source, target, fhirDal, patch, cache, ctx, compareComputable, compareExecutable, dao);
+							checkForChangesInChildren(diffToAppend, source, target, hapiFhirRepository, patch, cache, ctx, compareComputable, compareExecutable, dao);
 						},
 						() -> {
 							if (target == null) {
@@ -1525,11 +1656,11 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, FhirDal fhirDal, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
-				resource = retrieveResourcesByCanonical(url, fhirDal);
+				resource = retrieveResourcesByCanonical(url, hapiFhirRepository);
 			} catch (ResourceNotFoundException e) {
 				// ignore
 			}
@@ -1563,8 +1694,8 @@ public class KnowledgeArtifactProcessor {
 		return Optional.ofNullable(retval);
 	}
 	/* $revise */
-	public MetadataResource revise(FhirDal fhirDal, MetadataResource resource) {
-		MetadataResource existingResource = (MetadataResource) fhirDal.read(resource.getIdElement());
+	public MetadataResource revise(HapiFhirRepository hapiFhirRepository, MetadataResource resource) {
+		MetadataResource existingResource = (MetadataResource)hapiFhirRepository.read(ResourceClassMapHelper.getClass(resource.getResourceType().name()), resource.getIdElement());
 		if (existingResource == null) {
 			throw new IllegalArgumentException(String.format("Resource with ID: '%s' not found.", resource.getId()));
 		}
@@ -1577,7 +1708,7 @@ public class KnowledgeArtifactProcessor {
 			throw new IllegalStateException(String.format("The resource status can not be updated from 'draft'. The proposed resource has status: %s", resource.getStatus().toString()));
 		}
 
-		fhirDal.update(resource);
+		hapiFhirRepository.update(resource);
 
 		return resource;
 	}
