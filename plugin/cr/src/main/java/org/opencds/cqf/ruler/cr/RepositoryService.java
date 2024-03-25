@@ -1,11 +1,14 @@
 package org.opencds.cqf.ruler.cr;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.NpmPackageValidationSupport;
@@ -308,8 +311,7 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		if (theSourceResource.getClass() != theTargetResource.getClass()) {
 			throw new UnprocessableEntityException("Source and target resources must be of the same type.");
 		}
-		IFhirResourceDaoValueSet<ValueSet> dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
-		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource, (MetadataResource)theTargetResource, this.getFhirContext(), hapiFhirRepository, compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue(), dao);
+		return this.artifactProcessor.artifactDiff((MetadataResource)theSourceResource, (MetadataResource)theTargetResource, this.getFhirContext(), hapiFhirRepository, compareComputable == null ? false : compareComputable.getValue(), compareExecutable == null ? false : compareExecutable.getValue());
 	}
 	private BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()

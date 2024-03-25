@@ -109,6 +109,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
 	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
+	public static final String systemVersion = "system-version";
 
 	// as per http://hl7.org/fhir/R4/resource.html#canonical
 	public static final List<ResourceType> canonicalResourceTypes =
@@ -1190,7 +1191,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return distinctFilteredEntries;
 	}
-	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository hapiFhirRepository, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, HapiFhirRepository hapiFhirRepository, boolean compareComputable, boolean compareExecutable) throws UnprocessableEntityException {
 		// setup
 		FhirPatch patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
@@ -1201,7 +1202,7 @@ public class KnowledgeArtifactProcessor {
 		// then check for references and add those to the base Parameters object
 		diffCache cache = new diffCache();
 		cache.addDiff(theSourceLibrary.getUrl()+"|"+theSourceLibrary.getVersion(), theTargetLibrary.getUrl()+"|"+theTargetLibrary.getVersion(), libraryDiff);
-		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, hapiFhirRepository, patch, cache, theContext, compareComputable, compareExecutable,dao);
+		checkForChangesInChildren(libraryDiff, theSourceLibrary, theTargetLibrary, hapiFhirRepository, patch, cache, theContext, compareComputable, compareExecutable);
 		return libraryDiff;
 	}
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
@@ -1249,7 +1250,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return vsDiff;
 	}
-	private void doesValueSetNeedExpansion(ValueSet vset, IFhirResourceDaoValueSet<ValueSet> dao) {
+	private void doesValueSetNeedExpansion(ValueSet vset, Parameters expansionParams) {
 		Optional<Date> lastExpanded = Optional.ofNullable(vset.getExpansion()).map(e -> e.getTimestamp());
 		Optional<Date> lastUpdated = Optional.ofNullable(vset.getMeta()).map(m -> m.getLastUpdated());
 		if (lastExpanded.isPresent() && lastUpdated.isPresent() && lastExpanded.get().equals(lastUpdated.get())) {
@@ -1261,12 +1262,8 @@ public class KnowledgeArtifactProcessor {
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
 
-			ValueSet e = dao.expand(vset,options);
-			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
-			// `copy` creates the superclass again
-			vset.setExpansion(e.getExpansion().copy());
-			return;
-		}
+			expandValueSet(vset, expansionParams);
+	   }
 	}
 
 	public void expandValueSet(ValueSet valueSet, Parameters expansionParameters) {
@@ -1305,6 +1302,12 @@ public class KnowledgeArtifactProcessor {
 			valueSet.setExpansion(expansion);
 		} else {
 			try {
+				for (ValueSet.ConceptSetComponent include: valueSet.getCompose().getInclude()) {
+					if (include.hasSystem() && include.hasVersion()) {
+						expansionParameters.addParameter(systemVersion, include.getSystem() + "|" + include.getVersion());
+					}
+				}
+
 				expandedValueSet = terminologyServerClient.expand(valueSet, authoritativeSourceUrl, expansionParameters);
 				valueSet.setExpansion(expandedValueSet.getExpansion());
 			} catch (Exception ex) {
@@ -1528,27 +1531,44 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
-	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository hapiFhirRepository, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private void checkForChangesInChildren(Parameters baseDiff, MetadataResource theSourceBase, MetadataResource theTargetBase, HapiFhirRepository hapiFhirRepository, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable) throws UnprocessableEntityException {
 		// get the references in both the source and target
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
 		additionsAndDeletions<RelatedArtifact> fixed = extractAdditionsAndDeletions(sourceRefs, targetRefs, RelatedArtifact.class);
+
+		Parameters sourceParams = new Parameters();
+		Parameters targetParams = new Parameters();
+
+		Extension sourceExpansionParamsExtension = theSourceBase.getExtensionByUrl(expansionParametersUrl);
+		Extension targetExpansionParamsExtension = theTargetBase.getExtensionByUrl(expansionParametersUrl);
+
+		if (sourceExpansionParamsExtension != null) {
+			Reference sourceExpansionReference = (Reference) sourceExpansionParamsExtension.getValue();
+			sourceParams = getExpansionParams((Library)theSourceBase, sourceExpansionReference.getReference());
+		}
+
+		if (targetExpansionParamsExtension != null) {
+			Reference targetExpansionReference = (Reference) targetExpansionParamsExtension.getValue();
+			targetParams = getExpansionParams((Library)theTargetBase, targetExpansionReference.getReference());
+		}
+
 		if (fixed.getSourceMatches().size() > 0) {
 			for(int i = 0; i < fixed.getSourceMatches().size(); i++) {
 				String sourceCanonical = fixed.getSourceMatches().get(i).getResource();
 				String targetCanonical = fixed.getTargetMatches().get(i).getResource();
 				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(targetCanonical)) == null;
 				if (diffNotAlreadyComputedAndPresent) {
-					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, dao);
-					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, dao);
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, sourceParams);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, targetParams);
 					// need to do something smart here to expand the executable or computable resources
-					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable, dao)
+					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable)
 						.ifPresentOrElse(diffToAppend -> {
 							ParametersParameterComponent component = baseDiff.addParameter();
 							component.setName(Canonicals.getUrl(sourceCanonical));
 							component.setResource(diffToAppend);
 							// check for changes in the children of those as well
-							checkForChangesInChildren(diffToAppend, source, target, hapiFhirRepository, patch, cache, ctx, compareComputable, compareExecutable, dao);
+							checkForChangesInChildren(diffToAppend, source, target, hapiFhirRepository, patch, cache, ctx, compareComputable, compareExecutable);
 						},
 						() -> {
 							if (target == null) {
@@ -1585,6 +1605,7 @@ public class KnowledgeArtifactProcessor {
 			}
 		}
 	}
+
 	private <T> additionsAndDeletions<T> extractAdditionsAndDeletions(List<T> source, List<T> target, Class<T> t) {
 		List<T> sourceCopy = new ArrayList<T>(source);
 		List<T> targetCopy = new ArrayList<T>(target);
@@ -1656,7 +1677,7 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, Parameters expansionParams) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
@@ -1667,7 +1688,7 @@ public class KnowledgeArtifactProcessor {
 			if (resource != null) {
 				if (resource instanceof ValueSet) {
 					try {
-						doesValueSetNeedExpansion((ValueSet)resource, dao);
+						doesValueSetNeedExpansion((ValueSet)resource, expansionParams);
 					} catch (Exception e) {
 						throw new UnprocessableEntityException("Could not expand ValueSet: " + e.getMessage());
 					}
@@ -1677,7 +1698,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return resource;
 	}
-	private Optional<Parameters> checkOrUpdateDiffCache(String sourceCanonical, String targetCanonical, MetadataResource source, MetadataResource target, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
+	private Optional<Parameters> checkOrUpdateDiffCache(String sourceCanonical, String targetCanonical, MetadataResource source, MetadataResource target, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable) {
 		Parameters retval = cache.getDiff(sourceCanonical, targetCanonical);
 		if (retval == null) {
 			if (target != null) {
@@ -1712,6 +1733,19 @@ public class KnowledgeArtifactProcessor {
 
 		return resource;
 	}
+
+	private static Library getRootSpecificationLibrary(List<BundleEntryComponent> bundleEntries) {
+		Optional<BundleEntryComponent> rootSpecLibraryEntry = bundleEntries.stream().filter(entry ->
+			entry.getResource().getResourceType() == ResourceType.Library && ((Library) entry.getResource()).getType().hasCoding(libraryType, assetCollection)
+		).findFirst();
+		return rootSpecLibraryEntry.map(bundleEntryComponent -> ((Library) bundleEntryComponent.getResource())).orElse(null);
+	}
+
+	private static Parameters getExpansionParams(Library rootSpecificationLibrary, String reference) {
+		Optional<Resource> expansionParamResource = rootSpecificationLibrary.getContained().stream().filter(contained -> contained.getId().equals(reference)).findFirst();
+		return (Parameters) expansionParamResource.orElse(null);
+	}
+
 	private class additionsAndDeletions<T> {
 		private List<T> mySourceMatches;
 		private List<T> myTargetMatches;
