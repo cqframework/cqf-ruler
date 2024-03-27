@@ -108,6 +108,7 @@ public class KnowledgeArtifactProcessor {
 			valueSetPriorityUrl,
 			valueSetConditionUrl
 		);
+	public static final String usPhContextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
 	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
@@ -1727,10 +1728,15 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	private static Library getRootSpecificationLibrary(List<BundleEntryComponent> bundleEntries) {
-		Optional<BundleEntryComponent> rootSpecLibraryEntry = bundleEntries.stream().filter(entry ->
-			entry.getResource().getResourceType() == ResourceType.Library && ((Library) entry.getResource()).getType().hasCoding(libraryType, assetCollection)
-		).findFirst();
-		return rootSpecLibraryEntry.map(bundleEntryComponent -> ((Library) bundleEntryComponent.getResource())).orElse(null);
+		Optional<Library> rootSpecLibrary = bundleEntries.stream()
+			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.Library))
+			.map(entry -> ((Library) entry.getResource()))
+			.filter(entry -> entry.getType().hasCoding(libraryType, assetCollection)
+				&& entry.getUseContext().stream().allMatch(useContext ->
+					(useContext.getCode().getSystem().equals(usPhContextTypeUrl) && useContext.getCode().getCode().equals("reporting") && useContext.getValueCodeableConcept().hasCoding(usPhContextUrl, "triggering")) ||
+					(useContext.getCode().getSystem().equals(usPhContextTypeUrl) && useContext.getCode().getCode().equals("specification-type") && useContext.getValueCodeableConcept().hasCoding(usPhContextUrl, "program"))
+		)).findFirst();
+		return rootSpecLibrary.orElse(null);
 	}
 
 	private static Parameters getExpansionParams(Library rootSpecificationLibrary, String reference) {
