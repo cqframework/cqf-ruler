@@ -1729,7 +1729,7 @@ public class KnowledgeArtifactProcessor {
 
 	private static Library getRootSpecificationLibrary(List<BundleEntryComponent> bundleEntries) {
 		Optional<Library> rootSpecLibrary = bundleEntries.stream()
-			.filter(entry -> entry.getResource().getResourceType().equals(ResourceType.Library))
+			.filter(entry -> entry.getResource().getResourceType() == ResourceType.Library)
 			.map(entry -> ((Library) entry.getResource()))
 			.filter(entry -> entry.getType().hasCoding(libraryType, assetCollection)
 				&& entry.getUseContext().stream().allMatch(useContext ->
