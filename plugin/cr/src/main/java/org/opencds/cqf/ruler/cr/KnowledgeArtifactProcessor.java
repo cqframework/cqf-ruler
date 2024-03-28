@@ -96,6 +96,8 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String authoritativeSourceUrl = "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource";
 	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
+	public static final String libraryType = "http://terminology.hl7.org/CodeSystem/library-type";
+	public static final String assetCollection = "asset-collection";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
 	public static final String vsmValueSetTagCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag";
@@ -106,6 +108,7 @@ public class KnowledgeArtifactProcessor {
 			valueSetPriorityUrl,
 			valueSetConditionUrl
 		);
+	public static final String usPhContextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
 	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
@@ -948,6 +951,16 @@ public class KnowledgeArtifactProcessor {
 	private void handleValueSetReferenceExtensions(MetadataResource manifest, List<BundleEntryComponent> bundleEntries, HapiFhirRepository hapiFhirRepository) throws UnprocessableEntityException, IllegalArgumentException {
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<MetadataResource>(manifest);
 		List<RelatedArtifact> relatedArtifactsWithPreservedExtension = getRelatedArtifactsWithPreservedExtensions(adapter.getDependencies());
+		Parameters expansionParams = new Parameters();
+		Library rootSpecificationLibrary = getRootSpecificationLibrary(bundleEntries);
+		if (rootSpecificationLibrary != null) {
+			Extension expansionParamsExtension = rootSpecificationLibrary.getExtensionByUrl(expansionParametersUrl);
+			if (expansionParamsExtension != null  && expansionParamsExtension.hasValue()) {
+				Reference expansionReference = (Reference) expansionParamsExtension.getValue();
+				expansionParams = getExpansionParams(rootSpecificationLibrary, expansionReference.getReference());
+			}
+		}
+		Parameters params = expansionParams;
 		bundleEntries.stream()
 			.forEach(entry -> {
 				if (entry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
@@ -960,6 +973,7 @@ public class KnowledgeArtifactProcessor {
 					// If leaf valueset
 					if (!valueSet.hasCompose()
 					 || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0)) {
+						expandValueSet(valueSet, params);
 						// If Condition extension is present
 						maybeVSRelatedArtifact
 							.map(ra -> ra.getExtension())
@@ -1712,6 +1726,24 @@ public class KnowledgeArtifactProcessor {
 
 		return resource;
 	}
+
+	private static Library getRootSpecificationLibrary(List<BundleEntryComponent> bundleEntries) {
+		Optional<Library> rootSpecLibrary = bundleEntries.stream()
+			.filter(entry -> entry.getResource().getResourceType() == ResourceType.Library)
+			.map(entry -> ((Library) entry.getResource()))
+			.filter(entry -> entry.getType().hasCoding(libraryType, assetCollection)
+				&& entry.getUseContext().stream().allMatch(useContext ->
+					(useContext.getCode().getSystem().equals(usPhContextTypeUrl) && useContext.getCode().getCode().equals("reporting") && useContext.getValueCodeableConcept().hasCoding(usPhContextUrl, "triggering")) ||
+					(useContext.getCode().getSystem().equals(usPhContextTypeUrl) && useContext.getCode().getCode().equals("specification-type") && useContext.getValueCodeableConcept().hasCoding(usPhContextUrl, "program"))
+		)).findFirst();
+		return rootSpecLibrary.orElse(null);
+	}
+
+	private static Parameters getExpansionParams(Library rootSpecificationLibrary, String reference) {
+		Optional<Resource> expansionParamResource = rootSpecificationLibrary.getContained().stream().filter(contained -> contained.getId().equals(reference)).findFirst();
+      return (Parameters) expansionParamResource.orElse(null);
+	}
+
 	private class additionsAndDeletions<T> {
 		private List<T> mySourceMatches;
 		private List<T> myTargetMatches;
