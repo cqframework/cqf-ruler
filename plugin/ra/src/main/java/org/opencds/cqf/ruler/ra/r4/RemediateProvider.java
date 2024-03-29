@@ -1,7 +1,8 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
+import org.opencds.cqf.fhir.utility.Ids;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +16,6 @@ import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;

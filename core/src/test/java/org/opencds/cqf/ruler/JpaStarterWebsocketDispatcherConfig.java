@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler;
 
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ public class JpaStarterWebsocketDispatcherConfig {
 
 			factory.addServerCustomizers(server -> {
 				WebAppContext ctx = (WebAppContext) server.getHandler();
-				JettyWebSocketServletContainerInitializer.configure(ctx, null);
+				JakartaWebSocketServletContainerInitializer.configure(ctx, null);
 			});
 
 		}

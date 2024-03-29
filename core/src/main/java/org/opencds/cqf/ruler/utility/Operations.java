@@ -8,12 +8,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
-import org.opencds.cqf.cql.evaluator.fhir.util.Parameters;
+
 
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import org.opencds.cqf.fhir.utility.Ids;
+import org.opencds.cqf.fhir.utility.Parameters;
 
 /**
  * This class provides utilities for implementing FHIR operations

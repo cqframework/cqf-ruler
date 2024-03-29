@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -27,9 +22,10 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
 import org.opencds.cqf.external.AppProperties;
+import org.opencds.cqf.fhir.cql.engine.model.FhirModelResolverCache;
+import org.opencds.cqf.fhir.utility.Canonicals;
+import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -37,8 +33,6 @@ import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
-import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
-import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,37 +44,47 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ca.uhn.fhir.cr.config.CrProperties;
+import ca.uhn.fhir.cr.r4.cpg.CqlExecutionOperationProvider;
+import ca.uhn.fhir.cr.r4.cpg.LibraryEvaluationOperationProvider;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	private CrProperties.CqlProperties cqlProperties;
 	@Autowired
 	private DaoRegistry daoRegistry;
 	@Autowired
 	private AppProperties myAppProperties;
 	@Autowired
-	private CqlExecutionProvider cqlExecution;
+	private CqlExecutionOperationProvider cqlExecution;
 	@Autowired
-	private LibraryEvaluationProvider libraryExecution;
+	private LibraryEvaluationOperationProvider libraryExecution;
 	@Autowired
-	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider applyEvaluator;
+	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
-	@Autowired
-	private ModelResolver modelResolver;
+
 	@Autowired
 	CdsServicesCache cdsServicesCache;
 	@Autowired
 	RestfulServer restfulServer;
+
+	private ModelResolver modelResolver;
+
+	@PostConstruct
+	public void postConstruct() {
+		var version = this.myAppProperties.getFhir_version();
+		this.modelResolver = FhirModelResolverCache.resolverForVersion(version);
+	}
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -100,12 +104,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		logger.info(request.getRequestURI());
 		if (!request.getRequestURL().toString().endsWith("/cds-services")
 				&& !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
-			throw new ServletException("This servlet is not configured to handle GET requests.");
+			/// throw new ServletException("This servlet is not configured to handle GET
+			/// requests.");
 		}
 		ErrorHandling.setAccessControlHeaders(response, myAppProperties);
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
@@ -156,10 +161,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			}
 
 			List<String> expressions = CdsHooksUtil.getExpressions(servicePlan);
-			BooleanType useServerData = null;
+			// BooleanType useServerData = null;
 			Endpoint remoteDataEndpoint = null;
 			if (cdsHooksRequest.fhirServer != null && !cdsHooksRequest.fhirServer.equals(baseUrl)) {
-				useServerData = new BooleanType(false);
+				// useServerData = new BooleanType(false);
 				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
 				if (cdsHooksRequest.fhirAuthorization != null) {
 					remoteDataEndpoint.addHeader(String.format("Authorization: %s %s",
@@ -174,7 +179,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 
 			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
-					expressions, parameters, useServerData, data, remoteDataEndpoint);
+					expressions, parameters, data, remoteDataEndpoint);
 
 			List<Card.Link> links = resolvePlanLinks(servicePlan);
 			List<Card> cards = new ArrayList<>();
@@ -216,7 +221,6 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
 		logger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
 		logger.info("cds-hooks fhir server address: {}", request.fhirServer);
-		logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
 	}
 
 	private List<Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
@@ -258,11 +262,18 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (action.hasPriority()) {
 							String indicator;
 							switch (action.getPriority().toCode()) {
-								case "routine": indicator = "info"; break;
-								case "urgent": indicator = "warning"; break;
-								case "stat": indicator = "critical"; break;
-								default: throw new IllegalArgumentException(
-									"Invalid priority code: " + action.getPriority().toCode());
+								case "routine":
+									indicator = "info";
+									break;
+								case "urgent":
+									indicator = "warning";
+									break;
+								case "stat":
+									indicator = "critical";
+									break;
+								default:
+									throw new IllegalArgumentException(
+											"Invalid priority code: " + action.getPriority().toCode());
 							}
 							card.setIndicator(indicator);
 						}
@@ -357,10 +368,26 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			IdType definitionId = new IdType(
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
-			suggAction.setResource(applyEvaluator.apply(definitionId,
-					patientId, null, patientId, null, null,
-					null, null, null, null, null,
-					null, null, null, null, null, requestDetails));
+			suggAction.setResource(applyEvaluator.apply(
+					definitionId,
+					null,
+					null,
+					patientId,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					requestDetails));
 			hasAction = true;
 		}
 		if (hasAction)
@@ -416,10 +443,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()) {
-			// getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
-			debugMap.setIsLoggingEnabled(true);
-		}
+		// if (cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled()) {
+		// getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
+		// debugMap.setIsLoggingEnabled(true);
+		// }
 		return debugMap;
 	}
 

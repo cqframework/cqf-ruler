@@ -1,12 +1,10 @@
 package org.opencds.cqf.ruler.ra;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.cr.config.CrR4Config;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.ra.r4.ApproveProvider;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.RACodingGapsProvider;
@@ -19,7 +17,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.ra", name = "enabled", havingValue = "true", matchIfMissing = true)

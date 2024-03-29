@@ -1,6 +1,0 @@
-hapi:
-   fhir:
-      rulercr:
-         enabled: true
-         vsac-username:
-         vsac-api-key:

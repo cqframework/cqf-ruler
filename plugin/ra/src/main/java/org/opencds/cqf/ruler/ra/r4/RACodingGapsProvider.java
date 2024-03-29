@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.ra.r4;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 import java.util.Date;
 import java.util.List;

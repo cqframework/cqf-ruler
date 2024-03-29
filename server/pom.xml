@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -12,12 +14,14 @@
 
 	<dependencies>
 
-		<!-- This example uses H2 embedded database. If you are using another database such as Mysql or Oracle, you may omit the following dependencies and replace them with an appropriate database client
+		<!-- This example uses H2 embedded database. If you are using another database such as Mysql
+		or Oracle, you may omit the following dependencies and replace them with an appropriate
+		database client
             dependency for your database platform. -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>2.2.220</version>
+			<version>2.2.224</version>
 		</dependency>
 		<!--
 		<dependency>
@@ -41,7 +45,8 @@
 			<artifactId>commons-io</artifactId>
 		</dependency>
 
-		<!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
+		<!-- You may not need this if you are deploying to an application server which provides
+		database connection pools itself. -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
@@ -52,7 +57,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-client</artifactId>
+		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-api</artifactId>
@@ -61,6 +74,7 @@
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-client</artifactId>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-core</artifactId>
@@ -84,7 +98,8 @@
 			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
 
-		<!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
+		<!-- The following dependencies are only needed for automated unit tests, you do not
+		neccesarily need them to run the example. -->
 		<!-- <dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-test</artifactId>
@@ -159,7 +174,8 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well. Otherwise the following can be omitted. -->
+		<!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well.
+		Otherwise the following can be omitted. -->
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>
@@ -219,6 +235,14 @@
 			</exclusions>
 		</dependency>
 
+		<!--
+        For some reason JavaDoc crashed during site generation unless we have this dependency
+        -->
+		<dependency>
+			<groupId>jakarta.interceptor</groupId>
+			<artifactId>jakarta.interceptor-api</artifactId>
+		</dependency>
+
 		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -226,24 +250,12 @@
 			<type>war</type>
 			<scope>provided</scope>
 		</dependency>
-
-		<!--
-        For some reason JavaDoc crashed during site generation unless we have this dependency
-        -->
 		<dependency>
-			<groupId>javax.interceptor</groupId>
-			<artifactId>javax.interceptor-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<!-- Needed for JEE/Servlet support -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- runtime only dependencies for developing plugins -->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-case-reporting</artifactId>
@@ -258,13 +270,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cpg</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cr</artifactId>
+			<artifactId>cqf-ruler-ecr</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -314,7 +320,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn package jetty:run -Dspring.batch.job.enabled=false" from the command line. -->
+			<!-- The following is not required for the application to build, but allows you to test it
+			by issuing "mvn package jetty:run -Dspring.batch.job.enabled=false" from the command line. -->
 
 			<!-- <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -327,7 +334,8 @@
                 </configuration>
             </plugin> -->
 
-			<!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+			<!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You
+			can omit it if you are not using that feature. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -448,7 +456,8 @@
         that the main users of this project already have an app server.
         Different profiles are needed as packing it for spring boot, makes the resulting war undeployable
         due to a class shading issue between tomcat and jetty.
-        (the error is 'java.util.ServiceConfigurationError: org.apache.juli.logging.Log: org.eclipse.jetty.apache.jsp.JuliLog not a subtype')
+        (the error is 'java.util.ServiceConfigurationError: org.apache.juli.logging.Log:
+		org.eclipse.jetty.apache.jsp.JuliLog not a subtype')
          -->
 
 		<!-- example of how to start the server using spring boot-->

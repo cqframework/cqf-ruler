@@ -5,8 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.opencds.cqf.external.AppProperties;
 
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -14,7 +13,7 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 public class ErrorHandling {
 
     public static void handleError(HttpServletResponse response, String message,
-            Exception e, AppProperties myAppProperties)
+											  Exception e, AppProperties myAppProperties)
             throws IOException {
         setAccessControlHeaders(response, myAppProperties);
         response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.

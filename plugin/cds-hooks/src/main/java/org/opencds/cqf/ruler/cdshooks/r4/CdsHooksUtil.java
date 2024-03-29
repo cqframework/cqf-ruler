@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.cdshooks.r4;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +22,9 @@ import com.google.gson.JsonObject;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
+
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 public class CdsHooksUtil {
 

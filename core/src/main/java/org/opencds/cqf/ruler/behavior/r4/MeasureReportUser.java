@@ -23,7 +23,8 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.SearchParameter.XPathUsageType;
-import org.opencds.cqf.cql.evaluator.fhir.util.Ids;
+
+import org.opencds.cqf.fhir.utility.Ids;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.utility.Searches;
