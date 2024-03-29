@@ -270,18 +270,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cpg</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cr</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-dev-tools</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>

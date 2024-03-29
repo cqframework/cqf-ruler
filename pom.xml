@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
@@ -87,15 +89,14 @@
 	</distributionManagement>
 
 	<properties>
-		<clinical-reasoning.version>3.0.0-PRE14</clinical-reasoning.version>
-		<cqf-tooling.version>2.4.0</cqf-tooling.version>
+		<clinical-reasoning.version>3.2.0</clinical-reasoning.version>
 
 		<!-- CQL Support -->
-		<cql.version>3.4.1</cql.version>
+		<cql.version>3.9.0</cql.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.11.8-SNAPSHOT</hapi_version>
+		<hapi_version>7.1.7-SNAPSHOT</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
@@ -360,11 +361,6 @@
 				<version>2.17.1</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.opencds.cqf</groupId>
-				<artifactId>tooling</artifactId>
-				<version>${cqf-tooling.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-cr</artifactId>
