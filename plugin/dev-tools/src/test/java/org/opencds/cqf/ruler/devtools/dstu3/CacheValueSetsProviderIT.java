@@ -24,16 +24,15 @@ import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringAndListParam;
-import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { DevToolsConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3", "hapi.fhir.cr.enabled=true" })
 class CacheValueSetsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private CacheValueSetsProvider cacheValueSetsProvider;
@@ -127,36 +126,36 @@ class CacheValueSetsProviderIT extends RestIntegrationTest {
 		// assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
 	}
 
-//	TODO Get help with this....
-//	@Test
-//	void testCacheValueSetsExpandAndAddConcepts() throws Exception {
-//		Endpoint endpoint = uploadLocalServerEndpoint();
-//		RequestDetails details = Mockito.mock(RequestDetails.class);
-//		ValueSet vs =
-//				uploadValueSet("valueset/valueset-buprenorphine-and-methadone-medications.json");
-//		vs.getCompose().getInclude().forEach(include -> {
-//			assertFalse(include.hasConcept());
-//		});
-//		StringAndListParam stringAndListParam =
-//				getStringAndListParamFromValueSet(vs);
-//
-//		IGenericClient localClient = getClient();
-//		localClient.operation().onServer().named("updateCodeSystems").withNoParameters(Parameters.class).execute();
-//		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details,
-//				endpoint.getIdElement(), stringAndListParam, null, null);
-//		assertTrue(outcomeResource instanceof Bundle);
-//		Bundle resultBundle = (Bundle) outcomeResource;
-//		assertEquals(1, resultBundle.getEntry().size());
-//		BundleEntryComponent entry = resultBundle.getEntry().get(0);
-//		assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" +
-//				vs.getIdElement().getIdPart()));
-//		assertEquals("200 OK", entry.getResponse().getStatus());
-//		ValueSet resultingValueSet =
-//				localClient.read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
-//		resultingValueSet.getCompose().getInclude().forEach(include -> {
-//			assertTrue(include.hasConcept());
-//		});
-//	}
+	// TODO Get help with this....
+	// @Test
+	// void testCacheValueSetsExpandAndAddConcepts() throws Exception {
+	// Endpoint endpoint = uploadLocalServerEndpoint();
+	// RequestDetails details = Mockito.mock(RequestDetails.class);
+	// ValueSet vs =
+	// uploadValueSet("valueset/valueset-buprenorphine-and-methadone-medications.json");
+	// vs.getCompose().getInclude().forEach(include -> {
+	// assertFalse(include.hasConcept());
+	// });
+	// StringAndListParam stringAndListParam =
+	// getStringAndListParamFromValueSet(vs);
+	//
+	// IGenericClient localClient = getClient();
+	// localClient.operation().onServer().named("updateCodeSystems").withNoParameters(Parameters.class).execute();
+	// Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details,
+	// endpoint.getIdElement(), stringAndListParam, null, null);
+	// assertTrue(outcomeResource instanceof Bundle);
+	// Bundle resultBundle = (Bundle) outcomeResource;
+	// assertEquals(1, resultBundle.getEntry().size());
+	// BundleEntryComponent entry = resultBundle.getEntry().get(0);
+	// assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" +
+	// vs.getIdElement().getIdPart()));
+	// assertEquals("200 OK", entry.getResponse().getStatus());
+	// ValueSet resultingValueSet =
+	// localClient.read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
+	// resultingValueSet.getCompose().getInclude().forEach(include -> {
+	// assertTrue(include.hasConcept());
+	// });
+	// }
 
 	@Test
 	void testCacheValueSetsAlreadyExpanded() throws Exception {
@@ -205,7 +204,8 @@ class CacheValueSetsProviderIT extends RestIntegrationTest {
 
 	private Endpoint uploadLocalServerEndpoint() throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json"))));
+				Objects.requireNonNull(
+						CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json"))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		// Don't want to update during loading because need to setAddress first

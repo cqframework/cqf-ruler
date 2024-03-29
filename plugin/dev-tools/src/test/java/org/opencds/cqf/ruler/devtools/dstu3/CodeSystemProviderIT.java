@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+		DevToolsConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3", "hapi.fhir.cr.enabled=true" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CodeSystemProviderIT extends RestIntegrationTest {
 	private final Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);

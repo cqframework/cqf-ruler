@@ -24,16 +24,16 @@ import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringAndListParam;
-import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		DevToolsConfig.class }, properties = {
-	"hapi.fhir.fhir_version=r4"})
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class CacheValueSetsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private CacheValueSetsProvider cacheValueSetsProvider;
@@ -206,7 +206,8 @@ class CacheValueSetsProviderIT extends RestIntegrationTest {
 
 	private Endpoint uploadLocalServerEndpoint() throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json"))));
+				Objects.requireNonNull(
+						CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json"))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		// Don't want to update during loading because need to setAddress first

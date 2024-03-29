@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cdshooks;
 
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,31 +13,32 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import ca.uhn.fhir.cr.config.dstu3.CrDstu3Config;
-import ca.uhn.fhir.cr.config.r4.CrR4Config;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({ CrR4Config.class, CrDstu3Config.class })
+@Import({ StarterCrR4Config.class })
 public class CdsHooksConfig {
 
 	@Autowired
 	AutowireCapableBeanFactory beanFactory;
 
 	@Bean
+	@Conditional(OnR4Condition.class)
 	public CdsHooksProperties cdsHooksProperties() {
 		return new CdsHooksProperties();
 	}
 
 	@Bean
+	@Conditional(OnR4Condition.class)
 	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties) {
 		return new ProviderConfiguration(cdsProperties);
 	}
 
 	@Bean
+	@Conditional(OnR4Condition.class)
 	public CdsServicesCache cdsServiceInterceptor(IResourceChangeListenerRegistry resourceChangeListenerRegistry,
 			DaoRegistry daoRegistry) {
 		CdsServicesCache listener = new CdsServicesCache(daoRegistry);
