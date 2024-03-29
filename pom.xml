@@ -156,6 +156,16 @@
 				<version>${hapi_version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.16.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.16.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.simplejavamail</groupId>
 				<artifactId>simple-java-mail</artifactId>
 				<version>6.6.1</version>
@@ -182,12 +192,6 @@
 						<artifactId>woodstox-core</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.13.4.1</version>
-				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.woodstox</groupId>
