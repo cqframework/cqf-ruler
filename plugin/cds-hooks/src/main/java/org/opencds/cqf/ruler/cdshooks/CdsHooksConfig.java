@@ -10,13 +10,17 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
+import ca.uhn.fhir.cr.config.dstu3.CrDstu3Config;
+import ca.uhn.fhir.cr.config.r4.CrR4Config;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Import({ CrR4Config.class, CrDstu3Config.class })
 public class CdsHooksConfig {
 
 	@Autowired

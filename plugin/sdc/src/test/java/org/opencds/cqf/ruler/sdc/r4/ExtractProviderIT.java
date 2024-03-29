@@ -1,11 +1,10 @@
 package org.opencds.cqf.ruler.sdc.r4;
 
-import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
-
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
@@ -23,7 +22,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class ExtractProviderIT extends RestIntegrationTest {
 	@Autowired
 	private SDCProperties mySdcProperties;

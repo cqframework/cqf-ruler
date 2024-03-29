@@ -10,10 +10,9 @@ import org.opencds.cqf.ruler.security.SecurityConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { SecurityConfig.class },
-		properties = { "hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.oauth.enabled=true" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		SecurityConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.oauth.enabled=true",
+				"hapi.fhir.cr.enabled=true" })
 class OAuthProviderIT extends RestIntegrationTest {
 	@Test
 	void testOAuthConfig() {
