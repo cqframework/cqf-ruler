@@ -63,7 +63,6 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		return new ArrayList<>(result.values());
 	}
 
-	// TODO: replace this with version from the evaluator?
 	default List<Patient> getPatientListFromSubject(String subject) {
 		if (subject.startsWith("Patient/")) {
 			return Collections.singletonList(ensurePatient(subject));
@@ -75,7 +74,6 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		return Collections.emptyList();
 	}
 
-	// TODO: replace this with version from the evaluator?
 	default List<Patient> getPatientListFromGroup(String subjectGroupId) {
 		List<Patient> patientList = new ArrayList<>();
 
@@ -99,7 +97,6 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		return patientList;
 	}
 
-	// TODO: replace this with version from the evaluator?
 	default Patient ensurePatient(String patientRef) {
 		Patient patient = read(newId(patientRef));
 		if (patient == null) {

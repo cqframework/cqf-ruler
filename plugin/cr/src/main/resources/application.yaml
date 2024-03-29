@@ -1,4 +1,0 @@
-hapi:
-   fhir:
-      rulercr:
-         enabled: true
