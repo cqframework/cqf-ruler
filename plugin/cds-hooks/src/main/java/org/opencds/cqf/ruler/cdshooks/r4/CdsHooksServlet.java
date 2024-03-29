@@ -81,7 +81,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private ModelResolver modelResolver;
 
 	@PostConstruct
-	public void init() {
+	public void postConstruct() {
 		var version = this.myAppProperties.getFhir_version();
 		this.modelResolver = FhirModelResolverCache.resolverForVersion(version);
 	}
