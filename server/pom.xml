@@ -255,7 +255,7 @@
 			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Needed for JEE/Servlet support -->
+		
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-case-reporting</artifactId>
@@ -266,7 +266,6 @@
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cds-hooks</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>

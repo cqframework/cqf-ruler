@@ -32,7 +32,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"spring.flyway.enabled=false",
 		"spring.main.allow-circular-references=true",
 		"spring.main.allow-bean-definition-overriding=true",
-		"hapi.fhir.cr_enabled=true",
+		"hapi.fhir.cr.enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",

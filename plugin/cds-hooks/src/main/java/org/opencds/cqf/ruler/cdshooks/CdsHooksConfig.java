@@ -46,28 +46,6 @@ public class CdsHooksConfig {
 				SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
-	/*
-	 * @Bean
-	 * 
-	 * @Conditional(OnDSTU3Condition.class)
-	 * 
-	 * @DependsOn({ "dstu3CqlExecutionProvider", "dstu3LibraryEvaluationProvider" })
-	 * public
-	 * ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet>
-	 * cdsHooksRegistrationBeanDstu3() {
-	 * org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet cdsHooksServlet = new
-	 * org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet();
-	 * beanFactory.autowireBean(cdsHooksServlet);
-	 * 
-	 * ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet>
-	 * registrationBean = new ServletRegistrationBean<>();
-	 * registrationBean.setName("cds-hooks servlet");
-	 * registrationBean.setServlet(cdsHooksServlet);
-	 * registrationBean.addUrlMappings("/cds-services/*");
-	 * registrationBean.setLoadOnStartup(1);
-	 * return registrationBean;
-	 * }
-	 */
 
 	@Bean
 	@Conditional(OnR4Condition.class)

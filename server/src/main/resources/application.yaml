@@ -13,7 +13,6 @@ hapi:
       allow_external_references: true
       enforce_referential_integrity_on_delete: false
       enforce_referential_integrity_on_write: false
-      cr_enabled: true
       cors:
          allow_Credentials: true
          allowed_origin:
@@ -29,22 +28,6 @@ hapi:
 
       ## Include settings
       max_includes_per_page: 1000
-
-      ## CQL Settings
-      cql:
-         # enabled: true
-         engine:
-            # debug_logging_enabled: false
-            options: "EnableExpressionCaching"
-#            max_codes_per_query: 64
-#            query_batch_threshold: 10
-
-
-         # use_embedded_libraries: true
-         # translator:
-         #    analyzeDataRequirements: false
-         #    collapseDataRequirements: true
-         # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"
 
       ## RA Settings
       ra:

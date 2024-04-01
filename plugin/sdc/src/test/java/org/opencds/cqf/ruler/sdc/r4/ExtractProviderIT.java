@@ -44,7 +44,7 @@ class ExtractProviderIT extends RestIntegrationTest {
 		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);
 
 		Parameters params = parameters(
-				part("questionnaireResponse", questionnaireResponse));
+				part("questionnaire-response", questionnaireResponse));
 
 		Bundle actual = getClient()
 				.operation()

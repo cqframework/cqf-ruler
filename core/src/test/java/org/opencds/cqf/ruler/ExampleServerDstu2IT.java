@@ -8,23 +8,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
-	"hapi.fhir.fhir_version=dstu2",
-	"spring.datasource.url=jdbc:h2:mem:dbr2",
-	"hapi.fhir.cr_enabled=false",
-	"spring.main.allow-bean-definition-overriding=true"
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+		JpaStarterWebsocketDispatcherConfig.class }, properties = {
+				"hapi.fhir.fhir_version=dstu2",
+				"spring.datasource.url=jdbc:h2:mem:dbr2",
+				"hapi.fhir.cr.enabled=false",
+				"spring.main.allow-bean-definition-overriding=true"
+		})
 public class ExampleServerDstu2IT {
 
 	private IGenericClient ourClient;

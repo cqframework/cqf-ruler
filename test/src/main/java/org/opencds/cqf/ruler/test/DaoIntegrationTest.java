@@ -29,7 +29,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 		"spring.main.allow-circular-references=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"spring.batch.job.enabled=false",
-	"hapi.fhir.cr_enabled=true",
+		"hapi.fhir.cr.enabled=true",
 		// "spring.jpa.properties.hibernate.show_sql=true",
 		// "spring.jpa.properties.hibernate.format_sql=true",
 		// "spring.jpa.properties.hibernate.use_sql_comments=true",
@@ -37,8 +37,8 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",
 		"hapi.fhir.client_id_strategy=ANY",
-	"hapi.fhir.bulk_export_enabled=false",
-	"spring.batch.job.enabled=false"})
+		"hapi.fhir.bulk_export_enabled=false",
+		"spring.batch.job.enabled=false" })
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 public class DaoIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
