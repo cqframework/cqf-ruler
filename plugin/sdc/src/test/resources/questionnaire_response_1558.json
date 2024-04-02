@@ -15,7 +15,7 @@
       }
     ]
   },
-  "questionnaire": "Questionnaire/mypain-questionnaire",
+  "questionnaire": "http://fhir.org/guide/cqf/cds4cpm",
   "status": "completed",
   "subject": {
     "reference": "Patient/sharondecision",
