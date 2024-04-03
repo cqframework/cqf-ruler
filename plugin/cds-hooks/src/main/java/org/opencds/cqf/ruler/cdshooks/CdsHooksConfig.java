@@ -38,7 +38,6 @@ public class CdsHooksConfig {
 	}
 
 	@Bean
-	@Conditional(OnR4Condition.class)
 	public CdsServicesCache cdsServiceInterceptor(IResourceChangeListenerRegistry resourceChangeListenerRegistry,
 			DaoRegistry daoRegistry) {
 		CdsServicesCache listener = new CdsServicesCache(daoRegistry);

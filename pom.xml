@@ -89,13 +89,9 @@
 	<properties>
 		<clinical-reasoning.version>3.2.0</clinical-reasoning.version>
 
-		<!-- CQL Support -->
-		<cql.version>3.9.0</cql.version>
-
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
 		<hapi_version>7.1.7-SNAPSHOT</hapi_version>
-		<javax.version>8.0.1</javax.version>
 		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -107,6 +103,14 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>2.16.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
@@ -138,36 +142,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-base</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-storage</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-jpaserver-subscription</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.16.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>2.16.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>2.16.1</version>
-			</dependency>
+
 			<dependency>
 				<groupId>org.simplejavamail</groupId>
 				<artifactId>simple-java-mail</artifactId>
@@ -213,16 +188,6 @@
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-storage-cr</artifactId>
 				<version>${hapi_version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.opencds.cqf.cql</groupId>
-						<artifactId>*</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>info.cqframework</groupId>
-						<artifactId>*</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
@@ -292,65 +257,6 @@
 				<version>1.7</version>
 			</dependency>
 
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>engine</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-formatter</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-to-elm</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>elm</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>elm-fhir</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>model</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>qdm</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>quick</artifactId>
-				<version>${cql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>${javax.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
