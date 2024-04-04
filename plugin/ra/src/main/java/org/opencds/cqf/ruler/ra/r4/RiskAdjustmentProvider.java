@@ -60,7 +60,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		}
 
 		ensureSupplementalDataElementSearchParameter(requestDetails);
-
+		// measure report
 		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(
 				theId, periodStart.getValueAsString(), periodEnd.getValueAsString(), null, subject,
 				null, null, null, null, null, null, requestDetails);
@@ -68,8 +68,11 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		Parameters riskAdjustmentParameters = new Parameters();
 
 		RiskAdjustmentReturnElement riskAdjustmentReturnElement = new RiskAdjustmentReturnElement(
-				unprocessedReport.getSubject().getReference(), unprocessedReport);
+				unprocessedReport.getSubject().getReference(),
+			unprocessedReport);
+
 		resolveRiskAdjustmentReport(riskAdjustmentReturnElement);
+
 		riskAdjustmentParameters.addParameter()
 				.setName(riskAdjustmentReturnElement.reference)
 				.setResource(riskAdjustmentReturnElement.getRiskAdjustmentOutcome());
@@ -78,30 +81,29 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 	}
 
 	private void resolveRiskAdjustmentReport(RiskAdjustmentReturnElement riskAdjustmentReturnElement) {
-		for (MeasureReport.MeasureReportGroupComponent group : riskAdjustmentReturnElement.unprocessedReport
-				.getGroup()) {
+
+
+		for (MeasureReport.MeasureReportGroupComponent group : riskAdjustmentReturnElement.unprocessedReport.getGroup()) {
 			CodeableConcept hccCode = group.getCode();
 			visited = null;
 			for (MeasureReport.MeasureReportGroupStratifierComponent stratifier : group.getStratifier()) {
 				CodeableConcept stratifierPopCode = stratifier.getCodeFirstRep();
+
 				for (MeasureReport.StratifierGroupComponent stratum : stratifier.getStratum()) {
 					CodeableConcept value = stratum.getValue();
 					Quantity score = stratum.getMeasureScore();
-					if (stratifierPopCode.hasCoding()
-							&& stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.HISTORIC_CODE)) {
-						resolveGroup(riskAdjustmentReturnElement,
-								new Historic(hccCode, value, score,
-										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
-					} else if (stratifierPopCode.hasCoding()
-							&& stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.SUSPECTED_CODE)) {
-						resolveGroup(riskAdjustmentReturnElement,
-								new Suspected(hccCode, value, score,
-										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
-					} else if (stratifierPopCode.hasCoding()
-							&& stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.NET_NEW_CODE)) {
-						resolveGroup(riskAdjustmentReturnElement,
-								new NetNew(hccCode, value, score,
-										resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+
+					if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.HISTORIC_CODE)) {
+
+						resolveGroup(riskAdjustmentReturnElement, new Historic(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+
+					} else if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.SUSPECTED_CODE)) {
+
+						resolveGroup(riskAdjustmentReturnElement, new Suspected(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
+
+					} else if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals(RAConstants.NET_NEW_CODE)) {
+
+						resolveGroup(riskAdjustmentReturnElement, new NetNew(hccCode, value, score, resolveEvidenceStatusDate(riskAdjustmentReturnElement)));
 					}
 				}
 			}
@@ -218,7 +220,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			this.unprocessedReport = unprocessedReport;
 			this.processedReport = new MeasureReport();
 			this.unprocessedReport.copyValues(this.processedReport);
-			this.processedReport.getGroup().clear();
+			//this.processedReport.getGroup().clear();
 			this.processedReport.setMeta(
 					new Meta().addProfile(RAConstants.PATIENT_REPORT_URL));
 		}
