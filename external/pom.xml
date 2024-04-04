@@ -80,10 +80,6 @@
 			<artifactId>cqf-fhir-cr</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>info.cqframework</groupId>
-			<artifactId>cql-to-elm</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-jackson</artifactId>
 			<type>pom</type>
@@ -95,6 +91,10 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.simplejavamail</groupId>

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -78,13 +79,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	RestfulServer restfulServer;
 
-	private ModelResolver modelResolver;
-
-	@PostConstruct
-	public void postConstruct() {
-		var version = this.myAppProperties.getFhir_version();
-		this.modelResolver = FhirModelResolverCache.resolverForVersion(version);
+	public CdsHooksServlet() {
+		// myAppProperties is null
+		// var version = this.myAppProperties.getFhir_version();
+		this.modelResolver = FhirModelResolverCache.resolverForVersion(FhirVersionEnum.R4);
 	}
+
+	private ModelResolver modelResolver;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;

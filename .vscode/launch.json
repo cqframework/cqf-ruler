@@ -37,7 +37,7 @@
 				"-Dspring.datasource.dataClassName=org.h2.Driver",
 				"-Dspring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect",
 				"-Dhapi.fhir.cdshooks.enabled=true",
-				"-Dhapi.fhir.cr_enabled=true",
+				"-Dhapi.fhir.cr.enabled=true",
 				"-Dspring.main.allow-bean-definition-overriding=true"
 			],
 			"classPaths": ["$Auto", "$Runtime"]

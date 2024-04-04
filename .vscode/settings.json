@@ -14,26 +14,18 @@
 				"-Ddebug=true",
 				"-Dloader.debug=true"
 			]
-		},
+		}
 	],
 	"java.test.defaultConfig": "test-config",
 	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
 	"java.checkstyle.version": "9.2.1",
-	"cSpell.enabledLanguageIds": [
-		"java",
-		"json",
-		"xml",
-		"markdown"
-	],
+	"cSpell.enabledLanguageIds": ["java", "json", "xml", "markdown"],
 	"cSpell.ignorePaths": [
 		".git/objects",
 		".vscode",
 		"**/pom.xml",
 		"checkstyle.xml"
 	],
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit"
-	},
 	"cSpell.words": [
 		"Alphora",
 		"autoconfiguration",
@@ -84,9 +76,6 @@
 		"**/.settings": true,
 		"**/.factorypath": true
 	},
-	"files.eol": "\r\n",
-	"editor.formatOnSave": true,
-	"thunder-client.saveToWorkspace": true,
 	"java.jdt.ls.vmargs": "-Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication",
 	"java.compile.nullAnalysis.mode": "automatic"
 }

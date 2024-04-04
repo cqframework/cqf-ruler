@@ -1,5 +1,12 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.stringPart;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
@@ -15,16 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.fhir.utility.r4.Parameters.stringPart;
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
-"hapi.fhir.ra_enabled=true"})
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
+				"hapi.fhir.ra_enabled=true", "hapi.fhir.cr.enabled=true" })
 class ApproveProviderIT extends RestIntegrationTest {
 
 	@Autowired
@@ -48,14 +49,14 @@ class ApproveProviderIT extends RestIntegrationTest {
 		loadResource("Bundle-ra-remediate-result-closure.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"),
-			stringPart("measureId", "Measure-RAModelExample01"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.approve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.named("$ra.approve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.isEmpty());
 		assertTrue(result.hasParameter("return"));
@@ -73,18 +74,16 @@ class ApproveProviderIT extends RestIntegrationTest {
 		assertTrue(raBundle.getEntryFirstRep().getResource() instanceof Composition);
 		// check that DetectedIssue status' have been updated
 		raBundle.getEntry().forEach(
-			entry -> {
-				if (entry.getResource() instanceof DetectedIssue) {
-					DetectedIssue.DetectedIssueStatus status = ((DetectedIssue) entry.getResource()).getStatus();
-					if (((DetectedIssue) entry.getResource()).getCode().getCodingFirstRep().getCode().equals("96")) {
-						assertSame(DetectedIssue.DetectedIssueStatus.FINAL, status);
+				entry -> {
+					if (entry.getResource() instanceof DetectedIssue) {
+						DetectedIssue.DetectedIssueStatus status = ((DetectedIssue) entry.getResource()).getStatus();
+						if (((DetectedIssue) entry.getResource()).getCode().getCodingFirstRep().getCode().equals("96")) {
+							assertSame(DetectedIssue.DetectedIssueStatus.FINAL, status);
+						} else {
+							assertTrue(status == DetectedIssue.DetectedIssueStatus.CANCELLED
+									|| status == DetectedIssue.DetectedIssueStatus.FINAL);
+						}
 					}
-					else {
-						assertTrue(status == DetectedIssue.DetectedIssueStatus.CANCELLED
-							|| status == DetectedIssue.DetectedIssueStatus.FINAL);
-					}
-				}
-			}
-		);
+				});
 	}
 }

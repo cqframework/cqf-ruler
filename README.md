@@ -138,25 +138,31 @@ This table maintains a current view of what operations have migrated out of this
 -  Migrated = source code in Clinical-Reasoning
 -  To Do = source code in Cqf-Ruler
 
-| Plugin         | ResourceType          | Operation                    | Status   |
-| -------------- | --------------------- | ---------------------------- | -------- |
-| CR             | Measure               | $evaluate-measure            | migrated |
-| CR             | Measure               | $submit-data                 | migrated |
-| CR             | Measure               | $care-gaps                   | migrated |
-| CR             | Measure               | $data-requirements           | To do    |
-| CR             | Measure               | $collect-data                | To do    |
-| CR             | PlanDefinition        | $apply                       | migrated |
-| CR             | PlanDefinition        | $package                     | migrated |
-| CR             | ActivityDefinition    | $apply                       | migrated |
-| CPG            | NA                    | $cql                         | migrated |
-| CPG            | Library               | $evaluate                    | migrated |
-| SDC            | Questionnaire         | $package                     | migrated |
-| SDC            | Questionnaire         | $populate                    | migrated |
-| SDC            | QuestionnaireResponse | $extract                     | migrated |
-| SDC            | Observation           | $transform                   | To do    |
-| RA             | Measure               | $davinci-ra.evaluate-measure | To do    |
-| Case-Reporting | MeasureReport         | $extract-line-list-data      | To do    |
-| Case-Reporting | NA                    | $process-message-bundle      | To do    |
+| Plugin         | ResourceType          | Operation                    | Status      |
+| -------------- | --------------------- | ---------------------------- | ------------|
+| CR             | Measure               | $evaluate-measure            | migrated    |
+| CR             | Measure               | $submit-data                 | migrated    |
+| CR             | Measure               | $care-gaps                   | migrated    |
+| CR             | Measure               | $data-requirements           | To do       |
+| CR             | Measure               | $collect-data                | To do       |
+| CR             | PlanDefinition        | $apply                       | migrated    |
+| CR             | PlanDefinition        | $package                     | migrated    |
+| CR             | ActivityDefinition    | $apply                       | migrated    |
+| CPG            | N/A                   | $cql                         | migrated    |
+| CPG            | Library               | $evaluate                    | migrated    |
+| SDC            | Questionnaire         | $package                     | migrated    |
+| SDC            | Questionnaire         | $populate                    | migrated    |
+| SDC            | QuestionnaireResponse | $extract                     | migrated    |
+| SDC            | Observation           | $transform                   | dropped<sup>1</sup>  |
+| RA             | Measure               | $davinci-ra.evaluate-measure | dropped<sup>2</sup>   |
+| Case-Reporting | MeasureReport         | $extract-line-list-data      | To do       |
+| Case-Reporting | N/A                   | $process-message-bundle      | To do       |
+| ERSD           | N/A                   | $ersd-v2-to-v1-transform     | To do       |
+| cds-hooks      | N/A                   | discovery and service        | In progress |
+
+<sup>1</sup> This was a provisional operation in the SDC Ig that has been removed
+
+<sup>2</sup> The RA IG has evolved significantly and this operation needs to be reimplemented.
 
 ## License
 

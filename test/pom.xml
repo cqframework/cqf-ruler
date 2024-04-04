@@ -46,6 +46,11 @@
 			<artifactId>commons-validator</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-base</artifactId>
+		</dependency>
+
 		<!-- Needed for spotbugs-annotations.
 		https://stackoverflow.com/questions/39412365/what-to-import-to-use-suppressfbwarnings
 			https://search.maven.org/artifact/net.jcip/jcip-annotations/1.0/jar -->

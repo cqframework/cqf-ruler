@@ -22,9 +22,6 @@ import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
@@ -37,14 +34,12 @@ public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(MeasureDataProcessProvider.class);
 
-	@Autowired
-	private MeasureResourceProvider measureResourceProvider;
-
 	@Operation(name = "$extract-line-list-data", idempotent = true, type = MeasureReport.class)
 	public Bundle extractLineListData(RequestDetails details,
 			@OperationParam(name = "measureReport", min = 0, max = 1, type = MeasureReport.class) MeasureReport measureReport,
 			@OperationParam(name = "subjectList") List<String> subjectList) {
-		IVersionSpecificBundleFactory bundleFactory = measureResourceProvider.getContext().newBundleFactory();
+
+		var bundleFactory = this.getFhirContext().newBundleFactory();
 
 		Map<String, Reference> populationSubjectListReferenceMap = new HashMap<>();
 		gatherSubjectList(measureReport, subjectList, populationSubjectListReferenceMap);
