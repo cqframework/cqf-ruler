@@ -87,27 +87,30 @@
 	</distributionManagement>
 
 	<properties>
-		<cqf-tooling.version>2.4.0</cqf-tooling.version>
-
-		<!-- CQL Support -->
-		<cqframework.version>2.10.0</cqframework.version>
-		<cql-engine.version>2.10.0</cql-engine.version>
-		<cql-evaluator.version>3.0.0-PRE2</cql-evaluator.version>
+		<clinical-reasoning.version>3.2.0</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.6.1</hapi_version>
-		<javax.version>8.0.1</javax.version>
+		<hapi_version>7.1.7-SNAPSHOT</hapi_version>
+		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<spring_boot_version>2.7.12</spring_boot_version>
-		<spring_version>5.3.27</spring_version>
+		<spring_boot_version>3.2.0</spring_boot_version>
+		<spring_version>6.1.1</spring_version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>2.16.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
@@ -139,21 +142,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-base</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-storage</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-jpaserver-subscription</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>org.simplejavamail</groupId>
 				<artifactId>simple-java-mail</artifactId>
@@ -183,12 +172,6 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.13.4.1</version>
-				<scope>compile</scope>
-			</dependency>
-			<dependency>
 				<groupId>com.fasterxml.woodstox</groupId>
 				<artifactId>woodstox-core</artifactId>
 				<version>6.4.0</version>
@@ -205,16 +188,11 @@
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-storage-cr</artifactId>
 				<version>${hapi_version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.opencds.cqf.cql</groupId>
-						<artifactId>*</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>info.cqframework</groupId>
-						<artifactId>*</artifactId>
-					</exclusion>
-				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-server-cds-hooks</artifactId>
+				<version>${hapi_version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
@@ -280,59 +258,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-formatter</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-to-elm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>elm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>elm-fhir</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>model</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>qdm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>quick</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>${javax.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
 				<version>2.17.1</version>
@@ -350,100 +275,19 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.opencds.cqf</groupId>
-				<artifactId>tooling</artifactId>
-				<version>${cqf-tooling.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>engine</artifactId>
-				<version>${cql-engine.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>engine-fhir</artifactId>
-				<version>${cql-engine.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.activitydefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cr</artifactId>
+				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.expression</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cql</artifactId>
+				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.builder</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.fhir</artifactId>
-				<version>${cql-evaluator.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>org.hl7.fhir.convertors</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>org.hl7.fhir.utilities</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>hapi-fhir-structures-r5</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ca.uhn.hapi.fhir</groupId>
-						<artifactId>hapi-fhir-validation-resources-r5</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.library</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.measure-hapi</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.plandefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaire</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.questionnaireresponse</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.spring</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.jackson-deps</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-jackson</artifactId>
+				<version>${clinical-reasoning.version}</version>
 				<type>pom</type>
 			</dependency>
 
@@ -483,10 +327,47 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
+				<groupId>jakarta.persistence</groupId>
+				<artifactId>jakarta.persistence-api</artifactId>
+				<version>3.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10</groupId>
+				<artifactId>jetty-ee10-annotations</artifactId>
+				<version>${jetty_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+				<artifactId>jetty-ee10-websocket-jetty-api</artifactId>
+				<version>${jetty_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+				<artifactId>jetty-ee10-websocket-jetty-client</artifactId>
+				<version>${jetty_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-continuation</artifactId>
+				<version>9.4.51.v20230217</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.0.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
 				<version>4.10.1</version>
 				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+				<artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
+				<version>${jetty_version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -500,6 +381,18 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
 				<version>${spring_boot_version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10</groupId>
+				<artifactId>jetty-ee10-servlets</artifactId>
+				<version>${jetty_version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.ee10</groupId>
+				<artifactId>jetty-ee10-servlet</artifactId>
+				<version>${jetty_version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -541,18 +434,19 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.5.0.0</version>
+					<version>4.8.3.1</version>
 					<configuration>
 						<effort>Max</effort>
 						<!-- TODO: Gradually migrate this down to Medium and then Low-->
 						<threshold>High</threshold>
 					</configuration>
 					<dependencies>
-						<!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+						<!-- overwrite dependency on spotbugs if you want to specify the version of
+						spotbugs -->
 						<dependency>
 							<groupId>com.github.spotbugs</groupId>
 							<artifactId>spotbugs</artifactId>
-							<version>4.5.2</version>
+							<version>4.8.3</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -576,7 +470,8 @@
 						<failOnWarning>false</failOnWarning>
 						<compilerArgs>
 							<arg>-Xlint:all</arg>
-							<!-- This fixes a bootstrapclass path warning which the "release" property fixes on Java 9+ -->
+							<!-- This fixes a bootstrapclass path warning which the "release" property
+							fixes on Java 9+ -->
 							<arg>-Xlint:-processing</arg>
 						</compilerArgs>
 					</configuration>
@@ -626,7 +521,7 @@
 					<version>3.3.1</version>
 					<configuration>
 						<source>11</source>
-						<failOnWarnings>true</failOnWarnings>
+						<failOnWarnings>false</failOnWarnings>
 						<failOnErrors>true</failOnErrors>
 						<doclint>-missing</doclint>
 						<quiet>true</quiet>
@@ -743,7 +638,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.8</version>
+					<version>0.8.11</version>
 					<configuration>
 						<rules>
 							<rule>

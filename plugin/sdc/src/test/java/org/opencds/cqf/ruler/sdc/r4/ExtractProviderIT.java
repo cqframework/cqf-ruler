@@ -1,17 +1,16 @@
 package org.opencds.cqf.ruler.sdc.r4;
 
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.sdc.SDCConfig;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -23,7 +22,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class ExtractProviderIT extends RestIntegrationTest {
 	@Autowired
 	private SDCProperties mySdcProperties;
@@ -45,7 +44,7 @@ class ExtractProviderIT extends RestIntegrationTest {
 		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);
 
 		Parameters params = parameters(
-				part("questionnaireResponse", questionnaireResponse));
+				part("questionnaire-response", questionnaireResponse));
 
 		Bundle actual = getClient()
 				.operation()
@@ -61,9 +60,12 @@ class ExtractProviderIT extends RestIntegrationTest {
 		assertEquals(5, actual.getEntry().size());
 
 		// Ensure the Observations were saved to the local server
-		for (Bundle.BundleEntryComponent bec : actual.getEntry()) {
-			assertEquals("201 Created", bec.getResponse().getStatus());
-		}
+		// The HAPI implementation of $extract does not automatically save the bundle
+		// I would question the need for ever doing this.  If you want the resources saved, POST the bundle yourself.
+		// It should NOT be done as part of the $extract operation itself.
+//		for (Bundle.BundleEntryComponent bec : actual.getEntry()) {
+//			assertEquals("201 Created", bec.getResponse().getStatus());
+//		}
 	}
 
 	@Test

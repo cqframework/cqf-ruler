@@ -20,7 +20,8 @@ import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 		SecurityConfig.class, DevToolsConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=true",
 				"hapi.fhir.security.basic_auth.username=someuser",
-				"hapi.fhir.security.basic_auth.password=thepassword"
+				"hapi.fhir.security.basic_auth.password=thepassword",
+				"hapi.fhir.cr.enabled=true"
 		})
 public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 

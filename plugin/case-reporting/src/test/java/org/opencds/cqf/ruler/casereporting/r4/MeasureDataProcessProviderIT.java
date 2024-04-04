@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.part;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -17,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CaseReportingConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4",
+				"hapi.fhir.cr.enabled=true",
 		})
 class MeasureDataProcessProviderIT extends RestIntegrationTest {
 	@Test

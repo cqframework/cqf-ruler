@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class OpioidRecommendation08IT extends RestIntegrationTest {
 
 	@Autowired

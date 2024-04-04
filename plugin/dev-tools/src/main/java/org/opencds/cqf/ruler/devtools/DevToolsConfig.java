@@ -1,15 +1,18 @@
 package org.opencds.cqf.ruler.devtools;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
+import org.opencds.cqf.external.cr.CrCommonConfig;
 import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 
 /**
  * This class provides the {@link Bean Bean} {@link Configuration Configuration}
@@ -27,6 +30,7 @@ import org.springframework.context.annotation.Lazy;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.devtools", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Import({ CrCommonConfig.class })
 public class DevToolsConfig {
 
 	@Bean
@@ -58,14 +62,17 @@ public class DevToolsConfig {
 	public org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider dstu3CacheValueSetsProvider() {
 		return new org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider();
 	}
+
 	@Bean
 	DevToolsProviderFactory devToolsOperationFactory() {
 		return new DevToolsProviderFactory();
 	}
 
 	@Bean
-	DevToolsProviderLoader devToolsProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-														  DevToolsProviderFactory theDevToolsProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
-		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory, thePostInitProviderRegisterer);
+	DevToolsProviderLoader devToolsProviderLoader(FhirContext theFhirContext,
+			ResourceProviderFactory theResourceProviderFactory,
+			DevToolsProviderFactory theDevToolsProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
+		return new DevToolsProviderLoader(theFhirContext, theResourceProviderFactory, theDevToolsProviderFactory,
+				thePostInitProviderRegisterer);
 	}
 }

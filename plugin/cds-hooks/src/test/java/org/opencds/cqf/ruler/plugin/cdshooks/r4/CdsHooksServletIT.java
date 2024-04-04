@@ -20,7 +20,6 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
@@ -37,7 +36,7 @@ import com.google.gson.JsonObject;
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;

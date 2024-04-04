@@ -22,18 +22,6 @@ public class SDCConfig {
 
     @Bean
     @Conditional(OnR4Condition.class)
-    public OperationProvider r4ExtractProvider() {
-        return new org.opencds.cqf.ruler.sdc.r4.ExtractProvider();
-    }
-
-    @Bean
-    @Conditional(OnDSTU3Condition.class)
-    public OperationProvider dstu3ExtractProvider() {
-        return new org.opencds.cqf.ruler.sdc.dstu3.ExtractProvider();
-    }
-
-    @Bean
-    @Conditional(OnR4Condition.class)
     public OperationProvider r4TransformProvider() {
         return new org.opencds.cqf.ruler.sdc.r4.TransformProvider();
     }

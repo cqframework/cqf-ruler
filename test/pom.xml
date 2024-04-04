@@ -14,12 +14,13 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-test-utilities</artifactId>
 		</dependency>
-		<!-- Needed for spotbugs SuppressFBWarning annotation. https://github.com/spotbugs/spotbugs/blob/master/spotbugs-annotations/src/main/java/edu/umd/cs/findbugs/annotations/SuppressFBWarnings.java
-			https://search.maven.org/artifact/com.github.spotbugs/spotbugs-annotations/4.5.2/jar -->
+		<!-- Needed for spotbugs SuppressFBWarning annotation.
+		https://github.com/spotbugs/spotbugs/blob/master/spotbugs-annotations/src/main/java/edu/umd/cs/findbugs/annotations/SuppressFBWarnings.java
+			https://search.maven.org/artifact/com.github.spotbugs/spotbugs-annotations/4.8.3/jar -->
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.5.2</version>
+			<version>4.8.3</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -45,7 +46,13 @@
 			<artifactId>commons-validator</artifactId>
 		</dependency>
 
-		<!-- Needed for spotbugs-annotations. https://stackoverflow.com/questions/39412365/what-to-import-to-use-suppressfbwarnings
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-base</artifactId>
+		</dependency>
+
+		<!-- Needed for spotbugs-annotations.
+		https://stackoverflow.com/questions/39412365/what-to-import-to-use-suppressfbwarnings
 			https://search.maven.org/artifact/net.jcip/jcip-annotations/1.0/jar -->
 		<dependency>
 			<groupId>net.jcip</groupId>
@@ -70,29 +77,16 @@
 			<artifactId>awaitility</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
+			<groupId>org.eclipse.jetty.ee10</groupId>
+			<artifactId>jetty-ee10-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>websocket-server</artifactId>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jetty-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -120,6 +114,21 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10</groupId>
+			<artifactId>jetty-ee10-servlets</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10</groupId>
+			<artifactId>jetty-ee10-servlet</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee10.websocket</groupId>
+			<artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

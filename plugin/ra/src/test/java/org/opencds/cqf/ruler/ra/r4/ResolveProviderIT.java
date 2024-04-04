@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.parameters;
-import static org.opencds.cqf.cql.evaluator.fhir.util.r4.Parameters.stringPart;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.fhir.utility.r4.Parameters.stringPart;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -22,14 +22,14 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.utility.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class ResolveProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
@@ -39,6 +39,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
+
 	@DirtiesContext
 	@Test
 	void closureTest() {
@@ -223,7 +224,7 @@ class ResolveProviderIT extends RestIntegrationTest {
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class FailureCases extends RestIntegrationTest {
 
 	@Autowired
@@ -234,6 +235,7 @@ class FailureCases extends RestIntegrationTest {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
+
 	@Test
 	void preconditionTest() {
 		loadResource("Organization-ra-payer01.json");
@@ -247,16 +249,17 @@ class FailureCases extends RestIntegrationTest {
 		loadResource("Bundle-ra-approve-result-precondition-error.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}
+
 	@Test
 	void creationErrorTest() {
 		loadResource("Organization-ra-payer01.json");
@@ -270,13 +273,13 @@ class FailureCases extends RestIntegrationTest {
 		loadResource("Bundle-ra-approve-result-creation-error.json");
 
 		Parameters params = parameters(
-			stringPart("periodStart", "2021-01-01"),
-			stringPart("periodEnd", "2021-12-31"),
-			stringPart("subject", "Patient/ra-patient02"));
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient02"));
 
 		IOperationUntypedWithInput<Parameters> shouldThrow = getClient().operation().onType(MeasureReport.class)
-			.named("$ra.resolve-coding-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.named("$ra.resolve-coding-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InternalErrorException.class, shouldThrow::execute);
 	}

@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true", })
 class ProcessMessageProviderIT extends RestIntegrationTest {
 	@Test
 	void testProcessMessage() {

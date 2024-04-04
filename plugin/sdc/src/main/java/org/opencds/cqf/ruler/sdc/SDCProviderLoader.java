@@ -30,12 +30,10 @@ public class SDCProviderLoader {
 			case DSTU3:
 				myLogger.info("Registering DSTU3 Ruler SDC Providers");
 				myResourceProviderFactory.addSupplier(mySDCProviderFactory::getTransformProvider);
-				myResourceProviderFactory.addSupplier(mySDCProviderFactory::getExtractProvider);
 				break;
 			case R4:
 				myLogger.info("Registering R4 Ruler SDC Providers");
 				myResourceProviderFactory.addSupplier(mySDCProviderFactory::getTransformProvider);
-				myResourceProviderFactory.addSupplier(mySDCProviderFactory::getExtractProvider);
 				break;
 			default:
 				throw new ConfigurationException("SDC not supported for FHIR version "

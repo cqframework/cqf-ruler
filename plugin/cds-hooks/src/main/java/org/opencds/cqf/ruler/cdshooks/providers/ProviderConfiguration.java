@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.cdshooks.providers;
 
-import ca.uhn.fhir.cr.config.CrProperties;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksProperties;
 
 
@@ -9,7 +8,7 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 public class ProviderConfiguration {
 
 	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, 64,
-			SearchStyleEnum.GET, 8000, false, 5, "client_id");
+			SearchStyleEnum.GET, 8000, 5, "client_id");
 
 	private final Integer maxCodesPerQuery;
 	private final SearchStyleEnum searchStyle;
@@ -17,27 +16,24 @@ public class ProviderConfiguration {
 	private final Integer queryBatchThreshold;
 	private final Integer maxUriLength;
 	private final String clientIdHeaderName;
-	private final boolean cqlLoggingEnabled;
 
 	public ProviderConfiguration(boolean expandValueSets, Integer maxCodesPerQuery, SearchStyleEnum searchStyle,
-			Integer maxUriLength, boolean cqlLoggingEnabled, Integer queryBatchThreshold, String clientIdHeaderName) {
+			Integer maxUriLength, Integer queryBatchThreshold, String clientIdHeaderName) {
 		this.maxCodesPerQuery = maxCodesPerQuery;
 		this.searchStyle = searchStyle;
 		this.expandValueSets = expandValueSets;
 		this.maxUriLength = maxUriLength;
-		this.cqlLoggingEnabled = cqlLoggingEnabled;
 		this.queryBatchThreshold = queryBatchThreshold;
 		this.clientIdHeaderName = clientIdHeaderName;
 	}
 
-	public ProviderConfiguration(CdsHooksProperties cdsProperties, CrProperties.CqlProperties cqlProperties) {
+	public ProviderConfiguration(CdsHooksProperties cdsProperties) {
 		this.expandValueSets = cdsProperties.getFhirServer().getExpandValueSets();
 		this.maxCodesPerQuery = cdsProperties.getFhirServer().getMaxCodesPerQuery();
 		this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
 		this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
 		this.queryBatchThreshold = cdsProperties.getFhirServer().getQueryBatchThreshold();
 		this.clientIdHeaderName = cdsProperties.getClientIdHeaderName();
-		this.cqlLoggingEnabled = cqlProperties.getCqlRuntimeOptions().isDebugLoggingEnabled();
 	}
 
 	public Integer getMaxCodesPerQuery() {
@@ -60,9 +56,5 @@ public class ProviderConfiguration {
 
 	public String getClientIdHeaderName() {
 		return this.clientIdHeaderName;
-	}
-
-	public boolean getCqlLoggingEnabled() {
-		return this.cqlLoggingEnabled;
 	}
 }
