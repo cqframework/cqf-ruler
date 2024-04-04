@@ -16,6 +16,7 @@
 		<module>dev-tools</module>
 		<module>sdc</module>
 		<module>security</module>
+		<module>ra</module>
 	</modules>
 	<dependencies>
 		<dependency>

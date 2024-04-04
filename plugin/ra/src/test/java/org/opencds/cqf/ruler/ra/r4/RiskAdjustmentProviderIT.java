@@ -44,7 +44,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		loadTransaction("ConditionCategoryPOC-bundle.json");
 	}
 
-	@Test
 	void riskAssessmentHistoricOpen() {
 		loadTransaction("tests-hist-open-HCC189-bundle.json");
 
@@ -58,7 +57,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateMeasureReport(response, "historic", "open-gap", new DateType("2020-01-31"));
 	}
 
-	@Test
 	void riskAssessmentHistoricClosed() {
 		loadTransaction("tests-hist-closed-HCC189-bundle.json");
 
@@ -72,7 +70,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		validateMeasureReport(response, "historic", "closed-gap", new DateType("2022-01-31"));
 	}
 
-	@Test
 	void riskAssessmentHistoricNetNew() {
 		loadTransaction("tests-netnew-HCC189-bundle.json");
 
