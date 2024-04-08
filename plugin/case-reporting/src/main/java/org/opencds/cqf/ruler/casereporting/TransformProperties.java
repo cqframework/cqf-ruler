@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.ecr;
+package org.opencds.cqf.ruler.casereporting;
 
 import org.hl7.fhir.r5.model.IdType;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;

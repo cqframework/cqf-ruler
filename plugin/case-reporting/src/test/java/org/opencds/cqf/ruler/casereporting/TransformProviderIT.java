@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.ecr;
+package org.opencds.cqf.ruler.casereporting;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.ecr;
+package org.opencds.cqf.ruler.casereporting;
 
 import java.util.List;
 import java.util.Optional;

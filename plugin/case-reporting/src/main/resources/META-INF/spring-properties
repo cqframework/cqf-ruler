@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.casereporting.CaseReportingConfig
+org.opencds.cqf.ruler.casereporting.CaseReportingConfig,org.opencds.cqf.ruler.ecr.TransformConfig

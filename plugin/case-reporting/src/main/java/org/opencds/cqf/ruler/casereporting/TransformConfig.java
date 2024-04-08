@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.ecr;
+package org.opencds.cqf.ruler.casereporting;
 
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;

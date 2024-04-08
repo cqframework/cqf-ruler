@@ -16,7 +16,6 @@
 		<module>case-reporting</module>
 		<module>cds-hooks</module>
 		<module>dev-tools</module>
-		<module>ecr</module>
 		<module>ra</module>
 		<module>sdc</module>
 		<module>security</module>
