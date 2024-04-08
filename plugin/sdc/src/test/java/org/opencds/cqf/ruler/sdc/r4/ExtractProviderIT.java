@@ -9,12 +9,9 @@ import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.sdc.SDCConfig;
-import org.opencds.cqf.ruler.sdc.SDCProperties;
+import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -22,16 +19,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
+	StarterCrR4Config.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
 class ExtractProviderIT extends RestIntegrationTest {
-	@Autowired
-	private SDCProperties mySdcProperties;
-
-	@BeforeEach
-	void beforeEach() {
-		String ourServerBase = "http://localhost:" + getPort() + "/fhir/";
-		mySdcProperties.getExtract().setEndpoint(ourServerBase);
-	}
 
 	@Test
 	void testExtract() {

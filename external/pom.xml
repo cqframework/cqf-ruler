@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -156,33 +154,25 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<target>
-								<copy
-									todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/external">
-									<fileset
-										dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter">
-										<include name="**/*.*" />
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/external">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter">
+										<include name="**/*.*"/>
 									</fileset>
 								</copy>
-								<copy
-									todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources/org/opencds/cqf/external">
-									<fileset
-										dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
-										<include name="application.yaml" />
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources/org/opencds/cqf/external">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
+										<include name="application.yaml"/>
 									</fileset>
 								</copy>
-								<copy
-									todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources">
-									<fileset
-										dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
-										<include name="**/*.*" />
-										<exclude name="application.yaml" />
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
+										<include name="**/*.*"/>
+										<exclude name="application.yaml"/>
 									</fileset>
 								</copy>
-								<copy
-									todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/webapp">
-									<fileset
-										dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/webapp">
-										<include name="**/*.*" />
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/webapp">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/webapp">
+										<include name="**/*.*"/>
 									</fileset>
 								</copy>
 							</target>
@@ -210,8 +200,7 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<sources>
-								<source>
-									${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java</source>
+								<source>${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -224,8 +213,7 @@
 						<configuration>
 							<resources>
 								<resource>
-									<directory>
-										${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources</directory>
+									<directory>${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources</directory>
 									<!-- <targetPath>resources</targetPath> -->
 								</resource>
 							</resources>
