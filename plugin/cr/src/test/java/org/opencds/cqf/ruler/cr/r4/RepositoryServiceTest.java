@@ -1,8 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -1600,8 +1598,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void artifact_diff_compare_executable() {
-		loadTransaction("ersd-small-active-bundle.json");
-		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		loadTransaction("vsm-ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("vsm-small-drafted-ersd-bundle.json");
 		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = parameters(
@@ -1624,10 +1622,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
 		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
 		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
+		// TODO these are now 0, is this expected with removal of dao for expansion?
 		// old codes removed
-		assertTrue(deleteOperations.size() == 23);
+		assertEquals(23, deleteOperations.size());
 		// new codes added
-		assertTrue(insertOperations.size() == 32);
+	   assertEquals(32, insertOperations.size());
 	}
 	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
 		return parameters.stream().filter(

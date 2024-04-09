@@ -2,15 +2,7 @@ package org.opencds.cqf.ruler.cr;
 import static java.util.Comparator.comparing;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1263,7 +1255,7 @@ public class KnowledgeArtifactProcessor {
 		}
 		return vsDiff;
 	}
-	private void doesValueSetNeedExpansion(ValueSet vset, IFhirResourceDaoValueSet<ValueSet> dao) {
+	private void doesValueSetNeedExpansion(ValueSet vset, IFhirResourceDaoValueSet<ValueSet> dao, Parameters expansionParams) {
 		Optional<Date> lastExpanded = Optional.ofNullable(vset.getExpansion()).map(e -> e.getTimestamp());
 		Optional<Date> lastUpdated = Optional.ofNullable(vset.getMeta()).map(m -> m.getLastUpdated());
 		if (lastExpanded.isPresent() && lastUpdated.isPresent() && lastExpanded.get().equals(lastUpdated.get())) {
@@ -1275,12 +1267,35 @@ public class KnowledgeArtifactProcessor {
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
 
-			ValueSet e = dao.expand(vset,options);
-			// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
-			// `copy` creates the superclass again
-			vset.setExpansion(e.getExpansion().copy());
-			return;
-		}
+			// Expanding both ways, DAO & Naive expansion
+			ValueSet daoExpanded = dao.expand(vset,options);
+			expandValueSet(vset, expansionParams);
+
+			// Get contained codes for each expansion
+			List<ValueSetExpansionContainsComponent> functionContains = vset.getExpansion().copy().getContains();
+			List <ValueSetExpansionContainsComponent> daoContains = daoExpanded.getExpansion().copy().getContains();
+
+			// Ensure that both contain same number of elements and the same codes.
+			if (functionContains.size() != daoContains.size()) {
+				System.out.println("Contained element lists not same size");
+			}
+			for (ValueSetExpansionContainsComponent fc: functionContains) {
+				boolean found = false;
+				for (ValueSetExpansionContainsComponent dc: daoContains) {
+					if (Objects.equals(fc.getCode(), dc.getCode())) {
+						found =true;
+					}
+				}
+
+				if (!found) {
+					System.out.println(fc.getCode() + " not found in dao contains");
+				}
+			}
+
+			vset.setExpansion(daoExpanded.getExpansion().copy());
+
+
+	   }
 	}
 
 	public void expandValueSet(ValueSet valueSet, Parameters expansionParameters) {
@@ -1547,14 +1562,31 @@ public class KnowledgeArtifactProcessor {
 		List<RelatedArtifact> targetRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theTargetBase));
 		List<RelatedArtifact> sourceRefs = combineComponentsAndDependencies(new KnowledgeArtifactAdapter<MetadataResource>(theSourceBase));
 		additionsAndDeletions<RelatedArtifact> fixed = extractAdditionsAndDeletions(sourceRefs, targetRefs, RelatedArtifact.class);
+
+		Parameters sourceParams = new Parameters();
+		Parameters targetParams = new Parameters();
+
+		Extension sourceExpansionParamsExtension = theSourceBase.getExtensionByUrl(expansionParametersUrl);
+		Extension targetExpansionParamsExtension = theTargetBase.getExtensionByUrl(expansionParametersUrl);
+
+		if (sourceExpansionParamsExtension != null) {
+			Reference sourceExpansionReference = (Reference) sourceExpansionParamsExtension.getValue();
+			sourceParams = getExpansionParams((Library)theSourceBase, sourceExpansionReference.getReference());
+		}
+
+		if (targetExpansionParamsExtension != null) {
+			Reference targetExpansionReference = (Reference) targetExpansionParamsExtension.getValue();
+			targetParams = getExpansionParams((Library)theTargetBase, targetExpansionReference.getReference());
+		}
+
 		if (fixed.getSourceMatches().size() > 0) {
 			for(int i = 0; i < fixed.getSourceMatches().size(); i++) {
 				String sourceCanonical = fixed.getSourceMatches().get(i).getResource();
 				String targetCanonical = fixed.getTargetMatches().get(i).getResource();
 				boolean diffNotAlreadyComputedAndPresent = baseDiff.getParameter(Canonicals.getUrl(targetCanonical)) == null;
 				if (diffNotAlreadyComputedAndPresent) {
-					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, dao);
-					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, dao);
+					MetadataResource source = checkOrUpdateResourceCache(sourceCanonical, cache, hapiFhirRepository, dao, sourceParams);
+					MetadataResource target = checkOrUpdateResourceCache(targetCanonical, cache, hapiFhirRepository, dao, targetParams);
 					// need to do something smart here to expand the executable or computable resources
 					checkOrUpdateDiffCache(sourceCanonical, targetCanonical, source, target, patch, cache, ctx, compareComputable, compareExecutable, dao)
 						.ifPresentOrElse(diffToAppend -> {
@@ -1670,7 +1702,7 @@ public class KnowledgeArtifactProcessor {
 	private boolean ValueSetContainsEquals(ValueSetExpansionContainsComponent ref1, ValueSetExpansionContainsComponent ref2) {
 		return ref1.getSystem().equals(ref2.getSystem()) && ref1.getCode().equals(ref2.getCode());
 	}
-	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, IFhirResourceDaoValueSet<ValueSet> dao) throws UnprocessableEntityException {
+	private MetadataResource checkOrUpdateResourceCache(String url, diffCache cache, HapiFhirRepository hapiFhirRepository, IFhirResourceDaoValueSet<ValueSet> dao, Parameters expansionParams) throws UnprocessableEntityException {
 		MetadataResource resource = cache.getResource(url);
 		if (resource == null) {
 			try {
@@ -1681,7 +1713,7 @@ public class KnowledgeArtifactProcessor {
 			if (resource != null) {
 				if (resource instanceof ValueSet) {
 					try {
-						doesValueSetNeedExpansion((ValueSet)resource, dao);
+						doesValueSetNeedExpansion((ValueSet)resource, dao, expansionParams);
 					} catch (Exception e) {
 						throw new UnprocessableEntityException("Could not expand ValueSet: " + e.getMessage());
 					}
