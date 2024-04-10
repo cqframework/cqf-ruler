@@ -1267,34 +1267,15 @@ public class KnowledgeArtifactProcessor {
 			ValueSetExpansionOptions options = new ValueSetExpansionOptions();
 			options.setIncludeHierarchy(true);
 
-			// Expanding both ways, DAO & Naive expansion
-			ValueSet daoExpanded = dao.expand(vset,options);
-			expandValueSet(vset, expansionParams);
-
-			// Get contained codes for each expansion
-			List<ValueSetExpansionContainsComponent> functionContains = vset.getExpansion().copy().getContains();
-			List <ValueSetExpansionContainsComponent> daoContains = daoExpanded.getExpansion().copy().getContains();
-
-			// Ensure that both contain same number of elements and the same codes.
-			if (functionContains.size() != daoContains.size()) {
-				System.out.println("Contained element lists not same size");
+			// Expand via server first, if this is not successful then proceed with VSAC/naive expansion.
+			ValueSet e = dao.expand(vset,options);
+			if (e != null && e.hasExpansion()) {
+				// we need to do this because dao.expand sets the expansion to a subclass and then that breaks the FhirPatch
+				// `copy` creates the superclass again
+				vset.setExpansion(e.getExpansion().copy());
+			} else {
+				expandValueSet(vset, expansionParams);
 			}
-			for (ValueSetExpansionContainsComponent fc: functionContains) {
-				boolean found = false;
-				for (ValueSetExpansionContainsComponent dc: daoContains) {
-					if (Objects.equals(fc.getCode(), dc.getCode())) {
-						found =true;
-					}
-				}
-
-				if (!found) {
-					System.out.println(fc.getCode() + " not found in dao contains");
-				}
-			}
-
-			vset.setExpansion(daoExpanded.getExpansion().copy());
-
-
 	   }
 	}
 

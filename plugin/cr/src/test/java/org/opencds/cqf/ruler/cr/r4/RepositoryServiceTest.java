@@ -1598,8 +1598,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	}
 	@Test
 	void artifact_diff_compare_executable() {
-		loadTransaction("vsm-ersd-small-active-bundle.json");
-		Bundle bundle = (Bundle) loadTransaction("vsm-small-drafted-ersd-bundle.json");
+		loadTransaction("ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
 		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = parameters(
@@ -1622,12 +1622,44 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
 		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
 		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
-		// TODO these are now 0, is this expected with removal of dao for expansion?
 		// old codes removed
 		assertEquals(23, deleteOperations.size());
 		// new codes added
 	   assertEquals(32, insertOperations.size());
 	}
+
+	@Test
+	void artifact_diff_compare_executable_naive_expansion() {
+		loadTransaction("vsm-ersd-small-active-bundle.json");
+		Bundle bundle = (Bundle) loadTransaction("vsm-small-drafted-ersd-bundle.json");
+		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters diffParams = parameters(
+			part("source", specificationLibReference),
+			part("target", maybeLib.get().getResponse().getLocation()),
+			part("compareExecutable", new BooleanType(true))
+		);
+		Parameters returnedParams = getClient().operation()
+			.onServer()
+			.named("$artifact-diff")
+			.withParameters(diffParams)
+			.returnResourceType(Parameters.class)
+			.execute();
+		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
+			.filter(p -> !p.getName().equals("operation"))
+			.map(p -> (Parameters)p.getResource())
+			.filter(p -> p != null)
+			.collect(Collectors.toList());
+		assertTrue(nestedChanges.size() == 3);
+		Parameters valueSetParams = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/ValueSet") && p.getResource() != null).map(p -> (Parameters)p.getResource()).findFirst().get();
+		List<ParametersParameterComponent> deleteOperations = getOperationsByType(valueSetParams.getParameter(), "delete");
+		List<ParametersParameterComponent> insertOperations = getOperationsByType(valueSetParams.getParameter(), "insert");
+		// No codes removed
+		assertEquals(0, deleteOperations.size());
+		// No codes added
+		assertEquals(0, insertOperations.size());
+	}
+
 	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
 		return parameters.stream().filter(
 			p -> p.getName().equals("operation")
