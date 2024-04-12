@@ -713,7 +713,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void release_test_condition_missing() {
-		loadTransaction("ersd-small-approved-draft-no-conditions.json");
+		loadTransaction("ersd-small-approved-draft-missing-condition.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters params = parameters(
 			part("version", new StringType("1.2.3.23")),
@@ -732,7 +732,55 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition reference"));
+	}
+
+	@Test
+	void release_test_priority_missing() {
+		loadTransaction("ersd-small-approved-draft-missing-priority.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3.23")),
+			part("versionBehavior", new StringType("default"))
+		);
+		UnprocessableEntityException noPriorityExtension = null;
+		try {
+			getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noPriorityExtension = e;
+		}
+
+		assertNotNull(noPriorityExtension);
+		assertTrue(noPriorityExtension.getMessage().contains("Missing priority reference"));
+	}
+
+	@Test
+	void release_test_condition_and_priority_missing() {
+		loadTransaction("ersd-small-approved-draft-missing-condition-and-priority.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		Parameters params = parameters(
+			part("version", new StringType("1.2.3.23")),
+			part("versionBehavior", new StringType("default"))
+		);
+		UnprocessableEntityException noConditionAndPriorityExtension = null;
+		try {
+			getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noConditionAndPriorityExtension = e;
+		}
+
+		assertNotNull(noConditionAndPriorityExtension);
+		assertTrue(noConditionAndPriorityExtension.getMessage().contains("Missing condition and priority references"));
 	}
 
 	@Test
@@ -1323,7 +1371,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 
 	@Test
 	void package_test_condition_missing() {
-		loadTransaction("ersd-small-approved-draft-no-conditions.json");
+		loadTransaction("ersd-small-approved-draft-missing-condition.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		UnprocessableEntityException noConditionExtension = null;
 		try {
@@ -1338,7 +1386,45 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition reference"));
+	}
+
+	@Test
+	void package_test_priority_missing() {
+		loadTransaction("ersd-small-approved-draft-missing-priority.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		UnprocessableEntityException noPriorityExtension = null;
+		try {
+			getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$package")
+				.withNoParameters(Parameters.class)
+				.returnResourceType(Bundle.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noPriorityExtension = e;
+		}
+		assertNotNull(noPriorityExtension);
+		assertTrue(noPriorityExtension.getMessage().contains("Missing priority reference"));
+	}
+
+	@Test
+	void package_test_condition_and_priority_missing() {
+		loadTransaction("ersd-small-approved-draft-missing-condition-and-priority.json");
+		loadResource("artifactAssessment-search-parameter.json");
+		UnprocessableEntityException noConditionAndPriorityExtension = null;
+		try {
+			getClient().operation()
+				.onInstance(specificationLibReference)
+				.named("$package")
+				.withNoParameters(Parameters.class)
+				.returnResourceType(Bundle.class)
+				.execute();
+		} catch (UnprocessableEntityException e) {
+			noConditionAndPriorityExtension = e;
+		}
+		assertNotNull(noConditionAndPriorityExtension);
+		assertTrue(noConditionAndPriorityExtension.getMessage().contains("Missing condition and priority references"));
 	}
 
 	@Test

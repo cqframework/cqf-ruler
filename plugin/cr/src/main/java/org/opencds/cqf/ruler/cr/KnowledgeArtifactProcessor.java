@@ -938,8 +938,19 @@ public class KnowledgeArtifactProcessor {
 				.map(list -> {
 					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl)).findFirst().orElse(null);
 				});
-			if (isLeaf && !maybeConditionExtension.isPresent()) {
-				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
+			Optional<Extension> maybePriorityExtension = Optional.ofNullable(relatedArtifact)
+				.map(RelatedArtifact::getExtension)
+				.map(list -> {
+					return list.stream().filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetPriorityUrl)).findFirst().orElse(null);
+				});
+			if (isLeaf && (maybeConditionExtension.isEmpty() || maybePriorityExtension.isEmpty())) {
+				if (maybeConditionExtension.isEmpty() && maybePriorityExtension.isEmpty()) {
+					throw new UnprocessableEntityException("Missing condition and priority references on ValueSet : " + valueSet.getUrl());
+				} else if (maybeConditionExtension.isEmpty()) {
+					throw new UnprocessableEntityException("Missing condition reference on ValueSet : " + valueSet.getUrl());
+				} else {
+					throw new UnprocessableEntityException("Missing priority reference on ValueSet : " + valueSet.getUrl());
+				}
 			}
 		}
 	}
