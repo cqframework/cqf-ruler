@@ -95,7 +95,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String releaseLabelUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel";
 	public static final String releaseDescriptionUrl = "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription";
 	public static final String authoritativeSourceUrl = "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource";
-	public static final String expansionParametersUrl = "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-expansion-parameters-extension";
+	public static final String expansionParametersUrl = "http://hl7.org/fhir/StructureDefinition/cqf-expansionParameters";
 	public static final String libraryType = "http://terminology.hl7.org/CodeSystem/library-type";
 	public static final String assetCollection = "asset-collection";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
