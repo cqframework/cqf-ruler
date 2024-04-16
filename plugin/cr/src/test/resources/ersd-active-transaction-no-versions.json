@@ -39,6 +39,18 @@
                   },
                   {
                       "extension": [
+								  {
+									 	"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority",
+									 	"valueCodeableConcept": {
+										 	"coding": [
+												 {
+													 "system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+													 "code": "emergent"
+												 }
+											],
+											"text": "Emergent"
+										}
+								  },
                           {
                               "url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
                               "valueCodeableConcept": {
