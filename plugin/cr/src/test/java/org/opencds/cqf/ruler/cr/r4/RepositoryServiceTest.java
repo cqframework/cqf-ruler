@@ -51,6 +51,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -1367,6 +1368,51 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == loadedBundle.getEntry().size());
+	}
+
+	@Disabled
+	@Test
+		// We need to disable this as it requires VSAC credentials to expand Value Sets
+	void packageOperation_expansion() {
+		loadTransaction("small-expansion-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance("Library/SmallSpecificationLibrary")
+			.named("$package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+
+		List<ValueSet> leafValueSets = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType() == ResourceType.ValueSet)
+			.map(entry -> ((ValueSet) entry.getResource()))
+			.filter(valueSet -> !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0))
+			.collect(Collectors.toList());
+
+		// Ensure expansion is populated and each code has correct version for all leaf value sets
+		leafValueSets.forEach(valueSet -> assertNotNull(valueSet.getExpansion()));
+		leafValueSets.stream().allMatch(vs -> vs.getExpansion().getContains().stream().allMatch(c -> c.getVersion().equals("http://snomed.info/sct/731000124108/version/20230901")));
+	}
+
+	@Test
+	void packageOperation_naive_expansion() {
+		loadTransaction("small-naive-expansion-bundle.json");
+		Parameters emptyParams = parameters();
+		Bundle packagedBundle = getClient().operation()
+			.onInstance("Library/SmallSpecificationLibrary")
+			.named("$package")
+			.withParameters(emptyParams)
+			.returnResourceType(Bundle.class)
+			.execute();
+
+		List<ValueSet> leafValueSets = packagedBundle.getEntry().stream()
+			.filter(entry -> entry.getResource().getResourceType() == ResourceType.ValueSet)
+			.map(entry -> ((ValueSet) entry.getResource()))
+			.filter(valueSet -> !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0))
+			.collect(Collectors.toList());
+
+		// Ensure expansion is populated for all leaf value sets
+		leafValueSets.forEach(valueSet -> assertNotNull(valueSet.getExpansion()));
 	}
 
 	@Test
