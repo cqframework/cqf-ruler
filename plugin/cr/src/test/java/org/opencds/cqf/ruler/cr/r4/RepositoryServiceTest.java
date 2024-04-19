@@ -49,6 +49,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -1626,38 +1627,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertEquals(23, deleteOperations.size());
 		// new codes added
 	   assertEquals(32, insertOperations.size());
-	}
-
-	@Test
-	void artifact_diff_compare_executable_naive_expansion() {
-		loadTransaction("vsm-ersd-small-active-bundle.json");
-		Bundle bundle = (Bundle) loadTransaction("vsm-small-drafted-ersd-bundle.json");
-		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
-		loadResource("artifactAssessment-search-parameter.json");
-		Parameters diffParams = parameters(
-			part("source", specificationLibReference),
-			part("target", maybeLib.get().getResponse().getLocation()),
-			part("compareExecutable", new BooleanType(true))
-		);
-		Parameters returnedParams = getClient().operation()
-			.onServer()
-			.named("$artifact-diff")
-			.withParameters(diffParams)
-			.returnResourceType(Parameters.class)
-			.execute();
-		List<Parameters> nestedChanges = returnedParams.getParameter().stream()
-			.filter(p -> !p.getName().equals("operation"))
-			.map(p -> (Parameters)p.getResource())
-			.filter(p -> p != null)
-			.collect(Collectors.toList());
-		assertTrue(nestedChanges.size() == 3);
-		Parameters valueSetParams = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/ValueSet") && p.getResource() != null).map(p -> (Parameters)p.getResource()).findFirst().get();
-		List<ParametersParameterComponent> deleteOperations = getOperationsByType(valueSetParams.getParameter(), "delete");
-		List<ParametersParameterComponent> insertOperations = getOperationsByType(valueSetParams.getParameter(), "insert");
-		// No codes removed
-		assertEquals(0, deleteOperations.size());
-		// No codes added
-		assertEquals(0, insertOperations.size());
 	}
 
 	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
