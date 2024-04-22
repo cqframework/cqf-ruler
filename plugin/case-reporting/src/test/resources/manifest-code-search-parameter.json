@@ -1,0 +1,10 @@
+{
+	"resourceType": "SearchParameter",
+	"id": "manifest-contains-code",
+	"status": "active",
+	"code": "manifest-contains-code",
+	"base": ["Library"],
+	"type": "token",
+	"description": "Return all Libraries which reference a particular code",
+	"expression": "Library.relatedArtifact.extension.where(url.contains('vsm-valueset-condition')).value as CodeableConcept"
+}

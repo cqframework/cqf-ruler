@@ -1,0 +1,1207 @@
+{
+	"resourceType": "Measure",
+	"id": "BreastCancerScreeningFHIR",
+	"meta": {
+		"profile": [
+			"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/proportion-measure-cqfm",
+			"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm"
+		]
+	},
+	"language": "en",
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-populationBasis",
+			"valueCode": "boolean"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+			"valueReference": {
+				"reference": "Device/cqf-tooling"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter",
+			"valueParameterDefinition": {
+				"name": "Measurement Period",
+				"use": "in",
+				"min": 0,
+				"max": "1",
+				"type": "Period"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter",
+			"valueParameterDefinition": {
+				"name": "Numerator",
+				"use": "out",
+				"min": 0,
+				"max": "1",
+				"type": "boolean"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter",
+			"valueParameterDefinition": {
+				"name": "Denominator",
+				"use": "out",
+				"min": 0,
+				"max": "1",
+				"type": "boolean"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter",
+			"valueParameterDefinition": {
+				"name": "Initial Population",
+				"use": "out",
+				"min": 0,
+				"max": "1",
+				"type": "boolean"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter",
+			"valueParameterDefinition": {
+				"name": "Denominator Exclusion",
+				"use": "out",
+				"min": 0,
+				"max": "1",
+				"type": "boolean"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "DiagnosticReport",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/DiagnosticReport"
+				],
+				"mustSupport": [
+					"effective",
+					"code",
+					"status"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018"
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Encounter",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Encounter"
+				],
+				"mustSupport": [
+					"period",
+					"hospitalization",
+					"hospitalization.dischargeDisposition",
+					"type",
+					"status"
+				],
+				"codeFilter": [
+					{
+						"path": "type",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307"
+					}
+				],
+				"dateFilter": [
+					{
+						"path": "period",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "period",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "period",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Encounter",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Encounter"
+				],
+				"mustSupport": [
+					"period",
+					"type"
+				],
+				"codeFilter": [
+					{
+						"path": "type",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1088"
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "ServiceRequest",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/ServiceRequest"
+				],
+				"mustSupport": [
+					"code",
+					"authoredOn",
+					"intent"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15"
+					},
+					{
+						"path": "intent",
+						"code": [
+							{
+								"code": "order"
+							}
+						]
+					},
+					{
+						"path": "intent",
+						"code": [
+							{
+								"code": "order"
+							}
+						]
+					},
+					{
+						"path": "intent",
+						"code": [
+							{
+								"code": "order"
+							}
+						]
+					}
+				],
+				"dateFilter": [
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Procedure",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Procedure"
+				],
+				"mustSupport": [
+					"code",
+					"performed",
+					"status"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15"
+					},
+					{
+						"path": "status",
+						"code": [
+							{
+								"code": "completed"
+							}
+						]
+					},
+					{
+						"path": "status",
+						"code": [
+							{
+								"code": "completed"
+							}
+						]
+					},
+					{
+						"path": "status",
+						"code": [
+							{
+								"code": "completed"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Condition",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Condition"
+				],
+				"mustSupport": [
+					"bodySite",
+					"code"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1071"
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Condition",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Condition"
+				],
+				"mustSupport": [
+					"code"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1074"
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "DeviceRequest",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/DeviceRequest"
+				],
+				"mustSupport": [
+					"code",
+					"authoredOn"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.118.12.1300"
+					}
+				],
+				"dateFilter": [
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					},
+					{
+						"path": "authoredOn",
+						"_valueDateTime": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/cqf-expression",
+									"valueExpression": {
+										"language": "text/cql-identifier",
+										"expression": "Measurement Period"
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement",
+			"valueDataRequirement": {
+				"type": "Observation",
+				"profile": [
+					"http://hl7.org/fhir/StructureDefinition/Observation"
+				],
+				"mustSupport": [
+					"effective",
+					"code"
+				],
+				"codeFilter": [
+					{
+						"path": "code",
+						"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1075"
+					}
+				]
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode",
+			"valueCoding": {
+				"system": "http://snomed.info/sct",
+				"version": "http://snomed.info/sct/version/201709",
+				"code": "428361000124107",
+				"display": "Discharge to home for hospice care (procedure)"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode",
+			"valueCoding": {
+				"system": "http://snomed.info/sct",
+				"version": "http://snomed.info/sct/version/201709",
+				"code": "428371000124100",
+				"display": "Discharge to healthcare facility for hospice care (procedure)"
+			}
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Numerator"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Numerator\":\n  exists (\n  \t\t\t\t[DiagnosticReport: \"Mammography\"] Mammogram\n  \t\t\t\t\t\twhere ( Global.\"Normalize Interval\"(Mammogram.effective) ends 27 months or less on or before end of \"Measurement Period\" )\n  \t\t\t\t\t\t\t\tand Mammogram.status in { 'final', 'amended', 'corrected', 'appended' }\n  \t\t)"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 0
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdultOutpatientEncountersFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Qualifying Encounters"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Qualifying Encounters\":\n  (\n      [Encounter: \"Office Visit\"]\n    \t\tunion [Encounter: \"Annual Wellness Visit\"]\n    \t\tunion [Encounter: \"Preventive Care Services - Established Office Visit, 18 and Up\"]\n    \t\tunion [Encounter: \"Preventive Care Services-Initial Office Visit, 18 and Up\"]\n    \t\tunion [Encounter: \"Home Healthcare Services\"]\n    ) ValidEncounter\n  \t\twhere ValidEncounter.period during \"Measurement Period\"\n    \t\tand ValidEncounter.status  = 'finished'"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 1
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Initial Population"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Initial Population\":\n  Patient.gender = 'female'\n  \t\t\tand AgeInYearsAt(start of \"Measurement Period\") between 51 and 74\n  \t\t\tand exists AdultOutpatientEncounters.\"Qualifying Encounters\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 2
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Denominator"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Denominator\":\n  \"Initial Population\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 3
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "HospiceFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Has Hospice"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Has Hospice\":\n  exists (\n      [Encounter: \"Encounter Inpatient\"] DischargeHospice\n  \t\t\twhere DischargeHospice.status = 'finished'\n  \t\t    and (\n  \t        DischargeHospice.hospitalization.dischargeDisposition ~ \"Discharge to home for hospice care (procedure)\"\n  \t\t\t\t    or DischargeHospice.hospitalization.dischargeDisposition ~ \"Discharge to healthcare facility for hospice care (procedure)\"\n  \t    \t)\n  \t\t\t\tand DischargeHospice.period ends during \"Measurement Period\"\n  \t)\n      or exists (\n        [ServiceRequest: \"Hospice care ambulatory\"] HospiceOrder\n          where HospiceOrder.intent = 'order'\n              and HospiceOrder.authoredOn in \"Measurement Period\"\n      )\n      or exists (\n        [Procedure: \"Hospice care ambulatory\"] HospicePerformed\n          where HospicePerformed.status = 'completed'\n            and Global.\"Normalize Interval\"(HospicePerformed.performed) overlaps \"Measurement Period\"\n      )"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 4
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Right Mastectomy Diagnosis"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Right Mastectomy Diagnosis\":\n  (\n  \t\t\t\t( [Condition: \"Status Post Right Mastectomy\"]\n            //where C.clinicalStatus ~ ToConcept(Global.\"active\") not nneeded for exclusion\n          )\n  \t\t\t\tunion (\n  \t\t\t\t\t\t[Condition: \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis\n  \t\t\t\t\t\t\t\twhere UnilateralMastectomyDiagnosis.bodySite in \"Right\"\n                //    and UnilateralMastectomyDiagnosis.clinicalStatus ~ ToConcept(Global.\"active\") not needed for exclusion\n  \t\t\t\t)\n  \t\t) RightMastectomy\n  \t\t\t\twhere Global.\"Normalize Interval\"(RightMastectomy.onset) starts on or before end of \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 5
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Right Mastectomy Procedure"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Right Mastectomy Procedure\":\n  [Procedure: \"Unilateral Mastectomy Right\"] UnilateralMastectomyRightPerformed\n           \t\twhere Global.\"Normalize Interval\"(UnilateralMastectomyRightPerformed.performed) ends on or before end of \"Measurement Period\"\n                  and UnilateralMastectomyRightPerformed.status = 'completed'"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 6
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Left Mastectomy"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Left Mastectomy\":\n  (\n  \t\t    ( [Condition: \"Status Post Left Mastectomy\"]\n          //  where C.clinicalStatus ~ ToConcept(Global.\"active\") not needed for exclusion\n          )\n  \t\t\t\tunion (\n  \t\t\t\t\t\t[Condition: \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis\n  \t\t\t\t\t\t\t\twhere UnilateralMastectomyDiagnosis.bodySite in \"Left\"\n                  //  and UnilateralMastectomyDiagnosis.clinicalStatus ~ ToConcept(Global.\"active\") not needed for exclusion\n  \t\t\t\t)\n  \t\t) LeftMastectomy\n  \t\t\t\twhere Global.\"Normalize Interval\"(LeftMastectomy.onset) starts on or before end of \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 7
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Left Mastectomy Procedure"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Left Mastectomy Procedure\":\n  [Procedure: \"Unilateral Mastectomy Left\"] UnilateralMastectomyLeftPerformed\n              where Global.\"Normalize Interval\"(UnilateralMastectomyLeftPerformed.performed) ends on or before end of \"Measurement Period\"\n                 and UnilateralMastectomyLeftPerformed.status = 'completed'"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 8
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Bilateral Mastectomy Diagnosis"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Bilateral Mastectomy Diagnosis\":\n  [Condition: \"History of bilateral mastectomy\"] BilateralMastectomyHistory\n  \t\t\t\twhere Global.\"Normalize Interval\"(BilateralMastectomyHistory.onset) starts on or before end of \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 9
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Bilateral Mastectomy Procedure"
+				},
+				{
+					"url": "statement",
+					"valueString": "//      and BilateralMastectomyHistory.clinicalStatus ~ ToConcept(Global.\"active\") not needed because it is an exclusiondefine \"Bilateral Mastectomy Procedure\":\n  [Procedure: \"Bilateral Mastectomy\"] BilateralMastectomyPerformed\n  \t\t\t\twhere Global.\"Normalize Interval\"(BilateralMastectomyPerformed.performed) ends on or before end of \"Measurement Period\"\n  \t\t\t\t\t\tand BilateralMastectomyPerformed.status = 'completed'"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 10
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Has Criteria Indicating Frailty"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Has Criteria Indicating Frailty\":\n  //Ask Bryn about devices\n      \texists ( [DeviceRequest: \"Frailty Device\"] FrailtyDeviceOrder\n      \t\t\twhere FrailtyDeviceOrder.authoredOn during \"Measurement Period\"\n      \t)\n      \t\t/* or exists ( [DeviceUseStatement: \"Frailty Device\"] FrailtyDeviceUse\n      \t\t\t\twhere Global.\"Normalize Interval\"(FrailtyDeviceUse.timing) overlaps \"Measurement Period\"\n      \t\t) */\n      \t\tor exists ( [Condition: \"Frailty Diagnosis\"] FrailtyDiagnosis\n      \t\t\t\twhere Global.\"Prevalence Period\"(FrailtyDiagnosis) overlaps \"Measurement Period\"\n      \t\t)\n      \t\tor exists ( [Encounter: \"Frailty Encounter\"] FrailtyEncounter\n      \t\t\t\twhere FrailtyEncounter.period overlaps \"Measurement Period\"\n      \t\t)\n      \t\tor exists ( [Observation: \"Frailty Symptom\"] FrailtySymptomObservation\n      \t\t\t\twhere Global.\"Normalize Interval\"(FrailtySymptomObservation.effective) overlaps \"Measurement Period\"\n      \t\t)"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 11
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Outpatient Encounters with Advanced Illness"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Outpatient Encounters with Advanced Illness\":\n  ( [Encounter: \"Outpatient\"]\n      \t\tunion [Encounter: \"Observation\"]\n      \t\tunion [Encounter: \"ED\"]\n      \t\tunion [Encounter: \"Nonacute Inpatient\"] ) OutpatientEncounter\n      \t\t with [Condition: \"Advanced Illness\"] AdvancedIllnessDiagnosis\n                  such that exists (\n                      OutpatientEncounter.diagnosis.condition EncounterDiagnosis\n                          where EndsWith(EncounterDiagnosis.reference, AdvancedIllnessDiagnosis.id)\n                  )\n                  and OutpatientEncounter.period starts 2 years or less on or before\n      \t\t\tend of \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 12
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Inpatient Encounter with Advanced Illness"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Inpatient Encounter with Advanced Illness\":\n  [Encounter: \"Acute Inpatient\"] InpatientEncounter\n      \t\twith [Condition: \"Advanced Illness\"] AdvancedIllnessDiagnosis\n                  such that exists (\n                      InpatientEncounter.diagnosis.condition EncounterDiagnosis\n                          where EndsWith(EncounterDiagnosis.reference, AdvancedIllnessDiagnosis.id)\n                  )\n      \t\t\tand InpatientEncounter.period starts 2 years or less on or before\n      \t\t\tend of \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 13
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Dementia Medications In Year Before or During Measurement Period"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Dementia Medications In Year Before or During Measurement Period\":\n  [\"MedicationDispense\": \"Dementia Medications\"] DementiaMed\n      \t\twhere DementiaMed.whenHandedOver during Interval[\n                  ( start of \"Measurement Period\" - 1 year ), end of \"Measurement Period\"\n              ]"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 14
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Advanced Illness and Frailty Exclusion Not Including Over Age 80"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Advanced Illness and Frailty Exclusion Not Including Over Age 80\":\n  //If the measure does NOT include populations age 80 and older, then use this logic:\n    AgeInYearsAt(start of \"Measurement Period\") >= 65\n    and \"Has Criteria Indicating Frailty\"\n    and ( Count(\"Outpatient Encounters with Advanced Illness\")>= 2\n        or exists ( \"Inpatient Encounter with Advanced Illness\" )\n        or exists \"Dementia Medications In Year Before or During Measurement Period\"\n    )"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 15
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Long Term Care Periods During Measurement Period"
+				},
+				{
+					"url": "statement",
+					"valueString": "// start heredefine \"Long Term Care Periods During Measurement Period\":\n  ( [Encounter: \"Care Services in Long-Term Residential Facility\"]\n              \t\tunion [Encounter: \"Nursing Facility Visit\"] ) LongTermFacilityEncounter\n              \t\twhere LongTermFacilityEncounter.period overlaps \"Measurement Period\"\n              \t\treturn LongTermFacilityEncounter.period\n              \t\t\tintersect \"Measurement Period\""
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 16
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "AdvancedIllnessandFrailtyExclusionECQMFHIR4"
+				},
+				{
+					"url": "name",
+					"valueString": "Long Term Care Periods Longer Than 90 Consecutive Days"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Long Term Care Periods Longer Than 90 Consecutive Days\":\n  exists ( \"Long Term Care Periods During Measurement Period\" LongTermCareDuringMP\n        where duration in days of LongTermCareDuringMP > 90\n    )"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 17
+				}
+			]
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [
+				{
+					"url": "libraryName",
+					"valueString": "BreastCancerScreeningFHIR"
+				},
+				{
+					"url": "name",
+					"valueString": "Denominator Exclusion"
+				},
+				{
+					"url": "statement",
+					"valueString": "define \"Denominator Exclusion\":\n  Hospice.\"Has Hospice\"\n  \t\t\t\tor (( exists \"Right Mastectomy Diagnosis\"\n  \t\t\t\tor exists \"Right Mastectomy Procedure\")\n            and (exists \"Left Mastectomy\" or exists \"Left Mastectomy Procedure\"))\n  \t\t\t\tor exists \"Bilateral Mastectomy Diagnosis\"\n  \t\t\t\tor exists \"Bilateral Mastectomy Procedure\"\n          or Frailty.\"Advanced Illness and Frailty Exclusion Not Including Over Age 80\"\n          or (AgeInYearsAt(start of \"Measurement Period\") >= 65\n            and Frailty.\"Long Term Care Periods Longer Than 90 Consecutive Days\")"
+				},
+				{
+					"url": "displaySequence",
+					"valueInteger": 18
+				}
+			]
+		}
+	],
+	"url": "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningFHIR",
+	"identifier": [
+		{
+			"use": "official",
+			"system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/guid",
+			"value": "80366f35-e0a0-4ba7-a746-ad5760b79e01"
+		}
+	],
+	"version": "2.0.003",
+	"name": "BreastCancerScreeningFHIR",
+	"title": "Breast Cancer Screening FHIR",
+	"status": "draft",
+	"experimental": false,
+	"date": "2021-09-08T20:24:19-06:00",
+	"publisher": "National Committee for Quality Assurance",
+	"contact": [
+		{
+			"telecom": [
+				{
+					"system": "url",
+					"value": "https://cms.gov"
+				}
+			]
+		}
+	],
+	"description": "Percentage of women 50-74 years of age who had a mammogram to screen for breast cancer in the 27 months prior to the end of the Measurement Period",
+	"purpose": "Unknown",
+	"copyright": "This Physician Performance Measure (Measure) and related data specifications are owned and were developed by the National Committee for Quality Assurance (NCQA). NCQA is not responsible for any use of the Measure. NCQA makes no representations, warranties, or endorsement about the quality of any organization or physician that uses or reports performance measures and NCQA has no liability to anyone who relies on such measures or specifications. NCQA holds a copyright in the Measure. The Measure can be reproduced and distributed, without modification, for noncommercial purposes (e.g., use by healthcare providers in connection with their practices) without obtaining approval from NCQA. Commercial use is defined as the sale, licensing, or distribution of the Measure for commercial gain, or incorporation of the Measure into a product or service that is sold, licensed or distributed for commercial gain. All commercial uses or requests for modification must be approved by NCQA and are subject to a license at the discretion of NCQA. (C) 2012-2019 National Committee for Quality Assurance. All Rights Reserved. \n\nLimited proprietary coding is contained in the Measure specifications for user convenience. Users of proprietary code sets should obtain all necessary licenses from the owners of the code sets. NCQA disclaims all liability for use or accuracy of any third party codes contained in the specifications.\n\nCPT(R) contained in the Measure specifications is copyright 2004-2019 American Medical Association. LOINC(R) copyright 2004-2019 Regenstrief Institute, Inc. This material contains SNOMED Clinical Terms(R) (SNOMED CT[R]) copyright 2004-2019 International Health Terminology Standards Development Organisation. ICD-10 copyright 2019 World Health Organization. All Rights Reserved.",
+	"effectivePeriod": {
+		"start": "2021-01-01",
+		"end": "2021-12-31"
+	},
+	"relatedArtifact": [
+		{
+			"type": "depends-on",
+			"display": "Library Global",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/MATGlobalCommonFunctionsFHIR4|6.0.000"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library FHIRHelpers",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/FHIRHelpers|4.0.001"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library AdultOutpatientEncounters",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/AdultOutpatientEncountersFHIR4|2.0.000"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library Hospice",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/HospiceFHIR4|2.0.000"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library Frailty",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/AdvancedIllnessandFrailtyExclusionECQMFHIR4|5.12.000"
+		},
+		{
+			"type": "depends-on",
+			"display": "Code system SNOMEDCT:2017-09",
+			"resource": "http://snomed.info/sct|http://snomed.info/sct/version/201709"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Mammography",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Office Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Annual Wellness Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Preventive Care Services - Established Office Visit, 18 and Up",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Preventive Care Services-Initial Office Visit, 18 and Up",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Home Healthcare Services",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1016"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Encounter Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Hospice care ambulatory",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Status Post Right Mastectomy",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1070"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Unilateral Mastectomy, Unspecified Laterality",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1071"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Right",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.122.12.1035"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Unilateral Mastectomy Right",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1134"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Status Post Left Mastectomy",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1069"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Left",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.122.12.1036"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Unilateral Mastectomy Left",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1133"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set History of bilateral mastectomy",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1068"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Bilateral Mastectomy",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1005"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Frailty Device",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.118.12.1300"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Frailty Diagnosis",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1074"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Frailty Encounter",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1088"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Frailty Symptom",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1075"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Outpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1087"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Observation",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1086"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set ED",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1085"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Nonacute Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1084"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Advanced Illness",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.110.12.1082"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Acute Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1083"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Dementia Medications",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.196.12.1510"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Care Services in Long-Term Residential Facility",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1014"
+		},
+		{
+			"type": "depends-on",
+			"display": "Value set Nursing Facility Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1012"
+		}
+	],
+	"library": [
+		"http://ecqi.healthit.gov/ecqms/Library/BreastCancerScreeningFHIR"
+	],
+	"disclaimer": "The performance Measure is not a clinical guideline and does not establish a standard of medical care, and has not been tested for all potential applications. THE MEASURE AND SPECIFICATIONS ARE PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND.\n \nDue to technical limitations, registered trademarks are indicated by (R) or [R] and unregistered trademarks are indicated by (TM) or [TM].",
+	"scoring": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/measure-scoring",
+				"code": "proportion",
+				"display": "Proportion"
+			}
+		]
+	},
+	"type": [
+		{
+			"coding": [
+				{
+					"system": "http://hl7.org/fhir/measure-type",
+					"code": "process"
+				}
+			]
+		}
+	],
+	"rationale": "Breast cancer is one of the most common types of cancers, accounting for 15 percent of all new cancer diagnoses in the U.S. (Noone et al, 2018). In 2015, over 3 million women were estimated to be living with breast cancer in the U.S. and it is estimated that 12 percent of women will be diagnosed with breast cancer at some point during their lifetime (Noone et al, 2018). \n\nWhile there are other factors that affect a woman's risk of developing breast cancer, advancing age is a primary risk factor. Breast cancer is most frequently diagnosed among women ages 55-64; the median age at diagnosis is 62 years (Noone et al, 2018).\n\nThe chance of a woman being diagnosed with breast cancer in a given year increases with age. By age 40, the chances are 1 in 68; by age 50 it becomes 1 in 43; by age 60, it is 1 in 29 (American Cancer Society, 2017).",
+	"clinicalRecommendationStatement": "The U.S. Preventive Services Task Force (USPSTF) recommends biennial screening mammography for women aged 50-74 years (B recommendation). \n\nThe decision to start screening mammography in women prior to age 50 years should be an individual one. Women who place a higher value on the potential benefit than the potential harms may choose to begin biennial screening between the ages of 40 and 49 years (C recommendation). (USPSTF, 2016) \n\nThe USPSTF concludes that the current evidence is insufficient to assess the balance of benefits and harms of screening mammography in women aged 75 years or older (I statement). (USPSTF, 2016) \n\nThe USPSTF concludes that the current evidence is insufficient to assess the benefits and harms of digital breast tomosynthesis (DBT) as a primary screening method for breast cancer (I Statement). (USPSTF, 2016) \n\nThe USPSTF concludes that the current evidence is insufficient to assess the balance of benefits and harms of adjunctive screening for breast cancer using breast ultrasonography, magnetic resonance imaging, DBT, or other methods in women identified to have dense breasts on an otherwise negative screening mammogram (I statement). (USPSTF, 2016)",
+	"improvementNotation": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/measure-improvement-notation",
+				"code": "increase"
+			}
+		]
+	},
+	"guidance": "Patient self-report for procedures as well as diagnostic studies should be recorded in 'Procedure, Performed' template or 'Diagnostic Study, Performed' template in QRDA-1. \n\nThis measure evaluates primary screening. Do not count biopsies, breast ultrasounds, or MRIs because they are not appropriate methods for primary breast cancer screening.\n\nThis eCQM is a patient-based measure.",
+	"group": [
+		{
+			"id": "group-1",
+			"population": [
+				{
+					"id": "3D2DD734-0712-484A-BE23-B1D2FF96D83A",
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "initial-population",
+								"display": "Initial Population"
+							}
+						]
+					},
+					"criteria": {
+						"language": "text/cql.identifier",
+						"expression": "Initial Population"
+					}
+				},
+				{
+					"id": "C4B18753-73BC-4D48-801E-82AB55A70139",
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "denominator",
+								"display": "Denominator"
+							}
+						]
+					},
+					"criteria": {
+						"language": "text/cql.identifier",
+						"expression": "Denominator"
+					}
+				},
+				{
+					"id": "7C770CA2-5177-4C5F-A976-7F57EC9BC311",
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "denominator-exclusion",
+								"display": "Denominator Exclusion"
+							}
+						]
+					},
+					"criteria": {
+						"language": "text/cql.identifier",
+						"expression": "Denominator Exclusion"
+					}
+				},
+				{
+					"id": "57BC5171-93A7-4D9B-AA42-18A344C8623B",
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "numerator",
+								"display": "Numerator"
+							}
+						]
+					},
+					"criteria": {
+						"language": "text/cql.identifier",
+						"expression": "Numerator"
+					}
+				}
+			]
+		}
+	]
+}

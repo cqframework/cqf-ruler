@@ -1,0 +1,274 @@
+{
+	"resourceType": "Bundle",
+	"type": "transaction",
+	"id": "LibraryTransactionBundleDstu3",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "Patient",
+				"id": "example-opioidcds",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2017-11-25T17:26:27.040-07:00"
+				},
+				"identifier": [
+					{
+						"use": "official",
+						"type": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/identifier-type",
+									"code": "SB",
+									"display": "Social Beneficiary Identifier"
+								}
+							],
+							"text": "US Social Security Number"
+						},
+						"system": "http://hl7.org/fhir/sid/us-ssn",
+						"value": "000002341"
+					}
+				],
+				"active": true,
+				"name": [
+					{
+						"family": "Goodwall",
+						"given": [
+							"Jerry",
+							"Phillip"
+						]
+					}
+				],
+				"telecom": [
+					{
+						"system": "phone",
+						"value": "248-555-7834",
+						"use": "home"
+					},
+					{
+						"system": "phone",
+						"value": "248-555-7845",
+						"use": "mobile"
+					}
+				],
+				"gender": "male",
+				"birthDate": "1936-05-29",
+				"address": [
+					{
+						"use": "home",
+						"type": "postal",
+						"line": [
+							"751 E Apple Drive"
+						],
+						"city": "Novi",
+						"district": "Oakland County",
+						"state": "MI",
+						"postalCode": "48376"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Patient/example-opioidcds/_history/1"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "example-opioidcds",
+				"status": "final",
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "3779-6"
+						}
+					]
+				},
+				"subject": {
+					"reference": "Patient/example-opioidcds"
+				},
+				"effectiveDateTime": "2017-12-12",
+				"interpretation": {
+					"coding": [
+						{
+							"system": "https://www.hl7.org/fhir/v2/0078",
+							"code": "POS"
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/example-opioidcds"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Library",
+				"id": "LibraryEvaluationTestDependency",
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "Device/cqf-tooling"
+						}
+					},
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "cqf-tooling"
+						}
+					}
+				],
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
+				"version": "1.0.000",
+				"name": "LibraryEvaluationTestDependency",
+				"parameter": [
+					{
+						"name": "Patient",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "Patient"
+					},
+					{
+						"name": "Encounters",
+						"use": "out",
+						"min": 0,
+						"max": "*",
+						"type": "Encounter"
+					}
+				],
+				"dataRequirement": [
+					{
+						"type": "Patient",
+						"profile": [
+							"http://hl7.org/fhir/StructureDefinition/Patient"
+						]
+					},
+					{
+						"type": "Encounter",
+						"profile": [
+							"http://hl7.org/fhir/StructureDefinition/Encounter"
+						]
+					}
+				],
+				"content": [
+					{
+						"contentType": "text/cql",
+						"data": "bGlicmFyeSBMaWJyYXJ5RXZhbHVhdGlvblRlc3REZXBlbmRlbmN5IHZlcnNpb24gJzEuMC4wMDAnCgp1c2luZyBGSElSIHZlcnNpb24gJzMuMC4wJwoKY29udGV4dCBQYXRpZW50CgpkZWZpbmUgIkVuY291bnRlcnMiOgogIFtFbmNvdW50ZXJdCg=="
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/LibraryEvaluationTestDependency"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Library",
+				"id": "LibraryEvaluationTest",
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "Device/cqf-tooling"
+						}
+					},
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "cqf-tooling"
+						}
+					}
+				],
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTest",
+				"version": "1.0.000",
+				"name": "LibraryEvaluationTest",
+				"relatedArtifact": [
+					{
+						"type": "depends-on",
+						"resource": {
+							"reference": "Library/LibraryEvaluationTestDependency"
+						}
+					}
+				],
+				"parameter": [
+					{
+						"name": "Patient",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "Patient"
+					},
+					{
+						"name": "Has Bone Narrowing Conditions",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "boolean"
+					},
+					{
+						"name": "Has Osteonecrosis Knee Conditions",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "boolean"
+					},
+					{
+						"name": "Has Angular Deformity Knee Conditions",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "boolean"
+					},
+					{
+						"name": "Has Presence of significant radiographic findings, which may include knee joint destruction, angular deformity, or severe narrowing",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "boolean"
+					},
+					{
+						"name": "Has Failure of Previous Proximal Tibial or Distal Femoral Osteotomy",
+						"use": "out",
+						"min": 0,
+						"max": "1",
+						"type": "boolean"
+					}
+				],
+				"dataRequirement": [
+					{
+						"type": "Patient",
+						"profile": [
+							"http://hl7.org/fhir/StructureDefinition/Patient"
+						]
+					},
+					{
+						"type": "Condition",
+						"profile": [
+							"http://hl7.org/fhir/StructureDefinition/Condition"
+						]
+					},
+					{
+						"type": "Procedure",
+						"profile": [
+							"http://hl7.org/fhir/StructureDefinition/Procedure"
+						]
+					}
+				],
+				"content": [
+					{
+						"contentType": "text/cql",
+						"data": "bGlicmFyeSBMaWJyYXJ5RXZhbHVhdGlvblRlc3QgdmVyc2lvbiAnMS4wLjAwMCcKCnVzaW5nIEZISVIgdmVyc2lvbiAnMy4wLjAnCgppbmNsdWRlIExpYnJhcnlFdmFsdWF0aW9uVGVzdERlcGVuZGVuY3kgdmVyc2lvbiAnMS4wLjAwMCcgY2FsbGVkIExFVDIKCmNvbnRleHQgUGF0aWVudAoKLy8gVGhpcyBleHByZXNzaW9uIGRvZXMgbm90IGRpcmVjdGx5IHJldHJpZXZlIGRhdGEgYW5kIHNvIGl0IGlzIG5vdCBuZWNlc3NhcnkgZm9yCi8vIERhdGFSZXF1aXJlbWVudCBpZGVudGlmaWNhdGlvbi4gSXQgaXMgY29tcG9zZWQgdGhpcyB3YXMgaW4gdGhlIGluZGljYXRpb25zIHRob3VnaAovLyBhbmQgc28gaXQgc2VlbXMgdGhhdCBpdCBfaXNfIHRoZSAicXVlc3Rpb24iIGFzIG9wcG9zZWQgdG8gdGhlIHVuZGVybHlpbmcgcmV0cmlldmFscwovLyBiZWluZy4KLyogN0FFQjMyRDdCRDhFNTJDNy1GMUNGQzExNTc5NjJDMUYzLTVEQjBEMERBNTM3OTA4RTUgKi8KZGVmaW5lICJIYXMgUHJlc2VuY2Ugb2Ygc2lnbmlmaWNhbnQgcmFkaW9ncmFwaGljIGZpbmRpbmdzLCB3aGljaCBtYXkgaW5jbHVkZSBrbmVlIGpvaW50IGRlc3RydWN0aW9uLCBhbmd1bGFyIGRlZm9ybWl0eSwgb3Igc2V2ZXJlIG5hcnJvd2luZyI6CiAgIkhhcyBCb25lIE5hcnJvd2luZyBDb25kaXRpb25zIgogICAgb3IgIkhhcyBPc3Rlb25lY3Jvc2lzIEtuZWUgQ29uZGl0aW9ucyIKICAgIG9yICJIYXMgQW5ndWxhciBEZWZvcm1pdHkgS25lZSBDb25kaXRpb25zIgoKZGVmaW5lICJIYXMgQm9uZSBOYXJyb3dpbmcgQ29uZGl0aW9ucyI6CiAgZXhpc3RzIChbQ29uZGl0aW9uXSkKCmRlZmluZSAiSGFzIE9zdGVvbmVjcm9zaXMgS25lZSBDb25kaXRpb25zIjoKICBleGlzdHMgKFtDb25kaXRpb25dKQoKZGVmaW5lICJIYXMgQW5ndWxhciBEZWZvcm1pdHkgS25lZSBDb25kaXRpb25zIjoKICBleGlzdHMgKFtDb25kaXRpb25dKQoKLyogIlBhdGhJZCI6ICI3QUVCMzJEN0JEOEU1MkM3LUQ5RTkxMDRBQkQ0OEIzRUQiICovCmRlZmluZSAiSGFzIEZhaWx1cmUgb2YgUHJldmlvdXMgUHJveGltYWwgVGliaWFsIG9yIERpc3RhbCBGZW1vcmFsIE9zdGVvdG9teSI6CiAgZXhpc3RzIChbUHJvY2VkdXJlXSkKCmRlZmluZSAiRW5jb3VudGVycyBmcm9tIERlcGVuZGVuY3kgTGlicmFyeSI6CiAgTEVUMi4iRW5jb3VudGVycyIKCmRlZmluZSAiSGFzIEVuY291bnRlcnMiOgogICAgZXhpc3RzICgiRW5jb3VudGVycyBmcm9tIERlcGVuZGVuY3kgTGlicmFyeSIpCg=="
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/LibraryEvaluationTest"
+			}
+		}
+	]
+}

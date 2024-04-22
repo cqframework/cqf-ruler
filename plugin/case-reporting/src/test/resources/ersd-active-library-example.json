@@ -1,0 +1,81 @@
+{
+	"resourceType": "Library",
+	"id": "SpecificationLibrary",
+	"meta": {
+		"profile": [
+			"http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library"
+		]
+	},
+	"text": {
+		"status": "generated",
+		"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Library</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Library \"SpecificationLibrary\" Version \"1.0.0\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-us-ph-specification-library.html\">US Public Health Specification Library</a></p></div><p><b>url</b>: <code>http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary</code></p><p><b>version</b>: 1.0.0</p><p><b>name</b>: SpecificationLibrary</p><p><b>title</b>: Specification Library</p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>type</b>: Asset Collection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-library-type.html\">LibraryType</a>#asset-collection)</span></p><p><b>publisher</b>: eCR</p><p><b>description</b>: Defines the asset-collection library containing the US Public Health specification assets.</p></div>"
+	},
+	"url": "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary",
+	"version": "1.0.0",
+	"name": "SpecificationLibrary",
+	"title": "Specification Library",
+	"status": "active",
+	"experimental": true,
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "asset-collection"
+			}
+		]
+	},
+	"publisher": "eCR",
+	"description": "Defines the asset-collection library containing the US Public Health specification assets.",
+	"useContext": [
+		{
+			"code": {
+				"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+				"code": "reporting"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+						"code": "triggering"
+					}
+				]
+			}
+		},
+		{
+			"code": {
+				"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+				"code": "specification-type"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+						"code": "program"
+					}
+				]
+			}
+		}
+	],
+	"relatedArtifact": [
+		{
+			"type": "composed-of",
+			"resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+			"extension":[
+				{
+					"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+					"valueBoolean": true
+				}
+			]
+		},
+		{
+			"type": "composed-of",
+			"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
+			"extension":[
+				{
+					"url":"http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+					"valueBoolean": true
+				}
+			]
+		}
+	]
+}
