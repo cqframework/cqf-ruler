@@ -139,7 +139,29 @@ public class KnowledgeArtifactProcessor {
 
 		return resourceList;
 	}
-
+	public static void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, Repository hapiFhirRepository) throws UnprocessableEntityException {
+		if (resource == null 
+		&& relatedArtifact != null 
+		&& relatedArtifact.getResource() != null 
+		&& Canonicals.getResourceType(relatedArtifact.getResource()).equals("ValueSet")) {
+			var searchResults = BundleHelper.getEntryResources(SearchHelper.searchRepositoryByCanonicalWithPaging( hapiFhirRepository, relatedArtifact.getResource()));
+			if (searchResults.size() > 0) {
+				resource = (MetadataResource)searchResults.get(0);
+			}
+		}
+		if (resource != null && resource.getResourceType() == ResourceType.ValueSet) {
+			var valueSet = (ValueSet)resource;
+			var isLeaf = !valueSet.hasCompose() || (valueSet.hasCompose() && valueSet.getCompose().getIncludeFirstRep().getValueSet().size() == 0);
+			var maybeConditionExtension = Optional.ofNullable(relatedArtifact)
+				.map(RelatedArtifact::getExtension)
+				.map(list -> {
+					return list.stream().map(e->(Extension)e).filter(ext -> ext.getUrl().equalsIgnoreCase(valueSetConditionUrl)).findFirst().orElse(null);
+				});
+			if (isLeaf && !maybeConditionExtension.isPresent()) {
+				throw new UnprocessableEntityException("Missing condition on ValueSet : " + valueSet.getUrl());
+			}
+		}
+	}
 	public static void checkIfValueSetNeedsCondition(MetadataResource resource, IDependencyInfo relatedArtifact, Repository hapiFhirRepository) throws UnprocessableEntityException {
 		if (resource == null 
 		&& relatedArtifact != null 
