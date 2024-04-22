@@ -1,0 +1,484 @@
+{
+	"resourceType": "Bundle",
+	"id": "rctc-release-4.0.0.0-Bundle-rctc",
+	"type": "transaction",
+	"timestamp": "2022-10-21T15:18:28.504-04:00",
+	"entry": [
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SmallSpecificationLibrary",
+			"resource": {
+				"resourceType": "Library",
+				"id": "SmallSpecificationLibrary",
+				"meta": {
+					"profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library" ]
+				},
+				"contained": [
+					{
+						"resourceType": "Parameters",
+						"id": "expansion-parameters-ecr",
+						"parameter": [
+							{
+								"name": "system-version",
+								"valueString": "http://snomed.info/sct|http://snomed.info/sct/731000124108/version/20230901"
+							}
+						]
+					}
+				],
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel",
+						"valueString": "2024-02-02"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseDescription",
+						"valueMarkdown": "test"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/cqf-expansionParameters",
+						"valueReference": {
+							"reference": "#expansion-parameters-ecr"
+						}
+					}
+				],
+				"url": "http://ersd.aimsplatform.org/fhir/Library/SmallSpecificationLibrary",
+				"version": "4.0.0.0",
+				"name": "SmallSpecificationLibrary",
+				"title": "Small Specification Library",
+				"status": "active",
+				"experimental": false,
+				"type": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/library-type",
+						"code": "asset-collection"
+					} ]
+				},
+				"publisher": "Association of Public Health Laboratories (APHL)",
+				"description": "Defines the asset-collection library containing the US Public Health specification assets.",
+				"useContext": [
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "reporting"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "triggering"
+								}
+							]
+						}
+					},
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "specification-type"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "program"
+								}
+							]
+						}
+					}
+				],
+				"effectivePeriod": {
+					"start": "2024-02-07"
+				},
+				"relatedArtifact": [
+					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|2.0.0",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						]
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|4.0.0.0",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						]
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
+					},
+					{
+						"extension": [
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+											"code": "emergent"
+										}
+									],
+									"text": "Emergent"
+								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "49649001"
+										}
+									],
+									"text": "Infection caused by Acanthamoeba (disorder)"
+								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "767146004"
+										}
+									]
+								}
+							}
+						],
+						"type": "depends-on",
+						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
+					},
+					{
+						"type": "depends-on",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|4.0.0.0"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/SmallSpecificationLibrary"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"resource": {
+				"resourceType": "PlanDefinition",
+				"id": "us-ecr-specification",
+				"url": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+				"version": "2.0.0",
+				"status": "active",
+				"relatedArtifact": [
+					{
+						"type": "depends-on",
+						"label": "RCTC Value Set Library of Trigger Codes",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|4.0.0.0"
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "PlanDefinition/us-ecr-specification"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"resource": {
+				"resourceType": "Library",
+				"id": "rctc",
+				"meta": {
+					"profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/ersd-valueset-library", "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-triggering-valueset-library" ]
+				},
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel",
+					"valueString": "2024-02-02"
+				} ],
+				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
+				"version": "4.0.0.0",
+				"name": "Reportable_Condition_Trigger_Codes",
+				"title": "Reportable Condition Trigger Codes",
+				"status": "active",
+				"experimental": false,
+				"type": {
+					"coding": [ {
+						"system": "http://terminology.hl7.org/CodeSystem/library-type",
+						"code": "asset-collection"
+					} ]
+				},
+				"date": "2024-02-13T13:47:56-05:00",
+				"publisher": "Association of Public Health Laboratories (APHL)",
+				"description": "Release Description: This release includes code updates for 210 existing conditions and 3 new conditions: Invasive Cronobacter Infection Among Infants Congenital cytomegalovirus (cCMV) infection and disease Neonatal Abstinence Syndrome",
+				"useContext": [ {
+					"code": {
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+						"code": "reporting"
+					},
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+							"code": "triggering"
+						} ]
+					}
+				}, {
+					"code": {
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+						"code": "specification-type"
+					},
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+							"code": "value-set-library"
+						} ]
+					}
+				} ],
+				"purpose": "Triggers for initiating decision support for electronic case reports",
+				"effectivePeriod": {
+					"start": "2024-06-01"
+				},
+				"relatedArtifact": [
+					{
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|4.0.0.0",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						]
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/rctc"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|4.0.0.0",
+			"resource": {
+				"resourceType": "ValueSet",
+				"id": "dxtc",
+				"meta": {
+					"profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/ersd-valueset", "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-triggering-valueset" ]
+				},
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+					"valueContactDetail": {
+						"name": "CSTE Author"
+					}
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+					"valueContactDetail": {
+						"name": "CSTE Steward"
+					}
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/artifact-releaseLabel",
+					"valueString": "2024-02-02"
+				} ],
+				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+				"version": "4.0.0.0",
+				"name": "Diagnosis_ProblemTriggersforPublicHealthReporting",
+				"title": "Diagnosis_Problem Triggers for Public Health Reporting",
+				"status": "draft",
+				"experimental": false,
+				"date": "2024-02-13T13:47:56-05:00",
+				"publisher": "CSTE Steward",
+				"description": "Purpose: Clinical Focus - This set of values contains diagnoses or problems that represent that the patient may have a potentially reportable condition. For example, these may be diagnoses recorded in an EHR problem list and diagnosis codes used for billing for the encounter. Purpose: Data Element Scope - Diagnoses or problems documented in a clinical record. Purpose: Inclusion Criteria - See individual value sets. Purpose: Exclusion Criteria - See individual value sets. Note - Includes codes from selected value sets used in the Reportable Condition Knowledge Management System (RCKMS) reporting logic. RCKMS value sets in VSAC are for informational use only. When implementing trigger codes for electronic case reporting, use the Reportable Condition Trigger Codes (RCTC) file.",
+				"useContext": [ {
+					"code": {
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+						"code": "reporting"
+					},
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+							"code": "triggering"
+						} ]
+					}
+				}, {
+					"code": {
+						"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+						"code": "priority"
+					},
+					"valueCodeableConcept": {
+						"coding": [ {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+							"code": "routine"
+						} ]
+					}
+				} ],
+				"purpose": "Diagnoses or problems documented in a clinical record.",
+				"compose": {
+					"include": [
+						{
+							"valueSet": [
+								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526"
+							]
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "ValueSet/dxtc"
+			}
+		},
+		{
+			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6|20210526",
+			"resource": {
+				"resourceType": "ValueSet",
+				"id": "2.16.840.1.113762.1.4.1146.6",
+				"meta": {
+					"profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/ersd-valueset", "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-triggering-valueset" ],
+					"tag" : [{
+						"system" : "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag",
+						"code" : "vsm-authored"
+					}]
+				},
+				"extension": [ {
+					"url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+					"valueContactDetail": {
+						"name": "CSTE Author"
+					}
+				}, {
+					"url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+					"valueContactDetail": {
+						"name": "CSTE Steward"
+					}
+				} ],
+				"url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.6",
+				"identifier": [
+					{
+						"system": "urn:ietf:rfc:3986",
+						"value": "urn:oid:2.16.840.1.113762.1.4.1146.6"
+					}
+				],
+				"version": "20210526",
+				"name": "DiphtheriaDisordersSNOMED",
+				"title": "Diphtheria (Disorders) (SNOMED)",
+				"status": "active",
+				"experimental": false,
+				"publisher": "CSTE Steward",
+				"description": "Diphtheria (Disorders) (SNOMED)",
+				"compose": {
+					"include": [
+						{
+							"system": "http://snomed.info/sct",
+							"version": "Provisional_2022-04-25",
+							"concept": [
+								{
+									"code": "1086051000119107",
+									"display": "Cardiomyopathy due to diphtheria (disorder)"
+								},
+								{
+									"code": "1086061000119109",
+									"display": "Diphtheria radiculomyelitis (disorder)"
+								},
+								{
+									"code": "1086071000119103",
+									"display": "Diphtheria tubulointerstitial nephropathy (disorder)"
+								},
+								{
+									"code": "1090211000119102",
+									"display": "Pharyngeal diphtheria (disorder)"
+								},
+								{
+									"code": "129667001",
+									"display": "Diphtheritic peripheral neuritis (disorder)"
+								},
+								{
+									"code": "13596001",
+									"display": "Diphtheritic peritonitis (disorder)"
+								},
+								{
+									"code": "15682004",
+									"display": "Anterior nasal diphtheria (disorder)"
+								},
+								{
+									"code": "186347006",
+									"display": "Diphtheria of penis (disorder)"
+								},
+								{
+									"code": "18901009",
+									"display": "Cutaneous diphtheria (disorder)"
+								},
+								{
+									"code": "194945009",
+									"display": "Acute myocarditis - diphtheritic (disorder)"
+								},
+								{
+									"code": "230596007",
+									"display": "Diphtheritic neuropathy (disorder)"
+								},
+								{
+									"code": "240422004",
+									"display": "Tracheobronchial diphtheria (disorder)"
+								},
+								{
+									"code": "26117009",
+									"display": "Diphtheritic myocarditis (disorder)"
+								},
+								{
+									"code": "276197005",
+									"display": "Infection caused by Corynebacterium diphtheriae (disorder)"
+								},
+								{
+									"code": "3419005",
+									"display": "Faucial diphtheria (disorder)"
+								},
+								{
+									"code": "397428000",
+									"display": "Diphtheria (disorder)"
+								},
+								{
+									"code": "397430003",
+									"display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
+								},
+								{
+									"code": "48278001",
+									"display": "Diphtheritic cystitis (disorder)"
+								},
+								{
+									"code": "50215002",
+									"display": "Laryngeal diphtheria (disorder)"
+								},
+								{
+									"code": "715659006",
+									"display": "Diphtheria of respiratory system (disorder)"
+								},
+								{
+									"code": "75589004",
+									"display": "Nasopharyngeal diphtheria (disorder)"
+								},
+								{
+									"code": "7773002",
+									"display": "Conjunctival diphtheria (disorder)"
+								},
+								{
+									"code": "789005009",
+									"display": "Paralysis of uvula after diphtheria (disorder)"
+								}
+							]
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "ValueSet/2.16.840.1.113762.1.4.1146.6"
+			}
+		}
+	]
+}
