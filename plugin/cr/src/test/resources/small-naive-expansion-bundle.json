@@ -376,7 +376,6 @@
 					"include": [
 						{
 							"system": "http://snomed.info/sct",
-							"version": "Provisional_2022-04-25",
 							"concept": [
 								{
 									"code": "1086051000119107",
