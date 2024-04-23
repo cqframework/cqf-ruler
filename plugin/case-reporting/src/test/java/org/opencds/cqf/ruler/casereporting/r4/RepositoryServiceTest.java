@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,8 +22,10 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Binary;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -62,6 +66,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
@@ -1761,6 +1768,43 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// new codes added
 		assertTrue(insertOperations.size() == 32);
 	}
+
+	@Test
+	void testGetChangelog() {
+		loadTransaction("ersd-small-active-bundle.json");
+		var bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+		var maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Parameters diffParams = new Parameters();
+		diffParams.addParameter("source", specificationLibReference);
+		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
+		var returnedBinary = getClient().operation()
+			.onServer()
+			.named("$create-changelog")
+			.withParameters(diffParams)
+			.returnResourceType(Binary.class)
+			.execute();
+		assertNotNull(returnedBinary);
+		byte[] decodedBytes = Base64.getDecoder().decode(returnedBinary.getContentAsBase64());
+		String decodedString = new String(decodedBytes);
+		ObjectMapper mapper = new ObjectMapper();
+		var pageURLS = List.of("http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary");
+		Exception expectNoException = null;
+		try {
+			var node = mapper.readTree(decodedString);
+			assertTrue(node.get("pages").isArray());
+			var pages = node.get("pages");
+			for (final var url : pageURLS) {
+				var pageExists = StreamSupport.stream(pages.spliterator(), false)
+					.anyMatch(page -> page.get("url").asText().equals(url));
+				assertTrue(pageExists);
+    	}
+		} catch (Exception e) {
+			// TODO: handle exception
+			expectNoException = e;
+		}
+		assertNull(expectNoException);
+	}
+
 	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
 		return parameters.stream().filter(
 			p -> p.getName().equals("operation")
