@@ -440,8 +440,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		@OperationParam(name = "target") String target) {
 			// 1) Create Diff Parameters Object as input
 			var cache = new KnowledgeArtifactProcessor.diffCache();
-			var dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
 			var repository = this.getRepository(requestDetails);
+			var dao = (IFhirResourceDaoValueSet<ValueSet>)this.getDaoRegistry().getResourceDao(ValueSet.class);
 			var sourceId = new IdType(source);
 			var theSourceResource = (MetadataResource) SearchHelper.readRepository(repository,sourceId);
 			if (theSourceResource == null || !(theSourceResource instanceof Library)) {
@@ -461,197 +461,28 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 			processChanges(diffParameters.getParameter(), changelog, cache, manifestUrl);
 
 			// 3) Handle the Conditions and Priorities which are in RelatedArtifact changes
-			var relatedArtifactOperations = diffParameters.getParameter().stream()
-			.filter(p -> p.getName().equals("operation"))
-			.filter(p -> {
-				var path = getPathParameterNoBase(p);
-				return path.isPresent() && path.get().contains("relatedArtifact[");
-			}).collect(Collectors.toList());
-			handleRelatedArtifacts((Library)theSourceResource,(Library)theTargetResource, changelog, relatedArtifactOperations, cache);
+			changelog.handleRelatedArtifacts();
 			
 			// 4) Generate the output JSON
 			var bin = new Binary();
+			var mapper = createSerializer();
+			try {
+				bin.setContent(mapper.writeValueAsString(changelog).getBytes(Charset.forName("UTF-8")));
+			} catch (JsonProcessingException e) {
+				// TODO: handle exception
+				throw new UnprocessableEntityException(e.getMessage());
+			}
+			
+			return bin;
+		}
+		private ObjectMapper createSerializer() {
 			var mapper = new ObjectMapper()
 				.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 				.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
       SimpleModule module = new SimpleModule("IBaseSerializer", new Version(1, 0, 0, null, null, null));
       module.addSerializer(IBase.class, new IBaseSerializer(this.getFhirContext()));
       mapper.registerModule(module);
-			try {
-				var jsonString = mapper.writeValueAsString(changelog);
-				bin.setContent(jsonString.getBytes(Charset.forName("UTF-8")));
-			} catch (JsonProcessingException e) {
-				// TODO: handle exception
-				bin.setContent(e.getMessage().getBytes(Charset.forName("UTF-8")));
-			}
-			
-			return bin;
-		}
-		private void handleRelatedArtifacts(Library source, Library target, ChangeLog changeLog, List<ParametersParameterComponent> parameters, KnowledgeArtifactProcessor.diffCache cache) {
-			// need to modify the diff function to change the order of the relatedartifacts and things
-			// in the diff cache resources so that the parameters paths make sense
-
-			// orrrrr
-			// just modify the diff function to also append the relatedArtifact target URL to all the parameters?
-			for(var change: parameters) {
-				if (change.getName().equals("operation")) {
-						var type = getStringParameter(change, "type")
-							.orElseThrow(() -> new UnprocessableEntityException("Type must be provided when adding an operation to the ChangeLog"));
-						var maybePath = getPathParameterNoBase(change);
-						if (maybePath.isPresent() 
-						&& maybePath.get().contains("elatedArtifact")) {
-							var path = maybePath.get();
-							var originalValue = getParameter(change, "previousValue").map(o -> (Object)o);
-							var newValue = getParameter(change, "value").map(o->(Object)o);
-							try {
-								if (originalValue.isEmpty()) {
-									originalValue = Optional.ofNullable((new PropertyUtilsBean()).getProperty(source, path));
-								}
-							} catch (Exception e) {
-								// TODO: handle exception
-								var message = e.getMessage();
-							}
-							String relatedArtifactTargetCanonical = null;
-							List<Extension> newConditions = new ArrayList<>();
-							List<Extension> oldConditions = new ArrayList<>();
-							List<Extension> newPriority = new ArrayList<>();
-							List<Extension> oldPriority = new ArrayList<>();
-							if (newValue.isPresent()) {
-								if (newValue.get() instanceof RelatedArtifact) {
-									relatedArtifactTargetCanonical = ((RelatedArtifact) newValue.get()).getResource();
-									newConditions = ((RelatedArtifact) newValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
-									newPriority = ((RelatedArtifact) newValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
-								} else if (newValue.get() instanceof IPrimitiveType 
-								&& path.contains("[")) {
-									var matcher = Pattern
-										.compile("relatedArtifact\\[(\\d+)\\]")
-										.matcher(path);
-										if (matcher.find()) {
-											var pathToRelatedArtifact = matcher.group();
-											try {
-													newValue = Optional.ofNullable((new PropertyUtilsBean()).getProperty(target, pathToRelatedArtifact));
-											} catch (Exception e) {
-												// TODO: handle exception
-												var message = e.getMessage();
-											}
-											if (newValue.isPresent() && newValue.get() instanceof RelatedArtifact) {
-												relatedArtifactTargetCanonical = ((RelatedArtifact) newValue.get()).getResource();
-												newConditions = ((RelatedArtifact) newValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
-												newPriority = ((RelatedArtifact) newValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
-											}
-										}
-								}
-							}
-							if (originalValue.isPresent()) {
-								if (originalValue.get() instanceof RelatedArtifact) {
-									relatedArtifactTargetCanonical = ((RelatedArtifact) originalValue.get()).getResource();
-									oldConditions = ((RelatedArtifact) originalValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
-									oldPriority = ((RelatedArtifact) originalValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
-								} else if (originalValue.get() instanceof IPrimitiveType 
-								&& path.contains("[")) {
-									var matcher = Pattern
-										.compile("relatedArtifact\\[(\\d+)\\]")
-										.matcher(path);
-										if (matcher.find()) {
-											var pathToRelatedArtifact = matcher.group();
-											try {
-												originalValue = Optional.ofNullable((new PropertyUtilsBean()).getProperty(source, pathToRelatedArtifact));
-											} catch (Exception e) {
-												// TODO: handle exception
-												var message = e.getMessage();
-											}
-											if (originalValue.isPresent() && originalValue.get() instanceof RelatedArtifact) {
-												relatedArtifactTargetCanonical = ((RelatedArtifact) originalValue.get()).getResource();
-												oldConditions = ((RelatedArtifact) originalValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl);
-												oldPriority = ((RelatedArtifact) originalValue.get()).getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
-											}
-										}
-								}
-							}
-							if (relatedArtifactTargetCanonical != null) {
-								final var finalCanonical = relatedArtifactTargetCanonical;
-								final var finalOriginal = originalValue;
-								final var finalNew = newValue;
-								var page = changeLog.pages.stream()
-									.filter(p -> (p.oldData instanceof ChangeLog.ValueSetChild)).map(p -> (ChangeLog.Page<ChangeLog.ValueSetChild>)p)
-									.filter(p -> p.oldData.codes.stream().anyMatch(c -> c.memberOid != null && c.memberOid.equals(Canonicals.getIdPart(finalCanonical))) 
-									|| p.newData.codes.stream().anyMatch(c -> c.memberOid != null && c.memberOid.equals(Canonicals.getUrl(finalCanonical))))
-									.findAny();
-								if (page.isPresent()) {
-									var page2 = page.get();
-										if (page2.oldData != null && page2.oldData instanceof ChangeLog.ValueSetChild) {
-											if (type.equals("delete" ) || type.equals("replace")) {
-												var isConditionInOld = ((ChangeLog.ValueSetChild)page2.oldData).codes.stream().anyMatch(c -> c.memberOid != null && c.memberOid.equals(Canonicals.getIdPart(finalCanonical)));
-													if (isConditionInOld) {
-														for (var condition: oldConditions) {
-															var val = ((CodeableConcept)condition.getValue()).getCodingFirstRep();
-															((ChangeLog.ValueSetChild)page2.oldData).grouperList.stream()
-															.filter(g -> g.memberOid.equals(finalCanonical)).findAny()
-															.ifPresent(g -> {
-																g.conditions.add(new ChangeLog.ValueSetChild.Code(
-																	val.getId(), 
-																	val.getSystem(), 
-																	val.getCode(), 
-																	val.getVersion(), 
-																	val.getDisplay(), 
-																	null, 
-																	new ChangeLog.ChangeLogOperation(type, path, finalNew.orElse(null), finalOriginal.orElse(null))));
-															});
-														}
-														if (oldPriority.size() > 1) {
-															throw new UnprocessableEntityException("too many priorities");
-														} else if(oldPriority.size() > 0) {
-																var val = ((CodeableConcept)oldPriority.get(0).getValue()).getCodingFirstRep();
-															((ChangeLog.ValueSetChild)page2.oldData).grouperList.stream()
-															.filter(g -> g.memberOid.equals(finalCanonical)).findAny()
-															.ifPresent(g -> {
-																g.priority.value = val.getCode();
-																g.priority.operation = new ChangeLog.ChangeLogOperation(type, path, finalNew.orElse(null), finalOriginal.orElse(null));
-															});
-														}
-											} else {
-												// throw new UnprocessableEntityException("whaa");
-												var whaaa = "whaa";
-											}
-											}
-											if (type.equals("insert") || type.equals("replace")) {
-												var isConditionInNew = ((ChangeLog.ValueSetChild)page2.newData).codes.stream().anyMatch(c -> c.memberOid != null && c.memberOid.equals(Canonicals.getIdPart(finalCanonical)));
-												if (isConditionInNew) {
-													for (var condition: newConditions) {
-														var val = ((CodeableConcept)condition.getValue()).getCodingFirstRep();
-														((ChangeLog.ValueSetChild)page2.newData).grouperList.stream().filter(g -> g.memberOid.equals(finalCanonical)).findAny()
-														.ifPresent(g -> {
-															g.conditions.add(new ChangeLog.ValueSetChild.Code(
-																val.getId(), 
-																val.getSystem(), 
-																val.getCode(), 
-																val.getVersion(), 
-																val.getDisplay(), 
-																null, 
-																new ChangeLog.ChangeLogOperation(type, path, finalNew.orElse(null), finalOriginal.orElse(null))));
-														});												
-													}
-													if (newPriority.size() > 1) {
-														throw new UnprocessableEntityException("too many priorities");
-													} else if(newPriority.size() > 0) {
-															var val = ((CodeableConcept)newPriority.get(0).getValue()).getCodingFirstRep();
-														((ChangeLog.ValueSetChild)page2.newData).grouperList.stream()
-														.filter(g -> g.memberOid.equals(finalCanonical)).findAny()
-														.ifPresent(g -> {
-															g.priority.value = val.getCode();
-															g.priority.operation = new ChangeLog.ChangeLogOperation(type, path, finalNew.orElse(null), finalOriginal.orElse(null));
-														});
-													}
-												} else {
-													var whaa = "whaaa";
-												}
-											}
-										}
-								}
-							}
-						}
-				}
-			}
+			return mapper;
 		}
 		private void processChanges(List<ParametersParameterComponent> changes, ChangeLog changelog, KnowledgeArtifactProcessor.diffCache cache, String url) {
 			// 1) Get the source and target resources so we can pull additional info as necessary

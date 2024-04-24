@@ -469,7 +469,15 @@ public class KnowledgeArtifactProcessor {
 			this.resources.put(url, new DiffCacheResource(resource,false));
 		}
 		public Optional<MetadataResource> getResource(String url) {
-			return Optional.ofNullable(this.resources.get(url)).map(r -> r.resource);
+			var resource = Optional.ofNullable(this.resources.get(url)).map(r -> r.resource);
+			if (!resource.isPresent()) {
+				var possibleMatches = getResourcesForUrl(url);
+				// what if there are multiple matches? Does this throw an error?
+				if (possibleMatches.size() > 0) {
+					resource = Optional.of(possibleMatches.get(0).resource);
+				}
+			}
+			return resource;
 		}
 		public List<DiffCacheResource> getResourcesForUrl(String url) {
 			return this.resources.keySet().stream()

@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.fhir.utility.Canonicals;
 
@@ -115,6 +119,70 @@ public class ChangeLog {
   public Optional<Page<? extends BaseMetadataObject>> getPage(String url) {
     return this.pages.stream().filter(p -> p.url.equals(url)).findAny();
   }
+  public void handleRelatedArtifacts() {
+    var manifest = this.getPage(this.manifestUrl);
+    if (manifest.isPresent()) {
+      var specLibrary = manifest.get();
+      var manifestOldData = (LibraryChild)specLibrary.oldData;
+      var manifestNewData = (LibraryChild)specLibrary.newData;
+      if (manifestNewData != null) {
+        for (final var page: this.pages) {
+          if (page.oldData instanceof ValueSetChild) {
+            for (final var ra: manifestOldData.relatedArtifacts) {
+              ((ValueSetChild)page.oldData).grouperList.stream()
+                .filter(g -> g.memberOid != null && g.memberOid.equals(Canonicals.getIdPart(ra.targetUrl)))
+                .forEach(g -> {
+                  ra.conditions.forEach(condition -> {
+                    if (condition.value != null && condition.value.hasValue() && condition.value.getValue() instanceof CodeableConcept) {
+                      var coding = ((CodeableConcept)condition.value.getValue()).getCodingFirstRep();
+                      g.conditions.add(new ChangeLog.ValueSetChild.Code(
+                        coding.getId(), 
+                        coding.getSystem(), 
+                        coding.getCode(), 
+                        coding.getVersion(), 
+                        coding.getDisplay(), 
+                        null, 
+                        condition.operation));
+                    }
+                  });
+                  if (ra.priority.value != null && ra.priority.value.hasValue()) {
+                    var coding = ((CodeableConcept)ra.priority.value.getValue()).getCodingFirstRep();
+                    g.priority.value = coding.getCode();
+                    g.priority.operation = ra.priority.operation;
+                  }
+                });
+            }
+          }
+          if (page.newData instanceof ValueSetChild) {
+            for (final var ra: manifestNewData.relatedArtifacts) {
+              ((ValueSetChild)page.newData).grouperList.stream()
+                .filter(g -> g.memberOid != null && g.memberOid.equals(Canonicals.getIdPart(ra.targetUrl)))
+                .forEach(g -> {
+                  ra.conditions.forEach(condition -> {
+                    if (condition.value != null && condition.value.hasValue() && condition.value.getValue() instanceof CodeableConcept) {
+                      var coding = ((CodeableConcept)condition.value.getValue()).getCodingFirstRep();
+                      g.conditions.add(new ChangeLog.ValueSetChild.Code(
+                        coding.getId(), 
+                        coding.getSystem(), 
+                        coding.getCode(), 
+                        coding.getVersion(), 
+                        coding.getDisplay(), 
+                        null, 
+                        condition.operation));
+                    }
+                  });
+                  if (ra.priority.value != null && ra.priority.value.hasValue()) {
+                    var coding = ((CodeableConcept)ra.priority.value.getValue()).getCodingFirstRep();
+                    g.priority.value = coding.getCode();
+                    g.priority.operation = ra.operation;
+                  }
+                });
+            }
+          }
+        }
+      }
+    }
+  }
   public static class Page<T extends BaseMetadataObject> {
       public T oldData;
       public T newData;
@@ -125,17 +193,17 @@ public class ChangeLog {
         this.oldData = oldData;
         this.newData = newData;
       }
-      void addOperation(String type, String path, Object value, Object original, ChangeLog parent) {
+      void addOperation(String type, String path, Object newValue, Object original, ChangeLog parent) {
         if (type != null) {
           switch (type) {
             case "replace":
-              addReplaceOperation(type, path, value, value, parent);
+              addReplaceOperation(type, path, newValue, original, parent);
               break;
             case "delete":
-              addDeleteOperation(type, path, null, value, parent);
+              addDeleteOperation(type, path, null, original, parent);
               break;
             case "insert":
-              addInsertOperation(type, path, value, null, parent);
+              addInsertOperation(type, path, newValue, null, parent);
               break;
             default:
               throw new UnprocessableEntityException("Unknown type provided when adding an operation to the ChangeLog");
@@ -144,11 +212,11 @@ public class ChangeLog {
           throw new UnprocessableEntityException("Type must be provided when adding an operation to the ChangeLog");
         }
       }
-      void addInsertOperation(String type, String path, Object value, Object original, ChangeLog parent) {
+      void addInsertOperation(String type, String path, Object newValue, Object original, ChangeLog parent) {
         if (type != "insert") {
           throw new UnprocessableEntityException("wrong type");
         }
-        this.newData.addOperation(type, path, value, original, parent);
+        this.newData.addOperation(type, path, newValue, original, parent);
       }
       void addDeleteOperation(String type, String path, Object value, Object original, ChangeLog parent) {
         if (type != "delete") {
@@ -182,34 +250,30 @@ public class ChangeLog {
   public static class ChangeLogOperation {
     public String type;
     public String path;
-    public String newValue;
-    public String oldValue;
+    public Object newValue;
+    public Object oldValue;
     private final IParser parser = FhirContext.forR4().newJsonParser();
     ChangeLogOperation(String type, String path, IBase newValue, IBase original) {
       this.type = type;
       this.path = path;
-      if (original != null) {
-        this.oldValue = original.toString();
-      }
-      if (newValue != null) {
-        this.newValue = newValue.toString();
-      }
-    }
-    ChangeLogOperation(String type, String path, IBase newValue, String original) {
-      this.type = type;
-      this.path = path;
       this.oldValue = original;
-      if (newValue != null) {
-        this.newValue = newValue.toString();
-      }    
+      this.newValue = newValue;
     }
     ChangeLogOperation(String type, String path, Object newValue, Object original) {
       this.type = type;
       this.path = path;
-      if (original != null) {
+      if (original instanceof IPrimitiveType) {
+        this.oldValue = ((IPrimitiveType)original).getValue();
+      } else if (original instanceof IBase) {
+        this.oldValue = original;
+      } else if (original != null) {
         this.oldValue = original.toString();
       }
-      if (newValue != null) {
+      if (newValue instanceof IPrimitiveType) {
+        this.newValue = ((IPrimitiveType)newValue).getValue();
+      } else if (newValue instanceof IBase) {
+        this.newValue = newValue;
+      } else if (newValue != null) {
         this.newValue = newValue.toString();
       }
     }
@@ -231,9 +295,9 @@ public class ChangeLog {
       this.version.value = version;
         }
     }
-    public void addOperation(String type, String path, Object value, Object original, ChangeLog parent) {
+    public void addOperation(String type, String path, Object newValue, Object original, ChangeLog parent) {
       if (type != null) {
-        var newOp = new ChangeLogOperation(type, path, value, original);
+        var newOp = new ChangeLogOperation(type, path, newValue, original);
         if (path.equals("id")) {
           this.id.setOperation(newOp);
         } else if (path.contains("title")) {
@@ -247,7 +311,6 @@ public class ChangeLog {
   public static class ValueSetChild extends BaseMetadataObject {
     public List<Code> codes = new ArrayList<>();
     public List<Grouper> grouperList = new ArrayList<>();
-    // public KnowledgeArtifactProcessor.diffCache cache;
     public final String resourceType = "ValueSet";
     public static class Code {
       public String id;
@@ -305,7 +368,7 @@ public class ChangeLog {
         .map(vs -> vs.getValue())
         .forEach(vs -> {
           var grouper = new Grouper();
-          grouper.memberOid = vs;
+          grouper.memberOid = Canonicals.getIdPart(vs);
           this.grouperList.add(grouper);
         });
       }
@@ -316,20 +379,24 @@ public class ChangeLog {
       return newCodeObj;
     }
     @Override
-    public void addOperation(String type, String path, Object value, Object original, ChangeLog parent) {
+    public void addOperation(String type, String path, Object newValue, Object originalValue, ChangeLog parent) {
       if (type != null) {
-        super.addOperation(type, path, value, original, parent);
-        var operation = new ChangeLogOperation(type,path,value,original);
+        super.addOperation(type, path, newValue, originalValue, parent);
+        var operation = new ChangeLogOperation(type,path,newValue,originalValue);
         if (path.contains("compose.include")) {
           // if the valuesets changed
           String urlToCheck = null;
-          if (value instanceof IPrimitiveType || original instanceof IPrimitiveType) {
-            urlToCheck = value instanceof IPrimitiveType ? ((IPrimitiveType<String>) value).getValue() : ((IPrimitiveType<String>) original).getValue();
-          } else if (original instanceof ValueSet.ValueSetComposeComponent){
-            urlToCheck = ((ValueSet.ValueSetComposeComponent) original).getIncludeFirstRep().getValueSet().get(0).getValue();
+          if (newValue instanceof IPrimitiveType) {
+            urlToCheck = ((IPrimitiveType<String>) newValue).getValue();
+          } else if (originalValue instanceof IPrimitiveType){
+            urlToCheck = ((IPrimitiveType<String>) originalValue).getValue();
+          } else if ( newValue instanceof ValueSet.ValueSetComposeComponent){
+            urlToCheck = ((ValueSet.ValueSetComposeComponent) newValue).getIncludeFirstRep().getValueSet().get(0).getValue();
+          }else if (originalValue instanceof ValueSet.ValueSetComposeComponent){
+            urlToCheck = ((ValueSet.ValueSetComposeComponent) originalValue).getIncludeFirstRep().getValueSet().get(0).getValue();
           }
           if (urlToCheck != null) {
-            final var urlNotNull = urlToCheck;
+            final var urlNotNull = Canonicals.getIdPart(urlToCheck);
             this.grouperList.stream().forEach(grouper -> {
               if (grouper.memberOid.equals(urlNotNull)) {
                 grouper.operation = operation;
@@ -340,10 +407,10 @@ public class ChangeLog {
         else if (path.contains("expansion.contains[")) {
           // if the codes themselves changed
           String codeToCheck = null;
-          if (value instanceof IPrimitiveType || original instanceof IPrimitiveType) {
-            codeToCheck = value instanceof IPrimitiveType ? ((IPrimitiveType<String>) value).getValue() : ((IPrimitiveType<String>) original).getValue();
-          } else if (original instanceof ValueSet.ValueSetExpansionContainsComponent){
-            codeToCheck = ((ValueSet.ValueSetExpansionContainsComponent) original).getCode();
+          if (newValue instanceof IPrimitiveType || originalValue instanceof IPrimitiveType) {
+            codeToCheck = newValue instanceof IPrimitiveType ? ((IPrimitiveType<String>) newValue).getValue() : ((IPrimitiveType<String>) originalValue).getValue();
+          } else if (originalValue instanceof ValueSet.ValueSetExpansionContainsComponent){
+            codeToCheck = ((ValueSet.ValueSetExpansionContainsComponent) originalValue).getCode();
           }
           if (codeToCheck != null) {
             final String codeNotNull = codeToCheck;
@@ -357,22 +424,7 @@ public class ChangeLog {
               // handle missing codes
             }); 
           }
-        }        // FIXME: conditions and priorities
-        // else if (path.contains("extension")) {
-        //   // handle conditions
-        //   var conditions = this.getConditions();
-        //   conditions.stream()
-        //   .filter(condition -> condition.code != null)
-        //   .filter(condition -> condition.code.equals(value)).findAny()
-        //   .ifPresentOrElse(condition -> {
-        //     condition.setOperation(operation);
-        //   },
-        //   () -> {
-        //     // handle missing conditions
-        //   });
-        // } else if(path.contains(".priority")) {
-        //   this.priority.setOperation(null);
-        // }
+        }
       }
     }
   }
@@ -383,13 +435,31 @@ public class ChangeLog {
     }
   }
   public static class RelatedArtifactWithOperation {
-    public String stringValue;
     public RelatedArtifact value;
     public ChangeLogOperation operation;
     public String targetUrl;
+    public List<extensionWithOperation> conditions = new ArrayList<>();
+    public extensionWithOperation priority = new extensionWithOperation();
+    public static class extensionWithOperation {
+      public Extension value;
+      public ChangeLogOperation operation;
+    }
     RelatedArtifactWithOperation(RelatedArtifact value) {
-      this.targetUrl = value.getResource();
-      this.stringValue = value.toString();
+      if (value != null) {
+        this.targetUrl = value.getResource();
+        this.conditions = value.getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl).stream()
+          .map(e -> {
+            var retval = new extensionWithOperation();
+            retval.value = e;
+            return retval;
+          }).collect(Collectors.toList());
+        var priorities = value.getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl);
+        if (priorities.size() > 1) {
+          throw new UnprocessableEntityException("too many priorities");
+        } else if (priorities.size() == 1) {
+          this.priority.value = priorities.get(0);
+        }
+      }
       this.value = value;
     }
   }
@@ -421,29 +491,71 @@ public class ChangeLog {
     private Optional<RelatedArtifactWithOperation> getRelatedArtifactFromUrl(String target) {
       return this.relatedArtifacts.stream().filter(ra -> ra.targetUrl != null && ra.targetUrl.equals(target)).findAny();
     }
+    private void tryAddConditionOperation(Extension maybeCondition, RelatedArtifactWithOperation target, ChangeLogOperation newOperation) {
+      if (maybeCondition.getUrl().equals(KnowledgeArtifactProcessor.valueSetConditionUrl)) {
+        target.conditions.stream()
+          .filter(e -> e.value.getUrl().equals(KnowledgeArtifactProcessor.valueSetConditionUrl) 
+               && e.value.getValue() instanceof CodeableConcept
+               && ((CodeableConcept)e.value.getValue()).getCodingFirstRep().getSystem().equals(((CodeableConcept)maybeCondition.getValue()).getCodingFirstRep().getSystem())
+               && ((CodeableConcept)e.value.getValue()).getCodingFirstRep().getCode().equals(((CodeableConcept)maybeCondition.getValue()).getCodingFirstRep().getCode())
+          )
+          .findAny()
+          .ifPresent(condition -> {
+            condition.operation = newOperation;
+          });
+      }
+    }
+    private void tryAddPriorityOperation(Extension maybePriority, RelatedArtifactWithOperation target, ChangeLogOperation newOperation) {
+      if (maybePriority.getUrl().equals(KnowledgeArtifactProcessor.valueSetPriorityUrl)) {
+        if (target.priority.value != null
+          && target.priority.value.getUrl().equals(KnowledgeArtifactProcessor.valueSetPriorityUrl) 
+          && target.priority.value.getValue() instanceof CodeableConcept
+          && ((CodeableConcept)target.priority.value.getValue()).getCodingFirstRep().getSystem().equals(((CodeableConcept)maybePriority.getValue()).getCodingFirstRep().getSystem())
+          && ((CodeableConcept)target.priority.value.getValue()).getCodingFirstRep().getCode().equals(((CodeableConcept)maybePriority.getValue()).getCodingFirstRep().getCode())
+          ) {
+            target.priority.operation = newOperation;
+          };
+      }
+    }
     @Override
     public void addOperation(String type, String path, Object value, Object original, ChangeLog parent) {
       if(type != null) {
         super.addOperation(type, path, value, original, parent);
-        var operation = new ChangeLogOperation(type, path, value, original);
+        var newOperation = new ChangeLogOperation(type, path, value, original);
         Optional<RelatedArtifactWithOperation> operationTarget = Optional.ofNullable(null);
         if (path != null && path.contains("elatedArtifact") ){
           if (value instanceof RelatedArtifact) {
             operationTarget = getRelatedArtifactFromUrl(((RelatedArtifact) value).getResource());
           } else if (original instanceof RelatedArtifact) {
-            operationTarget = getRelatedArtifactFromUrl(((RelatedArtifact) value).getResource());
+            operationTarget = getRelatedArtifactFromUrl(((RelatedArtifact) original).getResource());
           } else if (path.contains("[")) {
             var matcher = Pattern
 										.compile("relatedArtifact\\[(\\d+)\\]")
 										.matcher(path);
             if (matcher.find()) {
-              var pathToRelatedArtifact = matcher.group();
               var relatedArtifactIndex = Integer.parseInt(matcher.group(1));
               operationTarget = Optional.of(this.relatedArtifacts.get(relatedArtifactIndex));
             }
           }
           if (operationTarget.isPresent()) {
-            operationTarget.get().operation = operation;
+            if (path.contains("xtension[")) {
+              var matcher = Pattern
+										.compile("xtension\\[(\\d+)\\]")
+										.matcher(path);
+              if (matcher.find()) {
+                var extension = operationTarget.get().value.getExtension().get(Integer.parseInt(matcher.group(1)));
+                tryAddConditionOperation(extension, operationTarget.orElse(null), newOperation);
+                tryAddPriorityOperation(extension, operationTarget.orElse(null), newOperation);
+              }
+            } else if (value instanceof Extension){
+              tryAddConditionOperation((Extension)value, operationTarget.orElse(null), newOperation);
+              tryAddPriorityOperation((Extension)value, operationTarget.orElse(null), newOperation);
+            } else if (original instanceof Extension){
+              tryAddConditionOperation((Extension)original, operationTarget.orElse(null), newOperation);
+              tryAddPriorityOperation((Extension)original, operationTarget.orElse(null), newOperation);
+            } else {
+              operationTarget.get().operation = newOperation;
+            }
           }
         }
       }
