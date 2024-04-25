@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.jetbrains.annotations.NotNull;
 import org.opencds.cqf.cql.evaluator.fhir.util.Canonicals;
 
 import java.nio.charset.StandardCharsets;
