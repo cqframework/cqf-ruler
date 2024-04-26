@@ -1,0 +1,509 @@
+{
+	"resourceType": "Bundle",
+	"type": "transaction",
+	"entry": [
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary|1.0.0.0-draft",
+			"resource": {
+				"resourceType": "Library",
+				"id": "7",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2023-12-14T15:38:56.845-05:00",
+					"source": "#FNgLVm21fIyZMxwE"
+				},
+				"url": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+				"version": "1.0.0.0-draft",
+				"status": "draft",
+				"useContext": [
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "reporting"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "triggering"
+								}
+							]
+						}
+					},
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "specification-type"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "program"
+								}
+							]
+						}
+					}
+				],
+				"relatedArtifact": [
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						],
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.0.0.0-draft"
+					},
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						],
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft"
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
+					},
+					{
+						"extension": [
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+											"code": "emergent"
+										}
+									],
+									"text": "Emergent"
+								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "123123123"
+										}
+									]
+								}
+							}
+						],
+						"type": "depends-on",
+						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163|20220603"
+					},
+					{
+						"extension": [
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "767146004"
+										}
+									]
+								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "49649001"
+										}
+									],
+									"text": "Infection caused by Acanthamoeba (disorder)"
+								}
+							}
+						],
+						"type": "depends-on",
+						"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526"
+					},
+					{
+						"type": "depends-on",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft"
+					}
+				]
+			},
+			"request": {
+				"method": "POST",
+				"url": "Library/7",
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary&version=1.0.0.0-draft"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification|1.0.0.0-draft",
+			"resource": {
+				"resourceType": "PlanDefinition",
+				"id": "8",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2023-12-14T15:38:56.845-05:00",
+					"source": "#FNgLVm21fIyZMxwE"
+				},
+				"url": "http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+				"version": "1.0.0.0-draft",
+				"status": "draft",
+				"relatedArtifact": [
+					{
+						"type": "depends-on",
+						"label": "RCTC Value Set Library of Trigger Codes",
+						"resource": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft"
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1"
+					}
+				]
+			},
+			"request": {
+				"method": "POST",
+				"url": "PlanDefinition/8",
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification&version=1.0.0.0-draft"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/rctc|1.0.0.0-draft",
+			"resource": {
+				"resourceType": "Library",
+				"id": "9",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2023-12-14T15:38:56.845-05:00",
+					"source": "#FNgLVm21fIyZMxwE"
+				},
+				"url": "http://ersd.aimsplatform.org/fhir/Library/rctc",
+				"version": "1.0.0.0-draft",
+				"status": "draft",
+				"relatedArtifact": [
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
+								"valueBoolean": true
+							}
+						],
+						"type": "composed-of",
+						"resource": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft"
+					},
+					{
+						"type": "composed-of",
+						"resource": "http://notOwnedTest.com/Library/notOwnedLeaf2|0.1.1"
+					}
+				]
+			},
+			"request": {
+				"method": "POST",
+				"url": "Library/9",
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/Library/rctc&version=1.0.0.0-draft"
+			}
+		},
+		{
+			"fullUrl": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc|1.0.0.0-draft",
+			"resource": {
+				"resourceType": "ValueSet",
+				"id": "10",
+				"meta": {
+					"versionId": "2",
+					"lastUpdated": "2023-12-14T15:43:06.193-05:00",
+					"source": "#YvcttWKq2KbM0Igj"
+				},
+				"url": "http://ersd.aimsplatform.org/fhir/ValueSet/dxtc",
+				"version": "1.0.0.0-draft",
+				"status": "draft",
+				"useContext": [
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "priority"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "routine"
+								}
+							],
+							"text": "Routine"
+						}
+					}
+				],
+				"compose": {
+					"include": [
+						{
+							"valueSet": [
+								"http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526"
+							]
+						},
+						{
+							"valueSet": [
+								"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163"
+							]
+						}
+					]
+				},
+				"expansion": {
+					"timestamp": "2022-10-21T15:18:29-04:00",
+					"contains": [
+						{
+							"system": "http://hl7.org/fhir/sid/icd-10-cm",
+							"version": "Provisional_2022-01-12",
+							"code": "T40.0X1A"
+						},
+						{
+							"system": "http://hl7.org/fhir/sid/icd-10-cm",
+							"version": "Provisional_2022-01-12",
+							"code": "T40.0X2A"
+						},
+						{
+							"system": "http://hl7.org/fhir/sid/icd-10-cm",
+							"version": "Provisional_2022-01-12",
+							"code": "T40.0X3A"
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "POST",
+				"url": "ValueSet/10",
+				"ifNoneExist": "url=http://ersd.aimsplatform.org/fhir/ValueSet/dxtc&version=1.0.0.0-draft"
+			}
+		},
+		{
+			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine|20210526",
+			"resource": {
+				"resourceType": "ValueSet",
+				"id": "123-this-will-be-routine",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2023-12-14T15:38:33.243-05:00",
+					"source": "#MT6tY32vbfEfzQmh"
+				},
+				"url": "http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine",
+				"identifier": [
+					{
+						"system": "urn:ietf:rfc:3986",
+						"value": "urn:oid:123-this-will-be-routine"
+					}
+				],
+				"version": "20210526",
+				"status": "active",
+				"useContext": [
+					{
+						"code": {
+							"system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+							"code": "focus"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "49649001"
+								}
+							],
+							"text": "Infection caused by Acanthamoeba (disorder)"
+						}
+					},
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "priority"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "routine"
+								}
+							],
+							"text": "Routine"
+						}
+					}
+				],
+				"compose": {
+					"include": [
+						{
+							"system": "http://snomed.info/sct",
+							"version": "Provisional_2022-01-10",
+							"concept": [
+								{
+									"code": "772155008",
+									"display": "Acute poliomyelitis suspected (situation)"
+								}
+							]
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "POST",
+				"url": "ValueSet/123-this-will-be-routine",
+				"ifNoneExist": "url=http://cts.nlm.nih.gov/fhir/ValueSet/123-this-will-be-routine&version=20210526"
+			}
+		},
+		{
+			"fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163|20220603",
+			"resource": {
+				"resourceType": "ValueSet",
+				"id": "11",
+				"meta": {
+					"versionId": "1",
+					"lastUpdated": "2023-12-14T15:38:56.845-05:00",
+					"source": "#FNgLVm21fIyZMxwE",
+					"profile": [
+						"http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/publishable-valueset-cqfm",
+						"http://hl7.org/fhir/StructureDefinition/shareablevalueset"
+					]
+				},
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+						"valueString": "CSTE Author"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/valueset-keyWord",
+						"valueString": "Cholera,G_Enteric,Trigger"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/resource-lastReviewDate",
+						"valueDate": "2022-12-15"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/valueset-effectiveDate",
+						"valueDate": "2022-06-03"
+					},
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/valueset-authoritativeSource",
+						"valueUri": "https://cts.nlm.nih.gov/fhir"
+					}
+				],
+				"url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163",
+				"identifier": [
+					{
+						"system": "urn:ietf:rfc:3986",
+						"value": "urn:oid:2.16.840.1.113762.1.4.1146.163"
+					}
+				],
+				"version": "20220603",
+				"name": "Cholera (Disorders) (SNOMED)",
+				"title": "Cholera (Disorders) (SNOMED)",
+				"status": "active",
+				"experimental": false,
+				"date": "2022-06-03T01:06:35-04:00",
+				"publisher": "CSTE Steward",
+				"useContext": [
+					{
+						"code": {
+							"system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+							"code": "focus"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "49649001"
+								}
+							],
+							"text": "Infection caused by Acanthamoeba (disorder)"
+						}
+					},
+					{
+						"code": {
+							"system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+							"code": "focus"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "767146004"
+								}
+							]
+						}
+					},
+					{
+						"code": {
+							"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type",
+							"code": "priority"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context",
+									"code": "emergent"
+								}
+							],
+							"text": "Emergent"
+						}
+					}
+				],
+				"jurisdiction": [
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+								"valueCode": "unknown"
+							}
+						]
+					}
+				],
+				"purpose": "(Clinical Focus: This set of values contains diagnoses or problems that represent that the patient has Cholera regardless of the clinical presentation of the condition),(Data Element Scope: Diagnoses or problems documented in a clinical record.),(Inclusion Criteria: Root1 = Cholera (disorder); \nRoot1 children included = All;\n\nAdded leaf concepts: YES\n\nRoot2 = Intestinal infection due to Vibrio cholerae O1 (disorder); \nRoot2 children included = All;),(Exclusion Criteria: Cholera non-O159 or non-O1;  Verner–Morrison syndrome; Cholera vaccine related disorders)",
+				"compose": {
+					"include": [
+						{
+							"system": "http://snomed.info/sct",
+							"concept": [
+								{
+									"code": "1193749009",
+									"display": "Inflammation of small intestine caused by Vibrio cholerae (disorder)"
+								},
+								{
+									"code": "1193750009",
+									"display": "Inflammation of intestine caused by Vibrio cholerae (disorder)"
+								},
+								{
+									"code": "240349003",
+									"display": "Cholera caused by Vibrio cholerae O1 Classical biotype (disorder)"
+								},
+								{
+									"code": "240350003",
+									"display": "Cholera - non-O1 group vibrio (disorder)"
+								},
+								{
+									"code": "240351004",
+									"display": "Cholera - O139 group Vibrio cholerae (disorder)"
+								},
+								{
+									"code": "447282003",
+									"display": "Intestinal infection caused by Vibrio cholerae O1 (disorder)"
+								},
+								{
+									"code": "63650001",
+									"display": "Cholera (disorder)"
+								},
+								{
+									"code": "81020007",
+									"display": "Cholera caused by Vibrio cholerae El Tor (disorder)"
+								}
+							]
+						}
+					]
+				}
+			},
+			"request": {
+				"method": "POST",
+				"url": "ValueSet/11",
+				"ifNoneExist": "url=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.163&version=20220603"
+			}
+		}
+	]
+}

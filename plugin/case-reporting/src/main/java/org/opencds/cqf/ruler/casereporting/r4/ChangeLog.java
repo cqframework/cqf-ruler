@@ -129,7 +129,7 @@ public class ChangeLog {
         for (final var page: this.pages) {
           if (page.oldData instanceof ValueSetChild) {
             for (final var ra: manifestOldData.relatedArtifacts) {
-              ((ValueSetChild)page.oldData).grouperList.stream()
+              ((ValueSetChild)page.oldData).leafValuesets.stream()
                 .filter(g -> g.memberOid != null && g.memberOid.equals(Canonicals.getIdPart(ra.targetUrl)))
                 .forEach(g -> {
                   ra.conditions.forEach(condition -> {
@@ -155,7 +155,7 @@ public class ChangeLog {
           }
           if (page.newData instanceof ValueSetChild) {
             for (final var ra: manifestNewData.relatedArtifacts) {
-              ((ValueSetChild)page.newData).grouperList.stream()
+              ((ValueSetChild)page.newData).leafValuesets.stream()
                 .filter(g -> g.memberOid != null && g.memberOid.equals(Canonicals.getIdPart(ra.targetUrl)))
                 .forEach(g -> {
                   ra.conditions.forEach(condition -> {
@@ -310,7 +310,7 @@ public class ChangeLog {
   }
   public static class ValueSetChild extends BaseMetadataObject {
     public List<Code> codes = new ArrayList<>();
-    public List<Grouper> grouperList = new ArrayList<>();
+    public List<Leaf> leafValuesets = new ArrayList<>();
     public final String resourceType = "ValueSet";
     public static class Code {
       public String id;
@@ -344,7 +344,7 @@ public class ChangeLog {
         }
       }
     }
-    public static class Grouper {
+    public static class Leaf {
       public String memberOid;
       public List<Code> conditions = new ArrayList<Code>();
       public SingleValue priority = new SingleValue();
@@ -367,9 +367,9 @@ public class ChangeLog {
         .filter(vs -> vs.hasValue())
         .map(vs -> vs.getValue())
         .forEach(vs -> {
-          var grouper = new Grouper();
+          var grouper = new Leaf();
           grouper.memberOid = Canonicals.getIdPart(vs);
-          this.grouperList.add(grouper);
+          this.leafValuesets.add(grouper);
         });
       }
     }
@@ -397,7 +397,7 @@ public class ChangeLog {
           }
           if (urlToCheck != null) {
             final var urlNotNull = Canonicals.getIdPart(urlToCheck);
-            this.grouperList.stream().forEach(grouper -> {
+            this.leafValuesets.stream().forEach(grouper -> {
               if (grouper.memberOid.equals(urlNotNull)) {
                 grouper.operation = operation;
               }

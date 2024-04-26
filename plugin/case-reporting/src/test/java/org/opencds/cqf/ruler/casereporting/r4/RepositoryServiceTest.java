@@ -1,12 +1,14 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.jena.sparql.function.library.e;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Binary;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -1768,35 +1771,269 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// new codes added
 		assertTrue(insertOperations.size() == 32);
 	}
-
-	@Test
-	void testGetChangelog() {
-		loadTransaction("ersd-small-active-bundle.json");
-		var bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
+	private Parameters createChangelogSetup() {
+		loadTransaction("small-diff-bundle.json");
+		var bundle = (Bundle) loadTransaction("small-dxtc-modified-diff-bundle.json");
 		var maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		Parameters diffParams = new Parameters();
 		diffParams.addParameter("source", specificationLibReference);
 		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
+		return diffParams;
+	}
+	@Test
+	void create_changelog_pages() {
+		// check that the correct pages are created
 		var returnedBinary = getClient().operation()
 			.onServer()
 			.named("$create-changelog")
-			.withParameters(diffParams)
+			.withParameters(createChangelogSetup())
 			.returnResourceType(Binary.class)
 			.execute();
 		assertNotNull(returnedBinary);
 		byte[] decodedBytes = Base64.getDecoder().decode(returnedBinary.getContentAsBase64());
 		String decodedString = new String(decodedBytes);
 		ObjectMapper mapper = new ObjectMapper();
-		var pageURLS = List.of("http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary");
+		var pageURLS = List.of(
+			"http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
+			"http://ersd.aimsplatform.org/fhir/Library/rctc",
+			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc"
+			);
 		Exception expectNoException = null;
 		try {
 			var node = mapper.readTree(decodedString);
 			assertTrue(node.get("pages").isArray());
 			var pages = node.get("pages");
+			assertEquals(pages.size(), pageURLS.size());
 			for (final var url : pageURLS) {
 				var pageExists = StreamSupport.stream(pages.spliterator(), false)
 					.anyMatch(page -> page.get("url").asText().equals(url));
 				assertTrue(pageExists);
+    	}
+		} catch (Exception e) {
+			// TODO: handle exception
+			expectNoException = e;
+		}
+		assertNull(expectNoException);
+	}
+
+	@Test
+	void create_changelog_codes() {
+		// check that the correct leaf VS codes are generated and have
+		// the correct memberOID values
+		var returnedBinary = getClient().operation()
+			.onServer()
+			.named("$create-changelog")
+			.withParameters(createChangelogSetup())
+			.returnResourceType(Binary.class)
+			.execute();
+		assertNotNull(returnedBinary);
+		byte[] decodedBytes = Base64.getDecoder().decode(returnedBinary.getContentAsBase64());
+		String decodedString = new String(decodedBytes);
+		ObjectMapper mapper = new ObjectMapper();
+		Exception expectNoException = null;
+		Map<String,codeAndOperation> oldCodes = new HashMap<String,codeAndOperation>();
+		oldCodes.put("772155008", new codeAndOperation("123-this-will-be-routine",null));
+		oldCodes.put("1086051000119107", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("1086061000119109", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("1086071000119103", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("1090211000119102", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("129667001", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("13596001", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("15682004", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("186347006", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("18901009", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("194945009", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("230596007", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("240422004", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("26117009", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("276197005", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("276197005", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("3419005", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("397428000", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("397430003", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("48278001", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("50215002", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("715659006", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("75589004", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("7773002", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		oldCodes.put("789005009", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
+		var newCodes = Map.of(
+			"772155008", new codeAndOperation("123-this-will-be-routine",null),
+			"1193749009", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"1193750009", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"240349003", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"240350003", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"240351004", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"447282003", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"63650001", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert"),
+			"81020007", new codeAndOperation("2.16.840.1.113762.1.4.1146.163","insert")
+		);
+		try {
+			var node = mapper.readTree(decodedString);
+			assertTrue(node.get("pages").isArray());
+			var pages = node.get("pages");
+			for (final var page : pages) {
+				if (Canonicals.getResourceType(page.get("url").asText()).equals("ValueSet")) {
+					assertTrue(page.get("oldData").get("codes").isArray());
+					for (final var code: page.get("oldData").get("codes")) {
+						codeAndOperation expectedOldCode = oldCodes.get(code.get("code").asText());
+						assertNotNull(expectedOldCode);
+						if (expectedOldCode.operation != null) {
+							assertEquals(expectedOldCode.operation, code.get("operation").get("type").asText());
+							assertEquals(expectedOldCode.code, code.get("memberOid").asText());
+						}
+					}
+					assertTrue(page.get("newData").get("codes").isArray());
+					for (final var code: page.get("newData").get("codes")) {
+						codeAndOperation expectedNewCode = newCodes.get(code.get("code").asText());
+						assertNotNull(expectedNewCode);
+						if (expectedNewCode.operation != null) {
+							assertEquals(expectedNewCode.operation, code.get("operation").get("type").asText());
+							assertEquals(expectedNewCode.code, code.get("memberOid").asText());
+						}
+					}
+				}
+    	}
+		} catch (Exception e) {
+			// TODO: handle exception
+			expectNoException = e;
+		}
+		assertNull(expectNoException);
+	}
+
+	@Test
+	void create_changelog_conditions_and_priorities() {
+		// check that the conditions and priorities are correctly
+		// extracted and have the correct operations
+		var returnedBinary = getClient().operation()
+			.onServer()
+			.named("$create-changelog")
+			.withParameters(createChangelogSetup())
+			.returnResourceType(Binary.class)
+			.execute();
+		assertNotNull(returnedBinary);
+		Map<String,Map<String,List<codeAndOperation>>> oldLeafsAndConditions = Map.of(
+			"123-this-will-be-routine", Map.of(
+				"conditions", List.of(
+					new codeAndOperation("49649001", null),
+					new codeAndOperation("000000000", "delete")
+				),
+				"priority", new ArrayList<>()
+			),
+			"2.16.840.1.113762.1.4.1146.6", Map.of(
+				"conditions", List.of(
+					new codeAndOperation("49649001", null),
+					new codeAndOperation("767146004", null)
+				),
+				"priority", List.of(
+					new codeAndOperation("emergent", null)
+				)
+			)
+		);
+		Map<String,Map<String,List<codeAndOperation>>> newLeafsAndConditions = Map.of(
+			"123-this-will-be-routine", Map.of(
+				"conditions", List.of(
+					new codeAndOperation("767146004", "insert"),
+					new codeAndOperation("49649001", null)
+				),
+				"priority", new ArrayList<>()
+			),
+			"2.16.840.1.113762.1.4.1146.163", Map.of(
+				"conditions", List.of(
+					new codeAndOperation("123123123", null)
+				),
+				"priority", List.of(
+					new codeAndOperation("emergent", null)
+				)
+			)
+		);
+		ObjectMapper mapper = new ObjectMapper();
+		Exception expectNoException = null;
+		try {
+			var node = mapper.readTree(new String(Base64.getDecoder().decode(returnedBinary.getContentAsBase64())));
+			assertTrue(node.get("pages").isArray());
+			var pages = node.get("pages");
+			for (final var page : pages) {
+				if (Canonicals.getResourceType(page.get("url").asText()).equals("ValueSet")) {
+					assertTrue(page.get("oldData").get("leafValuesets").isArray());
+					for (final var leaf: page.get("oldData").get("leafValuesets")) {
+						assertTrue(leaf.get("conditions").isArray());
+						List<codeAndOperation> expectedConditions = oldLeafsAndConditions.get(leaf.get("memberOid").asText()).get("conditions");
+						assertTrue(expectedConditions.size() > 0);
+						for (final var condition: leaf.get("conditions")) {
+							Optional<codeAndOperation> conditionInList = expectedConditions.stream().filter(c -> c.code != null && c.code.equals(condition.get("code").asText())).findAny();
+							assertTrue(conditionInList.isPresent());
+							if (conditionInList.get().operation != null) {
+								assertEquals(conditionInList.get().operation, condition.get("operation").get("type").asText());
+							}
+						}
+					}
+					assertTrue(page.get("newData").get("leafValuesets").isArray());
+					for (final var leaf: page.get("newData").get("leafValuesets")) {
+						assertTrue(leaf.get("conditions").isArray());
+						List<codeAndOperation> expectedConditions = newLeafsAndConditions.get(leaf.get("memberOid").asText()).get("conditions");
+						assertTrue(expectedConditions.size() > 0);
+						for (final var condition: leaf.get("conditions")) {
+							Optional<codeAndOperation> conditionInList = expectedConditions.stream().filter(c -> c.code != null && c.code.equals(condition.get("code").asText())).findAny();
+							assertTrue(conditionInList.isPresent());
+							if (conditionInList.get().operation != null) {
+								assertEquals(conditionInList.get().operation, condition.get("operation").get("type").asText());
+							}
+						}
+					}
+				}
+    	}
+		} catch (Exception e) {
+			// TODO: handle exception
+			expectNoException = e;
+		}
+		assertNull(expectNoException);
+	}
+
+	@Test
+	void create_changelog_grouped_leaf() {
+		// check that all the grouped leaf valuesets exist
+		var returnedBinary = getClient().operation()
+			.onServer()
+			.named("$create-changelog")
+			.withParameters(createChangelogSetup())
+			.returnResourceType(Binary.class)
+			.execute();
+		assertNotNull(returnedBinary);
+		ObjectMapper mapper = new ObjectMapper();
+		Exception expectNoException = null;
+		var oldLeafs = Map.of(
+			"123-this-will-be-routine", "",
+			"2.16.840.1.113762.1.4.1146.6", "delete"
+		);
+		var newLeafs = Map.of(
+			"123-this-will-be-routine", "",
+			"2.16.840.1.113762.1.4.1146.163", "insert"
+		);
+		try {
+			var node = mapper.readTree(new String(Base64.getDecoder().decode(returnedBinary.getContentAsBase64())));
+			assertTrue(node.get("pages").isArray());
+			var pages = node.get("pages");
+			for (final var page : pages) {
+				if (Canonicals.getResourceType(page.get("url").asText()).equals("ValueSet")) {
+					assertTrue(page.get("oldData").get("leafValuesets").isArray());
+					for (final var leaf: page.get("oldData").get("leafValuesets")) {
+						var expectedLeaf = oldLeafs.get(leaf.get("memberOid").asText());
+						assertNotNull(expectedLeaf);
+						if (!expectedLeaf.isBlank()) {
+							assertEquals(expectedLeaf, leaf.get("operation").get("type").asText());
+						}
+					}
+					assertTrue(page.get("newData").get("leafValuesets").isArray());
+					for (final var leaf: page.get("newData").get("leafValuesets")) {
+						var expectedLeaf = newLeafs.get(leaf.get("memberOid").asText());
+						assertNotNull(expectedLeaf);
+						if (!expectedLeaf.isBlank()) {
+							assertEquals(expectedLeaf, leaf.get("operation").get("type").asText());
+						}
+					}
+				}
     	}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -1810,5 +2047,23 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			p -> p.getName().equals("operation")
 		    && p.getPart().stream().anyMatch(part -> part.getName().equals("type") && ((CodeType)part.getValue()).getCode().equals(type))
 			).collect(Collectors.toList());
+	}
+	private static class codeAndOperation {
+		public String code;
+		public String operation;
+		codeAndOperation(String code, String operation) {
+			this.code = code;
+			this.operation = operation;
+		}
+	}
+	private static class codeAndCodeListWithOperations {
+		public String code;
+		public List<codeAndOperation> operations = new ArrayList<codeAndOperation>();
+		codeAndCodeListWithOperations(String code, List<codeAndOperation> operations) {
+			this.code = code;
+			if (operations != null) {
+				this.operations = operations;
+			}
+		}
 	}
 }

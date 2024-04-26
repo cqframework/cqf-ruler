@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IDomainResource;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -302,13 +304,49 @@ public class KnowledgeArtifactProcessor {
 		var updateSource = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theSourceLibrary.copy());
 		var updateTarget = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theTargetLibrary.copy());
 		additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
-		updateSource.setRelatedArtifact(processedRelatedArtifacts.getSourceMatches());
-		updateTarget.setRelatedArtifact(processedRelatedArtifacts.getTargetMatches());
-		Parameters updateOperations = (Parameters) patch.diff(updateSource.copy(),updateTarget.copy());
-		processedRelatedArtifacts.appendInsertOperations(updateOperations, patch, updateSource.getRelatedArtifact().size());
-		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, updateSource.getRelatedArtifact().size());
+		Parameters updateOperations = diffWithExtensions(updateSource, updateTarget, processedRelatedArtifacts, patch);
+		processedRelatedArtifacts.appendInsertOperations(updateOperations, patch, processedRelatedArtifacts.getSourceMatches().size());
+		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, processedRelatedArtifacts.getTargetMatches().size());
 		processedRelatedArtifacts.reorderArrayElements(theSourceLibrary, theTargetLibrary);
 		return updateOperations;
+	}
+	private Parameters diffWithExtensions(KnowledgeArtifactAdapter updateSource, KnowledgeArtifactAdapter updateTarget, additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts, FhirPatch patch) {
+		updateSource.setRelatedArtifact(processedRelatedArtifacts.getSourceMatches());
+		updateTarget.setRelatedArtifact(processedRelatedArtifacts.getTargetMatches());
+		Parameters updateOperations = (Parameters) patch.diff(removeRelatedArtifactExtensions(updateSource),removeRelatedArtifactExtensions(updateTarget));
+		for (var i = 0; i < processedRelatedArtifacts.getSourceMatches().size(); i++) {
+			var processedExtensions = extractAdditionsAndDeletions(processedRelatedArtifacts.getSourceMatches().get(i).getExtension(), processedRelatedArtifacts.getTargetMatches().get(i).getExtension(), Extension.class);
+			var source = new Library();
+			source.addRelatedArtifact().setExtension(processedExtensions.getSourceMatches());
+			var target = new Library();
+			target.addRelatedArtifact().setExtension(processedExtensions.getTargetMatches());
+			Parameters extensionDiff = (Parameters) patch.diff(source,target);
+			processedExtensions.appendInsertOperations(extensionDiff, patch, processedExtensions.getSourceMatches().size());
+			processedExtensions.appendDeleteOperations(extensionDiff, patch, processedExtensions.getTargetMatches().size());	
+			fixRelatedArtifactExtensionDiffPaths(extensionDiff.getParameter(), updateSource.get().fhirType(), i);
+			updateOperations.getParameter().addAll(extensionDiff.getParameter());
+		}
+		return updateOperations;
+	}
+	private IDomainResource removeRelatedArtifactExtensions(KnowledgeArtifactAdapter resource) {
+		var retval = resource.copy();
+		AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(retval).getRelatedArtifact().stream().forEach(ra -> {
+			((RelatedArtifact)ra).setExtension(new ArrayList<>());
+		});
+		return retval;
+	}
+	private boolean ExtensionEquals(Extension source, Extension target) {
+		if (!source.getValue().getClass().equals(target.getValue().getClass())) {
+			return false;
+		}
+		if (source.getValue() instanceof IPrimitiveType) {
+			return (((IPrimitiveType)source.getValue()).getValue()).equals((((IPrimitiveType)target.getValue()).getValue()));
+		} else if (source.getValue() instanceof CodeableConcept) {
+			return ((CodeableConcept)source.getValue()).getCodingFirstRep().getSystem().equals(((CodeableConcept)target.getValue()).getCodingFirstRep().getSystem())
+			&& ((CodeableConcept)source.getValue()).getCodingFirstRep().getCode().equals(((CodeableConcept)target.getValue()).getCodingFirstRep().getCode());
+		} else {
+			return source.equals(target);
+		}
 	}
 	private Parameters advancedValueSetDiff(MetadataResource theSourceValueSet,MetadataResource theTargetValueSet, FhirPatch patch, boolean compareComputable, boolean compareExecutable) {
 		ValueSet updateSource = (ValueSet)theSourceValueSet.copy();
@@ -538,6 +576,23 @@ public class KnowledgeArtifactProcessor {
 			}
 		};
 	}
+	private void fixRelatedArtifactExtensionDiffPaths(List<ParametersParameterComponent> parameters, String resourceType, int relatedArtifactIndex) {
+		for (int i = 0; i < parameters.size(); i++) {
+			ParametersParameterComponent parameter = parameters.get(i);
+			Optional<ParametersParameterComponent> path = parameter.getPart().stream()
+			.filter(part -> part.hasName())	
+			.filter(part -> part.getName().equals("path"))
+			.findFirst();
+			if (path.isPresent()) {
+				var pathString = ((StringType)path.get().getValue()).getValue();
+				var e = new EncodeContextPath(pathString);
+				var noBase = removeBase(e);
+				var newIndex = "relatedArtifact[" + String.valueOf(relatedArtifactIndex) + "]"; // Replace with your desired string
+				noBase = pathString.replaceAll("relatedArtifact\\[([^\\]]+)\\]", newIndex);
+				path.get().setValue(new StringType(noBase));
+			}
+		};
+	}
 	private String removeBase(EncodeContextPath path) {
 		return path.getPath().subList(1, path.getPath().size())
 		.stream()
@@ -761,6 +816,8 @@ public class KnowledgeArtifactProcessor {
 					return conceptSetEquals((ConceptSetComponent)sourceObj, (ConceptSetComponent)targetObj);
 				} else if (sourceObj instanceof ValueSetExpansionContainsComponent && targetObj instanceof ValueSetExpansionContainsComponent) {
 					return ValueSetContainsEquals((ValueSetExpansionContainsComponent) sourceObj,(ValueSetExpansionContainsComponent) targetObj);
+				} else if (sourceObj instanceof Extension && targetObj instanceof Extension) {
+					return ExtensionEquals((Extension) sourceObj,(Extension) targetObj);
 				} else {
 					return false;
 				}
@@ -915,7 +972,7 @@ public class KnowledgeArtifactProcessor {
 				((ValueSet)theSourceResource).getExpansion().setContains(sourceExpansionContains);
 				((ValueSet)theTargetResource).getExpansion().setContains(targetExpansionContains);
 			} else {
-
+				// what do we do here :(
 			}
 		}
 		/**
@@ -945,6 +1002,12 @@ public class KnowledgeArtifactProcessor {
 					((ValueSet)empty).setExpansion(new ValueSetExpansionComponent().setContains(new ArrayList<>()));
 					hasNewResources = new ValueSet();
 					((ValueSet)hasNewResources).setExpansion(new ValueSetExpansionComponent().setContains((List<ValueSetExpansionContainsComponent>)theResourcesToAdd));
+				}  else if (this.t.isAssignableFrom(Extension.class)) {
+					empty = new Library();
+					((Library)empty).addRelatedArtifact();
+					hasNewResources = new Library();
+					var newRA = ((Library)hasNewResources).addRelatedArtifact();
+					newRA.setExtension((List<Extension>)theResourcesToAdd);
 				} else {
 					throw new UnprocessableEntityException("Could not process object");
 				}

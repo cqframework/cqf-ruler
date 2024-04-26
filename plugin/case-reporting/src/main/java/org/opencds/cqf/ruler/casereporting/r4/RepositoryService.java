@@ -3,13 +3,10 @@ package org.opencds.cqf.ruler.casereporting.r4;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
@@ -28,11 +25,8 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateType;
-import org.hl7.fhir.r4.model.Element;
 import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Library;
@@ -46,7 +40,6 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.hl7.fhir.r4.model.ValueSet.FilterOperator;
 import org.opencds.cqf.fhir.api.Repository;
 import org.opencds.cqf.fhir.utility.Canonicals;
 import org.opencds.cqf.fhir.utility.SearchHelper;
@@ -59,7 +52,6 @@ import org.opencds.cqf.ruler.casereporting.IBaseSerializer;
 import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
@@ -244,6 +236,8 @@ public class RepositoryService extends HapiFhirRepositoryProvider {
 		try {
 			var visitor = new KnowledgeArtifactReleaseVisitor();
 			var retval = (Bundle)adapter.accept(visitor, repository, params);
+			// not copying the extensions correctly and not releasing all the
+			// artifacts correctly (still have draft references)
 			forEachMetadataResource(
 				retval.getEntry(), 
 				(r) -> {
