@@ -323,10 +323,10 @@ public class KnowledgeArtifactProcessor {
 		}
 	}
 	private Parameters advancedValueSetDiff(MetadataResource theSourceValueSet,MetadataResource theTargetValueSet, FhirPatch patch, boolean compareComputable, boolean compareExecutable) {
-		ValueSet updateSource = (ValueSet)theSourceValueSet.copy();
-		ValueSet updateTarget = (ValueSet)theTargetValueSet.copy();
-		additionsAndDeletions<ConceptSetComponent> composeIncludeProcessed = extractAdditionsAndDeletions(updateSource.getCompose().getInclude(), updateTarget.getCompose().getInclude(), ConceptSetComponent.class);
-		additionsAndDeletions<ValueSetExpansionContainsComponent> expansionContainsProcessed = extractAdditionsAndDeletions(updateSource.getExpansion().getContains(), updateTarget.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
+		var updateSource = (ValueSet)theSourceValueSet.copy();
+		var updateTarget = (ValueSet)theTargetValueSet.copy();
+		var composeIncludeProcessed = extractAdditionsAndDeletions(updateSource.getCompose().getInclude(), updateTarget.getCompose().getInclude(), ConceptSetComponent.class);
+		var expansionContainsProcessed = extractAdditionsAndDeletions(updateSource.getExpansion().getContains(), updateTarget.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
 		if (compareComputable) {
 			// only generate changes for compose.inlude elements if compareComputable is true
 			updateSource.getCompose().setInclude(composeIncludeProcessed.getSourceMatches());
@@ -346,7 +346,7 @@ public class KnowledgeArtifactProcessor {
 			updateTarget.getExpansion().setContains(new ArrayList<>());
 		}
 		// first check for ancillary differences between the otherwise matching array elements
-		Parameters vsDiff = (Parameters) patch.diff(updateSource,updateTarget);
+		var vsDiff = (Parameters) patch.diff(updateSource,updateTarget);
 		
 		// then append the insert / delete entries
 		if (compareComputable) {
