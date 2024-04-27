@@ -87,28 +87,6 @@ public class KnowledgeArtifactProcessor {
 	public static final String usPhContextTypeUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context-type";
 	public static final String contextTypeUrl = "http://terminology.hl7.org/CodeSystem/usage-context-type";
 	public static final String contextUrl = "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
-
-	public static String getPriority(MetadataResource resource) {
-		var priorities = getCodeableConceptExtensions(resource,KnowledgeArtifactProcessor.valueSetPriorityUrl);
-		if (priorities == null || priorities.isEmpty()) {
-			// throw new UnprocessableEntityException("Could not find priority for resource: " + resource.getUrl());
-			return null;
-		} else
-		if (priorities.size() > 1) {
-			throw new UnprocessableEntityException("Multiple priorities for resource: " + resource.getUrl());
-		}
-		return priorities.get(0).getCodingFirstRep().getCode();
-	}
-	public static List<CodeableConcept> getConditions(MetadataResource resource) {
-		return getCodeableConceptExtensions(resource,KnowledgeArtifactProcessor.valueSetConditionUrl);
-	}
-	private static List<CodeableConcept> getCodeableConceptExtensions(MetadataResource resource, String url) {
-		return resource.getExtensionsByUrl(url).stream()
-    .filter(e-> e.hasValue())
-    .filter(e -> e.getValue() instanceof CodeableConcept)
-    .map(e -> (CodeableConcept)e.getValue())
-    .collect(Collectors.toList());
-	}
 	private MetadataResource retrieveResourcesByCanonical(String reference, Repository hapiFhirRepository) throws ResourceNotFoundException {
 		var referencedResourceBundle = SearchHelper.searchRepositoryByCanonicalWithPaging(hapiFhirRepository, reference);
 		var referencedResource = KnowledgeArtifactAdapter.findLatestVersion(referencedResourceBundle);
