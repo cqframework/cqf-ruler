@@ -101,21 +101,6 @@ public class KnowledgeArtifactProcessor {
 			.collect(Collectors.toList());
 	}
 	
-	public static List<MetadataResource> getResourcesFromBundle(Bundle bundle) {
-		List<MetadataResource> resourceList = new ArrayList<>();
-
-		if (!bundle.getEntryFirstRep().isEmpty()) {
-			var referencedResourceEntries = bundle.getEntry();
-			for (Bundle.BundleEntryComponent entry: referencedResourceEntries) {
-				if (entry.hasResource() && entry.getResource() instanceof MetadataResource) {
-					var referencedResource = (MetadataResource) entry.getResource();
-					resourceList.add(referencedResource);
-				}
-			}
-		}
-
-		return resourceList;
-	}
 	public static void checkIfValueSetNeedsCondition(MetadataResource resource, RelatedArtifact relatedArtifact, Repository hapiFhirRepository) throws UnprocessableEntityException {
 		if (resource == null 
 		&& relatedArtifact != null 
@@ -276,30 +261,44 @@ public class KnowledgeArtifactProcessor {
 		return libraryDiff;
 	}
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
-		var updateSource = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theSourceLibrary.copy());
-		var updateTarget = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theTargetLibrary.copy());
+		var updateSource = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theSourceLibrary);
+		var updateTarget = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theTargetLibrary);
+		
+		// separate into replacements/insertions/deletions
 		var processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
+		
+		// handle relatedArtifact extensions separately
 		var updateOperations = diffWithExtensions(updateSource, updateTarget, processedRelatedArtifacts, patch);
+		
+		// append insertions/deletions
 		processedRelatedArtifacts.appendInsertOperations(updateOperations, patch, processedRelatedArtifacts.getSourceMatches().size());
 		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, processedRelatedArtifacts.getTargetMatches().size());
+		
+		// reorder elements to match the path indexes, this should only be temporarily persisted in the cache
 		processedRelatedArtifacts.reorderArrayElements(theSourceLibrary, theTargetLibrary);
 		return updateOperations;
 	}
 	private Parameters diffWithExtensions(KnowledgeArtifactAdapter updateSource, KnowledgeArtifactAdapter updateTarget, additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts, FhirPatch patch) {
 		updateSource.setRelatedArtifact(processedRelatedArtifacts.getSourceMatches());
 		updateTarget.setRelatedArtifact(processedRelatedArtifacts.getTargetMatches());
-		Parameters updateOperations = (Parameters) patch.diff(removeRelatedArtifactExtensions(updateSource),removeRelatedArtifactExtensions(updateTarget));
+
+		// get the diff of the RelatedArtifacts without Extensions
+		var updateOperations = (Parameters) patch.diff(removeRelatedArtifactExtensions(updateSource),removeRelatedArtifactExtensions(updateTarget));
+		
 		for (var i = 0; i < processedRelatedArtifacts.getSourceMatches().size(); i++) {
 			var processedExtensions = extractAdditionsAndDeletions(processedRelatedArtifacts.getSourceMatches().get(i).getExtension(), processedRelatedArtifacts.getTargetMatches().get(i).getExtension(), Extension.class);
+			// create Libraries with an empty relatedArtifact and add extensions because patch.diff only takes resources
 			var source = new Library();
-			source.addRelatedArtifact().setExtension(processedExtensions.getSourceMatches());
+			source.addRelatedArtifact().setExtension(processedExtensions.getSourceMatches());			
 			var target = new Library();
 			target.addRelatedArtifact().setExtension(processedExtensions.getTargetMatches());
-			Parameters extensionDiff = (Parameters) patch.diff(source,target);
+			var extensionDiff = (Parameters) patch.diff(source,target);
 			processedExtensions.appendInsertOperations(extensionDiff, patch, processedExtensions.getSourceMatches().size());
 			processedExtensions.appendDeleteOperations(extensionDiff, patch, processedExtensions.getTargetMatches().size());	
+			// fix the path with the right indexes and remove the resourceType
 			fixRelatedArtifactExtensionDiffPaths(extensionDiff.getParameter(), updateSource.get().fhirType(), i);
 			updateOperations.getParameter().addAll(extensionDiff.getParameter());
+			processedExtensions.reorderArrayElements(processedRelatedArtifacts.getSourceMatches().get(i), processedRelatedArtifacts.getTargetMatches().get(i));
 		}
 		return updateOperations;
 	}
@@ -488,8 +487,10 @@ public class KnowledgeArtifactProcessor {
 			var resource = Optional.ofNullable(this.resources.get(url)).map(r -> r.resource);
 			if (!resource.isPresent()) {
 				var possibleMatches = getResourcesForUrl(url);
-				// what if there are multiple matches? Does this throw an error?
 				if (possibleMatches.size() > 0) {
+					if (possibleMatches.size() > 1) {
+						throw new UnprocessableEntityException("Artifact contains multiple resources with the same URL:"+url);
+					}
 					resource = Optional.of(possibleMatches.get(0).resource);
 				}
 			}
@@ -519,9 +520,9 @@ public class KnowledgeArtifactProcessor {
 			.findFirst();
 			if (path.isPresent()) {
 				
-				String pathString = ((StringType)path.get().getValue()).getValue();
-				EncodeContextPath e = new EncodeContextPath(pathString);
-				String noBase = removeBase(e);
+				var pathString = ((StringType)path.get().getValue()).getValue();
+				var e = new EncodeContextPath(pathString);
+				var noBase = removeBase(e);
 				try {
 					Optional.ofNullable((new PropertyUtilsBean()).getProperty(sourceResource, noBase))
 						.ifPresent(oldVal -> {
@@ -547,28 +548,28 @@ public class KnowledgeArtifactProcessor {
 				} catch (Exception err) {
 					throw new UnprocessableEntityException("Error while following changelog path to extract context:" + err.getMessage());
 				}
-        String newIndex = "[" + String.valueOf(i + newStart) + "]"; // Replace with your desired string
-				String result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
+        var newIndex = "[" + String.valueOf(i + newStart) + "]"; // Replace with your desired string
+				var result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
 				path.get().setValue(new StringType(result));
 			}
 		};
 	}
 	private void fixRelatedArtifactExtensionDiffPaths(List<ParametersParameterComponent> parameters, String resourceType, int relatedArtifactIndex) {
 		for (int i = 0; i < parameters.size(); i++) {
-			ParametersParameterComponent parameter = parameters.get(i);
+			var parameter = parameters.get(i);
 			Optional<ParametersParameterComponent> path = parameter.getPart().stream()
-			.filter(part -> part.hasName())	
-			.filter(part -> part.getName().equals("path"))
-			.findFirst();
-			if (path.isPresent()) {
-				var pathString = ((StringType)path.get().getValue()).getValue();
-				var e = new EncodeContextPath(pathString);
-				var noBase = removeBase(e);
-				var newIndex = "relatedArtifact[" + String.valueOf(relatedArtifactIndex) + "]"; // Replace with your desired string
-				noBase = pathString.replaceAll("relatedArtifact\\[([^\\]]+)\\]", newIndex);
-				path.get().setValue(new StringType(noBase));
-			}
-		};
+				.filter(part -> part.hasName())	
+				.filter(part -> part.getName().equals("path"))
+				.findFirst();
+				if (path.isPresent()) {
+					var pathString = ((StringType)path.get().getValue()).getValue();
+					var e = new EncodeContextPath(pathString);
+					var noBase = removeBase(e);
+					var newIndex = "relatedArtifact[" + String.valueOf(relatedArtifactIndex) + "]"; // Replace with your desired string
+					noBase = pathString.replaceAll("relatedArtifact\\[([^\\]]+)\\]", newIndex);
+					path.get().setValue(new StringType(noBase));
+				}
+			};
 	}
 	private String removeBase(EncodeContextPath path) {
 		return path.getPath().subList(1, path.getPath().size())
@@ -691,9 +692,9 @@ public class KnowledgeArtifactProcessor {
 				.filter(part -> part.getName().equals("path"))
 				.findFirst();
 			if (path.isPresent()) {
-				String pathString = ((StringType)path.get().getValue()).getValue();
-				EncodeContextPath e = new EncodeContextPath(pathString);
-				String elementName = e.getLeafElementName();
+				var pathString = ((StringType)path.get().getValue()).getValue();
+				var e = new EncodeContextPath(pathString);
+				var elementName = e.getLeafElementName();
 				// for contains / include, we want to update the second last index and the 
 				if (elementName.equals("contains") 
 				|| elementName.equals("include") 
@@ -706,11 +707,8 @@ public class KnowledgeArtifactProcessor {
 				}
 				if (pathString.contains("expansion.contains") || pathString.contains("compose.include")) {
 					if(value.isPresent()) {
-						// subtract 1 here because the opcounter has already been incremented
-						// maybe separate out the contains / include / relatedartifact rules a little more?
-						// refactor into specific methods linked to specific signatures?
-						String newIndex = "[" + String.valueOf(opCounter - 1 + newStart) + "]"; // Replace with your desired string
-						String result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
+						var newIndex = "[" + String.valueOf(opCounter - 1 + newStart) + "]";
+						var result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
 						path.get().setValue(new StringType(result));
 					}
 				}
@@ -816,6 +814,8 @@ public class KnowledgeArtifactProcessor {
 					return conceptSetEquals((ConceptSetComponent)sourceObj, (ConceptSetComponent)targetObj);
 				} else if (sourceObj instanceof ValueSetExpansionContainsComponent && targetObj instanceof ValueSetExpansionContainsComponent) {
 					return ValueSetContainsEquals((ValueSetExpansionContainsComponent) sourceObj,(ValueSetExpansionContainsComponent) targetObj);
+				}  else if (sourceObj instanceof Extension && targetObj instanceof Extension) {
+					return ExtensionEquals((Extension) sourceObj,(Extension) targetObj);
 				} else {
 					return false;
 				}
@@ -832,8 +832,8 @@ public class KnowledgeArtifactProcessor {
 	private boolean conceptSetEquals(ConceptSetComponent ref1, ConceptSetComponent ref2) {
 		// consider any includes which share at least 1 URL
 		if (ref1.hasValueSet() && ref2.hasValueSet()) {
-			List<String> ref1Urls = ref1.getValueSet().stream().map(CanonicalType::getValue).collect(Collectors.toList());
-			List<String> intersect = ref2.getValueSet().stream().map(CanonicalType::getValue).filter(ref1Urls::contains).collect(Collectors.toList());		
+			var ref1Urls = ref1.getValueSet().stream().map(CanonicalType::getValue).collect(Collectors.toList());
+			var intersect = ref2.getValueSet().stream().map(CanonicalType::getValue).filter(ref1Urls::contains).collect(Collectors.toList());		
 			return intersect.size() > 0;
 		} else if (!ref1.hasValueSet() && !ref2.hasValueSet()) {
 			return ref1.getSystem().equals(ref2.getSystem());
@@ -871,7 +871,7 @@ public class KnowledgeArtifactProcessor {
 		return resource;
 	}
 	private Optional<Parameters> checkOrUpdateDiffCache(String sourceCanonical, String targetCanonical, MetadataResource source, MetadataResource target, FhirPatch patch, diffCache cache, FhirContext ctx, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao) {
-		Parameters retval = cache.getDiff(sourceCanonical, targetCanonical);
+		var retval = cache.getDiff(sourceCanonical, targetCanonical);
 		if (retval == null) {
 			if (target != null) {
 				if (source instanceof Library || source instanceof PlanDefinition) {
@@ -948,8 +948,14 @@ public class KnowledgeArtifactProcessor {
 				var targetExpansionContains = (List<ValueSetExpansionContainsComponent>)Stream.concat(this.myTargetMatches.stream(), this.myInsertions.stream()).collect(Collectors.toList());
 				((ValueSet)theSourceResource).getExpansion().setContains(sourceExpansionContains);
 				((ValueSet)theTargetResource).getExpansion().setContains(targetExpansionContains);
-			} else {
-				// what do we do here :(
+			}
+		}
+		public void reorderArrayElements(RelatedArtifact theSourceElement, RelatedArtifact theTargetElement) {
+			if (this.t.isAssignableFrom(Extension.class)) {
+				var sourceExtensions = (List<Extension>)Stream.concat(this.mySourceMatches.stream(), this.myDeletions.stream()).collect(Collectors.toList());
+				var targetExtensions = (List<Extension>)Stream.concat(this.myTargetMatches.stream(), this.myInsertions.stream()).collect(Collectors.toList());
+				theSourceElement.setExtension(sourceExtensions);
+				theTargetElement.setExtension(targetExtensions);
 			}
 		}
 		/**
