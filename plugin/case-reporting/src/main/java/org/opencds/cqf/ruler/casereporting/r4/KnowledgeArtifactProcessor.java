@@ -130,10 +130,10 @@ public class KnowledgeArtifactProcessor {
 		List<MetadataResource> resourceList = new ArrayList<>();
 
 		if (!bundle.getEntryFirstRep().isEmpty()) {
-			List<Bundle.BundleEntryComponent> referencedResourceEntries = bundle.getEntry();
+			var referencedResourceEntries = bundle.getEntry();
 			for (Bundle.BundleEntryComponent entry: referencedResourceEntries) {
 				if (entry.hasResource() && entry.getResource() instanceof MetadataResource) {
-					MetadataResource referencedResource = (MetadataResource) entry.getResource();
+					var referencedResource = (MetadataResource) entry.getResource();
 					resourceList.add(referencedResource);
 				}
 			}
@@ -227,7 +227,7 @@ public class KnowledgeArtifactProcessor {
 							ext -> priority.setValue(ext.getValue()),
 							// set to "routine" if missing
 							() -> {
-								CodeableConcept routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
+								var routine = new CodeableConcept(new Coding(contextUrl, "routine", null)).setText("Routine");
 								priority.setValue(routine);
 						});
 				}
@@ -238,7 +238,7 @@ public class KnowledgeArtifactProcessor {
 	 * @param usageContexts the list of usage contexts to modify
 	 */
 	public static List<UsageContext> removeExistingReferenceExtensionData(List<UsageContext> usageContexts) {
-		List<String> useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
+		var useContextCodesToReplace = List.of(valueSetConditionCode,valueSetPriorityCode);
 		return usageContexts.stream()
 		// remove any useContexts which need to be replaced
 			.filter(useContext -> !useContextCodesToReplace.stream()
@@ -247,13 +247,13 @@ public class KnowledgeArtifactProcessor {
 	}
 
 	public static void tryAddCondition(List<UsageContext> usageContexts, CodeableConcept condition) {
-		boolean focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
+		var focusAlreadyExists = usageContexts.stream().anyMatch(u -> 
 			u.getCode().getSystem().equals(contextTypeUrl) 
 			&& u.getCode().getCode().equals(valueSetConditionCode) 
 			&& u.getValueCodeableConcept().hasCoding(condition.getCoding().get(0).getSystem(), condition.getCoding().get(0).getCode())
 		);
 		if (!focusAlreadyExists) {
-			UsageContext newFocus = new UsageContext(new Coding(contextTypeUrl,valueSetConditionCode,null),condition);
+			var newFocus = new UsageContext(new Coding(contextTypeUrl,valueSetConditionCode,null),condition);
 			newFocus.setValue(condition);
 			usageContexts.add(newFocus);
 		}
@@ -273,8 +273,8 @@ public class KnowledgeArtifactProcessor {
 			.filter(useContext -> useContext.getCode().getSystem().equals(system) && useContext.getCode().getCode().equals(code))
 			.findFirst().orElseGet(()-> {
 				// create the UseContext if it doesn't exist
-				Coding c = new Coding(system, code, null);
-				UsageContext n = new UsageContext(c, null);
+				var c = new Coding(system, code, null);
+				var n = new UsageContext(c, null);
 				// add it to the ValueSet before returning
 				usageContexts.add(n);
 				return n;
@@ -282,11 +282,11 @@ public class KnowledgeArtifactProcessor {
 	}
 	public Parameters artifactDiff(MetadataResource theSourceLibrary, MetadataResource theTargetLibrary, FhirContext theContext, Repository hapiFhirRepository, boolean compareComputable, boolean compareExecutable,IFhirResourceDaoValueSet<ValueSet> dao, diffCache cache) throws UnprocessableEntityException {
 		// setup
-		FhirPatch patch = new FhirPatch(theContext);
+		var patch = new FhirPatch(theContext);
 		patch.setIncludePreviousValueInDiff(true);
 		// ignore meta changes
 		patch.addIgnorePath("*.meta");
-		Parameters libraryDiff = handleRelatedArtifactArrayElementsDiff(theSourceLibrary,theTargetLibrary,patch);
+		var libraryDiff = handleRelatedArtifactArrayElementsDiff(theSourceLibrary,theTargetLibrary,patch);
 
 		// then check for references and add those to the base Parameters object
 		if (cache == null) {
@@ -303,8 +303,8 @@ public class KnowledgeArtifactProcessor {
 	private Parameters handleRelatedArtifactArrayElementsDiff(MetadataResource theSourceLibrary,MetadataResource theTargetLibrary, FhirPatch patch) {
 		var updateSource = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theSourceLibrary.copy());
 		var updateTarget = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(theTargetLibrary.copy());
-		additionsAndDeletions<RelatedArtifact> processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
-		Parameters updateOperations = diffWithExtensions(updateSource, updateTarget, processedRelatedArtifacts, patch);
+		var processedRelatedArtifacts = extractAdditionsAndDeletions(updateSource.getRelatedArtifact(), updateTarget.getRelatedArtifact(), RelatedArtifact.class);
+		var updateOperations = diffWithExtensions(updateSource, updateTarget, processedRelatedArtifacts, patch);
 		processedRelatedArtifacts.appendInsertOperations(updateOperations, patch, processedRelatedArtifacts.getSourceMatches().size());
 		processedRelatedArtifacts.appendDeleteOperations(updateOperations, patch, processedRelatedArtifacts.getTargetMatches().size());
 		processedRelatedArtifacts.reorderArrayElements(theSourceLibrary, theTargetLibrary);
@@ -354,6 +354,7 @@ public class KnowledgeArtifactProcessor {
 		additionsAndDeletions<ConceptSetComponent> composeIncludeProcessed = extractAdditionsAndDeletions(updateSource.getCompose().getInclude(), updateTarget.getCompose().getInclude(), ConceptSetComponent.class);
 		additionsAndDeletions<ValueSetExpansionContainsComponent> expansionContainsProcessed = extractAdditionsAndDeletions(updateSource.getExpansion().getContains(), updateTarget.getExpansion().getContains(), ValueSetExpansionContainsComponent.class);
 		if (compareComputable) {
+			// only generate changes for compose.inlude elements if compareComputable is true
 			updateSource.getCompose().setInclude(composeIncludeProcessed.getSourceMatches());
 			updateTarget.getCompose().setInclude(composeIncludeProcessed.getTargetMatches());
 		} else {
@@ -362,6 +363,7 @@ public class KnowledgeArtifactProcessor {
 			updateTarget.getCompose().setInclude(new ArrayList<>());
 		}
 		if (compareExecutable) {
+			// only generate changes for compose.inlude elements if compareExecutable is true
 			updateSource.getExpansion().setContains(expansionContainsProcessed.getSourceMatches());
 			updateTarget.getExpansion().setContains(expansionContainsProcessed.getTargetMatches());
 		} else {
@@ -369,9 +371,10 @@ public class KnowledgeArtifactProcessor {
 			updateSource.getExpansion().setContains(new ArrayList<>());
 			updateTarget.getExpansion().setContains(new ArrayList<>());
 		}
-		// first match the ones which are just updated
+		// first check for ancillary differences between the otherwise matching array elements
 		Parameters vsDiff = (Parameters) patch.diff(updateSource,updateTarget);
-		// then get all the delete entries
+		
+		// then append the insert / delete entries
 		if (compareComputable) {
 			composeIncludeProcessed.appendInsertOperations(vsDiff, patch, updateTarget.getCompose().getInclude().size());
 			composeIncludeProcessed.appendDeleteOperations(vsDiff, patch, updateTarget.getCompose().getInclude().size());
@@ -566,9 +569,8 @@ public class KnowledgeArtifactProcessor {
 							}
 						});
 					
-				} catch (Exception oops) {
-					// TODO: handle exception
-					var opps = oops.getMessage();
+				} catch (Exception err) {
+					throw new UnprocessableEntityException("Error while following changelog path to extract context:" + err.getMessage());
 				}
         String newIndex = "[" + String.valueOf(i + newStart) + "]"; // Replace with your desired string
 				String result = pathString.replaceAll("\\[([^\\]]+)\\]", newIndex);
