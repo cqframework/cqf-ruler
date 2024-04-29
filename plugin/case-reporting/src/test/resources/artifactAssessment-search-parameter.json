@@ -1,0 +1,13 @@
+{
+    "resourceType": "SearchParameter",
+    "id": "assessment-target-reference",
+    "status": "active",
+    "code": "artifact",
+    "base": [
+        "Basic"
+    ],
+    "target":["Library"],
+    "type": "reference",
+    "description": "The target of the ArtifactAssessment",
+              "expression": "Basic.extension.where(url.contains('crmi-artifactAssessmentArtifact')).value"
+}

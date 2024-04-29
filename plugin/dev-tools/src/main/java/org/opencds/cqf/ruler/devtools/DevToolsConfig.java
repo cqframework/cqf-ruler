@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.devtools;
 
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
-import org.opencds.cqf.external.cr.CrCommonConfig;
 import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,6 @@ import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.devtools", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({ CrCommonConfig.class })
 public class DevToolsConfig {
 
 	@Bean
