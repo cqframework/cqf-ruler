@@ -22,6 +22,18 @@
 									],
 									"text": "Infection caused by Acanthamoeba (disorder)"
 								}
+							},
+							{
+								"url": "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "http://snomed.info/sct",
+											"code": "12313123123"
+										}
+									],
+									"text": "test to see if multiple conditions break the interceptor"
+								}
 							}
 						],
 						"type": "depends-on",
