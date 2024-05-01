@@ -2056,14 +2056,4 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			this.operation = operation;
 		}
 	}
-	private static class codeAndCodeListWithOperations {
-		public String code;
-		public List<codeAndOperation> operations = new ArrayList<codeAndOperation>();
-		codeAndCodeListWithOperations(String code, List<codeAndOperation> operations) {
-			this.code = code;
-			if (operations != null) {
-				this.operations = operations;
-			}
-		}
-	}
 }
