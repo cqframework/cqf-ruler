@@ -10,6 +10,7 @@ import org.opencds.cqf.ruler.casereporting.r4.MeasureDataProcessProvider;
 import org.opencds.cqf.ruler.casereporting.r4.ProcessMessageProvider;
 import org.opencds.cqf.ruler.casereporting.r4.RepositoryService;
 import org.opencds.cqf.ruler.casereporting.r4.TerminologyServerClient;
+import org.opencds.cqf.ruler.casereporting.r4.ValueSetSynonymUpdateInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -50,6 +51,12 @@ public class CaseReportingConfig {
 	@Conditional(OnR4Condition.class)
 	public TerminologyServerClient r4TerminologyClientProvider() {
 		return new TerminologyServerClient();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public ValueSetSynonymUpdateInterceptor valueSetInterceptor() {
+		return new ValueSetSynonymUpdateInterceptor(this.caseReportingProperties().getRckmsSynonymsUrl());
 	}
 
 	@Bean

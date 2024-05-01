@@ -8,6 +8,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class CaseReportingProperties {
 
 	private boolean enabled = true;
+	private final String rckmsSynonymsUrl = "http://ersd.aimsplatform.org/fhir/ValueSet/rckms-condition-codes";
+
+	public String getRckmsSynonymsUrl() {
+		return this.rckmsSynonymsUrl;
+	}
 
 	public boolean isEnabled() {
 		return this.enabled;

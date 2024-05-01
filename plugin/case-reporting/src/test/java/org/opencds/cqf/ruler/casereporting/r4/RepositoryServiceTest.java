@@ -1626,8 +1626,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	private List<Extension> getConditionExtensionForValueSet(String valueSetUrl, Library library) {
 		return library.getRelatedArtifact().stream()
 			.filter(ra -> ra.hasResource() && ra.getResource().equals(valueSetUrl))
-			.map(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
-			.filter(ext -> ext != null)
+			.map(ra -> ra.getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
+			.flatMap(exts -> exts.stream())
 			.collect(Collectors.toList());
 	}
 	
@@ -2054,16 +2054,6 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		codeAndOperation(String code, String operation) {
 			this.code = code;
 			this.operation = operation;
-		}
-	}
-	private static class codeAndCodeListWithOperations {
-		public String code;
-		public List<codeAndOperation> operations = new ArrayList<codeAndOperation>();
-		codeAndCodeListWithOperations(String code, List<codeAndOperation> operations) {
-			this.code = code;
-			if (operations != null) {
-				this.operations = operations;
-			}
 		}
 	}
 }
