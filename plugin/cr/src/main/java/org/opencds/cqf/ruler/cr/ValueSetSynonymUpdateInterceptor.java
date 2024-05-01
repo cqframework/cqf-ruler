@@ -83,8 +83,9 @@ public class ValueSetSynonymUpdateInterceptor implements org.opencds.cqf.ruler.a
    private void updateConditionWithNewSynonym(Library library, String system, String code, String newText) {
     List<RelatedArtifact> relatedArtifacts = library.getRelatedArtifact();
     relatedArtifacts.stream()
-      .map(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
-      .filter(ext -> ext != null)
+      .map(ra -> ra.getExtensionsByUrl(KnowledgeArtifactProcessor.valueSetConditionUrl))
+      .flatMap(exts -> exts.stream())
+      .filter(ext -> ext.hasValue())
       .map(ext -> (CodeableConcept)ext.getValue())
       .filter(concept -> concept.getCoding().stream().anyMatch(coding -> coding.getSystem().equals(system) && coding.getCode().equals(code)))
       .forEach(concept -> {
