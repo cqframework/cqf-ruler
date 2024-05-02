@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cr;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Library;
@@ -12,32 +11,23 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
-import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.provider.HapiFhirRepositoryProvider;
 import org.opencds.cqf.ruler.utility.TypedBundleProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Pointcut;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 
-public class ValueSetSynonymUpdateInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
-  	@Autowired
-	  private DaoRegistry myDaoRegistry;
+public class ValueSetSynonymUpdateInterceptor extends HapiFhirRepositoryProvider implements org.opencds.cqf.ruler.api.Interceptor {
 
     private String synonymUrl;
 
-    ValueSetSynonymUpdateInterceptor(String synonymUrl) {
+    public ValueSetSynonymUpdateInterceptor(String synonymUrl) {
       this.synonymUrl = synonymUrl;
     }
-
-    public DaoRegistry getDaoRegistry() {
-      return myDaoRegistry;
-    }
-
     /** Handle updates */
    @Hook(Pointcut.STORAGE_PRESTORAGE_RESOURCE_UPDATED)
    public void update(
@@ -47,7 +37,6 @@ public class ValueSetSynonymUpdateInterceptor implements org.opencds.cqf.ruler.a
       if (theResource.fhirType().equals(ResourceType.ValueSet.toString())) {
         ValueSet vs = (ValueSet) theResource;
         if (vs.getUrl().equals(this.synonymUrl)) {
-          FhirDal fhirDal = new JpaFhirDal(myDaoRegistry,theRequestDetails);
           List<ConceptSetComponent> sets = vs.getCompose().getInclude();
           List<Library> librariesToUpdate = new ArrayList<Library>();
           for (ConceptSetComponent set: sets) {
@@ -75,7 +64,7 @@ public class ValueSetSynonymUpdateInterceptor implements org.opencds.cqf.ruler.a
             }
           }
           for (Library library:librariesToUpdate) {
-            fhirDal.update(library);
+            this.getRepository(theRequestDetails).update(library);
           }
         }
       }
