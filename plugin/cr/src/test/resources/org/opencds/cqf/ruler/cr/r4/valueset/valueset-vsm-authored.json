@@ -3,7 +3,7 @@
   "id": "vsm-authored-example",
   "meta": {
 	  "tag" : [{
-		  "system" : "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag",
+		  "system" : "http://aphl.org/fhir/vsm/CodeSystem/vsm-workflow-codes",
 		  "code" : "vsm-authored"
 	  }]
   },
