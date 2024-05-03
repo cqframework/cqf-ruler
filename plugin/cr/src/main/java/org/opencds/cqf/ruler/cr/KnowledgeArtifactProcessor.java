@@ -100,7 +100,7 @@ public class KnowledgeArtifactProcessor {
 	public static final String assetCollection = "asset-collection";
 	public static final String valueSetPriorityUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-priority";
 	public static final String valueSetConditionUrl = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-valueset-condition";
-	public static final String vsmValueSetTagCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-valueset-tag";
+	public static final String vsmWorkflowCodesCodeSystemUrl = "http://aphl.org/fhir/vsm/CodeSystem/vsm-workflow-codes";
 	public static final String vsmValueSetTagVSMAuthoredCode = "vsm-authored";
 	public static final String valueSetPriorityCode = "priority";
 	public static final String valueSetConditionCode = "focus";
@@ -1345,7 +1345,7 @@ public class KnowledgeArtifactProcessor {
 	public boolean isVSMAuthoredValueSet(ValueSet valueSet) {
 		return valueSet.hasMeta()
 			&& valueSet.getMeta().hasTag()
-			&& valueSet.getMeta().getTag(vsmValueSetTagCodeSystemUrl, vsmValueSetTagVSMAuthoredCode) != null;
+			&& valueSet.getMeta().getTag(vsmWorkflowCodesCodeSystemUrl, vsmValueSetTagVSMAuthoredCode) != null;
 	}
 
 	public boolean hasSimpleCompose(ValueSet valueSet) {
