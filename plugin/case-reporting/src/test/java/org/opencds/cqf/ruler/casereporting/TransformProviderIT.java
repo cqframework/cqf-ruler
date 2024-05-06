@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.casereporting;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -22,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class TransformProviderIT extends RestIntegrationTest {
 	@Test
 	void testTransformConfig() {
-		loadResource("ersd-v1-plandefinition-skeleton.json");
 		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
 		Parameters v2BundleParams = new Parameters();
 		v2BundleParams.addParameter()
@@ -37,82 +38,49 @@ class TransformProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(v1Bundle);
-		List<MetadataResource> entries = v1Bundle.getEntry().stream()
-				.map(entry -> (MetadataResource) entry.getResource()).collect(Collectors.toList());
-		List<MetadataResource> ersdValueSets = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.ValueSet
-						&& entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdVSProfile))
-				.collect(Collectors.toList());
-		List<MetadataResource> ersdValueSetLibrary = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.Library
-						&& entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdVSLibProfile))
-				.collect(Collectors.toList());
-		List<MetadataResource> containsSpecificationLibrary = entries
-				.stream().filter(entry -> entry.getResourceType() == ResourceType.Library && entry.hasMeta()
-						&& (entry.getMeta().hasProfile(TransformProperties.usPHSpecLibProfile)
-								|| entry.getUrl().equals("http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary")))
-				.collect(Collectors.toList());
-		List<MetadataResource> containsV2PlanDefinition = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdPlanDefinitionProfile)
-						&& !entry.getName().equals("PlanDefinition_eRSD_Skeleton_Instance"))
-				.collect(Collectors.toList());
-		List<MetadataResource> VSTriggeringUseContextsMissingV1PlanDefinitionReference = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.ValueSet && entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdVSProfile)
-						&& entry.getUseContext().stream()
-								.anyMatch(useContext -> useContext.getCode().getCode().equals("program")
-										&& !useContext.getValueReference().getReference()
-												.equals("PlanDefinition/plandefinition-ersd-skeleton")))
-				.collect(Collectors.toList());
-		List<MetadataResource> containsV1PlanDefinition = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdPlanDefinitionProfile)
-						&& entry.getName().equals("PlanDefinition_eRSD_Skeleton_Instance"))
-				.collect(Collectors.toList());
-		List<BundleEntryComponent> planDefFullUrlUpdated = v1Bundle.getEntry().stream()
-				.filter(entry -> entry.getFullUrl()
-						.equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton|1.2.0.0"))
-				.collect(Collectors.toList());
-		List<MetadataResource> hasV2TriggeringVSLibUseContexts = entries.stream().filter(entry -> entry
-				.getResourceType() == ResourceType.Library && entry.hasMeta()
-				&& entry.getMeta().hasProfile(TransformProperties.ersdVSLibProfile)
-				&& entry.getUseContext().stream()
-						.anyMatch(useContext -> (useContext.getCode().getCode().equals("reporting")
-								&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext,
-										"triggering"))
-								|| (useContext.getCode().getCode().equals("specification-type")
-										&& useContext.getValueCodeableConcept()
-												.hasCoding(TransformProperties.usPHUsageContext, "value-set-library"))))
-				.collect(Collectors.toList());
-		List<MetadataResource> hasV2TriggeringVSUseContexts = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.ValueSet && entry.hasMeta()
-						&& entry.getMeta().hasProfile(TransformProperties.ersdVSProfile)
-						&& entry.getUseContext().stream()
-								.anyMatch(useContext -> (useContext.getCode().getCode().equals("reporting")
-										&& useContext.getValueCodeableConcept()
-												.hasCoding(TransformProperties.usPHUsageContext, "triggering"))
-										|| (useContext.getCode().getCode().equals("priority")
-												&& useContext.getValueCodeableConcept()
-														.hasCoding(TransformProperties.usPHUsageContext, "routine"))))
-				.collect(Collectors.toList());
-		List<MetadataResource> hasUSPHProfiles = entries.stream()
-				.filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta()
-						&& entry.getMeta().hasProfile()
-						&& entry.getMeta().getProfile().stream()
-								.anyMatch(profile -> profile.getValueAsString().contains("us-ph")))
-				.collect(Collectors.toList());
-		List<MetadataResource> hasExperimental = entries.stream().filter(entry -> entry.hasExperimental())
-				.collect(Collectors.toList());
+		List<MetadataResource> entries = v1Bundle.getEntry().stream().map(entry -> (MetadataResource) entry.getResource()).collect(Collectors.toList());
+		List<MetadataResource> ersdValueSets = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.ValueSet
+				&& entry.hasMeta()
+				&& entry.getMeta().hasProfile(TransformProperties.ersdVSProfile)).collect(Collectors.toList());
+		List<MetadataResource> ersdValueSetLibrary = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.Library
+				&& entry.hasMeta()
+				&& entry.getMeta().hasProfile(TransformProperties.ersdVSLibProfile)).collect(Collectors.toList());
+		List<MetadataResource> containsSpecificationLibrary = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.Library && entry.hasMeta()
+				&& (entry.getMeta().hasProfile(TransformProperties.usPHSpecLibProfile) || entry.getUrl().equals("http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary"))).collect(Collectors.toList());
+
+		List<MetadataResource> containsV2PlanDefinition = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta()
+				&& entry.getMeta().hasProfile(TransformProperties.ersdPlanDefinitionProfile) && !entry.getName().equals("PlanDefinition_eRSD_Skeleton_Instance")).collect(Collectors.toList());
+
+		List<MetadataResource> VSTriggeringUseContextsMissingV1PlanDefinitionReference = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.ValueSet && entry.hasMeta() && entry.getMeta().hasProfile(TransformProperties.ersdVSProfile)
+				&& entry.getUseContext().stream().anyMatch(useContext -> useContext.getCode().getCode().equals("program") && !useContext.getValueReference().getReference().equals("PlanDefinition/plandefinition-ersd-skeleton"))).collect(Collectors.toList());
+
+		List<MetadataResource> containsV1PlanDefinition = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta()
+				&& entry.getMeta().hasProfile(TransformProperties.ersdPlanDefinitionProfile) && entry.getName().equals("PlanDefinition_eRSD_Skeleton_Instance")).collect(Collectors.toList());
+		List<BundleEntryComponent> planDefFullUrlUpdated = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton|1.2.0.0")).collect(Collectors.toList());
+		List<MetadataResource> hasV2TriggeringVSLibUseContexts = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.Library && entry.hasMeta() && entry.getMeta().hasProfile(TransformProperties.ersdVSLibProfile)
+				&& entry.getUseContext().stream().anyMatch(useContext ->
+				(useContext.getCode().getCode().equals("reporting")
+						&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "triggering"))
+						|| (useContext.getCode().getCode().equals("specification-type")
+						&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "value-set-library")))
+		).collect(Collectors.toList());
+		List<MetadataResource> hasV2TriggeringVSUseContexts = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.ValueSet && entry.hasMeta() && entry.getMeta().hasProfile(TransformProperties.ersdVSProfile)
+				&& entry.getUseContext().stream().anyMatch(useContext ->
+				(useContext.getCode().getCode().equals("reporting")
+						&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "triggering"))
+						|| (useContext.getCode().getCode().equals("priority")
+						&& useContext.getValueCodeableConcept().hasCoding(TransformProperties.usPHUsageContext, "routine")))
+		).collect(Collectors.toList());
+		List<MetadataResource> hasUSPHProfiles = entries.stream().filter(entry -> entry.getResourceType() == ResourceType.PlanDefinition && entry.hasMeta() && entry.getMeta().hasProfile()
+				&& entry.getMeta().getProfile().stream().anyMatch(profile -> profile.getValueAsString().contains("us-ph"))).collect(Collectors.toList());
+		List<MetadataResource> hasExperimental = entries.stream().filter(entry -> entry.hasExperimental()).collect(Collectors.toList());
 		assertTrue(ersdValueSets.size() > 0);
 		assertTrue(ersdValueSetLibrary.size() > 0);
 		assertTrue(containsSpecificationLibrary.size() == 0);
-		assertTrue(containsV2PlanDefinition.size() == 0);
-		assertTrue(containsV1PlanDefinition.size() == 1);
-		assertTrue(planDefFullUrlUpdated.size() == 1);
-		assertTrue(VSTriggeringUseContextsMissingV1PlanDefinitionReference.size() == 0);
+		assertTrue(containsV2PlanDefinition.size() == 1);
+		assertTrue(containsV1PlanDefinition.size() == 0);
+		assertTrue(planDefFullUrlUpdated.size() == 0);
+		assertTrue(VSTriggeringUseContextsMissingV1PlanDefinitionReference.size() == 6);
 		assertTrue(hasV2TriggeringVSLibUseContexts.size() == 0);
 		assertTrue(hasV2TriggeringVSUseContexts.size() == 0);
 		assertTrue(hasUSPHProfiles.size() == 0);
@@ -121,27 +89,24 @@ class TransformProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testTransform_alternate_v1_skeleton() {
-		PlanDefinition planDef = (PlanDefinition) loadResource("ersd-v1-plandefinition-alternate.json");
-		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
-		Parameters v2BundleParams = new Parameters();
+		var planDef = (PlanDefinition) loadResource("ersd-v1-plandefinition-alternate.json");
+		var v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
+		var v2BundleParams = new Parameters();
 		v2BundleParams.addParameter()
 				.setName("bundle")
 				.setResource(v2Bundle);
 		v2BundleParams.addParameter()
 				.setName("planDefinition")
 				.setResource(planDef);
-		Bundle v1Bundle = getClient()
+		var v1Bundle = getClient()
 				.operation()
 				.onServer()
 				.named("$ersd-v2-to-v1-transform")
 				.withParameters(v2BundleParams)
 				.returnResourceType(Bundle.class)
 				.execute();
-		List<BundleEntryComponent> bundleContainsAlternatePlanDef = v1Bundle.getEntry().stream()
-				.filter(entry -> entry.getFullUrl().equals(
-						"http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton-alternate|1.2.0.0"))
-				.collect(Collectors.toList());
-		assertTrue(bundleContainsAlternatePlanDef.size() == 1);
+		var bundleContainsAlternatePlanDef = v1Bundle.getEntry().stream().filter(entry -> entry.getFullUrl().equals("http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-skeleton-alternate|1.2.0.0")).collect(Collectors.toList());
+		assertEquals(1, bundleContainsAlternatePlanDef.size());
 	}
 
 	@Test
@@ -166,8 +131,24 @@ class TransformProviderIT extends RestIntegrationTest {
 				.withParameters(v2BundleParams)
 				.returnResourceType(Bundle.class)
 				.execute();
-		List<MetadataResource> resources = v1Bundle.getEntry().stream()
-				.map(entry -> (MetadataResource) entry.getResource()).collect(Collectors.toList());
+		List<MetadataResource> resources = v1Bundle.getEntry().stream().map(entry -> (MetadataResource)entry.getResource()).collect(Collectors.toList());
 		assertTrue(resources.stream().allMatch(res -> res.getVersion().equals(testVersion)));
+	}
+
+	@Test
+	void testImportOperation() {
+		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
+		Parameters v2BundleParams = new Parameters();
+		v2BundleParams.addParameter()
+			.setName("bundle")
+			.setResource(v2Bundle);
+
+		getClient()
+			.operation()
+			.onServer()
+			.named("$ersd-v2-import")
+			.withParameters(v2BundleParams)
+			.returnResourceType(OperationOutcome.class)
+			.execute();
 	}
 }
