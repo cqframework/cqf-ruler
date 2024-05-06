@@ -15,7 +15,7 @@ public class TransformConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider transformProvider() {
+	public TransformProvider transformProvider() {
 		return new TransformProvider();
 	}
 }

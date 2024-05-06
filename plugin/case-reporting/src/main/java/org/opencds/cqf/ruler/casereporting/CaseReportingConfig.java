@@ -1,14 +1,13 @@
 package org.opencds.cqf.ruler.casereporting;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.cr.common.IRepositoryFactory;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import org.opencds.cqf.external.annotations.OnR4Condition;
-import org.opencds.cqf.external.cr.PostInitProviderRegisterer;
-import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.casereporting.r4.CaseReportingOperationProvider;
 import org.opencds.cqf.ruler.casereporting.r4.KnowledgeArtifactProcessor;
 import org.opencds.cqf.ruler.casereporting.r4.MeasureDataProcessProvider;
 import org.opencds.cqf.ruler.casereporting.r4.ProcessMessageProvider;
-import org.opencds.cqf.ruler.casereporting.r4.RepositoryService;
 import org.opencds.cqf.ruler.casereporting.r4.TerminologyServerClient;
 import org.opencds.cqf.ruler.casereporting.r4.ValueSetSynonymUpdateInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +25,7 @@ public class CaseReportingConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider r4MeasureDataProcessor() {
+	public MeasureDataProcessProvider r4MeasureDataProcessor() {
 		return new MeasureDataProcessProvider();
 	}
 
@@ -38,8 +37,8 @@ public class CaseReportingConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider r4RepositoryServiceProvider() {
-		return new RepositoryService();
+	public CaseReportingOperationProvider r4CaseReportingOperationProvider() {
+		return new CaseReportingOperationProvider();
 	}
 
 	@Bean
@@ -47,6 +46,7 @@ public class CaseReportingConfig {
 	public KnowledgeArtifactProcessor r4KnowledgeArtifactProcessorProvider() {
 		return new KnowledgeArtifactProcessor();
 	}
+
 	@Bean
 	@Conditional(OnR4Condition.class)
 	public TerminologyServerClient r4TerminologyClientProvider() {
@@ -55,19 +55,12 @@ public class CaseReportingConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public ValueSetSynonymUpdateInterceptor valueSetInterceptor() {
-		return new ValueSetSynonymUpdateInterceptor(this.caseReportingProperties().getRckmsSynonymsUrl());
+	public ValueSetSynonymUpdateInterceptor valueSetInterceptor(IRepositoryFactory repositoryFactory) {
+		return new ValueSetSynonymUpdateInterceptor(this.caseReportingProperties().getRckmsSynonymsUrl(), repositoryFactory);
 	}
 
 	@Bean
-	CaseReportingProviderFactory cpgOperationFactory() {
-		return new CaseReportingProviderFactory();
-	}
-
-	@Bean
-	CaseReportingProviderLoader cpgProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory,
-													CaseReportingProviderFactory theCaseReportingProviderFactory, PostInitProviderRegisterer thePostInitProviderRegisterer) {
-		return new CaseReportingProviderLoader(theFhirContext, theResourceProviderFactory, theCaseReportingProviderFactory,
-			thePostInitProviderRegisterer);
+	CaseReportingProviderLoader caseReportingProviderLoader(FhirContext theFhirContext, ResourceProviderFactory theResourceProviderFactory) {
+		return new CaseReportingProviderLoader(theFhirContext, theResourceProviderFactory);
 	}
 }

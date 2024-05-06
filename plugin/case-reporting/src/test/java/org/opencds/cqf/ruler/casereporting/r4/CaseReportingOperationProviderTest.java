@@ -1,38 +1,18 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import org.apache.jena.sparql.function.library.e;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Binary;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -45,11 +25,8 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -67,45 +44,55 @@ import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
-import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
-@Lazy
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = {RepositoryServiceTest.class, CaseReportingConfig.class},
-	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false",})
-class RepositoryServiceTest extends RestIntegrationTest {
+	classes = {CaseReportingConfig.class},
+	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false", "hapi.fhir.cr.enabled=true"})
+class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	private final String specificationLibReference = "Library/SpecificationLibrary";
 	private final String minimalLibReference = "Library/SpecificationLibraryDraftVersion-1-0-0-23";
 	private final List<String> badVersionList = Arrays.asList(
-			"11asd1",
-			"1.1.3.1.1",
-			"1.|1.1.1",
-			"1/.1.1.1",
-			"-1.-1.2.1",
-			"1.-1.2.1",
-			"1.1.-2.1",
-			"7.1..21",
-			"1.2.1.3-draft",
-			"1.2.3-draft",
-			"3.2",
-			"1.",
-			"3.ad.2.",
-			"",
-			null
-		);
+		"11asd1",
+		"1.1.3.1.1",
+		"1.|1.1.1",
+		"1/.1.1.1",
+		"-1.-1.2.1",
+		"1.-1.2.1",
+		"1.1.-2.1",
+		"7.1..21",
+		"1.2.1.3-draft",
+		"1.2.3-draft",
+		"3.2",
+		"1.",
+		"3.ad.2.",
+		"",
+		null
+	);
+
 	@Test
 	void draftOperation_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
@@ -122,7 +109,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String version = "1.0.1.23";
 		String draftedVersion = version + "-draft";
 		Parameters params = new Parameters();
-    params.addParameter("version", version);
+		params.addParameter("version", version);
 		Bundle returnedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$draft")
@@ -131,7 +118,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnedBundle);
-		Optional<BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
+		Optional<Bundle.BundleEntryComponent> maybeLib = returnedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findAny();
 		assertTrue(maybeLib.isPresent());
 		Library lib = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		assertNotNull(lib);
@@ -153,6 +140,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			}
 		});
 	}
+
 	@Test
 	void draftOperation_no_effectivePeriod_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
@@ -170,7 +158,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(planDef.hasEffectivePeriod());
 		String version = "1.01.21.273";
 		Parameters params = new Parameters();
-    params.addParameter("version", version);
+		params.addParameter("version", version);
 		Bundle returnedBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$draft")
@@ -182,79 +170,82 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			var adapter = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(resource);
 			assertFalse(((Period)adapter.getEffectivePeriod()).hasStart() || ((Period)adapter.getEffectivePeriod()).hasEnd());
 		});
- 	}
+	}
+
 	@Test
 	void draftOperation_version_conflict_test() {
 		loadTransaction("ersd-active-transaction-bundle-example.json");
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = new Parameters();
-    params.addParameter("version", "1.0.0.23");
+		params.addParameter("version", "1.0.0.23");
 		String maybeException = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$draft")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$draft")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (Exception e) {
 			maybeException = e.getMessage();
 		}
 		assertNotNull(maybeException);
 		assertTrue(maybeException.contains("already exists"));
 	}
-	
+
 	@Test
 	void draftOperation_cannot_create_draft_of_draft_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		Parameters params = new Parameters();
-    params.addParameter("version", "1.2.1.23");
+		params.addParameter("version", "1.2.1.23");
 		String maybeException = null;
 		try {
 			getClient().operation()
-			.onInstance(minimalLibReference)
-			.named("$draft")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(minimalLibReference)
+				.named("$draft")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (Exception e) {
 			maybeException = e.getMessage();
 		}
 		assertNotNull(maybeException);
 		assertTrue(maybeException.contains("status of 'active'"));
 	}
+
 	@Test
 	void draftOperation_wrong_id_test() {
 		loadTransaction("ersd-draft-transaction-bundle-example.json");
-    Parameters params = new Parameters();
-    params.addParameter("version", "1.3.1.23");
+		Parameters params = new Parameters();
+		params.addParameter("version", "1.3.1.23");
 		ResourceNotFoundException maybeException = null;
 		try {
 			getClient().operation()
-			.onInstance("Library/there-is-no-such-id")
-			.named("$draft")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance("Library/there-is-no-such-id")
+				.named("$draft")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (ResourceNotFoundException e) {
 			maybeException = e;
 		}
 		assertNotNull(maybeException);
 	}
+
 	@Test
 	void draftOperation_version_format_test() {
 		loadResource("minimal-draft-to-test-version-conflict.json");
 		for(String version:badVersionList){
 			UnprocessableEntityException maybeException = null;
-      Parameters params = new Parameters();
-      params.addParameter("version", new StringType(version));
+			Parameters params = new Parameters();
+			params.addParameter("version", new StringType(version));
 			try {
 				getClient().operation()
-				.onInstance(minimalLibReference)
-				.named("$draft")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
+					.onInstance(minimalLibReference)
+					.named("$draft")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
 			} catch (UnprocessableEntityException e) {
 				maybeException = e;
 			}
@@ -268,9 +259,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadResource("artifactAssessment-search-parameter.json");
 		String existingVersion = "1.2.3";
 		String versionData = "1.2.7.23";
-    Parameters params1 = new Parameters();
-    params1.addParameter("version", new StringType(versionData));
-    params1.addParameter("versionBehavior", new CodeType("default"));
+		Parameters params1 = new Parameters();
+		params1.addParameter("version", new StringType(versionData));
+		params1.addParameter("versionBehavior", new CodeType("default"));
 		Bundle returnResource = getClient().operation()
 			.onInstance("Library/ReleaseSpecificationLibrary")
 			.named("$release")
@@ -280,7 +271,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		// versionBehaviour == 'default' so version should be
@@ -362,10 +353,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// Existing version should be "1.2.3";
 		String newVersionToForce = "1.2.7.23";
 
-		  Parameters params = new Parameters();
-			params.addParameter("version", new StringType(newVersionToForce));
-			params.addParameter("versionBehavior", new CodeType("force"));
-		
+		Parameters params = new Parameters();
+		params.addParameter("version", new StringType(newVersionToForce));
+		params.addParameter("versionBehavior", new CodeType("force"));
+
 
 		Bundle returnResource = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -376,7 +367,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnResource);
-		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		assertTrue(releasedLibrary.getVersion().equals(newVersionToForce));
@@ -389,21 +380,21 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-small-approved-draft-experimental-bundle.json");
 		// SpecificationLibrary2 - root is NOT experimental but HAS experimental children
 		loadTransaction("ersd-small-approved-draft-non-experimental-with-experimental-comp-bundle.json");
-		
-    Parameters params = new Parameters();
-    params.addParameter("version", new StringType("1.2.3"));
-    params.addParameter("versionBehavior", new CodeType("default"));
-    params.addParameter("requireNonExperimental", new CodeType("error"));
+
+		Parameters params = new Parameters();
+		params.addParameter("version", new StringType("1.2.3"));
+		params.addParameter("versionBehavior", new CodeType("default"));
+		params.addParameter("requireNonExperimental", new CodeType("error"));
 		Exception notExpectingAnyException = null;
 		// no Exception if root is experimental
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$release")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (Exception e) {
 			notExpectingAnyException = e;
 		}
@@ -412,12 +403,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		UnprocessableEntityException nonExperimentalChildException = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference+"2")
-			.named("$release")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference+"2")
+				.named("$release")
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			nonExperimentalChildException = e;
 		}
@@ -449,9 +440,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		myLoggerRoot.addAppender(myMockAppender);
 
 		Parameters params = new Parameters();
-    params.addParameter("version", new StringType("1.2.3"));
-    params.addParameter("versionBehavior", new CodeType("default"));
-    params.addParameter("requireNonExperimental", new CodeType("warn"));
+		params.addParameter("version", new StringType("1.2.3"));
+		params.addParameter("versionBehavior", new CodeType("default"));
+		params.addParameter("requireNonExperimental", new CodeType("warn"));
 		getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$release")
@@ -483,9 +474,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String effectivePeriodToPropagate = "2020-12-11";
 
 		Parameters params = new Parameters();
-			params.addParameter("version", new StringType("1.2.7"));
-			params.addParameter("versionBehavior", new CodeType("default"));
-		
+		params.addParameter("version", new StringType("1.2.7"));
+		params.addParameter("versionBehavior", new CodeType("default"));
+
 
 		Bundle returnResource = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -512,7 +503,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			}
 		});
 	}
-	private void forEachMetadataResource(List<BundleEntryComponent> entries, Consumer<MetadataResource> callback) {
+
+	private void forEachMetadataResource(List<Bundle.BundleEntryComponent> entries, Consumer<MetadataResource> callback) {
 		entries.stream()
 			.map(entry -> entry.getResponse().getLocation())
 			.map(location -> {
@@ -533,15 +525,16 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			})
 			.forEach(callback);
 	}
+
 	@Test
 	void releaseResource_latestFromTx_NotSupported_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		String actualErrorMessage = "";
 
 		Parameters params = new Parameters();
-			params.addParameter("version", "1.2.3");
-			params.addParameter("versionBehavior", new CodeType("default"));
-			params.addParameter("latestFromTxServer", new BooleanType(true));
+		params.addParameter("version", "1.2.3");
+		params.addParameter("versionBehavior", new CodeType("default"));
+		params.addParameter("latestFromTxServer", new BooleanType(true));
 
 		try {
 			getClient().operation()
@@ -564,9 +557,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String actualErrorMessage = "";
 
 		Parameters params1 = new Parameters();
-			params1.addParameter("version", versionData);
-			params1.addParameter("versionBehavior", new CodeType("default"));
-		
+		params1.addParameter("version", versionData);
+		params1.addParameter("versionBehavior", new CodeType("default"));
+
 		try {
 			getClient().operation()
 				.onInstance("Library/ReleaseSpecificationLibrary")
@@ -580,6 +573,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		}
 		assertTrue(actualErrorMessage.contains("approvalDate"));
 	}
+
 	@Test
 	void release_version_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
@@ -587,86 +581,90 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		for(String version:badVersionList){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = new Parameters();
-				params.addParameter("version", new StringType(version));
-				params.addParameter("versionBehavior", new CodeType("force"));
-			
+			params.addParameter("version", new StringType(version));
+			params.addParameter("versionBehavior", new CodeType("force"));
+
 			try {
 				getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$release")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
+					.onInstance(specificationLibReference)
+					.named("$release")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
 			} catch (UnprocessableEntityException e) {
 				maybeException = e;
 			}
 			assertNotNull(maybeException);
 		}
 	}
+
 	@Test
 	void release_releaseLabel_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		String releaseLabel = "release label test";
 		Parameters params = new Parameters();
-			params.addParameter("releaseLabel", new StringType(releaseLabel));
-			params.addParameter("version", "1.2.3.23");
-			params.addParameter("versionBehavior", new StringType("default"));
-		
+		params.addParameter("releaseLabel", new StringType(releaseLabel));
+		params.addParameter("version", "1.2.3.23");
+		params.addParameter("versionBehavior", new StringType("default"));
+
 		Bundle returnResource = getClient().operation()
-		.onInstance(specificationLibReference)
-		.named("$release")
-		.withParameters(params)
-		.returnResourceType(Bundle.class)
-		.execute();
+			.onInstance(specificationLibReference)
+			.named("$release")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
 		assertNotNull(returnResource);
-		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		Optional<Extension> maybeReleaseLabel = releasedLibrary.getExtension().stream().filter(ext -> ext.getUrl().equals(KnowledgeArtifactProcessor.releaseLabelUrl)).findFirst();
 		assertTrue(maybeReleaseLabel.isPresent());
 		assertTrue(((StringType) maybeReleaseLabel.get().getValue()).getValue().equals(releaseLabel));
 	}
+
 	@Test
 	void release_version_active_test() {
 		loadTransaction("ersd-small-active-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
-			PreconditionFailedException maybeException = null;
-			Parameters params = new Parameters();
-      params.addParameter("version", new StringType("1.2.3"));
-      params.addParameter("versionBehavior", new CodeType("force"));
-			
-			try {
-				getClient().operation()
+		PreconditionFailedException maybeException = null;
+		Parameters params = new Parameters();
+		params.addParameter("version", new StringType("1.2.3"));
+		params.addParameter("versionBehavior", new CodeType("force"));
+
+		try {
+			getClient().operation()
 				.onInstance(specificationLibReference)
 				.named("$release")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
-			} catch (PreconditionFailedException e) {
-				maybeException = e;
-			}
-			assertNotNull(maybeException);
+		} catch (PreconditionFailedException e) {
+			maybeException = e;
+		}
+		assertNotNull(maybeException);
 	}
+
 	@Test
 	void release_resource_not_found_test() {
 		ResourceNotFoundException maybeException = null;
 		Parameters params = new Parameters();
-    params.addParameter("version", new StringType("1.2.3"));
-    params.addParameter("versionBehavior", new CodeType("force"));
-		
+		params.addParameter("version", new StringType("1.2.3"));
+		params.addParameter("versionBehavior", new CodeType("force"));
+
 		try {
 			getClient().operation()
-			.onInstance("Library/this-resource-does-not-exist")
-			.named("$release")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance("Library/this-resource-does-not-exist")
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (ResourceNotFoundException e) {
 			maybeException = e;
 		}
 		assertNotNull(maybeException);
 	}
+
 	@Test
 	void release_versionBehaviour_format_test() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
@@ -678,30 +676,31 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		for(String versionBehaviour:badVersionBehaviors){
 			UnprocessableEntityException maybeException = null;
 			Parameters params = new Parameters();
-      params.addParameter("version", new StringType("1.2.3"));
-      params.addParameter("versionBehavior", new CodeType(versionBehaviour));
-			
+			params.addParameter("version", new StringType("1.2.3"));
+			params.addParameter("versionBehavior", new CodeType(versionBehaviour));
+
 			try {
 				getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$release")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
+					.onInstance(specificationLibReference)
+					.named("$release")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
 			} catch (UnprocessableEntityException e) {
 				maybeException = e;
 			}
 			assertNotNull(maybeException);
 		}
 	}
+
 	@Test
 	void release_preserve_extensions() {
 		loadTransaction("ersd-small-approved-draft-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters params = new Parameters();
-    params.addParameter("version", new StringType("1.2.3.23"));
-    params.addParameter("versionBehavior", new StringType("default"));
-		
+		params.addParameter("version", new StringType("1.2.3.23"));
+		params.addParameter("versionBehavior", new StringType("default"));
+
 		Bundle returnResource =	getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$release")
@@ -709,7 +708,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertNotNull(returnResource);
-		Optional<BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains(specificationLibReference)).findFirst();
 		assertTrue(maybeLib.isPresent());
 		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		Optional<RelatedArtifact> maybeRelatedArtifactWithPriorityExtension = releasedLibrary.getRelatedArtifact().stream().filter(ra -> ra.getExtensionByUrl(KnowledgeArtifactProcessor.valueSetPriorityUrl) != null).findAny();
@@ -729,17 +728,17 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadTransaction("ersd-small-approved-draft-missing-condition.json");
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters params = new Parameters();
-    params.addParameter("version", new StringType("1.2.3.23"));
-    params.addParameter("versionBehavior", new StringType("default"));
-		
+		params.addParameter("version", new StringType("1.2.3.23"));
+		params.addParameter("versionBehavior", new StringType("default"));
+
 		UnprocessableEntityException noConditionExtension = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$release")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$release")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			// TODO: handle exception
 			noConditionExtension = e;
@@ -752,10 +751,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void release_test_priority_missing() {
 		loadTransaction("ersd-small-approved-draft-missing-priority.json");
 		loadResource("artifactAssessment-search-parameter.json");
-		  Parameters params = new Parameters();
-			params.addParameter("version", new StringType("1.2.3.23"));
-			params.addParameter("versionBehavior", new StringType("default"));
-		
+		Parameters params = new Parameters();
+		params.addParameter("version", new StringType("1.2.3.23"));
+		params.addParameter("versionBehavior", new StringType("default"));
+
 		UnprocessableEntityException noPriorityExtension = null;
 		try {
 			getClient().operation()
@@ -776,10 +775,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void release_test_condition_and_priority_missing() {
 		loadTransaction("ersd-small-approved-draft-missing-condition-and-priority.json");
 		loadResource("artifactAssessment-search-parameter.json");
-		  Parameters params = new Parameters();
-			params.addParameter("version", new StringType("1.2.3.23"));
-			params.addParameter("versionBehavior", new StringType("default"));
-		
+		Parameters params = new Parameters();
+		params.addParameter("version", new StringType("1.2.3.23"));
+		params.addParameter("versionBehavior", new StringType("default"));
+
 		UnprocessableEntityException noConditionAndPriorityExtension = null;
 		try {
 			getClient().operation()
@@ -802,42 +801,43 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadResource("artifactAssessment-search-parameter.json");
 		String versionData = "1.2.3";
 		Parameters approveParams = new Parameters();
-    approveParams.addParameter("approvalDate", new DateType(new Date(),TemporalPrecisionEnum.DAY));
-		
+		approveParams.addParameter("approvalDate", new DateType(new Date(), TemporalPrecisionEnum.DAY));
+
 		Bundle approvedBundle = getClient().operation()
-				.onInstance("Library/ReleaseSpecificationLibrary")
-				.named("$approve")
-				.withParameters(approveParams)
-				.useHttpGet()
-				.returnResourceType(Bundle.class)
-				.execute();
-		Optional<BundleEntryComponent> maybeArtifactAssessment = approvedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+			.onInstance("Library/ReleaseSpecificationLibrary")
+			.named("$approve")
+			.withParameters(approveParams)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<Bundle.BundleEntryComponent> maybeArtifactAssessment = approvedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
 		assertTrue(maybeArtifactAssessment.isPresent());
 		var artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
 		assertTrue(artifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3-draft"));
 		Parameters releaseParams = new Parameters();
-			releaseParams.addParameter("version", versionData);
-			releaseParams.addParameter("versionBehavior", new CodeType("default"));
-		
+		releaseParams.addParameter("version", versionData);
+		releaseParams.addParameter("versionBehavior", new CodeType("default"));
+
 		Bundle releasedBundle = getClient().operation()
-				.onInstance("Library/ReleaseSpecificationLibrary")
-				.named("$release")
-				.withParameters(releaseParams)
-				.useHttpGet()
-				.returnResourceType(Bundle.class)
-				.execute();
-		Optional<BundleEntryComponent> maybeReleasedArtifactAssessment = releasedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+			.onInstance("Library/ReleaseSpecificationLibrary")
+			.named("$release")
+			.withParameters(releaseParams)
+			.useHttpGet()
+			.returnResourceType(Bundle.class)
+			.execute();
+		Optional<Bundle.BundleEntryComponent> maybeReleasedArtifactAssessment = releasedBundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
 		assertTrue(maybeReleasedArtifactAssessment.isPresent());
 		ArtifactAssessment releasedArtifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeReleasedArtifactAssessment.get().getResponse().getLocation());
 		assertTrue(releasedArtifactAssessment.getDerivedFromContentRelatedArtifact().get().getResourceElement().getValue().equals("http://ersd.aimsplatform.org/fhir/Library/ReleaseSpecificationLibrary|1.2.3"));
 	}
+
 	@Test
 	void reviseOperation_active_test() {
 		Library library = (Library) loadResource("ersd-active-library-example.json");
 		library.setName("NewSpecificationLibrary");
 		String actualErrorMessage = "";
-		  Parameters params = new Parameters();
-      params.addParameter().setName("resource").setResource(library);
+		Parameters params = new Parameters();
+		params.addParameter().setName("resource").setResource(library);
 		try {
 			getClient().operation()
 				.onServer()
@@ -857,8 +857,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		Library library = (Library) loadResource("ersd-draft-library-example.json");
 		library.setName(newResourceName);
 		String errorMessage = "";
-		  Parameters params = new Parameters();
-      params.addParameter().setName("resource").setResource(library);
+		Parameters params = new Parameters();
+		params.addParameter().setName("resource").setResource(library);
 		Library returnResource = null;
 		try {
 			returnResource = getClient().operation()
@@ -880,17 +880,17 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
-		  Parameters params = new Parameters();
-			params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
-		
+		Parameters params = new Parameters();
+		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
+
 		UnprocessableEntityException maybeException = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$approve")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			maybeException = e;
 		}
@@ -899,36 +899,37 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		maybeException = null;
 		artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
 		params = new Parameters();
-    params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
-		
+		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
+
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$approve")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			maybeException = e;
 		}
 		assertNotNull(maybeException);
 		assertTrue(maybeException.getMessage().contains("version"));
 	}
+
 	@Test
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
 		loadResource("ersd-active-library-example.json");
 		String artifactCommentType = "this-type-does-not-exist";
-		  Parameters params = new Parameters();
-			params.addParameter("artifactCommentType", artifactCommentType);
-		
+		Parameters params = new Parameters();
+		params.addParameter("artifactCommentType", artifactCommentType);
+
 		UnprocessableEntityException maybeException = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$approve")
-			.withParameters(params)
-			.returnResourceType(Library.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$approve")
+				.withParameters(params)
+				.returnResourceType(Library.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			maybeException = e;
 		}
@@ -941,20 +942,20 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		loadResource("practitioner-example-for-refs.json");
 		Date today = new Date();
 		// get today's date in the form "2023-05-11"
- 		DateType approvalDate = new DateType(today, TemporalPrecisionEnum.DAY);
+		DateType approvalDate = new DateType(today, TemporalPrecisionEnum.DAY);
 		String artifactCommentType = "comment";
 		String artifactCommentText = "comment text";
 		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
 		String artifactCommentReference="reference-valid-no-spaces";
 		String artifactCommentUser= "Practitioner/sample-practitioner";
-    Parameters params = new Parameters();
-    params.addParameter("approvalDate", approvalDate);
-    params.addParameter("artifactCommentType", artifactCommentType);
-    params.addParameter("artifactCommentText", artifactCommentText);
-    params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
-    params.addParameter("artifactCommentReference", new CanonicalType(artifactCommentReference));
-    params.addParameter("artifactCommentUser", new Reference(artifactCommentUser));
-		
+		Parameters params = new Parameters();
+		params.addParameter("approvalDate", approvalDate);
+		params.addParameter("artifactCommentType", artifactCommentType);
+		params.addParameter("artifactCommentText", artifactCommentText);
+		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
+		params.addParameter("artifactCommentReference", new CanonicalType(artifactCommentReference));
+		params.addParameter("artifactCommentUser", new Reference(artifactCommentUser));
+
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
 			.onInstance(specificationLibReference)
@@ -976,7 +977,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertFalse(lib.getApprovalDate().before(lib.getDate()));
 		// ArtifactAssessment is saved as type Basic, update when we change to OperationOutcome
 		// Get the reference from BundleEntry.response.location
-		Optional<BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
+		Optional<Bundle.BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
 		assertTrue(maybeArtifactAssessment.isPresent());
 		ArtifactAssessment artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
 		assertNotNull(artifactAssessment);
@@ -984,13 +985,13 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(artifactAssessment.checkArtifactCommentParams(
 			artifactCommentType,
 			artifactCommentText,
-      specificationLibReference,
+			specificationLibReference,
 			artifactCommentReference,
 			artifactCommentTarget,
 			artifactCommentUser
 		));
 	}
-	
+
 	@Test
 	void packageOperation_should_fail_non_matching_capability() {
 		loadTransaction("ersd-active-transaction-capabilities-bundle.json");
@@ -1003,27 +1004,27 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// so we should get an error when trying with
 		// any one capability
 		for (String capability : capabilities) {
-				  Parameters params = new Parameters();
-					params.addParameter("capability", capability);
-				
-				PreconditionFailedException maybeException = null;
-				try {
-					getClient().operation()
+			Parameters params = new Parameters();
+			params.addParameter("capability", capability);
+
+			PreconditionFailedException maybeException = null;
+			try {
+				getClient().operation()
 					.onInstance(specificationLibReference)
 					.named("$package")
 					.withParameters(params)
 					.returnResourceType(Bundle.class)
 					.execute();
-				} catch (PreconditionFailedException e) {
-					maybeException = e;
-				}
-				assertNotNull(maybeException);
+			} catch (PreconditionFailedException e) {
+				maybeException = e;
+			}
+			assertNotNull(maybeException);
 		}
 		Parameters allParams = new Parameters();
-    allParams.addParameter("capability", "computable");
-    allParams.addParameter("capability", "publishable");
-    allParams.addParameter("capability", "executable");
-		
+		allParams.addParameter("capability", "computable");
+		allParams.addParameter("capability", "publishable");
+		allParams.addParameter("capability", "executable");
+
 		Bundle packaged = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1034,14 +1035,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		// three capabilities
 		assertNotNull(packaged);
 	}
+
 	@Test
 	void packageOperation_should_apply_check_force_canonicalVersions() {
 		loadTransaction("ersd-active-transaction-no-versions.json");
 		String versionToUpdateTo = "1.3.1.23";
-		  Parameters params = new Parameters();
-			params.addParameter("artifactVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo));
-			params.addParameter("artifactVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo));
-		
+		Parameters params = new Parameters();
+		params.addParameter("artifactVersion", new CanonicalType("http://to-add-missing-version/PlanDefinition/us-ecr-specification|" + versionToUpdateTo));
+		params.addParameter("artifactVersion", new CanonicalType("http://to-add-missing-version/ValueSet/dxtc|" + versionToUpdateTo));
+
 		Bundle updatedCanonicalVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1057,24 +1059,24 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			assertTrue(updatedResource.getVersion().equals(versionToUpdateTo));
 		}
 		params = new Parameters();
-			params.addParameter("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"));
-		
+		params.addParameter("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|1.3.1"));
+
 		String correctCheckVersion = "2022-10-19";
 		PreconditionFailedException checkCanonicalThrewError = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$package")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$package")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (PreconditionFailedException e) {
 			checkCanonicalThrewError = e;
 		}
 		assertNotNull(checkCanonicalThrewError);
 		params = new Parameters();
-    params.addParameter("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion));
-		
+		params.addParameter("checkArtifactVersion", new CanonicalType("http://to-check-version/Library/SpecificationLibrary|" + correctCheckVersion));
+
 		Bundle noErrorCheckCanonicalPackage = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1089,8 +1091,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(checkedVersionResource.get().getVersion().equals(correctCheckVersion));
 		String versionToForceTo = "1.1.9.23";
 		params = new Parameters();
-    params.addParameter("forceArtifactVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo));
-		
+		params.addParameter("forceArtifactVersion", new CanonicalType("http://to-force-version/Library/rctc|" + versionToForceTo));
+
 		Bundle forcedVersionPackage = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1105,11 +1107,12 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(forcedVersionResource.get().getVersion().equals(versionToForceTo));
 
 	}
+
 	@Test
 	void packageOperation_should_respect_count_offset() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Parameters countZeroParams = new Parameters();
-    countZeroParams.addParameter("count", new IntegerType(0));
+		countZeroParams.addParameter("count", new IntegerType(0));
 		Bundle countZeroBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1120,8 +1123,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(countZeroBundle.getEntry().size() == 0);
 		assertTrue(countZeroBundle.getTotal() == 6);
 		Parameters count2Params = new Parameters();
-			count2Params.addParameter("count", new IntegerType(2));
-		
+		count2Params.addParameter("count", new IntegerType(2));
+
 		Bundle count2Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1130,9 +1133,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(count2Bundle.getEntry().size() == 2);
 		Parameters count2Offset2Params = new Parameters();
-    count2Offset2Params.addParameter("count", new IntegerType(2));
-    count2Offset2Params.addParameter("offset", new IntegerType(2));
-		
+		count2Offset2Params.addParameter("count", new IntegerType(2));
+		count2Offset2Params.addParameter("offset", new IntegerType(2));
+
 		Bundle count2Offset2Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1141,8 +1144,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(count2Offset2Bundle.getEntry().size() == 2);
 		Parameters offset4Params = new Parameters();
-    offset4Params.addParameter("offset", new IntegerType(4));
-		
+		offset4Params.addParameter("offset", new IntegerType(4));
+
 		Bundle offset4Bundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1150,11 +1153,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		assertTrue(offset4Bundle.getEntry().size() == (countZeroBundle.getTotal() - 4));
-		assertTrue(offset4Bundle.getType() == BundleType.COLLECTION);
+		assertTrue(offset4Bundle.getType() == Bundle.BundleType.COLLECTION);
 		assertTrue(offset4Bundle.hasTotal() == false);
 		Parameters offsetMaxParams = new Parameters();
-    offsetMaxParams.addParameter("offset", new IntegerType(countZeroBundle.getTotal()));
-		
+		offsetMaxParams.addParameter("offset", new IntegerType(countZeroBundle.getTotal()));
+
 		Bundle offsetMaxBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1163,9 +1166,9 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(offsetMaxBundle.getEntry().size() == 0);
 		Parameters offsetMaxRandomCountParams = new Parameters();
-			offsetMaxRandomCountParams.addParameter("offset", new IntegerType(countZeroBundle.getTotal()));
-			offsetMaxRandomCountParams.addParameter("count", new IntegerType(ThreadLocalRandom.current().nextInt(3, 20)));
-		
+		offsetMaxRandomCountParams.addParameter("offset", new IntegerType(countZeroBundle.getTotal()));
+		offsetMaxRandomCountParams.addParameter("count", new IntegerType(ThreadLocalRandom.current().nextInt(3, 20)));
+
 		Bundle offsetMaxRandomCountBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
@@ -1174,72 +1177,73 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(offsetMaxRandomCountBundle.getEntry().size() == 0);
 	}
+
 	@Test
 	void packageOperation_different_bundle_types() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Parameters countZeroParams = new Parameters();
-			countZeroParams.addParameter("count", new IntegerType(0));
-		
+		countZeroParams.addParameter("count", new IntegerType(0));
+
 		Bundle countZeroBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(countZeroParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		assertTrue(countZeroBundle.getType() == BundleType.SEARCHSET);
+		assertTrue(countZeroBundle.getType() == Bundle.BundleType.SEARCHSET);
 		Parameters countSevenParams = new Parameters();
-			countSevenParams.addParameter("count", new IntegerType(7));
-		
+		countSevenParams.addParameter("count", new IntegerType(7));
+
 		Bundle countSevenBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(countSevenParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		assertTrue(countSevenBundle.getType() == BundleType.TRANSACTION);
+		assertTrue(countSevenBundle.getType() == Bundle.BundleType.TRANSACTION);
 		Parameters countFourParams = new Parameters();
-			countFourParams.addParameter("count", new IntegerType(4));
-		
+		countFourParams.addParameter("count", new IntegerType(4));
+
 		Bundle countFourBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(countFourParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		assertTrue(countFourBundle.getType() == BundleType.COLLECTION);
+		assertTrue(countFourBundle.getType() == Bundle.BundleType.COLLECTION);
 		// these assertions test for Bundle base profile conformance when type = collection
 		assertFalse(countFourBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
 		assertFalse(countFourBundle.hasTotal());
 		Parameters offsetOneParams = new Parameters();
-			offsetOneParams.addParameter("offset", new IntegerType(1));
-		
+		offsetOneParams.addParameter("offset", new IntegerType(1));
+
 		Bundle offsetOneBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(offsetOneParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		assertTrue(offsetOneBundle.getType() == BundleType.COLLECTION);
+		assertTrue(offsetOneBundle.getType() == Bundle.BundleType.COLLECTION);
 		// these assertions test for Bundle base profile conformance when type = collection
 		assertFalse(offsetOneBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
 		assertFalse(offsetOneBundle.hasTotal());
 
 		Parameters countOneOffsetOneParams = new Parameters();
-    countOneOffsetOneParams.addParameter("count", new IntegerType(1));
-    countOneOffsetOneParams.addParameter("offset", new IntegerType(1));
-		
+		countOneOffsetOneParams.addParameter("count", new IntegerType(1));
+		countOneOffsetOneParams.addParameter("offset", new IntegerType(1));
+
 		Bundle countOneOffsetOneBundle = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$package")
 			.withParameters(countOneOffsetOneParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		assertTrue(countOneOffsetOneBundle.getType() == BundleType.COLLECTION);
+		assertTrue(countOneOffsetOneBundle.getType() == Bundle.BundleType.COLLECTION);
 		// these assertions test for Bundle base profile conformance when type = collection
 		assertFalse(countOneOffsetOneBundle.getEntry().stream().anyMatch(entry -> entry.hasRequest()));
 		assertFalse(countOneOffsetOneBundle.hasTotal());
-
 	}
+
 	@Test
 	void packageOperation_should_conditionally_create() {
 		loadTransaction("ersd-small-active-bundle.json");
@@ -1250,13 +1254,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.withParameters(emptyParams)
 			.returnResourceType(Bundle.class)
 			.execute();
-		for (BundleEntryComponent component : packagedBundle.getEntry()) {
+		for (Bundle.BundleEntryComponent component : packagedBundle.getEntry()) {
 			String ifNoneExist = component.getRequest().getIfNoneExist();
 			String url = ((MetadataResource) component.getResource()).getUrl();
 			String version = ((MetadataResource) component.getResource()).getVersion();
 			assertTrue(ifNoneExist.equals("url="+url+"&version="+version));
 		}
 	}
+
 	@Test
 	void packageOperation_should_be_aware_of_valueset_priority_extension() {
 		loadTransaction("ersd-small-active-bundle.json");
@@ -1293,7 +1298,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getCode().equals("routine"));
 		assertTrue(((CodeableConcept) priority2.get().getValue()).getCoding().get(0).getSystem().equals(KnowledgeArtifactProcessor.contextUrl));
 	}
-	
+
 	@Test
 	void packageOperation_should_be_aware_of_useContext_extension() {
 		loadTransaction("ersd-small-active-bundle.json");
@@ -1346,10 +1351,10 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		includeOptions.put("profiles",Arrays.asList());
 		includeOptions.put("tests",Arrays.asList());
 		includeOptions.put("examples",Arrays.asList());
-		for (Entry<String, List<String>> includedTypeURLs : includeOptions.entrySet()) {
-			  Parameters params = new Parameters();
-				params.addParameter("include", includedTypeURLs.getKey());
-			
+		for (Map.Entry<String, List<String>> includedTypeURLs : includeOptions.entrySet()) {
+			Parameters params = new Parameters();
+			params.addParameter("include", includedTypeURLs.getKey());
+
 			Bundle packaged = getClient().operation()
 				.onInstance(specificationLibReference)
 				.named("$package")
@@ -1357,8 +1362,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				.returnResourceType(Bundle.class)
 				.execute();
 			List<MetadataResource> resources = packaged.getEntry().stream()
-					.map(entry -> (MetadataResource) entry.getResource())
-					.collect(Collectors.toList());
+				.map(entry -> (MetadataResource) entry.getResource())
+				.collect(Collectors.toList());
 			for (MetadataResource resource: resources) {
 				Boolean noExtraResourcesReturned = includedTypeURLs.getValue().stream()
 					.anyMatch(url -> url.equals(resource.getUrl()));
@@ -1371,6 +1376,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			}
 		}
 	}
+
 	@Test
 	void packageOperation_big_bundle() {
 		Bundle loadedBundle = (Bundle) loadTransaction("ersd-active-transaction-bundle-example.json");
@@ -1435,11 +1441,11 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		UnprocessableEntityException noConditionExtension = null;
 		try {
 			getClient().operation()
-			.onInstance(specificationLibReference)
-			.named("$package")
-			.withNoParameters(Parameters.class)
-			.returnResourceType(Bundle.class)
-			.execute();
+				.onInstance(specificationLibReference)
+				.named("$package")
+				.withNoParameters(Parameters.class)
+				.returnResourceType(Bundle.class)
+				.execute();
 		} catch (UnprocessableEntityException e) {
 			// TODO: handle exception
 			noConditionExtension = e;
@@ -1490,14 +1496,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void validateOperation() {
 		Bundle ersdExampleSpecBundle = (Bundle) loadResource("ersd-bundle-example.json");
 		Parameters specBundleParams = new Parameters();
-    specBundleParams.addParameter().setName("resource").setResource(ersdExampleSpecBundle);
+		specBundleParams.addParameter().setName("resource").setResource(ersdExampleSpecBundle);
 		OperationOutcome specBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(specBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		List<OperationOutcome.OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(specBundleValidationErrors.size() == 3);
 		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
 		assertTrue(specBundleValidationErrors.get(0).getDiagnostics().contains("slicePlanDefinition"));
@@ -1505,32 +1511,32 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(specBundleValidationErrors.get(2).getDiagnostics().contains("variable"));
 		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
 		Parameters supplementalBundleParams = new Parameters();
-			supplementalBundleParams.addParameter().setName("resource").setResource(ersdExampleSupplementalBundle);
-		
+		supplementalBundleParams.addParameter().setName("resource").setResource(ersdExampleSupplementalBundle);
+
 		OperationOutcome supplementalBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(supplementalBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		List<OperationOutcome.OperationOutcomeIssueComponent> supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(supplementalBundleErrors.size() == 0);
 
 		Library validationErrorLibrary = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
 		Parameters validationFailedParams = new Parameters();
-    validationFailedParams.addParameter().setName("resource").setResource(validationErrorLibrary);
+		validationFailedParams.addParameter().setName("resource").setResource(validationErrorLibrary);
 		OperationOutcome failedValidationOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(validationFailedParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		List<OperationOutcome.OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(invalidLibraryErrors.size() == 5);
 
 		Parameters noResourceParams = new Parameters();
 		UnprocessableEntityException noResourceException = null;
-		try {	
+		try {
 			getClient().operation()
 				.onServer()
 				.named("$validate")
@@ -1548,7 +1554,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	void validateOperationUnqualifiedRelatedArtifact() {
 		Bundle ersdExampleSpecBundleUnqualifiedPlanDefinition = (Bundle) loadResource("ersd-library-validation-failure-unqualified-plandefinition-bundle.json");
 		Parameters validationFailedUnqualifiedPlanDefinitionParams = new Parameters();
-    validationFailedUnqualifiedPlanDefinitionParams.addParameter().setName("resource").setResource( ersdExampleSpecBundleUnqualifiedPlanDefinition);
+		validationFailedUnqualifiedPlanDefinitionParams.addParameter().setName("resource").setResource( ersdExampleSpecBundleUnqualifiedPlanDefinition);
 		OperationOutcome failedValidationUnqualifiedPlanDefinitionOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
@@ -1571,15 +1577,15 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.execute();
 		assertTrue(packagedBundle.getEntry().size() == 37);
 		Parameters packagedBundleParams = new Parameters();
-    packagedBundleParams.addParameter().setName("resource").setResource( packagedBundle);
-		
+		packagedBundleParams.addParameter().setName("resource").setResource( packagedBundle);
+
 		OperationOutcome packagedBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(packagedBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == IssueSeverity.ERROR || issue.getSeverity() == IssueSeverity.FATAL).collect(Collectors.toList());
+		List<OperationOutcome.OperationOutcomeIssueComponent> errors = packagedBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(errors.size() == 4);
 		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
 		assertTrue(errors.get(0).getDiagnostics().contains("slicePlanDefinition"));
@@ -1597,7 +1603,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		conditions.setId(id.getResourceType()+"/"+id.getIdPart());
 		loadResource("manifest-code-search-parameter.json");
 		loadTransaction("libraries-with-conditions-bundle.json");
-		
+
 		// if we update 2 synonyms
 		updateSynonym(conditions, "767146004", "testUpdate1");
 		updateSynonym(conditions, "49649001", "testUpdate2");
@@ -1615,6 +1621,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(((CodeableConcept)condition2.get(0).getValue()).getText().equals("testUpdate2"));
 
 	}
+
 	private void updateSynonym(ValueSet vs, String code, String newText) {
 		vs.getCompose()
 			.getInclude().get(0)
@@ -1623,6 +1630,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.getDesignation().get(0)
 			.setValue(newText);
 	}
+
 	private List<Extension> getConditionExtensionForValueSet(String valueSetUrl, Library library) {
 		return library.getRelatedArtifact().stream()
 			.filter(ra -> ra.hasResource() && ra.getResource().equals(valueSetUrl))
@@ -1630,26 +1638,26 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.flatMap(exts -> exts.stream())
 			.collect(Collectors.toList());
 	}
-	
+
 	void basic_artifact_diff() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
-		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = new Parameters();
-			diffParams.addParameter("source", specificationLibReference);
-			diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
-		
+		diffParams.addParameter("source", specificationLibReference);
+		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
+
 		Parameters returnedParams = getClient().operation()
 			.onServer()
 			.named("artifact-diff")
 			.withParameters(diffParams)
 			.returnResourceType(Parameters.class)
 			.execute();
-		List<ParametersParameterComponent> parameters = returnedParams.getParameter();
-		List<ParametersParameterComponent> libraryReplaceOperations = getOperationsByType(parameters, "replace");
-		List<ParametersParameterComponent> libraryInsertOperations = getOperationsByType(parameters, "insert");
-		List<ParametersParameterComponent> libraryDeleteOperations = getOperationsByType(parameters, "delete");
+		List<Parameters.ParametersParameterComponent> parameters = returnedParams.getParameter();
+		List<Parameters.ParametersParameterComponent> libraryReplaceOperations = getOperationsByType(parameters, "replace");
+		List<Parameters.ParametersParameterComponent> libraryInsertOperations = getOperationsByType(parameters, "insert");
+		List<Parameters.ParametersParameterComponent> libraryDeleteOperations = getOperationsByType(parameters, "delete");
 		List<String> libraryReplacedPaths = List.of(
 			"Library.id",
 			"Library.version",
@@ -1664,21 +1672,21 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		List<String> libraryInsertedPaths = List.of(
 			"Library.relatedArtifact"  // new DXTC leaf VS
 		);
-		for (ParametersParameterComponent param: libraryReplaceOperations) {
+		for (Parameters.ParametersParameterComponent param: libraryReplaceOperations) {
 			String path = param.getPart().stream()
 				.filter(part -> part.getName().equals("path"))
 				.map(part -> ((StringType)part.getValue()).getValue())
 				.findFirst().get();
 			assertTrue(libraryReplacedPaths.contains(path));
 		}
-		for (ParametersParameterComponent param: libraryInsertOperations) {
+		for (Parameters.ParametersParameterComponent param: libraryInsertOperations) {
 			String path = param.getPart().stream()
 				.filter(part -> part.getName().equals("path"))
 				.map(part -> ((StringType)part.getValue()).getValue())
 				.findFirst().get();
 			assertTrue(libraryInsertedPaths.contains(path));
 		}
-		for (ParametersParameterComponent param: libraryDeleteOperations) {
+		for (Parameters.ParametersParameterComponent param: libraryDeleteOperations) {
 			String path = param.getPart().stream()
 				.filter(part -> part.getName().equals("path"))
 				.map(part -> ((StringType)part.getValue()).getValue())
@@ -1696,24 +1704,25 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		);
 		libraryNestedChanges.stream()
 			.forEach(nestedChangeUrl -> {
-				ParametersParameterComponent nestedChange = returnedParams.getParameter(nestedChangeUrl);
+				Parameters.ParametersParameterComponent nestedChange = returnedParams.getParameter(nestedChangeUrl);
 				assertNotNull(nestedChange);
 				if (nestedChange.hasResource()) {
 					assertTrue(nestedChange.getResource() instanceof Parameters);
 				}
 			});
 	}
+
 	@Test
 	void artifact_diff_compare_computable() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
-		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = new Parameters();
-    diffParams.addParameter("source", specificationLibReference);
-    diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
-    diffParams.addParameter("compareComputable", new BooleanType(true));
-		
+		diffParams.addParameter("source", specificationLibReference);
+		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
+		diffParams.addParameter("compareComputable", new BooleanType(true));
+
 		Parameters returnedParams = getClient().operation()
 			.onServer()
 			.named("$artifact-diff")
@@ -1727,8 +1736,8 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.collect(Collectors.toList());
 		assertTrue(nestedChanges.size() == 3);
 		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
-		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
-		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
+		List<Parameters.ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<Parameters.ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
 		// delete the old leaf
 		assertTrue(deleteOperations.size() == 1);
 		// there aren't actually 2 operations here
@@ -1740,17 +1749,18 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertTrue(path1.equals("ValueSet.compose.include"));
 		assertTrue(path2.equals("ValueSet.compose.include[1].valueSet"));
 	}
+
 	@Test
 	void artifact_diff_compare_executable() {
 		loadTransaction("ersd-small-active-bundle.json");
 		Bundle bundle = (Bundle) loadTransaction("small-drafted-ersd-bundle.json");
-		Optional<BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
+		Optional<Bundle.BundleEntryComponent> maybeLib = bundle.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		loadResource("artifactAssessment-search-parameter.json");
 		Parameters diffParams = new Parameters();
-			diffParams.addParameter("source", specificationLibReference);
-			diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
-			diffParams.addParameter("compareExecutable", new BooleanType(true));
-		
+		diffParams.addParameter("source", specificationLibReference);
+		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
+		diffParams.addParameter("compareExecutable", new BooleanType(true));
+
 		Parameters returnedParams = getClient().operation()
 			.onServer()
 			.named("$artifact-diff")
@@ -1764,13 +1774,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			.collect(Collectors.toList());
 		assertTrue(nestedChanges.size() == 3);
 		Parameters grouperChanges = returnedParams.getParameter().stream().filter(p -> p.getName().contains("/dxtc")).map(p-> (Parameters)p.getResource()).findFirst().get();
-		List<ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
-		List<ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
+		List<Parameters.ParametersParameterComponent> deleteOperations = getOperationsByType(grouperChanges.getParameter(), "delete");
+		List<Parameters.ParametersParameterComponent> insertOperations = getOperationsByType(grouperChanges.getParameter(), "insert");
 		// old codes removed
 		assertTrue(deleteOperations.size() == 23);
 		// new codes added
 		assertTrue(insertOperations.size() == 32);
 	}
+
 	private Parameters createChangelogSetup() {
 		loadTransaction("small-diff-bundle.json");
 		var bundle = (Bundle) loadTransaction("small-dxtc-modified-diff-bundle.json");
@@ -1780,6 +1791,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		diffParams.addParameter("target", maybeLib.get().getResponse().getLocation());
 		return diffParams;
 	}
+
 	@Test
 	void create_changelog_pages() {
 		// check that the correct pages are created
@@ -1798,7 +1810,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-specification",
 			"http://ersd.aimsplatform.org/fhir/Library/rctc",
 			"http://ersd.aimsplatform.org/fhir/ValueSet/dxtc"
-			);
+		);
 		Exception expectNoException = null;
 		try {
 			var node = mapper.readTree(decodedString);
@@ -1809,7 +1821,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 				var pageExists = StreamSupport.stream(pages.spliterator(), false)
 					.anyMatch(page -> page.get("url").asText().equals(url));
 				assertTrue(pageExists);
-    	}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			expectNoException = e;
@@ -1832,7 +1844,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		String decodedString = new String(decodedBytes);
 		ObjectMapper mapper = new ObjectMapper();
 		Exception expectNoException = null;
-		Map<String,codeAndOperation> oldCodes = new HashMap<String,codeAndOperation>();
+		Map<String, codeAndOperation> oldCodes = new HashMap<String, codeAndOperation>();
 		oldCodes.put("772155008", new codeAndOperation("123-this-will-be-routine",null));
 		oldCodes.put("1086051000119107", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
 		oldCodes.put("1086061000119109", new codeAndOperation("2.16.840.1.113762.1.4.1146.6","delete"));
@@ -1894,7 +1906,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 						}
 					}
 				}
-    	}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			expectNoException = e;
@@ -1983,7 +1995,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 						}
 					}
 				}
-    	}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			expectNoException = e;
@@ -2034,7 +2046,7 @@ class RepositoryServiceTest extends RestIntegrationTest {
 						}
 					}
 				}
-    	}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			expectNoException = e;
@@ -2042,12 +2054,13 @@ class RepositoryServiceTest extends RestIntegrationTest {
 		assertNull(expectNoException);
 	}
 
-	private List<ParametersParameterComponent> getOperationsByType(List<ParametersParameterComponent> parameters, String type) {
+	private List<Parameters.ParametersParameterComponent> getOperationsByType(List<Parameters.ParametersParameterComponent> parameters, String type) {
 		return parameters.stream().filter(
 			p -> p.getName().equals("operation")
-		    && p.getPart().stream().anyMatch(part -> part.getName().equals("type") && ((CodeType)part.getValue()).getCode().equals(type))
-			).collect(Collectors.toList());
+				&& p.getPart().stream().anyMatch(part -> part.getName().equals("type") && ((CodeType)part.getValue()).getCode().equals(type))
+		).collect(Collectors.toList());
 	}
+
 	private static class codeAndOperation {
 		public String code;
 		public String operation;
