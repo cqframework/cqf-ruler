@@ -18,6 +18,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.opencds.cqf.fhir.utility.iterable.BundleMappingIterable;
+import org.opencds.cqf.ruler.api.Interceptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class ValueSetSynonymUpdateInterceptor {
+public class ValueSetSynonymUpdateInterceptor implements Interceptor {
 	private final String synonymUrl;
 	private final IRepositoryFactory repositoryFactory;
 

@@ -98,12 +98,12 @@ public class CaseReportingOperationProvider {
 	 * @param artifactAssessmentSummary
 	 * @param artifactAssessmentTarget
 	 * @param artifactAssessmentRelatedArtifact
-	 * @param artifactAssessmentAuthor          Optional ArtifactComment* arguments represent parts of a
+	 * @param artifactAssessmentAuthor          Optional ArtifactAssessment* arguments represent parts of a
 	 *                                          comment to beincluded as part of the approval. The
-	 *                                          artifactComment is a cqfm-artifactComment as defined here:
-	 *                                          http://hl7.org/fhir/us/cqfmeasures/STU3/StructureDefinition-cqfm-artifactComment.html
+	 *                                          artifactAssessment is a crmi-artifactAssessment as defined here:
+	 *                                          http://hl7.org/fhir/uv/crmi/StructureDefinition/crmi-artifactAssessment
 	 *                                          A Parameters resource with a parameter for each element
-	 *                                          of the artifactComment Extension definition is
+	 *                                          of the ArtifactAssessment Extension definition is
 	 *                                          used to represent the proper structure.
 	 * @return An IBaseResource that is the targeted resource, updated with the approval
 	 */
