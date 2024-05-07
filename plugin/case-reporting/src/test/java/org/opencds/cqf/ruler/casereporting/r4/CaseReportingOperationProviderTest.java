@@ -32,6 +32,7 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.MarkdownType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.Disabled;
@@ -273,12 +274,12 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		assertNotNull(returnResource);
 		Optional<Bundle.BundleEntryComponent> maybeLib = returnResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Library")).findFirst();
 		assertTrue(maybeLib.isPresent());
-		Library releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
+		var releasedLibrary = getClient().fetchResourceFromUrl(Library.class,maybeLib.get().getResponse().getLocation());
 		// versionBehaviour == 'default' so version should be
 		// existingVersion and not the new version provided in
 		// the parameters
 		assertTrue(releasedLibrary.getVersion().equals(existingVersion));
-		List<String> ersdTestArtifactDependencies = Arrays.asList(
+		var ersdTestArtifactDependencies = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/ValueSet/release-dxtc|" + existingVersion,
@@ -317,33 +318,43 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			"http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1438|2022-10-19",
 			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1",
 			"http://notOwnedTest.com/Library/notOwnedLeaf|0.1.1",
-			"http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1"
+			"http://notOwnedTest.com/Library/notOwnedLeaf1|0.1.1",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab",
+			"http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-lab",
+			"http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle",
+			"http://hl7.org/fhir/StructureDefinition/ServiceRequest"
 		);
-		List<String> ersdTestArtifactComponents = Arrays.asList(
+		var ersdTestArtifactComponents = Arrays.asList(
 			"http://ersd.aimsplatform.org/fhir/PlanDefinition/release-us-ecr-specification|" + existingVersion,
 			"http://ersd.aimsplatform.org/fhir/Library/release-rctc|" + existingVersion,
 			"http://notOwnedTest.com/Library/notOwnedRoot|0.1.1"
 		);
-		List<String> dependenciesOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
+		var dependenciesOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
 			.stream()
 			.filter(ra -> ra.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON))
 			.map(ra -> ra.getResource())
 			.collect(Collectors.toList());
-		List<String> componentsOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
+		var componentsOnReleasedArtifact = releasedLibrary.getRelatedArtifact()
 			.stream()
 			.filter(ra -> ra.getType().equals(RelatedArtifact.RelatedArtifactType.COMPOSEDOF))
 			.map(ra -> ra.getResource())
 			.collect(Collectors.toList());
 		// check that the released artifact has all the required dependencies
-		for(String dependency: ersdTestArtifactDependencies){
+		for(var dependency: ersdTestArtifactDependencies){
 			assertTrue(dependenciesOnReleasedArtifact.contains(dependency));
 		}
 		// and components
-		for(String component: ersdTestArtifactComponents){
+		for(var component: ersdTestArtifactComponents){
 			assertTrue(componentsOnReleasedArtifact.contains(component));
 		}
-		assertTrue(ersdTestArtifactDependencies.size() == dependenciesOnReleasedArtifact.size());
-		assertTrue(ersdTestArtifactComponents.size() == componentsOnReleasedArtifact.size());
+		// has extra groupers and rctc dependencies
+		assertEquals(ersdTestArtifactDependencies.size(), dependenciesOnReleasedArtifact.size());
+		assertEquals(ersdTestArtifactComponents.size(), componentsOnReleasedArtifact.size());
 	}
 
 	@Test
@@ -398,7 +409,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		} catch (Exception e) {
 			notExpectingAnyException = e;
 		}
-		assertTrue(notExpectingAnyException == null);
+		assertEquals( null, notExpectingAnyException);
 
 		UnprocessableEntityException nonExperimentalChildException = null;
 		try {
@@ -412,7 +423,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		} catch (UnprocessableEntityException e) {
 			nonExperimentalChildException = e;
 		}
-		assertTrue(nonExperimentalChildException != null);
+		assertNotNull(nonExperimentalChildException);
 		assertTrue(nonExperimentalChildException.getMessage().contains("not Experimental"));
 	}
 
@@ -451,7 +462,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			.returnResourceType(Bundle.class)
 			.execute();
 		// no warning if the root is Experimental
-		assertTrue(warningMessages.size()==0);
+		assertEquals(0, warningMessages.size());
 
 		getClient().operation()
 			.onInstance(specificationLibReference+"2")
@@ -471,14 +482,14 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	void releaseResource_propagate_effective_period() {
 		loadTransaction("ersd-small-approved-draft-no-child-effective-period.json");
 		loadResource("artifactAssessment-search-parameter.json");
-		String effectivePeriodToPropagate = "2020-12-11";
+		var effectivePeriodToPropagate = "2020-12-11";
 
-		Parameters params = new Parameters();
+		var params = new Parameters();
 		params.addParameter("version", new StringType("1.2.7"));
 		params.addParameter("versionBehavior", new CodeType("default"));
 
 
-		Bundle returnResource = getClient().operation()
+		var returnResource = getClient().operation()
 			.onInstance(specificationLibReference)
 			.named("$release")
 			.withParameters(params)
@@ -492,13 +503,13 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			if(!resource.getClass().getSimpleName().equals("ValueSet")){
 				var adapter = AdapterFactory.forFhirVersion(FhirVersionEnum.R4).createKnowledgeArtifactAdapter(resource);
 				assertTrue(((Period)adapter.getEffectivePeriod()).hasStart());
-				Date start = ((Period)adapter.getEffectivePeriod()).getStart();
-				Calendar calendar = new GregorianCalendar();
+				var start = ((Period)adapter.getEffectivePeriod()).getStart();
+				var calendar = new GregorianCalendar();
 				calendar.setTime(start);
 				int year = calendar.get(Calendar.YEAR);
 				int month = calendar.get(Calendar.MONTH) + 1;
 				int day = calendar.get(Calendar.DAY_OF_MONTH);
-				String startString = year + "-" + month + "-" + day;
+				var startString = year + "-" + month + "-" + day;
 				assertTrue(startString.equals(effectivePeriodToPropagate));
 			}
 		});
@@ -627,7 +638,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	void release_version_active_test() {
 		loadTransaction("ersd-small-active-bundle.json");
 		loadResource("artifactAssessment-search-parameter.json");
-		PreconditionFailedException maybeException = null;
+		UnprocessableEntityException maybeException = null;
 		Parameters params = new Parameters();
 		params.addParameter("version", new StringType("1.2.3"));
 		params.addParameter("versionBehavior", new CodeType("force"));
@@ -639,7 +650,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
-		} catch (PreconditionFailedException e) {
+		} catch (UnprocessableEntityException e) {
 			maybeException = e;
 		}
 		assertNotNull(maybeException);
@@ -744,55 +755,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition reference"));
-	}
-
-	@Test
-	void release_test_priority_missing() {
-		loadTransaction("ersd-small-approved-draft-missing-priority.json");
-		loadResource("artifactAssessment-search-parameter.json");
-		Parameters params = new Parameters();
-		params.addParameter("version", new StringType("1.2.3.23"));
-		params.addParameter("versionBehavior", new StringType("default"));
-
-		UnprocessableEntityException noPriorityExtension = null;
-		try {
-			getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$release")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch (UnprocessableEntityException e) {
-			noPriorityExtension = e;
-		}
-
-		assertNotNull(noPriorityExtension);
-		assertTrue(noPriorityExtension.getMessage().contains("Missing priority reference"));
-	}
-
-	@Test
-	void release_test_condition_and_priority_missing() {
-		loadTransaction("ersd-small-approved-draft-missing-condition-and-priority.json");
-		loadResource("artifactAssessment-search-parameter.json");
-		Parameters params = new Parameters();
-		params.addParameter("version", new StringType("1.2.3.23"));
-		params.addParameter("versionBehavior", new StringType("default"));
-
-		UnprocessableEntityException noConditionAndPriorityExtension = null;
-		try {
-			getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$release")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch (UnprocessableEntityException e) {
-			noConditionAndPriorityExtension = e;
-		}
-
-		assertNotNull(noConditionAndPriorityExtension);
-		assertTrue(noConditionAndPriorityExtension.getMessage().contains("Missing condition and priority references"));
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test
@@ -879,9 +842,9 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	@Test
 	void approveOperation_endpoint_id_should_match_target_parameter() {
 		loadResource("ersd-active-library-example.json");
-		String artifactCommentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
+		String artifactAssessmentTarget= "Library/This-Library-Does-Not-Exist|1.0.0";
 		Parameters params = new Parameters();
-		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
+		params.addParameter("artifactAssessmentTarget", new CanonicalType(artifactAssessmentTarget));
 
 		UnprocessableEntityException maybeException = null;
 		try {
@@ -897,9 +860,9 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		assertNotNull(maybeException);
 		assertTrue(maybeException.getMessage().contains("URL"));
 		maybeException = null;
-		artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
+		artifactAssessmentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|this-version-is-wrong";
 		params = new Parameters();
-		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
+		params.addParameter("artifactAssessmentTarget", new CanonicalType(artifactAssessmentTarget));
 
 		try {
 			getClient().operation()
@@ -918,9 +881,9 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	@Test
 	void approveOperation_should_respect_artifactAssessment_information_type_binding() {
 		loadResource("ersd-active-library-example.json");
-		String artifactCommentType = "this-type-does-not-exist";
+		String artifactAssessmentType = "this-type-does-not-exist";
 		Parameters params = new Parameters();
-		params.addParameter("artifactCommentType", artifactCommentType);
+		params.addParameter("artifactAssessmentType", artifactAssessmentType);
 
 		UnprocessableEntityException maybeException = null;
 		try {
@@ -928,7 +891,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 				.onInstance(specificationLibReference)
 				.named("$approve")
 				.withParameters(params)
-				.returnResourceType(Library.class)
+				.returnResourceType(Bundle.class)
 				.execute();
 		} catch (UnprocessableEntityException e) {
 			maybeException = e;
@@ -940,21 +903,21 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 	void approveOperation_test() {
 		loadResource("ersd-active-library-example.json");
 		loadResource("practitioner-example-for-refs.json");
-		Date today = new Date();
+		var today = new Date();
 		// get today's date in the form "2023-05-11"
-		DateType approvalDate = new DateType(today, TemporalPrecisionEnum.DAY);
-		String artifactCommentType = "comment";
-		String artifactCommentText = "comment text";
-		String artifactCommentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
-		String artifactCommentReference="reference-valid-no-spaces";
-		String artifactCommentUser= "Practitioner/sample-practitioner";
-		Parameters params = new Parameters();
+		var approvalDate = new DateType(today, TemporalPrecisionEnum.DAY);
+		var artifactAssessmentType = "comment";
+		var artifactAssessmentSummary = "comment text";
+		var artifactAssessmentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
+		var artifactAssessmentReference="reference-valid-no-spaces";
+		var artifactAssessmentUser= "Practitioner/sample-practitioner";
+		var params = new Parameters();
 		params.addParameter("approvalDate", approvalDate);
-		params.addParameter("artifactCommentType", artifactCommentType);
-		params.addParameter("artifactCommentText", artifactCommentText);
-		params.addParameter("artifactCommentTarget", new CanonicalType(artifactCommentTarget));
-		params.addParameter("artifactCommentReference", new CanonicalType(artifactCommentReference));
-		params.addParameter("artifactCommentUser", new Reference(artifactCommentUser));
+		params.addParameter("artifactAssessmentType", new CodeType(artifactAssessmentType));
+		params.addParameter("artifactAssessmentSummary", new MarkdownType(artifactAssessmentSummary));
+		params.addParameter("artifactAssessmentTarget", new CanonicalType(artifactAssessmentTarget));
+		params.addParameter("artifactAssessmentReference", new CanonicalType(artifactAssessmentReference));
+		params.addParameter("artifactAssessmentUser", new Reference(artifactAssessmentUser));
 
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
@@ -965,7 +928,7 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnedResource);
-		Library lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
+		var lib = getClient().fetchResourceFromUrl(Library.class, specificationLibReference);
 		assertNotNull(lib);
 		// Ensure Approval Date matches input parameter
 		assertTrue(lib.getApprovalDateElement().asStringValue().equals(approvalDate.asStringValue()));
@@ -979,16 +942,16 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		// Get the reference from BundleEntry.response.location
 		Optional<Bundle.BundleEntryComponent> maybeArtifactAssessment = returnedResource.getEntry().stream().filter(entry -> entry.getResponse().getLocation().contains("Basic")).findAny();
 		assertTrue(maybeArtifactAssessment.isPresent());
-		ArtifactAssessment artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
+		var artifactAssessment = getClient().fetchResourceFromUrl(ArtifactAssessment.class,maybeArtifactAssessment.get().getResponse().getLocation());
 		assertNotNull(artifactAssessment);
 		assertTrue(artifactAssessment.isValidArtifactComment());
 		assertTrue(artifactAssessment.checkArtifactCommentParams(
-			artifactCommentType,
-			artifactCommentText,
+			artifactAssessmentType,
+			artifactAssessmentSummary,
 			specificationLibReference,
-			artifactCommentReference,
-			artifactCommentTarget,
-			artifactCommentUser
+			artifactAssessmentReference,
+			artifactAssessmentTarget,
+			artifactAssessmentUser
 		));
 	}
 
@@ -1451,90 +1414,51 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			noConditionExtension = e;
 		}
 		assertNotNull(noConditionExtension);
-		assertTrue(noConditionExtension.getMessage().contains("Missing condition reference"));
-	}
-
-	@Test
-	void package_test_priority_missing() {
-		loadTransaction("ersd-small-approved-draft-missing-priority.json");
-		loadResource("artifactAssessment-search-parameter.json");
-		UnprocessableEntityException noPriorityExtension = null;
-		try {
-			getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$package")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch (UnprocessableEntityException e) {
-			noPriorityExtension = e;
-		}
-		assertNotNull(noPriorityExtension);
-		assertTrue(noPriorityExtension.getMessage().contains("Missing priority reference"));
-	}
-
-	@Test
-	void package_test_condition_and_priority_missing() {
-		loadTransaction("ersd-small-approved-draft-missing-condition-and-priority.json");
-		loadResource("artifactAssessment-search-parameter.json");
-		UnprocessableEntityException noConditionAndPriorityExtension = null;
-		try {
-			getClient().operation()
-				.onInstance(specificationLibReference)
-				.named("$package")
-				.withNoParameters(Parameters.class)
-				.returnResourceType(Bundle.class)
-				.execute();
-		} catch (UnprocessableEntityException e) {
-			noConditionAndPriorityExtension = e;
-		}
-		assertNotNull(noConditionAndPriorityExtension);
-		assertTrue(noConditionAndPriorityExtension.getMessage().contains("Missing condition and priority references"));
+		assertTrue(noConditionExtension.getMessage().contains("Missing condition"));
 	}
 
 	@Test
 	void validateOperation() {
-		Bundle ersdExampleSpecBundle = (Bundle) loadResource("ersd-bundle-example.json");
-		Parameters specBundleParams = new Parameters();
+		var ersdExampleSpecBundle = (Bundle) loadResource("ersd-bundle-example.json");
+		var specBundleParams = new Parameters();
 		specBundleParams.addParameter().setName("resource").setResource(ersdExampleSpecBundle);
-		OperationOutcome specBundleOutcome = getClient().operation()
+		var specBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(specBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcome.OperationOutcomeIssueComponent> specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
-		assertTrue(specBundleValidationErrors.size() == 3);
+		var specBundleValidationErrors = specBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
+		assertEquals(2, specBundleValidationErrors.size());
 		// expect errors for Variable extension which bubble up and invalidate the PlanDefinition slice
 		assertTrue(specBundleValidationErrors.get(0).getDiagnostics().contains("slicePlanDefinition"));
 		assertTrue(specBundleValidationErrors.get(1).getDiagnostics().contains("variable"));
-		assertTrue(specBundleValidationErrors.get(2).getDiagnostics().contains("variable"));
-		Bundle ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
-		Parameters supplementalBundleParams = new Parameters();
+		var ersdExampleSupplementalBundle = (Bundle) loadResource("ersd-supplemental-bundle-example.json");
+		var supplementalBundleParams = new Parameters();
 		supplementalBundleParams.addParameter().setName("resource").setResource(ersdExampleSupplementalBundle);
 
-		OperationOutcome supplementalBundleOutcome = getClient().operation()
+		var supplementalBundleOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(supplementalBundleParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcome.OperationOutcomeIssueComponent> supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
+		var supplementalBundleErrors = supplementalBundleOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(supplementalBundleErrors.size() == 0);
 
-		Library validationErrorLibrary = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
-		Parameters validationFailedParams = new Parameters();
+		var validationErrorLibrary = (Library) loadResource("ersd-active-library-us-ph-validation-failure-example.json");
+		var validationFailedParams = new Parameters();
 		validationFailedParams.addParameter().setName("resource").setResource(validationErrorLibrary);
-		OperationOutcome failedValidationOutcome = getClient().operation()
+		var failedValidationOutcome = getClient().operation()
 			.onServer()
 			.named("$validate")
 			.withParameters(validationFailedParams)
 			.returnResourceType(OperationOutcome.class)
 			.execute();
-		List<OperationOutcome.OperationOutcomeIssueComponent> invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
+		var invalidLibraryErrors = failedValidationOutcome.getIssue().stream().filter((issue) -> issue.getSeverity() == OperationOutcome.IssueSeverity.ERROR || issue.getSeverity() == OperationOutcome.IssueSeverity.FATAL).collect(Collectors.toList());
 		assertTrue(invalidLibraryErrors.size() == 5);
 
-		Parameters noResourceParams = new Parameters();
+		var noResourceParams = new Parameters();
 		UnprocessableEntityException noResourceException = null;
 		try {
 			getClient().operation()

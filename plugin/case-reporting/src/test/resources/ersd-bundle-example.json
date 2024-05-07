@@ -82,7 +82,7 @@
 					},
 					{
 						"type": "composed-of",
-						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example",
+						"resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example|1.0.0.0",
 						"extension": [
 							{
 								"url": "http://hl7.org/fhir/StructureDefinition/crmi-isOwned",
