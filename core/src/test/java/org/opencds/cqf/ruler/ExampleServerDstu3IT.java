@@ -1,8 +1,18 @@
 package org.opencds.cqf.ruler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ca.uhn.fhir.cr.config.RepositoryConfig;
+import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.CacheControlDirective;
+import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,21 +25,36 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, JpaStarterWebsocketDispatcherConfig.class}, properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+	classes = {
+		Application.class,
+		RepositoryConfig.class
+	}, properties =
+	{
+		"spring.profiles.include=storageSettingsTest",
 		"spring.datasource.url=jdbc:h2:mem:dbr3",
 		"hapi.fhir.fhir_version=dstu3",
+		"hapi.fhir.cr_enabled=true",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.allow_placeholder_references=true",
-		"spring.main.allow-bean-definition-overriding=true"})
-class ExampleServerDstu3IT {
-	private IGenericClient ourClient;
+		"spring.main.allow-bean-definition-overriding=true"
+	})
 
-	@Autowired
+
+class ExampleServerDstu3IT implements IServerSupport {
+
+	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerDstu3IT.class);
+	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 
 	@Autowired
@@ -37,7 +62,6 @@ class ExampleServerDstu3IT {
 
 	@LocalServerPort
 	private int port;
-
 
 	@BeforeEach
 	void beforeEach() {
@@ -50,8 +74,8 @@ class ExampleServerDstu3IT {
 	}
 
 	@Test
-	@DirtiesContext
 	void testCreateAndRead() {
+
 		String methodName = "testCreateResourceConditional";
 
 		Patient pt = new Patient();
