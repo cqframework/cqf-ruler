@@ -67,7 +67,7 @@ public class ImportBundleProducer {
 	}
 
 	private static void addModelGrouperUseContextIfMissing(ValueSet vs) {
-		if(isModelGrouperUseContextMissing(vs)){
+		if (isModelGrouperUseContextMissing(vs)) {
 			UsageContext usageContext = new UsageContext();
 
 			Coding code = new Coding();
