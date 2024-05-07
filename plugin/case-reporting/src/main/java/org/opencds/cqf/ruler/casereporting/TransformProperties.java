@@ -30,8 +30,12 @@ public class TransformProperties implements DaoRegistryUser {
   public static final String valueSetGrouperProfile = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-groupervalueset";
   public static final String leafValueSetConditionProfile = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-conditionvalueset";
   public static final String leafValueSetVsmHostedProfile = "http://aphl.org/fhir/vsm/StructureDefinition/vsm-hostedvalueset";
+  public static final String grouperUsageContextCodeURL = "http://aphl.org/fhir/vsm/CodeSystem/usage-context-type";
+  public static final String grouperUsageContextCodableConceptSystemURL = "http://aphl.org/fhir/vsm/CodeSystem/usage-context-type";
+
 
   public DaoRegistry getDaoRegistry() {
     return myDaoRegistry;
   }
+
 }

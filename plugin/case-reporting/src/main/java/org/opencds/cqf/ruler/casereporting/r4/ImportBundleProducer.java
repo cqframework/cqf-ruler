@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Meta;
@@ -56,6 +57,35 @@ public class ImportBundleProducer {
 		return resource.hasMeta() && resource.getMeta().hasProfile(TransformProperties.usPHSpecLibProfile);
 	}
 
+	private static boolean isModelGrouperUseContextMissing(ValueSet vs) {
+		return vs.getUseContext().stream()
+			.noneMatch(uc ->
+				uc.getValue() instanceof CodeableConcept &&
+					uc.getValueCodeableConcept().getCodingFirstRep().getCode().equals("model-grouper") &&
+					uc.getCode().getCode().equals("grouper-type")
+			);
+	}
+
+	private static void addModelGrouperUseContextIfMissing(ValueSet vs) {
+		if (isModelGrouperUseContextMissing(vs)) {
+			UsageContext usageContext = new UsageContext();
+
+			Coding code = new Coding();
+			code.setSystem(TransformProperties.grouperUsageContextCodeURL);
+			code.setCode("grouper-type");
+
+			Coding valueCodeableConceptCoding = new Coding();
+			valueCodeableConceptCoding.setCode("model-grouper");
+			valueCodeableConceptCoding.setSystem(TransformProperties.grouperUsageContextCodableConceptSystemURL);
+
+			usageContext.setCode(code);
+			usageContext.getValueCodeableConcept().setText("Model grouper");
+			usageContext.getValueCodeableConcept().getCoding().add(valueCodeableConceptCoding);
+
+			vs.addUseContext(usageContext);
+		}
+	}
+
 	public static List<Bundle.BundleEntryComponent> transformImportBundle(Bundle parameterBundle, TransformProperties transformProperties) throws FhirResourceExists {
 		// store for processing root library
 		HashMap<String, List<CodeableConcept>> conditionsMap = new HashMap<>();
@@ -77,6 +107,7 @@ public class ImportBundleProducer {
 						ValueSet valueSet = (ValueSet) resource;
 						String pinnedVersionKey = valueSet.getVersion() == null ? valueSet.getUrl() : valueSet.getUrl() + "|" + valueSet.getVersion();
 						if (isGrouper(valueSet)) {
+							addModelGrouperUseContextIfMissing(valueSet);
 							List<CanonicalType> grouperProfiles = addMetaProfileUrl(valueSet.getMeta(), Collections.singletonList(TransformProperties.valueSetGrouperProfile));
 							valueSet.getMeta().setProfile(grouperProfiles);
 							groupers.add(pinnedVersionKey);
