@@ -58,7 +58,7 @@ public class TransformLibraryTest extends RestIntegrationTest {
 
 		// Extract targeted ValueSet to check for import conformance
 		Optional<Bundle.BundleEntryComponent> preImportBundleEntry = v2Bundle.getEntry().stream()
-			.filter(i -> i.getFullUrl().equals(targetedValueSetUrl))
+			.filter(i -> i.getFullUrl().equals(targetedValueSetUrl + "|" + targetedPinnedValueSetVersion))
 			.findFirst();
 
 		ValueSet preImportValueSet = (ValueSet) preImportBundleEntry.get().getResource();
