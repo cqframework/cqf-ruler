@@ -143,8 +143,8 @@ This table maintains a current view of what operations have migrated out of this
 | CR             | Measure               | $evaluate-measure            | migrated    |
 | CR             | Measure               | $submit-data                 | migrated    |
 | CR             | Measure               | $care-gaps                   | migrated    |
-| CR             | Measure               | $data-requirements           | To do       |
-| CR             | Measure               | $collect-data                | To do       |
+| CR             | Measure               | $data-requirements           | migrated    |
+| CR             | Measure               | $collect-data                | migrated    |
 | CR             | PlanDefinition        | $apply                       | migrated    |
 | CR             | PlanDefinition        | $package                     | migrated    |
 | CR             | ActivityDefinition    | $apply                       | migrated    |
