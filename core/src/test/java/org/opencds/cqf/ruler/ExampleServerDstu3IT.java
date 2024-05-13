@@ -44,6 +44,8 @@ import java.util.List;
 		"spring.datasource.url=jdbc:h2:mem:dbr3",
 		"hapi.fhir.fhir_version=dstu3",
 		"hapi.fhir.cr_enabled=true",
+		"hapi.fhir.mdm_enabled=false",
+		"spring.batch.enabled=false",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.allow_placeholder_references=true",
