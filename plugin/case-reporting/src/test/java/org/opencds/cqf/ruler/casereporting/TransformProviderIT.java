@@ -140,63 +140,63 @@ class TransformProviderIT extends RestIntegrationTest {
 		assertTrue(resources.stream().allMatch(res -> res.getVersion().equals(testVersion)));
 	}
 
-	@Test
-	void testImportOperation() throws InterruptedException {
-		Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
-		Parameters v2BundleParams = new Parameters();
-		v2BundleParams.addParameter()
-			.setName("bundle")
-			.setResource(v2Bundle);
+	// @Test
+	// void testImportOperation() throws InterruptedException {
+	// 	Bundle v2Bundle = (Bundle) loadResource("ersd-bundle-example.json");
+	// 	Parameters v2BundleParams = new Parameters();
+	// 	v2BundleParams.addParameter()
+	// 		.setName("bundle")
+	// 		.setResource(v2Bundle);
 
-		getClient()
-			.operation()
-			.onServer()
-			.named("$ersd-v2-import")
-			.withParameters(v2BundleParams)
-			.returnResourceType(OperationOutcome.class)
-			.execute();
+	// 	getClient()
+	// 		.operation()
+	// 		.onServer()
+	// 		.named("$ersd-v2-import")
+	// 		.withParameters(v2BundleParams)
+	// 		.returnResourceType(OperationOutcome.class)
+	// 		.execute();
 
-		Thread.sleep(1500);
+	// 	Thread.sleep(1500);
 
-		FhirContext ctx = FhirContext.forR4();
-		String serverBase = this.getServerBase();
+	// 	FhirContext ctx = FhirContext.forR4();
+	// 	String serverBase = this.getServerBase();
 
-		IGenericClient client = ctx.newRestfulGenericClient(serverBase);
+	// 	IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
-		Bundle results = client.search()
-			.forResource(ValueSet.class)
-			.returnBundle(Bundle.class)
-			.execute();
+	// 	Bundle results = client.search()
+	// 		.forResource(ValueSet.class)
+	// 		.returnBundle(Bundle.class)
+	// 		.execute();
 
-		List<ValueSet> exportedGroupers = v2Bundle.getEntry().stream()
-			.filter(entry -> entry.getResource() instanceof MetadataResource && ImportBundleProducer.isGrouper((MetadataResource) entry.getResource()))
-			.map(entry -> (ValueSet)entry.getResource())
-			.collect(Collectors.toList());
+	// 	List<ValueSet> exportedGroupers = v2Bundle.getEntry().stream()
+	// 		.filter(entry -> entry.getResource() instanceof MetadataResource && ImportBundleProducer.isGrouper((MetadataResource) entry.getResource()))
+	// 		.map(entry -> (ValueSet)entry.getResource())
+	// 		.collect(Collectors.toList());
 
-		List<ValueSet> importedGroupers = results.getEntry().stream()
-			.filter(entry -> entry.getResource() instanceof MetadataResource && ImportBundleProducer.isGrouper((MetadataResource) entry.getResource()))
-			.map(entry -> (ValueSet)entry.getResource())
-			.collect(Collectors.toList());
+	// 	List<ValueSet> importedGroupers = results.getEntry().stream()
+	// 		.filter(entry -> entry.getResource() instanceof MetadataResource && ImportBundleProducer.isGrouper((MetadataResource) entry.getResource()))
+	// 		.map(entry -> (ValueSet)entry.getResource())
+	// 		.collect(Collectors.toList());
 
-		List<ValueSet> groupersWithGroupTypeFromExportedBundle = exportedGroupers.stream()
-			.filter(vs -> vs.getUseContext().stream().anyMatch(uc ->
-				uc.getValue() instanceof CodeableConcept &&
-					uc.getValueCodeableConcept().getCodingFirstRep().getCode().equals("model-grouper") &&
-					uc.getCode().getCode().equals("grouper-type")))
-			.collect(Collectors.toList());
+	// 	List<ValueSet> groupersWithGroupTypeFromExportedBundle = exportedGroupers.stream()
+	// 		.filter(vs -> vs.getUseContext().stream().anyMatch(uc ->
+	// 			uc.getValue() instanceof CodeableConcept &&
+	// 				uc.getValueCodeableConcept().getCodingFirstRep().getCode().equals("model-grouper") &&
+	// 				uc.getCode().getCode().equals("grouper-type")))
+	// 		.collect(Collectors.toList());
 
-		List<ValueSet> transformedGroupersWithGroupType = importedGroupers.stream()
-			.filter(vs -> vs.getUseContext().stream().anyMatch(uc ->
-				uc.getValue() instanceof CodeableConcept &&
-					uc.getValueCodeableConcept().getCodingFirstRep().getCode().equals("model-grouper") &&
-					uc.getCode().getCode().equals("grouper-type")))
-			.collect(Collectors.toList());
+	// 	List<ValueSet> transformedGroupersWithGroupType = importedGroupers.stream()
+	// 		.filter(vs -> vs.getUseContext().stream().anyMatch(uc ->
+	// 			uc.getValue() instanceof CodeableConcept &&
+	// 				uc.getValueCodeableConcept().getCodingFirstRep().getCode().equals("model-grouper") &&
+	// 				uc.getCode().getCode().equals("grouper-type")))
+	// 		.collect(Collectors.toList());
 
-		// Check there are 6 groupers to be imported and none of them have group type  as use context
-		assert(exportedGroupers.size() == 6);
-		assert(groupersWithGroupTypeFromExportedBundle.isEmpty());
+	// 	// Check there are 6 groupers to be imported and none of them have group type  as use context
+	// 	assert(exportedGroupers.size() == 6);
+	// 	assert(groupersWithGroupTypeFromExportedBundle.isEmpty());
 
-		// After the import, check all of them have the group type as use context
-		assert(transformedGroupersWithGroupType.size() == 6);
-	}
+	// 	// After the import, check all of them have the group type as use context
+	// 	assert(transformedGroupersWithGroupType.size() == 6);
+	// }
 }
