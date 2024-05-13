@@ -38,7 +38,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 	classes = {
 		Application.class,
-		RepositoryConfig.class
+		JpaStarterWebsocketDispatcherConfig.class
 	}, properties =
 	{
 		"spring.profiles.include=storageSettingsTest",
@@ -50,6 +50,7 @@ import java.util.List;
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.allow_placeholder_references=true",
+		"hapi.fhir.enable_repository_validating_interceptor=true",
 		"spring.main.allow-bean-definition-overriding=true"
 	})
 
