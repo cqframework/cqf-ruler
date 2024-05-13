@@ -909,15 +909,15 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 		var artifactAssessmentType = "comment";
 		var artifactAssessmentSummary = "comment text";
 		var artifactAssessmentTarget= "http://hl7.org/fhir/us/ecr/Library/SpecificationLibrary|1.0.0";
-		var artifactAssessmentReference="reference-valid-no-spaces";
-		var artifactAssessmentUser= "Practitioner/sample-practitioner";
+		var artifactAssessmentRelatedArtifact="reference-valid-no-spaces";
+		var artifactAssessmentAuthor= "Practitioner/sample-practitioner";
 		var params = new Parameters();
 		params.addParameter("approvalDate", approvalDate);
 		params.addParameter("artifactAssessmentType", new CodeType(artifactAssessmentType));
 		params.addParameter("artifactAssessmentSummary", new MarkdownType(artifactAssessmentSummary));
 		params.addParameter("artifactAssessmentTarget", new CanonicalType(artifactAssessmentTarget));
-		params.addParameter("artifactAssessmentReference", new CanonicalType(artifactAssessmentReference));
-		params.addParameter("artifactAssessmentUser", new Reference(artifactAssessmentUser));
+		params.addParameter("artifactAssessmentRelatedArtifact", new CanonicalType(artifactAssessmentRelatedArtifact));
+		params.addParameter("artifactAssessmentAuthor", new Reference(artifactAssessmentAuthor));
 
 		Bundle returnedResource = null;
 		returnedResource = getClient().operation()
@@ -949,9 +949,9 @@ class CaseReportingOperationProviderTest extends RestIntegrationTest {
 			artifactAssessmentType,
 			artifactAssessmentSummary,
 			specificationLibReference,
-			artifactAssessmentReference,
+			artifactAssessmentRelatedArtifact,
 			artifactAssessmentTarget,
-			artifactAssessmentUser
+			artifactAssessmentAuthor
 		));
 	}
 
