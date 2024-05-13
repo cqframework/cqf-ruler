@@ -26,6 +26,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
@@ -76,6 +77,7 @@ class ExampleServerDstu3IT implements IServerSupport {
 	}
 
 	@Test
+	@DirtiesContext
 	void testCreateAndRead() {
 
 		String methodName = "testCreateResourceConditional";
