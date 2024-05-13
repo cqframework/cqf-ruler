@@ -23,7 +23,8 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 		"hapi.fhir.fhir_version=r5",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.mdm_enabled=false",
-		"spring.main.allow-bean-definition-overriding=true"
+		"spring.main.allow-bean-definition-overriding=true",
+		"spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles-dstu2",
 })
 public class ExampleServerR5IT {
 

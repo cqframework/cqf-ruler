@@ -51,7 +51,8 @@ import java.util.List;
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.allow_placeholder_references=true",
 		"hapi.fhir.enable_repository_validating_interceptor=true",
-		"spring.main.allow-bean-definition-overriding=true"
+		"spring.main.allow-bean-definition-overriding=true",
+		"spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles-dstu3",
 	})
 
 

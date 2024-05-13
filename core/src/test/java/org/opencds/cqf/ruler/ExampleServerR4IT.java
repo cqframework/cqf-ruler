@@ -40,7 +40,8 @@ import ca.uhn.fhir.util.BundleUtil;
 				// Override is currently required when using MDM as the construction of the MDM
 				// beans are ambiguous as they are constructed multiple places. This is evident
 				// when running in a spring boot environment
-				"spring.main.allow-bean-definition-overriding=true"
+				"spring.main.allow-bean-definition-overriding=true",
+				"spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles-r4",
 		})
 public class ExampleServerR4IT implements IServerSupport {
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);
