@@ -11,7 +11,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>case-reporting</module>
 		<module>cds-hooks</module>
 		<module>dev-tools</module>
 		<module>sdc</module>
