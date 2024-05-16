@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -242,6 +240,11 @@
 			<groupId>jakarta.interceptor</groupId>
 			<artifactId>jakarta.interceptor-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-cds-hooks</artifactId>
+			<version>0.15.0-SNAPSHOT</version>
+		</dependency>
 
 		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 		<dependency>
@@ -255,26 +258,12 @@
 			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-case-reporting</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cds-hooks</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-dev-tools</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
-
-		<!-- runtime only dependencies for developing plugins -->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-ra</artifactId>

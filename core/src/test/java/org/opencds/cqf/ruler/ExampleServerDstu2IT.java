@@ -23,7 +23,8 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 				"hapi.fhir.fhir_version=dstu2",
 				"spring.datasource.url=jdbc:h2:mem:dbr2",
 				"hapi.fhir.cr.enabled=false",
-				"spring.main.allow-bean-definition-overriding=true"
+				"spring.main.allow-bean-definition-overriding=true",
+				"spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles-dstu2",
 		})
 public class ExampleServerDstu2IT {
 

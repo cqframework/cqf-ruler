@@ -1,13 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-	<configuration default="false" name="Launch Server (Live Reload)" type="Application" factoryName="Application">
-		<option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-1.8" />
-		<option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-		<option name="INCLUDE_PROVIDED_SCOPE" value="true" />
-		<option name="MAIN_CLASS_NAME" value="org.opencds.cqf.ruler.Application" />
-		<module name="cqf-ruler-server" />
-		<option name="VM_PARAMETERS" value="-XX:TieredStopAtLevel=1" />
-		<method v="2">
-			<option name="Make" enabled="true" />
-		</method>
-	</configuration>
+  <configuration default="false" name="Launch Server R4 (Live Reload)" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="org.opencds.cqf.ruler.Application" />
+    <module name="cqf-ruler-server" />
+    <option name="VM_PARAMETERS" value="-XX:TieredStopAtLevel=1 -Ddebug=true -Dloader.debug=true -Dhapi.fhir.bulk_export_enabled=false -Dhapi.fhir.bulk_import_enabled=false -Dhapi.fhir.mdm_enabled=false -Dspring.batch.job.enabled=false -Dspring.datasource.url=jdbc:h2:mem:test_mem -Dspring.datasource.dataClassName=org.h2.Driver -Dspring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect -Dhapi.fhir.cdshooks.enabled=true -Dhapi.fhir.cr.enabled=true -Dspring.main.allow-bean-definition-overriding=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
 </component>

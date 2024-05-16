@@ -19,6 +19,10 @@ This system is very basic. It does not support runtime addition or removal of pl
 
 NOTE: This plugin is for demonstration purposes only. It's never intended to be published
 
+## Build
+
+Use `mvn package` to build the jar files
+
 ## Docker
 
 The Dockerfile builds on top of the base cqf-ruler image and simply copies the jar into the `plugin` directory of the image.

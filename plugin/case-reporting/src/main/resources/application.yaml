@@ -1,4 +1,0 @@
-hapi:
-  fhir:
-    casereporting:
-      enabled: true

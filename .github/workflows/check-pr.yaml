@@ -13,4 +13,4 @@ jobs:
               distribution: temurin
               java-version: 21
          - name: Run Checks
-           run: mvn --batch-mode --no-transfer-progress --update-snapshots verify
+           run: ./mvnw -T 4 --batch-mode --no-transfer-progress --update-snapshots verify

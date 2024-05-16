@@ -62,7 +62,6 @@
 	</developers>
 
 	<modules>
-		<module>example</module>
 		<module>external</module>
 		<module>test</module>
 		<module>core</module>
@@ -87,11 +86,11 @@
 	</distributionManagement>
 
 	<properties>
-		<clinical-reasoning.version>3.2.0</clinical-reasoning.version>
+		<clinical-reasoning.version>3.4.0</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>7.1.7-SNAPSHOT</hapi_version>
+		<hapi_version>7.1.11-SNAPSHOT</hapi_version>
 		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -142,7 +141,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>org.simplejavamail</groupId>
 				<artifactId>simple-java-mail</artifactId>
@@ -518,11 +516,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.6.3</version>
 					<configuration>
 						<source>11</source>
 						<failOnWarnings>false</failOnWarnings>
-						<failOnErrors>true</failOnErrors>
 						<doclint>-missing</doclint>
 						<quiet>true</quiet>
 					</configuration>

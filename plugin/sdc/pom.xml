@@ -6,9 +6,5 @@
 		<artifactId>cqf-ruler-plugin</artifactId>
 		<version>0.15.0-SNAPSHOT</version>
 	</parent>
-
 	<artifactId>cqf-ruler-sdc</artifactId>
-	<dependencies>
-
-	</dependencies>
 </project>

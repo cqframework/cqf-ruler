@@ -8,7 +8,4 @@
 	</parent>
 
 	<artifactId>cqf-ruler-dev-tools</artifactId>
-	<dependencies>
-
-	</dependencies>
 </project>

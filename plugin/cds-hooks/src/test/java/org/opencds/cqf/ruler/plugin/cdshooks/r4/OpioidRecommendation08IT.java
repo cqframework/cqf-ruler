@@ -16,7 +16,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.r4.model.IdType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
@@ -35,6 +38,7 @@ import com.google.gson.JsonObject;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cr.enabled=true" })
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OpioidRecommendation08IT extends RestIntegrationTest {
 
 	@Autowired
@@ -47,6 +51,7 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
 	}
 
 	@Test
+	@Order(2)
 	void testOpioidRecommendation08OrderSignWithoutPrefetch() {
 		loadTransaction("opioidcds-08-order-sign-bundle.json");
 		loadResource("opioidcds-08-patient.json");
@@ -75,6 +80,7 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
 	}
 
 	@Test
+	@Order(1)
 	void testOpioidRecommendation08OrderSignWithPrefetch() {
 		loadTransaction("opioidcds-08-order-sign-bundle.json");
 		loadResource("opioidcds-08-medication.json");
