@@ -272,6 +272,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-ecr</artifactId>
+			<version>0.15.0-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-sdc</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
@@ -300,6 +306,7 @@
 						</goals>
 						<configuration>
 							<mainClass>org.opencds.cqf.ruler.Application</mainClass>
+							<loaderImplementation>CLASSIC</loaderImplementation>
 						</configuration>
 					</execution>
 				</executions>
