@@ -74,6 +74,7 @@ hapi:
 
       ## CR Settings
       cr:
+         enabled: true
          cql:
             use_embedded_libraries: true
             compiler:

@@ -240,11 +240,6 @@
 			<groupId>jakarta.interceptor</groupId>
 			<artifactId>jakarta.interceptor-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-cds-hooks</artifactId>
-			<version>0.15.0-SNAPSHOT</version>
-		</dependency>
 
 		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 		<dependency>
@@ -279,6 +274,12 @@
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-security</artifactId>
+			<version>0.15.0-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-cds-hooks</artifactId>
 			<version>0.15.0-SNAPSHOT</version>
 			<scope>runtime</scope>
 		</dependency>
