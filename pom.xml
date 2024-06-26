@@ -284,11 +284,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
-				<artifactId>cqf-fhir-utility</artifactId>
-				<version>${clinical-reasoning.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-jackson</artifactId>
 				<version>${clinical-reasoning.version}</version>
 				<type>pom</type>
