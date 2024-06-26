@@ -86,7 +86,7 @@
 	</distributionManagement>
 
 	<properties>
-		<clinical-reasoning.version>3.4.0</clinical-reasoning.version>
+		<clinical-reasoning.version>3.7.0</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
@@ -280,6 +280,11 @@
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-cql</artifactId>
+				<version>${clinical-reasoning.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-utility</artifactId>
 				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>
