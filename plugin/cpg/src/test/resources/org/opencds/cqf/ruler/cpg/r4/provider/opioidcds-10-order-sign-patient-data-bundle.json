@@ -1,0 +1,1588 @@
+{
+	"resourceType": "Bundle",
+	"type": "transaction",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "Patient",
+				"id": "ejwbAxeb2soWEsIm6r4GJnw3",
+				"gender": "female",
+				"birthDate": "1970-10-09"
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Patient/ejwbAxeb2soWEsIm6r4GJnw3"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "MedicationRequest",
+				"id": "eO2BcISsXCa-3hipIYFD0CZggeze5fydBQBYi6frgXcw3",
+				"identifier": [
+					{
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.798268",
+						"value": "30708338"
+					}
+				],
+				"status": "active",
+				"intent": "order",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+								"code": "community",
+								"display": "Community"
+							}
+						],
+						"text": "Community"
+					}
+				],
+				"medicationReference": {
+					"reference": "Medication/oxycodone-medication",
+					"display": "oxyCODONE (OxyCONTIN) 12 hr tablet"
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/ehpsxz6ocrHOt4S9rzYknhA3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436008"
+					},
+					"display": "Office Visit"
+				},
+				"authoredOn": "2024-07-08",
+				"requester": {
+					"reference": "Practitioner/edVgNmZO8PsofzicgHOR39A3",
+					"type": "Practitioner",
+					"display": "Physician Family Medicine, MD"
+				},
+				"recorder": {
+					"reference": "Practitioner/edVgNmZO8PsofzicgHOR39A3",
+					"type": "Practitioner",
+					"display": "Physician Family Medicine, MD"
+				},
+				"reasonCode": [
+					{
+						"coding": [
+							{
+								"system": "http://snomed.info/sct",
+								"code": "161891005",
+								"display": "Backache (finding)"
+							},
+							{
+								"system": "http://hl7.org/fhir/sid/icd-9-cm",
+								"code": "724.5",
+								"display": "Back pain, unspecified back location, unspecified back pain laterality, unspecified chronicity"
+							},
+							{
+								"system": "http://hl7.org/fhir/sid/icd-10-cm",
+								"code": "M54.9",
+								"display": "Back pain, unspecified back location, unspecified back pain laterality, unspecified chronicity"
+							}
+						],
+						"text": "Back pain, unspecified back location, unspecified back pain laterality, unspecified chronicity"
+					}
+				],
+				"courseOfTherapyType": {
+					"coding": [
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+							"code": "acute",
+							"display": "Short course (acute) therapy"
+						}
+					],
+					"text": "Short course (acute) therapy"
+				},
+				"dosageInstruction": [
+					{
+						"text": "Take 1 tablet (80 mg total) by mouth every 12 (twelve) hours., Starting Tue 7/2/2024, Until Thu 8/1/2024, Print",
+						"patientInstruction": "Take 1 tablet (80 mg total) by mouth every 12 (twelve) hours.",
+						"timing": {
+							"repeat": {
+								"boundsPeriod": {
+									"start": "2024-07-08"
+								},
+								"count": 60,
+								"frequency": 1,
+								"period": 12,
+								"periodUnit": "h"
+							},
+							"code": {
+								"text": "every 12 (twelve) hours"
+							}
+						},
+						"asNeededBoolean": false,
+						"route": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "26643006",
+									"display": "Oral route (qualifier value)"
+								},
+								{
+									"system": "urn:oid:1.2.840.114350.1.13.301.3.7.4.798268.7025",
+									"code": "15",
+									"display": "Oral"
+								}
+							],
+							"text": "Oral"
+						},
+						"method": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "419652001",
+									"display": "Take"
+								}
+							],
+							"text": "Take"
+						},
+						"doseAndRate": [
+							{
+								"type": {
+									"coding": [
+										{
+											"system": "http://epic.com/CodeSystem/dose-rate-type",
+											"code": "calculated",
+											"display": "calculated"
+										}
+									],
+									"text": "calculated"
+								},
+								"doseQuantity": {
+									"value": 80,
+									"unit": "mg",
+									"system": "http://unitsofmeasure.org",
+									"code": "mg"
+								}
+							},
+							{
+								"type": {
+									"coding": [
+										{
+											"system": "http://epic.com/CodeSystem/dose-rate-type",
+											"code": "admin-amount",
+											"display": "admin-amount"
+										}
+									],
+									"text": "admin-amount"
+								},
+								"doseQuantity": {
+									"value": 1,
+									"unit": "tablet",
+									"system": "http://unitsofmeasure.org",
+									"code": "{tbl}"
+								}
+							},
+							{
+								"type": {
+									"coding": [
+										{
+											"system": "http://epic.com/CodeSystem/dose-rate-type",
+											"code": "ordered",
+											"display": "ordered"
+										}
+									],
+									"text": "ordered"
+								},
+								"doseQuantity": {
+									"value": 80,
+									"unit": "mg",
+									"system": "http://unitsofmeasure.org",
+									"code": "mg"
+								}
+							}
+						]
+					}
+				],
+				"dispenseRequest": {
+					"validityPeriod": {
+						"start": "2024-07-08"
+					},
+					"numberOfRepeatsAllowed": 0,
+					"quantity": {
+						"value": 60,
+						"unit": "tablet"
+					},
+					"expectedSupplyDuration": {
+						"value": 30,
+						"unit": "Day",
+						"system": "http://unitsofmeasure.org",
+						"code": "d"
+					}
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "MedicationRequest/eO2BcISsXCa-3hipIYFD0CZggeze5fydBQBYi6frgXcw3"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Medication",
+				"id": "oxycodone-medication",
+				"identifier": [
+					{
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.698288",
+						"value": "173935"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://www.whocc.no/atc",
+							"code": "N02AA05"
+						},
+						{
+							"system": "urn:oid:2.16.840.1.113883.6.208",
+							"code": "72868"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "7804"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "82063"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "159821"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1860148"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "218129"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "218986"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "218987"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "219160"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "219740"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "352858"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "541043"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "541047"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "602169"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "607620"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "790841"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1113310"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1664443"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1944530"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1049601"
+						}
+					],
+					"text": "oxyCODONE (OxyCONTIN) 12 hr tablet"
+				},
+				"form": {
+					"coding": [
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.4.698288.310",
+							"code": "TR12",
+							"display": "tablet,oral only,ext.rel.12 hr"
+						}
+					],
+					"text": "tablet,oral only,ext.rel.12 hr"
+				},
+				"ingredient": [
+					{
+						"itemCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://www.whocc.no/atc",
+									"code": "N02AA05"
+								},
+								{
+									"system": "urn:oid:2.16.840.1.113883.6.208",
+									"code": "72868"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "7804"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "82063"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "159821"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1860148"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "218129"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "218986"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "218987"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "219160"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "219740"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "352858"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "541043"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "541047"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "602169"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "607620"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "790841"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1113310"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1664443"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1944530"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1049601"
+								}
+							],
+							"text": "oxyCODONE (OxyCONTIN) 12 hr tablet"
+						},
+						"strength": {
+							"numerator": {
+								"value": 80,
+								"unit": "mg",
+								"system": "http://unitsofmeasure.org",
+								"code": "mg"
+							},
+							"denominator": {
+								"value": 80,
+								"unit": "mg",
+								"system": "http://unitsofmeasure.org",
+								"code": "mg"
+							}
+						}
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Medication/oxycodone-medication"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "amphetamine-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "19261-7",
+							"display": "Amphetamines [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "11864"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "11864",
+							"display": "Amphetamine Screen, Urine, No Conf."
+						}
+					],
+					"text": "Amphetamine Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/amphetamine-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "barbiturate-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "19270-8",
+							"display": "Barbiturates [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "12133"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "12133",
+							"display": "Barbiturate Screen, Urine, No Conf."
+						}
+					],
+					"text": "Barbiturate Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/barbiturate-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "benzodiazepine-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "14316-4",
+							"display": "Benzodiazepines [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "12193"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "12193",
+							"display": "Benzodiazepines Screen, Urine, No Conf."
+						}
+					],
+					"text": "Benzodiazepines Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/benzodiazepine-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "cannabinoid-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "18282-4",
+							"display": "Cannabinoids [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "12485"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "12485",
+							"display": "Cannabinoids Screen, Urine, No Conf."
+						}
+					],
+					"text": "Cannabinoids Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/cannabinoid-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "cocaine-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "14314-9",
+							"display": "Benzoylecgonine [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "12792"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "12792",
+							"display": "Cocaine Screen, Urine, No Conf."
+						}
+					],
+					"text": "Cocaine Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/cocaine-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "doa-note-1",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/ePlz4dTzlXcxV2qSYZCgGvSxrnh.YeVdbAkrS0NMcQiU3",
+						"display": "Fentanyl, urine, with no confirmation (BH GH L LMW YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "13266"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "13266",
+							"display": "Drugs Of Abuse Note"
+						}
+					],
+					"text": "Drugs Of Abuse Note"
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:46Z",
+				"dataAbsentReason": {
+					"coding": [
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+							"code": "unknown",
+							"display": "Unknown"
+						}
+					],
+					"text": "No value exists"
+				},
+				"note": [
+					{
+						"text": "Formal chain of custody documentation not maintained on \r\nclinical specimens. Results are intended for medical \r\nmanagement purposes only. "
+					}
+				],
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/doa-note-1"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "opiates-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "19295-5",
+							"display": "Opiates [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "15285"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "15285",
+							"display": "Opiates Screen, Urine, No Conf."
+						}
+					],
+					"text": "Opiates Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/opiates-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "oxycodone-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "19642-8",
+							"display": "oxyCODONE [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "15357"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "15357",
+							"display": "Oxycodone Screen, Urine, No Conf."
+						}
+					],
+					"text": "Oxycodone Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/oxycodone-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "pcp-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "14310-7",
+							"display": "Phencyclidine [Presence] in Urine by Screen method >25 ng/mL"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "15557"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "15557",
+							"display": "Phencyclidine (PCP) Screen, Urine, No Conf."
+						}
+					],
+					"text": "Phencyclidine (PCP) Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/pcp-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "methadone-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "18822"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "18822",
+							"display": "Methadone Metabolite Screen, Urine, No Conf."
+						}
+					],
+					"text": "Methadone Metabolite Screen, Urine, No Conf."
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "Negative",
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/methadone-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "fentanyl-lab",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/ePlz4dTzlXcxV2qSYZCgGvSxrnh.YeVdbAkrS0NMcQiU3",
+						"display": "Fentanyl, urine, with no confirmation (BH GH L LMW YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "59673-4",
+							"display": "fentaNYL [Presence] in Urine by Screen method"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "29199"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "29199",
+							"display": "Fentanyl Screen, Urine"
+						}
+					],
+					"text": "Fentanyl Screen, Urine"
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:46Z",
+				"valueString": "Negative",
+				"note": [
+					{
+						"text": "This immunoassay is reported as negative if the reactivity is below that of a 5 ng/mL calibrator. "
+					}
+				],
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				},
+				"referenceRange": [
+					{
+						"text": "Negative"
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/fentanyl-lab"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Observation",
+				"id": "doa-note-2",
+				"basedOn": [
+					{
+						"reference": "ServiceRequest/eTD6QP6VKdZ-fZLhK3Baw5fyI14.AmZNxsyuTKMAIYlg3",
+						"display": "Urine drug screen w/no conf   (BH GH LMH YH)"
+					}
+				],
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "laboratory",
+								"display": "Laboratory"
+							}
+						],
+						"text": "Laboratory"
+					},
+					{
+						"coding": [
+							{
+								"system": "urn:oid:1.2.840.114350.1.13.301.3.7.10.798268.30",
+								"code": "Lab",
+								"display": "Lab"
+							}
+						],
+						"text": "Lab"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.5.737384.234",
+							"code": "29528"
+						},
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.768282",
+							"code": "29528",
+							"display": "Drugs Of Abuse Note"
+						}
+					],
+					"text": "Drugs Of Abuse Note"
+				},
+				"subject": {
+					"reference": "Patient/ejwbAxeb2soWEsIm6r4GJnw3",
+					"display": "Zzzunexp, NegAmbFive"
+				},
+				"encounter": {
+					"reference": "Encounter/e.Zn5mZ3m04gio0XQBlSBOQ3",
+					"identifier": {
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.3.698084.8",
+						"value": "80436338"
+					},
+					"display": "Orders Only"
+				},
+				"effectiveDateTime": "2024-07-09T13:08:00Z",
+				"issued": "2024-07-09T13:08:35Z",
+				"valueString": "See Comment",
+				"note": [
+					{
+						"text": "Drugs of Abuse Note:\r\n- These screening cutoffs are for medical/treatment/clinical purposes only.\r\n- For all non-medical purposes, samples should be referred for confirmatory testing\r\n- The concentration value must be greater than or equal to the cutoff to be reported as positive, and less than the cutoff to be reported as negative.\r\n- Follow-up confirmation testing by mass spectrometry is recommended for unexpected results.\r\n- Interpretive questions should be directed to the laboratory.\r\n- This test was performed in a CLIA certified laboratory.\r\n\r\nAnalyte                            Cutoff (ng/mL) \r\nAmphetamine                        1000 \r\nBarbiturate                        200 \r\nBenzodiazepine                     200 \r\nCannabinoids                       50 \r\nCocaine                            300 \r\nMethadone/Methadone Metabolite*    100 \r\nOpiates                            300 \r\nOxycodone                          100 \r\nPhencyclidine (PCP)                25\r\n\r\n* At BH-MC, GH, and LMH the screening cutoff for Methadone is 300 ng/mL."
+					}
+				],
+				"specimen": {
+					"reference": "Specimen/e4Z0SVTGTgpuMRblxNYxfmw3",
+					"display": "Specimen 24Y-191CH0001"
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Observation/doa-note-2"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Medication",
+				"id": "eyl6Lec3v4ru2gLNoY6SEkA3",
+				"identifier": [
+					{
+						"use": "usual",
+						"system": "urn:oid:1.2.840.114350.1.13.301.3.7.2.698288",
+						"value": "41382"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://www.whocc.no/atc",
+							"code": "N02AB03"
+						},
+						{
+							"system": "urn:oid:2.16.840.1.113883.6.208",
+							"code": "59102"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "4337"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "142436"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1652097"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "577057"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "4336"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "151678"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1237051"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1487612"
+						},
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "583490"
+						}
+					],
+					"text": "fentaNYL (DURAGESIC) patch"
+				},
+				"form": {
+					"coding": [
+						{
+							"system": "urn:oid:1.2.840.114350.1.13.301.3.7.4.698288.310",
+							"code": "PT72",
+							"display": "Patch 72 hr"
+						}
+					],
+					"text": "Patch 72 hr"
+				},
+				"ingredient": [
+					{
+						"itemCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://www.whocc.no/atc",
+									"code": "N02AB03"
+								},
+								{
+									"system": "urn:oid:2.16.840.1.113883.6.208",
+									"code": "59102"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "4337"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "142436"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1652097"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "577057"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "4336"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "151678"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1237051"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "1487612"
+								},
+								{
+									"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+									"code": "583490"
+								}
+							],
+							"text": "fentaNYL (DURAGESIC) patch"
+						},
+						"strength": {
+							"numerator": {
+								"value": 12,
+								"unit": "mcg/hr",
+								"system": "http://unitsofmeasure.org",
+								"code": "ug/h"
+							},
+							"denominator": {
+								"value": 12,
+								"unit": "mcg/hr",
+								"system": "http://unitsofmeasure.org",
+								"code": "ug/h"
+							}
+						}
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Medication/eyl6Lec3v4ru2gLNoY6SEkA3"
+			}
+		}
+	]
+}

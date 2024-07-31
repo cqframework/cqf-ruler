@@ -39,7 +39,11 @@ public class CdsHooksUtil {
 		Bundle contextBundle = new JsonParser(FhirContext.forR4Cached(), new LenientErrorHandler())
 				.parseResource(Bundle.class, contextResources.toString());
 		contextBundle.getEntry().forEach(
-				x -> parameters.addParameter(part("ContextPrescriptions", x.getResource())));
+				x -> {
+					if (x.getResource().fhirType().toLowerCase().endsWith("request") || x.getResource().fhirType().toLowerCase().endsWith("order")) {
+						parameters.addParameter(part("ContextPrescriptions", x.getResource()));
+					}
+				});
 		if (parameters.getParameter().size() == 1) {
 			Extension listExtension = new Extension(
 					"http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
@@ -47,6 +51,22 @@ public class CdsHooksUtil {
 			parameters.getParameterFirstRep().addExtension(listExtension);
 		}
 		return parameters;
+	}
+
+	public static void addNonRequestResourcesFromContextToDataBundle(JsonObject contextResources, Bundle data) {
+		Bundle contextBundle = new JsonParser(FhirContext.forR4Cached(), new LenientErrorHandler())
+			.parseResource(Bundle.class, contextResources.toString());
+		contextBundle.getEntry().forEach(
+			x -> {
+				if (!x.getResource().fhirType().toLowerCase().endsWith("request")
+					&& !x.getResource().fhirType().toLowerCase().endsWith("order")
+					&& data.getEntry().stream().noneMatch(
+						entry -> entry.getResource().getResourceType().equals(x.getResource().getResourceType())
+							&& entry.getResource().getIdPart().equals(x.getResource().getIdPart()))) {
+						data.addEntry().setResource(x.getResource());
+					}
+
+			});
 	}
 
 	public static Parameters getParameters(List<MedicationRequest> draftOrders) {

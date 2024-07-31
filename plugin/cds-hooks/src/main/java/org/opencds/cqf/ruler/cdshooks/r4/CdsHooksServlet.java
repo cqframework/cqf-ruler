@@ -14,17 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.cr.common.HapiTerminologyProvider;
+import ca.uhn.fhir.util.BundleUtil;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.instance.model.api.IBase;
-import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
@@ -36,8 +29,6 @@ import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CDSHooksTransactionInterceptor;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
-import org.opencds.cqf.ruler.cdshooks.LibraryLoaderCache;
-import org.opencds.cqf.ruler.cdshooks.ValueSetCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Card;
@@ -98,6 +89,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	private final ServletRequestDetails requestDetails = new ServletRequestDetails();
 	private R4CqlExecution cqlExecutor;
+	private boolean isEpic = false;
 
 	// CORS Pre-flight
 	@Override
@@ -126,6 +118,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		isEpic = false;
 		try {
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
 				throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
@@ -191,13 +184,41 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 			Bundle data;
 			Parameters evaluationResult;
-			if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign) {
-				ModuleConfigurationResolver moduleConfigurationResolver =
-					new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
-				data = moduleConfigurationResolver.getPrefetchBundle();
+			if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign && service.equals("opioidcds-10-order-sign")) {
+				isEpic = true;
+				if (cdsHooksRequest.prefetch != null && cdsHooksRequest.prefetch.resources != null
+					&& !cdsHooksRequest.prefetch.resources.isEmpty()) {
+					data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
+					CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(
+						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders, data);
+					// TODO: remove when finished resolving Lab issues with Yale
+					logger.info("================== Resource Log Start ==================");
+					for (var r : BundleUtil.toListOfResources(getFhirContext(), data)) {
+						String resource = getFhirContext().newJsonParser().encodeResourceToString(r);
+						logger.info(resource);
+					}
+					logger.info("================== Resource Log End ==================");
+				}
+				else {
+					ModuleConfigurationResolver moduleConfigurationResolver =
+						new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
+					data = moduleConfigurationResolver.getPrefetchBundle();
+					CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(
+						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders, data);
+					// TODO: remove when finished resolving Lab issues with Yale
+					logger.info("================== Resource Log Start ==================");
+					for (var r : BundleUtil.toListOfResources(getFhirContext(), data)) {
+						String resource = getFhirContext().newJsonParser().encodeResourceToString(r);
+						logger.info(resource);
+					}
+					logger.info("================== Resource Log End ==================");
+				}
+				// TODO: Remove this parameter once past med lookup issue is resolved
+//				CdsHooksUtil.addPastMedListParameter(parameters, BundleUtil.toListOfResourcesOfType(getFhirContext(), data, MedicationRequest.class));
 				evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
 					expressions, parameters, useServerData, data, null);
 			} else {
+				// TODO: How to generically handle resources referenced in context resources?
 				data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 				evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
 					expressions, parameters, useServerData, data, remoteDataEndpoint);
@@ -311,9 +332,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (action.hasAction()) {
 							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
 						}
-						Card.Extension extension = new Card.Extension();
-						extension.setMimeType("text/html");
-						card.setExtension(extension);
+						if (isEpic) {
+							Card.Extension extension = new Card.Extension();
+							extension.setMimeType("text/html");
+							card.setExtension(extension);
+						}
 						cards.add(card);
 					}
 				});

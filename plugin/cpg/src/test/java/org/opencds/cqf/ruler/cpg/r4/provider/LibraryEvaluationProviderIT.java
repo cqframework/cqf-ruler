@@ -102,11 +102,32 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testOpioidRec10Library() {
-		loadTransaction(packagePrefix + "OpioidCDSREC10-artifact-bundle.json");
-		loadTransaction(packagePrefix + "OpioidCDSREC10-patient-data-bundle.json");
+	void testRec10EpicData() {
+		loadTransaction(packagePrefix + "opioidcds-10-order-sign-bundle.json");
+		loadTransaction(packagePrefix + "opioidcds-10-order-sign-patient-data-bundle.json");
+		Parameters params = parameters(stringPart("subject", "Patient/ejwbAxeb2soWEsIm6r4GJnw3"),
+//			stringPart("expression", "Footer Row Test 1"),
+//			stringPart("expression", "Footer Row Test 2"),
+//			stringPart("expression", "Footer Row Test 3"),
+			stringPart("expression", "Details Table"),
+			stringPart("expression", "Generate Footer Rows"));
 
-		Parameters params = parameters(stringPart("subject", "Patient/example-rec-10-no-screenings"));
+		Parameters result = getClient().operation()
+			.onInstance(new IdType("Library", "OpioidCDSREC10Common"))
+			.named("$evaluate")
+			.withParameters(params)
+			.returnResourceType(Parameters.class)
+			.execute();
+
+		assertNotNull(result);
+	}
+
+	@Test
+	void testOpioidRec10Library() {
+		loadTransaction(packagePrefix + "opioidcds-10-order-sign-bundle.json");
+		loadTransaction(packagePrefix + "opioidcds-10-order-sign-patient-data-bundle.json");
+
+		Parameters params = parameters(stringPart("subject", "Patient/example-rec-10"));
 
 		Parameters result = getClient().operation()
 				.onInstance(new IdType("Library", "OpioidCDSREC10PatientView"))

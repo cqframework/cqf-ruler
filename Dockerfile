@@ -1,8 +1,8 @@
 FROM openjdk:18-slim-bullseye
 
 ARG COMMIT_HASH
-LABEL COMMIT_HASH ${COMMIT_HASH}
-ENV COMMIT_HASH ${COMMIT_HASH}
+LABEL COMMIT_HASH=${COMMIT_HASH}
+ENV COMMIT_HASH=${COMMIT_HASH}
 
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r cqfruler && useradd -r -g cqfruler cqfruler
