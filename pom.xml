@@ -279,6 +279,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-utility</artifactId>
+				<version>${clinical-reasoning.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-cql</artifactId>
 				<version>${clinical-reasoning.version}</version>
 			</dependency>
