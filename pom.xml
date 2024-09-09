@@ -86,7 +86,7 @@
 	</distributionManagement>
 
 	<properties>
-		<clinical-reasoning.version>3.11.0-SNAPSHOT</clinical-reasoning.version>
+		<clinical-reasoning.version>3.12.0-SNAPSHOT</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
