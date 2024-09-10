@@ -191,6 +191,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 					CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(
 						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders, data);
+//					data = CdsHooksUtil.resolveMedicationReferences(getFhirContext(), data);
 					// TODO: remove when finished resolving Lab issues with Yale
 					logger.info("================== Resource Log Start ==================");
 					for (var r : BundleUtil.toListOfResources(getFhirContext(), data)) {
@@ -323,14 +324,15 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						}
 						if (action.hasSelectionBehavior()) {
 							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
-							Card.Suggestion suggestion = resolveSuggestions(action, patientId);
-							card.setSuggestions(Collections.singletonList(suggestion));
+							//Card.Suggestion suggestion = resolveSuggestions(action, patientId);
+							//card.setSuggestions(Collections.singletonList(suggestion));
 						}
 						if (action.hasDynamicValue()) {
 							resolveDynamicActions(action, evaluationResults, patientId, card);
 						}
 						if (action.hasAction()) {
-							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
+							resolveOverrideReasons(action, card);
+							//resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
 						}
 						if (isEpic) {
 							Card.Extension extension = new Card.Extension();
@@ -460,6 +462,26 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						}
 					}
 				});
+	}
+
+	public void resolveOverrideReasons(PlanDefinition.PlanDefinitionActionComponent action, Card card) {
+		List<Card.Coding> overrideReasons = new ArrayList<>();
+		if (action.hasAction()) {
+			for (var subaction : action.getAction()) {
+				if (subaction.hasReason()) {
+					for (var reason : subaction.getReason()) {
+						for (var coding : reason.getCoding()) {
+							var overrideReason = new Card.Coding();
+							overrideReason.setSystem(coding.getSystem());
+							overrideReason.setCode(coding.getCode());
+							overrideReason.setDisplay(coding.getDisplay());
+							overrideReasons.add(overrideReason);
+						}
+					}
+				}
+			}
+			card.setOverrideReasons(overrideReasons);
+		}
 	}
 
 	private JsonObject getServices() {

@@ -5,12 +5,15 @@ import ca.uhn.fhir.i18n.Msg;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+import ca.uhn.fhir.util.BundleUtil;
 import ca.uhn.fhir.util.UrlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
@@ -40,7 +43,10 @@ public class ModuleConfigurationResolver {
 	private final String patientId;
 	private List<String> medicationIds;
 
+	private final FhirContext fhirContext;
+
 	public ModuleConfigurationResolver(FhirContext fhirContext, Endpoint prefetchEndpoint, CdsHooksRequest request) {
+		this.fhirContext = fhirContext;
 		prefetchClient = fhirContext.newRestfulGenericClient(prefetchEndpoint.getAddress());
 		if (prefetchEndpoint.getHeader() != null) {
 			AdditionalRequestHeadersInterceptor headerInterceptor = new AdditionalRequestHeadersInterceptor();
@@ -72,6 +78,26 @@ public class ModuleConfigurationResolver {
 		}
 
 		return prefetchBundle;
+	}
+
+	public Bundle resolveMedicationReferences(Bundle bundle) {
+		var newBundle = new Bundle().setType(Bundle.BundleType.SEARCHSET);
+		var medications = BundleUtil.toListOfResourcesOfType(fhirContext, bundle, Medication.class);
+		bundle.getEntry().forEach(
+			entry -> {
+				var resource = entry.getResource();
+				if (resource instanceof MedicationRequest && ((MedicationRequest) resource).getMedication() instanceof Reference) {
+					for (var med : medications) {
+						if (med.getIdPart().equals(((MedicationRequest) resource).getMedicationReference().getReference().replace("Medication/", ""))) {
+							((MedicationRequest) resource).setMedication(med.getCode());
+							break;
+						}
+					}
+				}
+				newBundle.addEntry().setResource(resource);
+			}
+		);
+		return newBundle;
 	}
 
 	public List<String> normalizeUrls() {

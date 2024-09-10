@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hl7.fhir.Coding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -793,6 +792,48 @@ public class Card {
             this.appContext = appContext;
         }
     }
+
+	public static class Coding {
+
+		@JsonProperty(required = true)
+		private String system;
+
+		@JsonProperty(required = true)
+		private String code;
+
+		@JsonProperty(required = true)
+		private String display;
+
+		@JsonGetter
+		public String getSystem() {
+			return system;
+		}
+
+		@JsonSetter
+		public void setSystem(String system) {
+			this.system = system;
+		}
+
+		@JsonGetter
+		public String getCode() {
+			return code;
+		}
+
+		@JsonSetter
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		@JsonGetter
+		public String getDisplay() {
+			return display;
+		}
+
+		@JsonSetter
+		public void setDisplay(String display) {
+			this.display = display;
+		}
+	}
 
 	 public static class Extension {
 		 @JsonProperty("com.epic.cdshooks.card.detail.content-type")
