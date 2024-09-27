@@ -90,7 +90,7 @@
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>7.2.0</hapi_version>
+		<hapi_version>7.4.0</hapi_version>
 		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
