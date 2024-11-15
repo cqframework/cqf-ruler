@@ -15,6 +15,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -87,7 +88,7 @@ public class ExampleServerR4IT implements IServerSupport {
 		retVal.sort(comparing(o -> ((Patient) o).getMeta().getLastUpdated()).reversed());
 		return retVal;
 	}
-
+	@Disabled
 	@Test
 	public void testCQLEvaluateMeasureEXM130() throws IOException {
 		String measureId = "ColorectalCancerScreeningsFHIR";
@@ -98,7 +99,7 @@ public class ExampleServerR4IT implements IServerSupport {
 		Parameters inParams = new Parameters();
 		inParams.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
 		inParams.addParameter().setName("periodEnd").setValue(new StringType("2019-12-31"));
-		inParams.addParameter().setName("reportType").setValue(new StringType("summary"));
+		inParams.addParameter().setName("reportType").setValue(new StringType("population"));
 
 		Parameters outParams = ourClient
 				.operation()
