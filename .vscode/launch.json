@@ -22,6 +22,7 @@
 		{
 			"type": "java",
 			"name": "Launch Server R4 (Live Reload)",
+			"javaExec": "/Users/jp/.sdkman/candidates/java/21.0.1-tem/bin/java",
 			"request": "launch",
 			"mainClass": "org.opencds.cqf.ruler.Application",
 			"projectName": "cqf-ruler-server",

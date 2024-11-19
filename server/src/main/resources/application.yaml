@@ -6,6 +6,35 @@ spring:
    main:
       allow-bean-definition-overriding: true # the cqf-ruler plugins override serveral upstream hapi beans
 ---
+server:
+management:
+  #The following configuration will enable the actuator endpoints at /actuator/health, /actuator/info, /actuator/prometheus, /actuator/metrics. For security purposes, only /actuator/health is enabled by default.
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: '*' # or e.g. 'info,health,prometheus,metrics' or '*' for all'
+  endpoint:
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    health:
+      enabled: true
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include:
+            - livenessState
+            - readinessState
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+   
 hapi:
    fhir:
       fhir_version: R4
