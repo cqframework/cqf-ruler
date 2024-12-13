@@ -1,4 +1,4 @@
-name: Publish Snapshot
+name: Publish Snapshot VSM
 on:
    push:
       branches:
@@ -39,8 +39,8 @@ jobs:
               push: true
               platforms: linux/amd64,linux/arm64
               tags: |
-                 contentgroup/cqf-ruler:latest
-                 alphora/cqf-ruler:latest
+                 contentgroup/cqf-ruler:cqf-ruler-vsm
+                 alphora/cqf-ruler:cqf-ruler-vsm
               build-args: COMMIT_HASH=${{ env.SHORT_SHA }}
               cache-from: type=gha
               cache-to: type=gha,mode=max
