@@ -46,12 +46,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import ca.uhn.fhir.cr.r4.cpg.CqlExecutionOperationProvider;
-import ca.uhn.fhir.cr.r4.cpg.LibraryEvaluationOperationProvider;
+import ca.uhn.fhir.cr.r4.library.LibraryEvaluateProvider;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,7 +67,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private CqlExecutionOperationProvider cqlExecution;
 	@Autowired
-	private LibraryEvaluationOperationProvider libraryExecution;
+	private LibraryEvaluateProvider libraryExecution;
 	@Autowired
 	private ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired

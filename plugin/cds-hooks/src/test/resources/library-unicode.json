@@ -2,6 +2,7 @@
   "resourceType": "Library",
   "id": "Unicode",
   "version": "0.1",
+  "url": "http://fhir.org/guides/ohsuhypertensionig/Library/Unicode",
   "name": "Unicode",
   "status": "active",
   "type": {
