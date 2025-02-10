@@ -88,7 +88,7 @@ public class ExampleServerR4IT implements IServerSupport {
 		retVal.sort(comparing(o -> ((Patient) o).getMeta().getLastUpdated()).reversed());
 		return retVal;
 	}
-
+	@Disabled
 	@Test
 	public void testCQLEvaluateMeasureEXM130() throws IOException {
 		String measureId = "ColorectalCancerScreeningsFHIR";

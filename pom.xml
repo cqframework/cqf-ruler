@@ -4,7 +4,7 @@
 
 	<groupId>org.opencds.cqf.ruler</groupId>
 	<artifactId>cqf-ruler</artifactId>
-	<version>0.15.0-SNAPSHOT</version>
+	<version>0.15-VSM.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>cqf-ruler</name>
@@ -90,7 +90,7 @@
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>7.7.16-SNAPSHOT</hapi_version>
+		<hapi_version>7.5.4-SNAPSHOT</hapi_version>
 		<jetty_version>12.0.0.alpha3</jetty_version>
 		<junit_version>5.8.2</junit_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
