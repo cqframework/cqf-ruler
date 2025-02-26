@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 public class ModuleConfigurationResolver {
 	private static final String PATIENT = "Patient/{{context.patientId}}";
 	private static final String ACTIVE_MEDICATION_ORDERS = "MedicationRequest?subject={{context.patientId}}&date=ge{{today - 13 months - 1 day}}&status=active,completed,stopped&category=community&intent=order&_include=MedicationRequest:medication";
-	private static final String ACTIVE_CATEGORIZED_CONDITIONS = "Condition?patient={{context.patientId}}&category=encounter-diagnosis,health-concern,problem-list-item&clinical-status=active";
+	private static final String ACTIVE_CATEGORIZED_CONDITIONS = "Condition?patient={{context.patientId}}&category=health-concern,problem-list-item&clinical-status=active";
+	private static final String ENCOUNTER_DIAGNOSIS_CONDITIONS = "Condition?patient={{context.patientId}}&category=encounter-diagnosis";
 	private static final String ENCOUNTERS_IN_PAST_YEAR = "Encounter?patient={{context.patientId}}&date=ge{{today - 1 year}}";
 	//private static final String ACTIVE_OR_COMPLETED_SERVICE_REQUESTS = "ServiceRequest?patient={{context.patientId}}&status=active,completed&authored=ge{{today - 90 days}}";
 	//&code=182964004,385763009,395103003,103735009,395669003,395670002,395694002,395695001,443761007
@@ -43,10 +44,13 @@ public class ModuleConfigurationResolver {
 	private final String patientId;
 	private List<String> medicationIds;
 
+	private Map<String, Long> performanceMap;
+
 	private final FhirContext fhirContext;
 
 	public ModuleConfigurationResolver(FhirContext fhirContext, Endpoint prefetchEndpoint, CdsHooksRequest request) {
 		this.fhirContext = fhirContext;
+		performanceMap = new HashMap<>();
 		prefetchClient = fhirContext.newRestfulGenericClient(prefetchEndpoint.getAddress());
 		if (prefetchEndpoint.getHeader() != null) {
 			AdditionalRequestHeadersInterceptor headerInterceptor = new AdditionalRequestHeadersInterceptor();
@@ -103,6 +107,7 @@ public class ModuleConfigurationResolver {
 	public List<String> normalizeUrls() {
 		String patientUrl = PATIENT.replace("{{context.patientId}}", patientId.replace("Patient/", ""));
 		String activeConditionsUrl = ACTIVE_CATEGORIZED_CONDITIONS.replace("{{context.patientId}}", patientId);
+		String encounterDiagnosisConditions = ENCOUNTER_DIAGNOSIS_CONDITIONS.replace("{{context.patientId}}", patientId);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
@@ -118,7 +123,7 @@ public class ModuleConfigurationResolver {
 
 		String activeMedsUrl = ACTIVE_MEDICATION_ORDERS.replace("{{today - 13 months - 1 day}}", thirteenMonthsAndOneDay).replace("{{context.patientId}}", patientId);
 
-		var ret = new ArrayList<>(Arrays.asList(patientUrl, activeMedsUrl, activeConditionsUrl, pastYearEncountersUrl, pastYearUdsLabsUrl));
+		var ret = new ArrayList<>(Arrays.asList(patientUrl, activeMedsUrl, activeConditionsUrl, encounterDiagnosisConditions, pastYearEncountersUrl, pastYearUdsLabsUrl));
 
 		if (medicationIds != null && !medicationIds.isEmpty()) {
 			ret.addAll(medicationIds);
@@ -128,6 +133,7 @@ public class ModuleConfigurationResolver {
 	}
 
 	public IBaseResource resourceFromUrl(String theUrl) {
+		long startTime = System.currentTimeMillis();
 		UrlUtil.UrlParts parts = UrlUtil.parseUrl(theUrl);
 		String resourceType = parts.getResourceType();
 		if (StringUtils.isEmpty(resourceType)) {
@@ -137,16 +143,22 @@ public class ModuleConfigurationResolver {
 
 		String resourceId = parts.getResourceId();
 		String matchUrl = parts.getParams();
-		if (resourceId != null) {
-			return prefetchClient.read().resource(resourceType).withId(resourceId).execute();
-		} else if (matchUrl != null) {
-			var queryMap = UrlUtil.parseQueryString(matchUrl);
-			Map<String, List<String>> whereMap = new HashMap<>();
-			queryMap.forEach((x,y) -> whereMap.put(x, Arrays.asList(y)));
-			return prefetchClient.search().forResource(resourceType).whereMap(whereMap).execute();
-		} else {
-			throw new InvalidRequestException(
-				Msg.code(2384) + "Unable to translate url " + theUrl + " into a resource or a bundle.");
+		try {
+			if (resourceId != null) {
+				return prefetchClient.read().resource(resourceType).withId(resourceId).execute();
+			} else if (matchUrl != null) {
+				var queryMap = UrlUtil.parseQueryString(matchUrl);
+				Map<String, List<String>> whereMap = new HashMap<>();
+				queryMap.forEach((x, y) -> whereMap.put(x, Arrays.asList(y)));
+				return prefetchClient.search().forResource(resourceType).whereMap(whereMap).execute();
+			} else {
+				throw new InvalidRequestException(
+					Msg.code(2384) + "Unable to translate url " + theUrl + " into a resource or a bundle.");
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			long durationMs = endTime - startTime;
+			performanceMap.put(theUrl, durationMs);
 		}
 	}
 
@@ -161,6 +173,10 @@ public class ModuleConfigurationResolver {
 			}
 		}
 		return headerNameValuePairs;
+	}
+
+	public Map<String, Long> getPerformanceMap() {
+		return performanceMap;
 	}
 
 	static class HeaderInfo {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,22 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 @Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
+
+	// Performance logger
+	private static final Logger performanceLogger =
+		LoggerFactory.getLogger("org.opencds.cds.performance");
+
+	// Errors with PHI
+	private static final Logger errorLogger =
+		LoggerFactory.getLogger("org.opencds.cds.error");
+
+	// Info with PHI
+	private static final Logger infoLogger =
+		LoggerFactory.getLogger("org.opencds.cds.info");
+
+	// Redacted info
+	private static final Logger infoRedactedLogger =
+		LoggerFactory.getLogger("org.opencds.cds.info.redacted");
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
@@ -91,6 +108,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private R4CqlExecution cqlExecutor;
 	private boolean isEpic = false;
 
+	private CdsHooksRequest.OrderSign.Context orderSignContext;
+
 	// CORS Pre-flight
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -118,19 +137,24 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		long startTime = System.currentTimeMillis();
 		isEpic = false;
+		orderSignContext = null;
+		String requestInstance = null;
 		try {
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
 				throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
 						request.getContentType()));
 			}
 			logger.info(request.getRequestURI());
+			infoLogger.info(request.getRequestURI());
 			String baseUrl = myAppProperties.getServer_address();
 			String service = request.getPathInfo().replace("/", "");
 			ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
 			String requestJson = request.getReader().lines().collect(Collectors.joining());
 			CdsHooksRequest cdsHooksRequest = mapper.readValue(requestJson, CdsHooksRequest.class);
+			requestInstance = cdsHooksRequest.hookInstance;
 			logRequestInfo(cdsHooksRequest, requestJson);
 
 			cqlExecutor = new R4CqlExecution(baseUrl);
@@ -155,6 +179,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				patientId = ((CdsHooksRequest.OrderSign) cdsHooksRequest).context.patientId;
 				parameters = CdsHooksUtil.getParameters(
 						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders);
+				orderSignContext = ((CdsHooksRequest.OrderSign) cdsHooksRequest).context;
 			} else {
 				patientId = cdsHooksRequest.context.patientId;
 			}
@@ -191,31 +216,39 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 					CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(
 						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders, data);
-//					data = CdsHooksUtil.resolveMedicationReferences(getFhirContext(), data);
 					// TODO: remove when finished resolving Lab issues with Yale
 					logger.info("================== Resource Log Start ==================");
+					infoLogger.info("================== Resource Log Start ==================");
 					for (var r : BundleUtil.toListOfResources(getFhirContext(), data)) {
 						String resource = getFhirContext().newJsonParser().encodeResourceToString(r);
 						logger.info(resource);
+						infoLogger.info(resource);
 					}
 					logger.info("================== Resource Log End ==================");
+					infoLogger.info("================== Resource Log End ==================");
 				}
 				else {
 					ModuleConfigurationResolver moduleConfigurationResolver =
 						new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, cdsHooksRequest);
 					data = moduleConfigurationResolver.getPrefetchBundle();
+
+					// log query performance
+					moduleConfigurationResolver.getPerformanceMap().forEach((key, value) -> performanceLogger.info("Time for query: {}, {} ms", key, value));
+
 					CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(
 						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders, data);
 					// TODO: remove when finished resolving Lab issues with Yale
 					logger.info("================== Resource Log Start ==================");
+					infoLogger.info("================== Resource Log Start ==================");
 					for (var r : BundleUtil.toListOfResources(getFhirContext(), data)) {
 						String resource = getFhirContext().newJsonParser().encodeResourceToString(r);
 						logger.info(resource);
+						infoLogger.info(resource);
 					}
 					logger.info("================== Resource Log End ==================");
+					infoLogger.info("================== Resource Log End ==================");
 				}
 				// TODO: Remove this parameter once past med lookup issue is resolved
-//				CdsHooksUtil.addPastMedListParameter(parameters, BundleUtil.toListOfResourcesOfType(getFhirContext(), data, MedicationRequest.class));
 				evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
 					expressions, parameters, useServerData, data, null);
 			} else {
@@ -229,44 +262,73 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			List<Card> cards = new ArrayList<>();
 
 			if (servicePlan.hasAction()) {
-				resolveServicePlan(servicePlan.getAction(), evaluationResult, patientId, cards, links);
+				cards.add(resolveServicePlan(servicePlan.getAction(), evaluationResult, patientId, cards, links, true, null));
 			}
 
 			Cards result = new Cards();
-			result.cards = cards;
+			result.cards = cards.stream().filter(Objects::nonNull).collect(Collectors.toList());
 			// Using GSON pretty print format as Jackson's is ugly
 			String jsonResponse = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
 					.toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
 			logger.info(jsonResponse);
+			infoLogger.info(jsonResponse);
 			response.setContentType("text/json;charset=UTF-8");
 			response.setHeader("Access-Control-Allow-Origin", "*");
 			response.getWriter().println(jsonResponse);
+
+			long endTime = System.currentTimeMillis();
+			long durationMs = endTime - startTime;
+
+			performanceLogger.info("CDS Hook request for hook instance {} took {} ms", cdsHooksRequest.hookInstance, durationMs);
 		} catch (BaseServerResponseException e) {
 			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);
+			errorLogger.error("Error encountered for request with hook instance {}, error: {}", requestInstance, e.toString());
 			logger.error(e.toString());
 		} catch (DataProviderException e) {
 			ErrorHandling.handleError(response, "ERROR: Exception in DataProvider.", e, myAppProperties);
+			errorLogger.error("Error encountered for request with hook instance {}, error: {}", requestInstance, e.toString());
 			logger.error(e.toString());
 		} catch (CqlException e) {
 			ErrorHandling.handleError(response, "ERROR: Exception in CQL Execution.", e, myAppProperties);
+			errorLogger.error("Error encountered for request with hook instance {}, error: {}", requestInstance, e.toString());
 			logger.error(e.toString());
 		} catch (Exception e) {
 			logger.error(e.toString());
+			errorLogger.error("Error encountered for request with hook instance {}, error: {}", requestInstance, e.toString());
 			throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
 		}
 	}
 
 	private void logRequestInfo(CdsHooksRequest request, String jsonRequest) {
 		logger.info(jsonRequest);
+		infoLogger.info(jsonRequest);
 		logger.info("cds-hooks hook instance: {}", request.hookInstance);
+		infoLogger.info("cds-hooks hook instance: {}", request.hookInstance);
+		infoRedactedLogger.info("cds-hooks hook instance: {}", request.hookInstance);
 		logger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
+		infoLogger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
+		infoRedactedLogger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
 		logger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
+		infoLogger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
+		infoRedactedLogger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
 		logger.info("cds-hooks queryBatchThreshold: {}", this.getProviderConfiguration().getQueryBatchThreshold());
+		infoLogger.info("cds-hooks queryBatchThreshold: {}", this.getProviderConfiguration().getQueryBatchThreshold());
+		infoRedactedLogger.info("cds-hooks queryBatchThreshold: {}", this.getProviderConfiguration().getQueryBatchThreshold());
 		logger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
+		infoLogger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
+		infoRedactedLogger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
 		logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
+		infoLogger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
+		infoRedactedLogger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
 		logger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
+		infoLogger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
+		infoRedactedLogger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
 		logger.info("cds-hooks fhir server address: {}", request.fhirServer);
+		infoLogger.info("cds-hooks fhir server address: {}", request.fhirServer);
+		infoRedactedLogger.info("cds-hooks fhir server address: {}", request.fhirServer);
 		logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
+		infoLogger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
+		infoRedactedLogger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
 	}
 
 	private List<Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
@@ -290,12 +352,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		return links;
 	}
 
-	private void resolveServicePlan(List<PlanDefinition.PlanDefinitionActionComponent> actions,
+	private Card resolveServicePlan(List<PlanDefinition.PlanDefinitionActionComponent> actions,
 			Parameters evaluationResults, String patientId, List<Card> cards,
-			List<Card.Link> links) {
-		Card card = new Card();
-		if (links != null)
-			card.setLinks(links);
+			List<Card.Link> links, boolean newCard, Card oldCard) {
+		Card card = newCard ? new Card() : oldCard;
 		actions.forEach(
 				action -> {
 					if (resolveCondition(action, evaluationResults, patientId).get()) {
@@ -322,26 +382,35 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (action.hasSelectionBehavior()) {
 							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
 						}
-						if (action.hasSelectionBehavior()) {
-							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
-							//Card.Suggestion suggestion = resolveSuggestions(action, patientId);
-							//card.setSuggestions(Collections.singletonList(suggestion));
+						if (action.hasParticipant() && (action.getParticipant().stream().anyMatch(
+							participant -> participant.getType().toCode().equals("device")))) {
+							// System Action
+							resolveSystemActions(action, evaluationResults, card);
 						}
 						if (action.hasDynamicValue()) {
 							resolveDynamicActions(action, evaluationResults, patientId, card);
 						}
-						if (action.hasAction()) {
+						if (action.hasReason()) {
 							resolveOverrideReasons(action, card);
-							//resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
+						}
+						if (action.hasDefinition()) {
+							Card.Suggestion suggestion = resolveSuggestions(action, patientId);
+							card.addSuggestion(suggestion);
+						}
+						if (action.hasAction()) {
+							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links, false, card);
 						}
 						if (isEpic) {
 							Card.Extension extension = new Card.Extension();
 							extension.setMimeType("text/html");
 							card.setExtension(extension);
 						}
-						cards.add(card);
 					}
 				});
+		if (card.getSummary() != null && links != null) {
+			card.setLinks(links);
+		} else if (card.getSummary() == null) return null;
+		return card;
 	}
 
 	public AtomicBoolean resolveCondition(PlanDefinition.PlanDefinitionActionComponent action,
@@ -370,6 +439,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							}
 						}
 					});
+		} else {
+			return new AtomicBoolean(true);
 		}
 		return conditionMet;
 	}
@@ -393,8 +464,12 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		Card.Suggestion suggestion = new Card.Suggestion();
 		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
 		suggAction.fhirContext = getFhirContext();
-		if (action.hasPrefix())
+		if (action.hasPrefix()) {
 			suggestion.setLabel(action.getPrefix());
+		}
+		if (action.hasPrecheckBehavior()) {
+			suggestion.setIsRecommended(action.getPrecheckBehavior().equals(PlanDefinition.ActionPrecheckBehavior.YES));
+		}
 		boolean hasAction = false;
 		if (action.hasDescription()) {
 			suggAction.setDescription(action.getDescription());
@@ -413,11 +488,21 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			IdType definitionId = new IdType(
 					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
 					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
+			var updatedPatientId = patientId;
+			if (!updatedPatientId.startsWith("Patient/")) updatedPatientId = "Patient/" + patientId;
 			suggAction.setResource(applyEvaluator.apply(definitionId,
-					patientId, null, patientId, null, null,
+					updatedPatientId, null, updatedPatientId, null, null,
 					null, null, null, null, null,
 					null, null, null, null, null, requestDetails));
 			hasAction = true;
+			// TODO - make this dynamic - serious performance issues with dynamic actions
+			if (suggAction.getResource() instanceof ServiceRequest) {
+				suggAction.setDescription("Service Request for Urine Drug Screening");
+				((ServiceRequest) suggAction.getResource()).setIntent(ServiceRequest.ServiceRequestIntent.PROPOSAL);
+				var category = new ArrayList<CodeableConcept>();
+				category.add(new CodeableConcept().addCoding(new Coding().setSystem("http://terminology.hl7.org/CodeSystem/medicationrequest-category").setCode("outpatient").setDisplay("Outpatient")));
+				((ServiceRequest) suggAction.getResource()).setCategory(category);
+			}
 		}
 		if (hasAction)
 			suggestion.setActions(Collections.singletonList(suggAction));
@@ -450,9 +535,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 									card.getSuggestions().get(0).getActions().get(0).setDescription(
 											dynamicValueResult.toString());
 								}
-							} else if (dv.getPath().endsWith("extension")) {
-								card.setIndicator(dynamicValueResult.toString());
-							} else if (card.getSuggestions() != null
+							}
+//							else if (dv.getPath().endsWith("extension")) {
+//								card.setIndicator(dynamicValueResult.toString());
+//							}
+							else if (card.getSuggestions() != null
 									&& card.getSuggestions().get(0).getActions() != null
 									&& card.getSuggestions().get((0)).getActions().get(0).getResource() != null) {
 								modelResolver.setValue(
@@ -465,22 +552,34 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	public void resolveOverrideReasons(PlanDefinition.PlanDefinitionActionComponent action, Card card) {
-		List<Card.Coding> overrideReasons = new ArrayList<>();
-		if (action.hasAction()) {
-			for (var subaction : action.getAction()) {
-				if (subaction.hasReason()) {
-					for (var reason : subaction.getReason()) {
-						for (var coding : reason.getCoding()) {
-							var overrideReason = new Card.Coding();
-							overrideReason.setSystem(coding.getSystem());
-							overrideReason.setCode(coding.getCode());
-							overrideReason.setDisplay(coding.getDisplay());
-							overrideReasons.add(overrideReason);
-						}
-					}
+		if (action.hasReason()) {
+			for (var reason : action.getReason()) {
+				for (var coding : reason.getCoding()) {
+					var overrideReason = new Card.Coding();
+					overrideReason.setSystem(coding.getSystem());
+					overrideReason.setCode(coding.getCode());
+					overrideReason.setDisplay(coding.getDisplay());
+					card.addOverrideReason(overrideReason);
 				}
 			}
-			card.setOverrideReasons(overrideReasons);
+		}
+
+	}
+
+	// TODO: this is super hacky!!!!
+	public void resolveSystemActions(PlanDefinition.PlanDefinitionActionComponent action, Parameters evaluationResults, Card card) {
+		if (action.hasType() && action.getType().getCoding().stream().anyMatch(coding -> coding.getCode().equals("update"))) {
+			var systemActions = new ArrayList<Card.SystemAction>();
+			var draftOrder = CdsHooksUtil.getDraftOrders(orderSignContext.draftOrders).get(0);
+			for (var dv : action.getDynamicValue()) {
+				var dvResult = evaluationResults.getParameter(dv.getExpression().getExpression()).getValue();
+				draftOrder.addExtension((Extension) dvResult);
+				var systemAction = new Card.SystemAction();
+				systemAction.setType("update");
+				systemAction.setResource(draftOrder);
+				systemActions.add(systemAction);
+			}
+			card.setSystemActions(systemActions);
 		}
 	}
 

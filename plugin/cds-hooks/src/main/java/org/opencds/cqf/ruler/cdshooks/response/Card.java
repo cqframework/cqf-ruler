@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cdshooks.response;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,6 +12,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Card {
@@ -92,6 +92,8 @@ public class Card {
      * @see Card.Link
      */
     private List<Card.Link> links;
+
+	 private List<Card.SystemAction> systemActions;
 
 	 private Extension extension;
 
@@ -227,6 +229,13 @@ public class Card {
         this.suggestions = suggestions;
     }
 
+	 public void addSuggestion(Suggestion suggestion) {
+		 if (this.suggestions == null) {
+			 this.suggestions = new ArrayList<>();
+		 }
+		 this.suggestions.add(suggestion);
+	 }
+
     /**
      * Get the selection behavior of the suggestions in the card
      * @return {@link Card#selectionBehavior}
@@ -271,6 +280,13 @@ public class Card {
         this.overrideReasons = overrideReasons;
     }
 
+	 public void addOverrideReason(Coding overrideReason) {
+		 if (this.overrideReasons == null) {
+			 this.overrideReasons = new ArrayList<>();
+		 }
+		 this.overrideReasons.add(overrideReason);
+	 }
+
     /**
      * Get link to additional information and/or guidance
      * @return List of {@link Card.Link}
@@ -288,6 +304,24 @@ public class Card {
     public void setLinks(List<Link> links) {
         this.links = links;
     }
+
+	/**
+	 * Get system actions
+	 * @return List of {@systemAction Card.SystenAction}
+	 */
+	@JsonGetter
+	public List<SystemAction> getSystemActions() {
+		return systemActions;
+	}
+
+	/**
+	 * Set system actions
+	 * @param systemActions {@systemActions Card#SystemAction}
+	 */
+	@JsonSetter
+	public void setSystemActions(List<SystemAction> systemActions) {
+		this.systemActions = systemActions;
+	}
 
 	@JsonGetter
 	 public Extension getExtension() {
@@ -433,7 +467,7 @@ public class Card {
          * pre-selecting, or highlighting recommended suggestions. Multiple suggestions MAY be
          * recommended, if {@link Card#selectionBehavior} is any.
          */
-        private boolean isRecommended;
+        private Boolean isRecommended;
 
         /**
          * Array of objects, each defining a suggested action. Within a suggestion, all actions
@@ -488,8 +522,8 @@ public class Card {
          * Get indicator on whether the suggestion is recommended
          * @return {@link Card.Suggestion#isRecommended}
          */
-        @JsonGetter
-        public boolean isRecommended() {
+        @JsonGetter("isRecommended")
+        public Boolean isRecommended() {
             return isRecommended;
         }
 
@@ -497,8 +531,8 @@ public class Card {
          * Set indicator on whether the suggestion is recommended
          * @param recommended {@link Card.Suggestion#isRecommended}
          */
-        @JsonSetter
-        public void setRecommended(boolean recommended) {
+        @JsonSetter("isRecommended")
+        public void setIsRecommended(Boolean recommended) {
             isRecommended = recommended;
         }
 
@@ -792,6 +826,141 @@ public class Card {
             this.appContext = appContext;
         }
     }
+
+	 public static class SystemAction {
+// member variables
+
+		 @JsonIgnore
+		 public FhirContext fhirContext;
+
+		 /**
+		  * The type of action being performed. Allowed values are: create, update, delete.
+		  */
+		 @JsonProperty(required = true)
+		 private String type;
+
+		 /**
+		  * Human-readable description of the suggested action MAY be presented to the end-user.
+		  */
+		 @JsonProperty(required = true)
+		 private String description;
+
+		 /**
+		  * A FHIR resource. When the {@link Card.Suggestion.Action#type} attribute is create,
+		  * the resource attribute SHALL contain a new FHIR resource to be created. For update,
+		  * this holds the updated resource in its entirety and not just the changed fields.
+		  * Use of this field to communicate a string of a FHIR id for delete suggestions is
+		  * DEPRECATED and {@link Card.Suggestion.Action#resourceId} SHOULD be used instead.
+		  */
+		 private IBaseResource resource;
+
+		 /**
+		  * A relative reference to the relevant resource. SHOULD be provided when the
+		  * {@link Card.Suggestion.Action#type} attribute is delete.
+		  */
+		 private String resourceId;
+
+		 // getters and setters
+
+		 /**
+		  * Get the type of action to be performed
+		  * @return {@link Card.Suggestion.Action#type}
+		  */
+		 @JsonGetter
+		 public String getType() {
+			 return type;
+		 }
+
+		 /**
+		  * Set the type of action to be performed
+		  * @param type {@link Card.Suggestion.Action#type}
+		  * @throws ErrorHandling.CdsHooksError Error detailing
+		  * unknown {@link Card.Suggestion.Action#type} value
+		  */
+		 @JsonSetter
+		 public void setType(String type) throws ErrorHandling.CdsHooksError {
+			 switch (type.toLowerCase()) {
+				 case "create":
+				 case "update":
+				 case "delete":
+					 this.type = type;
+					 break;
+				 case "remove":
+					 this.type = "delete";
+					 break;
+				 default: throw new ErrorHandling.CdsHooksError(
+					 String.format("Unknown suggestion.action.type value: %s", type));
+			 }
+		 }
+
+		 /**
+		  * Get the human-readable description of the suggested action
+		  * @return {@link Card.Suggestion.Action#description}
+		  */
+		 @JsonGetter
+		 public String getDescription() {
+			 return description;
+		 }
+
+		 /**
+		  * Set the human-readable description of the suggested action
+		  * @param description {@link Card.Suggestion.Action#description}
+		  */
+		 @JsonGetter
+		 public void setDescription(String description) {
+			 this.description = description;
+		 }
+
+		 /**
+		  * Get the resource to be created/updated by the suggested action
+		  * @return @link Card.Suggestion.Action#resource
+		  */
+		 public IBaseResource getResource() {
+			 return resource;
+		 }
+
+		 /**
+		  * Get the resource to be created/updated by the suggested action
+		  * @return String representation of {@link Card.Suggestion.Action#resource}
+		  */
+		 @JsonGetter("resource")
+		 @JsonRawValue
+		 public String getResourceString() {
+			 if (resource == null) return null;
+			 return FhirContext.forR4Cached().newJsonParser().setPrettyPrint(true).encodeResourceToString(resource);
+//			 return new JsonParser(fhirContext, new LenientErrorHandler()).setPrettyPrint(true).encodeResourceToString(resource);
+		 }
+
+		 /**
+		  * Set the resource to be created/updated by the suggested action
+		  * @param resource {@link Card.Suggestion.Action#resource}
+		  */
+		 @JsonSetter
+		 public void setResource(IBaseResource resource) {
+			 this.resource = resource;
+		 }
+
+		 /**
+		  * Get the ID of the resource suggested to be deleted by this action
+		  * @return {@link Card.Suggestion.Action#resourceId}
+		  */
+		 @JsonGetter
+		 public String getResourceId() {
+			 if (getType() != null && getType().equals("delete") && getResource() != null) {
+				 resourceId = getResource().getIdElement().getValue();
+			 }
+			 return resourceId;
+		 }
+
+		 /**
+		  * Set the ID of the resource suggested to be deleted by this action
+		  * @param resourceId {@link Card.Suggestion.Action#resourceId}
+		  */
+		 @JsonSetter
+		 public void setResourceId(String resourceId) {
+			 this.resourceId = resourceId;
+		 }
+	 }
 
 	public static class Coding {
 

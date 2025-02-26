@@ -1,13 +1,124 @@
 <configuration scan="true" scanPeriod="30 seconds">
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+	<!--
+		 1) Define a property for the log directory, or keep it inline.
+		 2) Provide rolling policies if desired. Below is a simple setup.
+	-->
+	<property name="LOG_HOME" value="./logs"/>
+
+	<!-- ========================= -->
+	<!--     PERFORMANCE APPENDER  -->
+	<!-- ========================= -->
+	<appender name="PERFORMANCE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/performance.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/performance.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>14</maxHistory>  <!-- keep 14 days -->
+		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%file:%line] %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<logger name = "org.opencds.cqf.cql.engine.debug" level="DEBUG"/>
+	<!-- ========================= -->
+	<!--     INFO APPENDER  -->
+	<!-- ========================= -->
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/info.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>14</maxHistory>  <!-- keep 14 days -->
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
 
+	<!-- ========================= -->
+	<!--   REDACTED INFO APPENDER -->
+	<!-- ========================= -->
+	<appender name="INFO_REDACTED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/info-redacted.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/info-redacted.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>14</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<!-- Basic pattern. Real-world usage might require a custom filter or layout
+				  that scrubs PHI from messages. -->
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [REDACTED] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- ========================= -->
+	<!--       ERROR APPENDER      -->
+	<!-- ========================= -->
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>14</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+		<!-- Only accept ERROR (and above) logs -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- ========================= -->
+	<!--      CONSOLE APPENDER     -->
+	<!-- ========================= -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- ========================= -->
+	<!--   LOGGERS CONFIGURATION   -->
+	<!-- ========================= -->
+
+	<!-- Performance logger
+		  You can log performance events at INFO (or any level)
+		  and direct them to PERFORMANCE_FILE.
+	-->
+	<logger name="org.opencds.cds.performance" level="INFO" additivity="false">
+		<appender-ref ref="PERFORMANCE_FILE" />
+	</logger>
+
+	<!-- Info logger (with PHI)
+		  You can log performance events at INFO (or any level)
+		  and direct them to INFO_FILE.
+	-->
+	<logger name="org.opencds.cds.info" level="INFO" additivity="false">
+		<appender-ref ref="INFO_FILE" />
+	</logger>
+
+	<!--
+		 Redacted info logger
+		 You can log performance events at INFO (or any level)
+	    and direct them to INFO_REDACTED_FILE.
+	-->
+	<logger name="org.opencds.cds.info.redacted" level="INFO" additivity="false">
+		<appender-ref ref="INFO_REDACTED_FILE" />
+	</logger>
+
+	<!--
+		 Error logger
+		 If you log at ERROR to a logger with this name (or package),
+		 it goes to error.log
+	-->
+	<logger name="org.opencds.cds.errors" level="ERROR" additivity="false">
+		<appender-ref ref="ERROR_FILE" />
+	</logger>
+
+	<!-- Root logger at INFO and up, to console. -->
 	<root level="INFO">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="CONSOLE" />
 	</root>
 </configuration>

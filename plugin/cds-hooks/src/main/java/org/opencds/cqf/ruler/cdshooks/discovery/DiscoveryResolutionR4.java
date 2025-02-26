@@ -18,6 +18,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
 public class DiscoveryResolutionR4 implements DaoRegistryUser {
 
+	private final String FHIR_QUERY_PATTERN_EXT_URL = "http://hl7.org/fhir/StructureDefinition/cqf-fhirQueryPattern";
 	private final String PATIENT_ID_CONTEXT = "{{context.patientId}}";
 	private final int DEFAULT_MAX_URI_LENGTH = 8000;
 	private int maxUriLength;
@@ -134,6 +135,13 @@ public class DiscoveryResolutionR4 implements DaoRegistryUser {
 	}
 
 	public List<String> createRequestUrl(DataRequirement dataRequirement) {
+		List<String> ret = new ArrayList<>();
+
+		if (dataRequirement.hasExtension(FHIR_QUERY_PATTERN_EXT_URL)) {
+			ret.add(dataRequirement.getExtensionString(FHIR_QUERY_PATTERN_EXT_URL));
+			return ret;
+		}
+
 		if (dataRequirement.getType() == null) {
 			return null;
 		}
@@ -142,7 +150,7 @@ public class DiscoveryResolutionR4 implements DaoRegistryUser {
 		String patientRelatedResource = dataRequirement.getType() + "?"
 				+ getPatientSearchParam(dataRequirement.getType())
 				+ "=Patient/" + PATIENT_ID_CONTEXT;
-		List<String> ret = new ArrayList<>();
+
 		if (dataRequirement.hasCodeFilter()) {
 			for (DataRequirement.DataRequirementCodeFilterComponent codeFilterComponent : dataRequirement
 					.getCodeFilter()) {
