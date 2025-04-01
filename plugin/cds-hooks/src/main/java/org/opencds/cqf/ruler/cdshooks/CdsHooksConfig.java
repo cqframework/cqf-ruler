@@ -1,19 +1,26 @@
 package org.opencds.cqf.ruler.cdshooks;
 
+import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
 import ca.uhn.fhir.cr.config.CrProperties;
+import ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider;
 import ca.uhn.fhir.interceptor.api.IInterceptorService;
 import ca.uhn.fhir.jpa.dao.ITransactionProcessorVersionAdapter;
+import ca.uhn.fhir.rest.server.RestfulServer;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.quick.FhirLibrarySourceProvider;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.providers.TranslatingLibraryLoader;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
+import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
+import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -122,14 +129,37 @@ public class CdsHooksConfig {
 		return registrationBean;
 	}
 
+//	@Bean
+//	@Conditional(OnR4Condition.class)
+//	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
+//	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> cdsHooksRegistrationBeanR4() {
+//		org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet();
+//		beanFactory.autowireBean(cdsHooksServlet);
+//
+//		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+//		registrationBean.setName("cds-hooks servlet");
+//		registrationBean.setServlet(cdsHooksServlet);
+//		registrationBean.addUrlMappings("/cds-services/*");
+//		registrationBean.setLoadOnStartup(1);
+//		return registrationBean;
+//	}
+
 	@Bean
 	@Conditional(OnR4Condition.class)
 	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
-	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> cdsHooksRegistrationBeanR4() {
-		org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet();
+	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet> cdsHooksRegistrationBeanR4(
+		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
+		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
+		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
+		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
+		IValidationSupport validationSupport) {
+		org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet(
+			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
+			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
+			validationSupport);
 		beanFactory.autowireBean(cdsHooksServlet);
 
-		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
 		registrationBean.setName("cds-hooks servlet");
 		registrationBean.setServlet(cdsHooksServlet);
 		registrationBean.addUrlMappings("/cds-services/*");

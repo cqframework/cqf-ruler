@@ -35,18 +35,18 @@
 	</appender>
 
 	<!-- ========================= -->
-	<!--   REDACTED INFO APPENDER -->
+	<!--   NO GUIDANCE INFO APPENDER -->
 	<!-- ========================= -->
-	<appender name="INFO_REDACTED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_HOME}/info-redacted.log</file>
+	<appender name="NO_GUIDANCE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/no-guidance.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/info-redacted.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>${LOG_HOME}/no-guidance.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>14</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<!-- Basic pattern. Real-world usage might require a custom filter or layout
 				  that scrubs PHI from messages. -->
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [REDACTED] - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -100,12 +100,12 @@
 	</logger>
 
 	<!--
-		 Redacted info logger
+		 Patients that do not generate guidance info logger
 		 You can log performance events at INFO (or any level)
-	    and direct them to INFO_REDACTED_FILE.
+	    and direct them to NO_GUIDANCE_FILE.
 	-->
-	<logger name="org.opencds.cds.info.redacted" level="INFO" additivity="false">
-		<appender-ref ref="INFO_REDACTED_FILE" />
+	<logger name="org.opencds.cds.info.unguided" level="INFO" additivity="false">
+		<appender-ref ref="NO_GUIDANCE_FILE" />
 	</logger>
 
 	<!--
