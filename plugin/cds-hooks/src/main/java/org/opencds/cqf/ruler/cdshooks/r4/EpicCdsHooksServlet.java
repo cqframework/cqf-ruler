@@ -7,6 +7,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
+import ca.uhn.fhir.util.BundleUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.cql.engine.execution.InMemoryLibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
@@ -168,8 +170,7 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 			primaryLibraryId, cdsHooksRequestHandler.getDraftOrdersParameters(),
 			cdsHooksRequestHandler.useServerData(), cdsHooksRequestHandler.getPrefetchBundle(logging));
 		var expressions = CdsHooksUtil.getExpressions(planDefinition);
-		var evaluationResults = cqlExecutionHandler.evaluateLibrary(patientId, expressions,
-			cdsHooksRequestHandler.remoteDataEndpoint);
+		var evaluationResults = cqlExecutionHandler.evaluateLibrary(patientId, expressions, null);
 
 		// Build cards
 		CardBuilder cardBuilder = new CardBuilder(patientId, evaluationResults, planDefinition, applyEvaluator, requestDetails, modelResolver, cqlExecutionHandler);
@@ -178,7 +179,7 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 		result.cards = cards.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
 		if (result.cards.isEmpty()) {
-			logging.logNoGuidance(patientId, cdsHooksRequestHandler.request.hookInstance);
+			logging.logNoGuidance(cdsHooksRequestHandler.mrn, cdsHooksRequestHandler.request.hookInstance);
 		}
 
 		// Serialize cards into response
@@ -226,6 +227,7 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 	private class CdsHooksRequestHandler {
 		private final CdsHooksRequest request;
 		private final Endpoint remoteDataEndpoint;
+		private String mrn;
 
 		public CdsHooksRequestHandler(CdsHooksRequest request) {
 			this.request = request;
@@ -239,7 +241,7 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 				}
 				remoteDataEndpoint = ep;
 			} else {
-				remoteDataEndpoint = null;
+				remoteDataEndpoint = new Endpoint().setAddress(appProperties.getServer_address());
 			}
 		}
 
@@ -268,7 +270,7 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 		}
 
 		public BooleanType useServerData() {
-			return new BooleanType(remoteDataEndpoint == null);
+			return new BooleanType(false);
 		}
 
 		public Bundle getPrefetchBundle(EpicLogging logging) {
@@ -276,18 +278,23 @@ public class EpicCdsHooksServlet extends HttpServlet implements DaoRegistryUser 
 			var draftOrders = getDraftOrders();
 			// Use prefetch resources if provided otherwise use MCL
 			if (data == null) {
-				var configResolver = new ModuleConfigurationResolver(getFhirContext(),
-					remoteDataEndpoint == null
-						? new Endpoint().setAddress(appProperties.getServer_address()) : remoteDataEndpoint,
-					request);
+				var configResolver = new ModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, request);
 				data = configResolver.getPrefetchBundle();
 				logging.logMclQueryPerformance(configResolver.getPerformanceMap());
-				logging.logBundleResources(data);
 			}
 
 			if (draftOrders != null) {
 				// Add non-request resources (e.g. referenced Medications) to bundle
 				CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(draftOrders, data);
+			}
+
+			logging.logBundleResources(data);
+
+			// Get the patient MRN for logging
+			var patient = BundleUtil.toListOfResourcesOfType(getFhirContext(), data, Patient.class).stream().findFirst().orElseThrow();
+			if (patient.hasIdentifier()) {
+				var mrn = patient.getIdentifier().stream().filter(identifier -> identifier.hasType() && identifier.getType().hasText() && identifier.getType().getText().equals("EPICMRN")).findFirst();
+				mrn.ifPresent(identifier -> this.mrn = identifier.getValue());
 			}
 
 			return data;

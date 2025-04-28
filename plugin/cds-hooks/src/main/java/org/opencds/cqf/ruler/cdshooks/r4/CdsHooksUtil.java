@@ -123,7 +123,7 @@ public class CdsHooksUtil {
 		Map<String, Resource> resourceMap = new HashMap<>();
 		Bundle prefetchResources = new Bundle();
 		Resource resource;
-		if (request.prefetch != null) {
+		if (request.prefetch != null && request.prefetch.resources != null && !request.prefetch.resources.isEmpty()) {
 			for (Map.Entry<String, JsonElement> entry : request.prefetch.resources.entrySet()) {
 				if (entry.getValue().isJsonObject()) {
 					resource = (Resource) new JsonParser(FhirContext.forR4Cached(), new LenientErrorHandler())
@@ -181,5 +181,9 @@ public class CdsHooksUtil {
 			}
 		}
 		return new ArrayList<>(expressions);
+	}
+
+	public static String emptyCards() {
+		return "{\n" + "  \"cards\": []\n" + "}";
 	}
 }

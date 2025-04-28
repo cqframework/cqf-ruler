@@ -147,19 +147,19 @@ public class CdsHooksConfig {
 	@Bean
 	@Conditional(OnR4Condition.class)
 	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
-	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet> cdsHooksRegistrationBeanR4(
+	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet> cdsHooksRegistrationBeanR4(
 		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
 		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
 		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
 		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
 		IValidationSupport validationSupport) {
-		org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet(
+		org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet(
 			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
 			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
 			validationSupport);
 		beanFactory.autowireBean(cdsHooksServlet);
 
-		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
 		registrationBean.setName("cds-hooks servlet");
 		registrationBean.setServlet(cdsHooksServlet);
 		registrationBean.addUrlMappings("/cds-services/*");
