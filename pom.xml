@@ -86,7 +86,7 @@
 	</distributionManagement>
 
 	<properties>
-		<clinical-reasoning.version>3.19.0-SNAPSHOT</clinical-reasoning.version>
+		<clinical-reasoning.version>3.21.0-SNAPSHOT</clinical-reasoning.version>
 
 		<!-- Dependency Versions -->
 		<flexmark_version>0.62.2</flexmark_version>
@@ -182,11 +182,11 @@
 				<version>1.10.0</version>
 			</dependency>
 
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-storage-cr</artifactId>
-				<version>${hapi_version}</version>
-			</dependency>
+			<!--			<dependency>-->
+			<!--				<groupId>ca.uhn.hapi.fhir</groupId>-->
+			<!--				<artifactId>hapi-fhir-storage-cr</artifactId>-->
+			<!--				<version>${hapi_version}</version>-->
+			<!--			</dependency>-->
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-server-cds-hooks</artifactId>
@@ -285,6 +285,11 @@
 			<dependency>
 				<groupId>org.opencds.cqf.fhir</groupId>
 				<artifactId>cqf-fhir-cql</artifactId>
+				<version>${clinical-reasoning.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.fhir</groupId>
+				<artifactId>cqf-fhir-cr-hapi</artifactId>
 				<version>${clinical-reasoning.version}</version>
 			</dependency>
 			<dependency>

@@ -16,7 +16,7 @@ services:
       depends_on:
          - postgres
       ports:
-         - "8080:8080"
+         - "8082:8080"
       healthcheck:
          test:
             [
