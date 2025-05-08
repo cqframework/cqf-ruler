@@ -2,7 +2,7 @@ package org.opencds.cqf.ruler.config;
 
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.external.cr.CrCommonConfig;
-import org.opencds.cqf.fhir.cr.hapi.config.CrConfigCondition;
+import org.opencds.cqf.external.cr.CrConfigCondition;
 import org.opencds.cqf.fhir.cr.hapi.config.r4.ApplyOperationConfig;
 import org.opencds.cqf.fhir.cr.hapi.config.r4.CrR4Config;
 import org.opencds.cqf.fhir.cr.hapi.config.r4.DataRequirementsOperationConfig;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Conditional({OnR4Condition.class, CrConfigCondition.class})
 @Import({
-	CrCommonConfig.class,
+	RulerCrCommonConfig.class,
 	CrR4Config.class,
 	ApplyOperationConfig.class,
 	DataRequirementsOperationConfig.class,
@@ -28,4 +28,4 @@ import org.springframework.context.annotation.Import;
 	PopulateOperationConfig.class,
 	QuestionnaireOperationConfig.class
 })
-public class StarterCrR4Config {}
+public class RulerCrR4Config {}
