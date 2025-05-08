@@ -16,7 +16,6 @@
 		<module>sdc</module>
 		<module>security</module>
 		<module>ra</module>
-		<module>ecr</module>
 	</modules>
 	<dependencies>
 		<dependency>
