@@ -19,6 +19,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.fhir.cr.hapi.r4.measure.MeasureOperationsProvider;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.ra.RAConstants;
@@ -38,7 +39,7 @@ import static org.opencds.cqf.fhir.utility.r4.Parameters.part;
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
 
 	@Autowired
-	ca.uhn.fhir.cr.r4.measure.MeasureOperationsProvider measureEvaluateProvider;
+	MeasureOperationsProvider measureEvaluateProvider;
 
 	private String visited;
 

@@ -39,10 +39,10 @@
 		</dependency>
 
 		<!-- This dependency includes the JPA CQL Server -->
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-storage-cr</artifactId>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>ca.uhn.hapi.fhir</groupId>-->
+		<!--			<artifactId>hapi-fhir-storage-cr</artifactId>-->
+		<!--		</dependency>-->
 
 		<!-- This dependency includes the JPA MDM Server -->
 		<dependency>
@@ -76,6 +76,10 @@
 		<dependency>
 			<groupId>org.opencds.cqf.fhir</groupId>
 			<artifactId>cqf-fhir-cr</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr-hapi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.fhir</groupId>
