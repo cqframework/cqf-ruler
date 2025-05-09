@@ -1,6 +1,7 @@
 {
   "resourceType": "Library",
   "id": "Html",
+  "url": "http://fhir.org/guides/ohsuhypertensionig/Library/Html",
   "version": "0.1",
   "name": "Html",
   "status": "active",

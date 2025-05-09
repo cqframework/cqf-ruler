@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.cdshooks.r4;
 
-import ca.uhn.fhir.cr.r4.cpg.CqlExecutionOperationProvider;
-import ca.uhn.fhir.cr.r4.cpg.LibraryEvaluationOperationProvider;
 import ca.uhn.fhir.rest.api.server.SystemRequestDetails;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.Bundle;
@@ -10,6 +8,8 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.opencds.cqf.cql.engine.exception.CqlException;
+import org.opencds.cqf.fhir.cr.hapi.r4.cpg.CqlExecutionOperationProvider;
+import org.opencds.cqf.fhir.cr.hapi.r4.library.LibraryEvaluateProvider;
 
 import java.util.List;
 
@@ -30,12 +30,12 @@ public class R4CqlExecution {
         }
     }
 
-    public Parameters getLibraryExecution(LibraryEvaluationOperationProvider libraryExecution, IdType logicId,
+    public Parameters getLibraryExecution(LibraryEvaluateProvider libraryExecution, IdType logicId,
 														String patientId, List<String> expressions, Parameters parameters,
 														Bundle data, Endpoint remoteDataEndpoint) {
-        Parameters executionResult = libraryExecution.evaluate(requestDetails, logicId, patientId,
-                expressions, parameters, data, null, remoteDataEndpoint,
-                null, null);
+        Parameters executionResult = libraryExecution.evaluate(logicId, patientId,
+                expressions, parameters, null, data, null, remoteDataEndpoint,
+                null, null, requestDetails);
         checkError(executionResult);
         return executionResult;
     }

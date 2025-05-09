@@ -1,9 +1,9 @@
 package org.opencds.cqf.ruler.cdshooks;
 
 import org.opencds.cqf.external.annotations.OnR4Condition;
-import org.opencds.cqf.external.cr.StarterCrR4Config;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet;
+import org.opencds.cqf.ruler.config.RulerCrR4Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,7 +19,7 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({ StarterCrR4Config.class })
+@Import({ RulerCrR4Config.class })
 public class CdsHooksConfig {
 
 	@Autowired
