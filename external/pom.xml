@@ -38,12 +38,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- This dependency includes the JPA CQL Server -->
-		<!--		<dependency>-->
-		<!--			<groupId>ca.uhn.hapi.fhir</groupId>-->
-		<!--			<artifactId>hapi-fhir-storage-cr</artifactId>-->
-		<!--		</dependency>-->
-
 		<!-- This dependency includes the JPA MDM Server -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>

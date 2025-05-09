@@ -182,11 +182,6 @@
 				<version>1.10.0</version>
 			</dependency>
 
-			<!--			<dependency>-->
-			<!--				<groupId>ca.uhn.hapi.fhir</groupId>-->
-			<!--				<artifactId>hapi-fhir-storage-cr</artifactId>-->
-			<!--				<version>${hapi_version}</version>-->
-			<!--			</dependency>-->
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-server-cds-hooks</artifactId>
