@@ -17,7 +17,7 @@
 #EXPOSE 8080
 #CMD ["java", "-cp", "server/ROOT.war", "-Dloader.path=WEB-INF/classes,WEB-INF/lib,WEB-INF/lib-provided,plugin", "org.springframework.boot.loader.PropertiesLauncher"]
 
-# Normal Dockerfile
+ Normal Dockerfile
 FROM openjdk:18-slim-bullseye
 
 ARG COMMIT_HASH

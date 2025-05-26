@@ -62,6 +62,19 @@ class EpicLogging {
 		performanceLogger.info("================== MCL Query Performance Log End ==================");
 	}
 
+	void logMclQueryPerformanceWithCount(Map<String, Long> mclQueryPerformanceMap, Map<String, Integer> resourceCountMap) {
+		performanceLogger.info("================== MCL Query Performance Log Start ==================");
+		mclQueryPerformanceMap.forEach((k, v) -> {
+				int count = 0;
+				if (resourceCountMap.containsKey(k)) {
+					count = resourceCountMap.get(k);
+				}
+				performanceLogger.info("Time for query: {} took {} ms, resulting in {} resource(s)", k, v, count);
+			}
+		);
+		performanceLogger.info("================== MCL Query Performance Log End ==================");
+	}
+
 	void logBundleResources(Bundle data) {
 		logger.info("================== Resource Log Start ==================");
 		infoLogger.info("================== Resource Log Start ==================");
@@ -86,5 +99,9 @@ class EpicLogging {
 		performanceLogger.info(
 			"CDS Hook request for hook instance {} took {} ms", hookInstance, getDuration()
 		);
+	}
+
+	void logTimeBetweenRequests(String patientId, Long duration) {
+		performanceLogger.info("Time between order-select and order-sign requests for patient: {} took {} ms", patientId, duration);
 	}
 }

@@ -44,7 +44,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
@@ -87,17 +89,14 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 	private final ServletRequestDetails requestDetails;
 	private final R4CqlExecution r4CqlExecution;
 
-//	private final Cache<String, String> orderSelectResponseCache = Caffeine.newBuilder()
-//		.expireAfterWrite(1, TimeUnit.HOURS)
-//		.maximumSize(1_000)
-//		.build();
-
 	// Cache from patientId → future of the *real* order-sign response JSON
 	private final Cache<String, CompletableFuture<String>> orderSelectResponseCache =
 		Caffeine.newBuilder()
 			.expireAfterWrite(1, TimeUnit.HOURS)
 			.maximumSize(1000)
 			.build();
+
+	private final Map<String, Long> orderSelectStartTimes = new HashMap<>();
 
 	@Autowired
 	public EpicCacheCdsHooksServlet(
@@ -152,86 +151,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-//		AsyncContext asyncContext = request.startAsync();
-//
-//		var logging = new EpicLogging(logger);
-//		// Validate content type header
-//		var contentType = request.getContentType();
-//		if (contentType == null || !contentType.startsWith("application/json")) {
-//			logging.logError(String.format("Expected content type: application/json, found %s.", contentType));
-//			return;
-//		}
-//
-//		// Deserialize request
-//		String cdsHooksRequestRaw;
-//		try {
-//			cdsHooksRequestRaw = request.getReader().lines().collect(Collectors.joining());
-//			logging.logInfo(cdsHooksRequestRaw);
-//		} catch (IOException ioe) {
-//			logging.logError("Error reading CDS Hooks Request: ", ioe);
-//			return;
-//		}
-//		var mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//		CdsHooksRequest cdsHooksRequest;
-//		try {
-//			cdsHooksRequest = mapper.readValue(cdsHooksRequestRaw, CdsHooksRequest.class);
-//		} catch (JsonProcessingException jpe) {
-//			logging.logError("Error deserializing CDS Hooks Request: ", jpe);
-//			return;
-//		}
-//
-//		var cdsHooksRequestHandler = new CdsHooksRequestHandler(cdsHooksRequest);
-//		var patientId = cdsHooksRequestHandler.getPatientId();
-//
-//		if (cdsHooksRequest instanceof CdsHooksRequest.OrderSelect) {
-//			// return empty cards
-//			setResponseHeaders(response);
-//			try {
-//				response.getWriter().println(CdsHooksUtil.emptyCards());
-//				response.getWriter().flush();
-//			} catch (IOException ioe) {
-//				logging.logError("Error writing CDS Hooks response: ", ioe);
-//			}
-//			if (orderSelectResponseCache.getIfPresent(patientId) == null) {
-//				orderSelectResponseCache.put(patientId, "");
-//			}
-//		} else if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign) {
-//			var cachedResponse = orderSelectResponseCache.getIfPresent(patientId);
-//			if (cachedResponse == null) {
-//				orderSelectResponseCache.put(patientId, "");
-//			} else if (cachedResponse.isEmpty()) {
-//				final var MAX_RETRIES = 50; // for example, wait up to 30 * 100ms = 5 seconds
-//				var retries = 0;
-//				while (cachedResponse.isEmpty() && retries < MAX_RETRIES) {
-//					try {
-//						Thread.sleep(100); // wait 100ms before checking again
-//					} catch (InterruptedException ie) {
-//						Thread.currentThread().interrupt();
-//						break;
-//					}
-//					cachedResponse = orderSelectResponseCache.getIfPresent(patientId);
-//					retries++;
-//				}
-//			} else {
-//				setResponseHeaders(response);
-//				try {
-//					response.getWriter().println(cachedResponse);
-//					response.getWriter().flush();
-//				} catch (IOException ioe) {
-//					logging.logError("Error writing CDS Hooks response: ", ioe);
-//				}
-//				return;
-//			}
-//		}
-//
-//		asyncContext.start(() -> {
-//			try {
-//				handleRequest(request, response, logging, cdsHooksRequestHandler, patientId, mapper);
-//			} finally {
-//				asyncContext.complete();
-//			}
-//		});
-
+		var logging = new EpicLogging(logger);
 		// Kick off async processing immediately:
 		AsyncContext asyncContext = request.startAsync();
 		// 60s timeout if something goes wrong
@@ -257,6 +177,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 					// Create or replace the future placeholder
 					CompletableFuture<String> future = new CompletableFuture<>();
 					orderSelectResponseCache.put(patientId, future);
+					orderSelectStartTimes.put(patientId, System.currentTimeMillis());
 
 					// Return empty cards immediately
 					writeJson(response, CdsHooksUtil.emptyCards());
@@ -265,7 +186,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 
 					// Meanwhile, in the background compute the *real* order‑sign payload
 					CompletableFuture
-						.supplyAsync(() -> computeOrderSignPayload(requestHandler, serviceId, patientId, mapper), ForkJoinPool.commonPool())
+						.supplyAsync(() -> computeOrderSignPayload(requestHandler, serviceId, patientId, mapper, logging), ForkJoinPool.commonPool())
 						.whenComplete((json, ex) -> {
 							if (ex != null) {
 								future.completeExceptionally(ex);
@@ -276,6 +197,10 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 
 				} else if (hookReq instanceof CdsHooksRequest.OrderSign) {
 					// --- ORDER‑SIGN branch ---
+					if (orderSelectStartTimes.containsKey(patientId)) {
+						// log time between the order-select and order-sign request
+						logging.logTimeBetweenRequests(patientId, System.currentTimeMillis() - orderSelectStartTimes.get(patientId));
+					}
 					CompletableFuture<String> future = orderSelectResponseCache.getIfPresent(patientId);
 					if (future != null) {
 						// When the select logic finishes (or already finished), write that JSON
@@ -299,7 +224,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 						}, ForkJoinPool.commonPool());
 					} else {
 						// No prior select → just run the full sign logic inline
-						String json = computeOrderSignPayload(requestHandler, serviceId, patientId, mapper);
+						String json = computeOrderSignPayload(requestHandler, serviceId, patientId, mapper, logging);
 						writeJson(response, json);
 						asyncContext.complete();
 					}
@@ -338,8 +263,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		} catch (IOException ignored) {}
 	}
 
-	private String computeOrderSignPayload(CdsHooksRequestHandler cdsHooksRequestHandler, String serviceId, String patientId, ObjectMapper mapper) {
-		var logging = new EpicLogging(logger);
+	private String computeOrderSignPayload(CdsHooksRequestHandler cdsHooksRequestHandler, String serviceId, String patientId, ObjectMapper mapper, EpicLogging logging) {
 		// Prepare Library evaluation
 		configureLibraryAndTerminologyProviders();
 
@@ -386,58 +310,6 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		logging.logRequestDuration(cdsHooksRequestHandler.request.hookInstance);
 		return jsonResponse;
 	}
-
-//	private void handleRequest(HttpServletRequest request, HttpServletResponse response, EpicLogging logging,
-//										CdsHooksRequestHandler cdsHooksRequestHandler, String patientId, ObjectMapper mapper) {
-//		// Prepare Library evaluation
-//		configureLibraryAndTerminologyProviders();
-//
-//		// Prepare evaluation and card building
-//		var serviceId = request.getPathInfo().replace("/", "");
-//		PlanDefinition planDefinition;
-//		try {
-//			planDefinition = read(Ids.newId(PlanDefinition.class, serviceId));
-//		} catch (ResourceNotFoundException e) {
-//			logging.logError(String.format("Could not resolve PlanDefinition/%s", serviceId), e);
-//			return;
-//		}
-//		if (!planDefinition.hasLibrary()) {
-//			logging.logError(String.format("PlanDefinition for service %s does not specify a primary library", serviceId));
-//			return;
-//		}
-//		IdType primaryLibraryId = Ids.newId(Library.class, Canonicals.getIdPart(planDefinition.getLibrary().get(0)));
-//		var cqlExecutionHandler = new CqlExecutionHandler(r4CqlExecution, libraryExecutionProvider, cqlExecutionProvider,
-//			primaryLibraryId, cdsHooksRequestHandler.getDraftOrdersParameters(),
-//			cdsHooksRequestHandler.useServerData(), cdsHooksRequestHandler.getPrefetchBundle(logging));
-//		var expressions = CdsHooksUtil.getExpressions(planDefinition);
-//		var evaluationResults = cqlExecutionHandler.evaluateLibrary(patientId, expressions, null);
-//
-//		// Build cards
-//		CardBuilder cardBuilder = new CardBuilder(patientId, evaluationResults, planDefinition, applyEvaluator, requestDetails, modelResolver, cqlExecutionHandler);
-//		List<Card> cards = cardBuilder.buildCards();
-//		Cards result = new Cards();
-//		result.cards = cards.stream().filter(Objects::nonNull).collect(Collectors.toList());
-//
-//		if (result.cards.isEmpty()) {
-//			logging.logNoGuidance(cdsHooksRequestHandler.mrn, cdsHooksRequestHandler.request.hookInstance);
-//		}
-//
-//		// Serialize cards into response
-//		try {
-//			String jsonResponse = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
-//				.toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
-//			orderSelectResponseCache.put(patientId, jsonResponse);
-//			logging.logInfo(jsonResponse);
-//			setResponseHeaders(response);
-//			response.getWriter().println(jsonResponse);
-//		} catch (JsonProcessingException | JsonSyntaxException jpe) {
-//			logging.logError("Error serializing CDS Hooks response: ", jpe);
-//		} catch (IOException ioe) {
-//			logging.logError("Error writing CDS Hooks response: ", ioe);
-//		}
-//
-//		logging.logRequestDuration(cdsHooksRequestHandler.request.hookInstance);
-//	}
 
 	private void setResponseHeaders(HttpServletResponse response) {
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
@@ -564,7 +436,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 			if (data == null) {
 				var configResolver = new EpicModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, request);
 				data = configResolver.getPrefetchBundle();
-				logging.logMclQueryPerformance(configResolver.getPerformanceMap());
+				logging.logMclQueryPerformanceWithCount(configResolver.getPerformanceMap(), configResolver.getResourceCountMap());
 			}
 
 			if (draftOrders != null) {

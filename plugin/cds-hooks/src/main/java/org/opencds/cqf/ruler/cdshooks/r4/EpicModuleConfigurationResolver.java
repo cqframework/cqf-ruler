@@ -30,6 +30,7 @@ public class EpicModuleConfigurationResolver {
 
 	// Thread-safe map for performance stats
 	private final Map<String, Long> performanceMap;
+	private final Map<String, Integer> resourceCountMap;
 
 	private final FhirContext fhirContext;
 
@@ -56,6 +57,7 @@ public class EpicModuleConfigurationResolver {
 	public EpicModuleConfigurationResolver(FhirContext fhirContext, Endpoint prefetchEndpoint, CdsHooksRequest request) {
 		this.fhirContext = fhirContext;
 		this.performanceMap = new ConcurrentHashMap<>();  // thread-safe
+		this.resourceCountMap = new ConcurrentHashMap<>();
 
 		// Initialize client
 		this.prefetchClient = fhirContext.newRestfulGenericClient(prefetchEndpoint.getAddress());
@@ -207,6 +209,7 @@ public class EpicModuleConfigurationResolver {
 	 */
 	public IBaseResource resourceFromUrl(String theUrl) {
 		var startTime = System.currentTimeMillis();
+		int count = 0;
 		try {
 			var parts = UrlUtil.parseUrl(theUrl);
 			var resourceType = parts.getResourceType();
@@ -220,7 +223,11 @@ public class EpicModuleConfigurationResolver {
 
 			if (resourceId != null) {
 				// Read a specific resource by ID
-				return prefetchClient.read().resource(resourceType).withId(resourceId).execute();
+				var resource =  prefetchClient.read().resource(resourceType).withId(resourceId).execute();
+				if (resource != null) {
+					count++;
+				}
+				return resource;
 			} else if (matchUrl != null) {
 				// Perform a search
 				var queryMap = UrlUtil.parseQueryString(matchUrl);
@@ -231,7 +238,11 @@ public class EpicModuleConfigurationResolver {
 					// Convert String[] -> List<String>
 					whereMap.put(key, Arrays.asList(valueArray));
 				});
-				return searchWithPagination(resourceType, whereMap);
+				var searchResult = searchWithPagination(resourceType, whereMap);
+				if (searchResult.hasEntry()) {
+					count = searchResult.getEntry().size();
+				}
+				return searchResult;
 			} else {
 				throw new InvalidRequestException(
 					Msg.code(2384) + "Unable to translate url " + theUrl + " into a resource or a bundle."
@@ -240,6 +251,7 @@ public class EpicModuleConfigurationResolver {
 		} finally {
 			var duration = System.currentTimeMillis() - startTime;
 			performanceMap.put(theUrl, duration);
+			resourceCountMap.put(theUrl, count);
 		}
 	}
 
@@ -293,6 +305,9 @@ public class EpicModuleConfigurationResolver {
 
 	public Map<String, Long> getPerformanceMap() {
 		return performanceMap;
+	}
+	public Map<String, Integer> getResourceCountMap() {
+		return resourceCountMap;
 	}
 
 	/**
