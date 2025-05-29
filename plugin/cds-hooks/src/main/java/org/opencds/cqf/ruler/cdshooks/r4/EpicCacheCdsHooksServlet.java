@@ -13,10 +13,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.engine.execution.InMemoryLibraryLoader;
@@ -28,7 +30,6 @@ import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CDSHooksTransactionInterceptor;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
-import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
@@ -38,15 +39,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
@@ -90,13 +89,11 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 	private final R4CqlExecution r4CqlExecution;
 
 	// Cache from patientId → future of the *real* order-sign response JSON
-	private final Cache<String, CompletableFuture<String>> orderSelectResponseCache =
+	private final Cache<String, CompletableFuture<OrderSelectMetadata>> orderSelectResponseCache =
 		Caffeine.newBuilder()
 			.expireAfterWrite(1, TimeUnit.HOURS)
 			.maximumSize(1000)
 			.build();
-
-	private final Map<String, Long> orderSelectStartTimes = new HashMap<>();
 
 	@Autowired
 	public EpicCacheCdsHooksServlet(
@@ -153,7 +150,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		var logging = new EpicLogging(logger);
 		// Kick off async processing immediately:
-		AsyncContext asyncContext = request.startAsync();
+		var asyncContext = request.startAsync();
 		// 60s timeout if something goes wrong
 		asyncContext.setTimeout(60_000);
 
@@ -164,20 +161,22 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 					response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
 					return;
 				}
-				String raw = request.getReader().lines().collect(Collectors.joining());
+				var raw = request.getReader().lines().collect(Collectors.joining());
+				logging.logInfo(raw);
 				var mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-				CdsHooksRequest hookReq = mapper.readValue(raw, CdsHooksRequest.class);
-				CdsHooksRequestHandler requestHandler = new CdsHooksRequestHandler(hookReq);
-				String patientId = requestHandler.getPatientId();
-				String serviceId = request.getPathInfo().replace("/", "");
+				var hookReq = mapper.readValue(raw, CdsHooksRequest.class);
+				var requestHandler = new CdsHooksRequestHandler(hookReq, logging);
+				var patientId = requestHandler.getPatientId();
+				var serviceId = request.getPathInfo().replace("/", "");
 
 				// 2) Distinguish OrderSelect vs. OrderSign
 				if (hookReq instanceof CdsHooksRequest.OrderSelect) {
 					// --- ORDER‑SELECT branch ---
 					// Create or replace the future placeholder
-					CompletableFuture<String> future = new CompletableFuture<>();
+					CompletableFuture<OrderSelectMetadata> future = new CompletableFuture<>();
+					var startTime = System.currentTimeMillis();
+					var medicationCodes = requestHandler.getDraftOrderMedicationCodes();
 					orderSelectResponseCache.put(patientId, future);
-					orderSelectStartTimes.put(patientId, System.currentTimeMillis());
 
 					// Return empty cards immediately
 					writeJson(response, CdsHooksUtil.emptyCards());
@@ -191,40 +190,51 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 							if (ex != null) {
 								future.completeExceptionally(ex);
 							} else {
-								future.complete(json);
+								var result = new OrderSelectMetadata();
+								result.setResponse(json);
+								result.setStartTime(startTime);
+								result.setMedicationCodes(medicationCodes);
+								future.complete(result);
 							}
 						});
 
 				} else if (hookReq instanceof CdsHooksRequest.OrderSign) {
 					// --- ORDER‑SIGN branch ---
-					if (orderSelectStartTimes.containsKey(patientId)) {
+					CompletableFuture<OrderSelectMetadata> future = orderSelectResponseCache.getIfPresent(patientId);
+					if (future != null && CollectionUtils.containsAny(future.get().getMedicationCodes(),
+						requestHandler.getDraftOrderMedicationCodes())) {
 						// log time between the order-select and order-sign request
-						logging.logTimeBetweenRequests(patientId, System.currentTimeMillis() - orderSelectStartTimes.get(patientId));
-					}
-					CompletableFuture<String> future = orderSelectResponseCache.getIfPresent(patientId);
-					if (future != null) {
+						logging.logTimeBetweenRequests(patientId, System.currentTimeMillis() - future.get().startTime);
+
 						// When the select logic finishes (or already finished), write that JSON
-						future.whenCompleteAsync((json, ex) -> {
+						future.whenCompleteAsync((osm, ex) -> {
 							try {
 								if (ex != null) {
 									response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 									response.getWriter().println("{\"error\":\"" + ex.getMessage() + "\"}");
 								} else {
 									if (ensureChronicOrSubacutePainOrder(requestHandler)) {
-										writeJson(response, json);
+										writeJson(response, osm.getResponse());
 									} else {
 										writeJson(response, CdsHooksUtil.emptyCards());
 									}
 								}
 							} catch (IOException ioe) {
-								// log
+								logging.logError(ioe.getMessage(), ioe);
 							} finally {
 								asyncContext.complete();
 							}
 						}, ForkJoinPool.commonPool());
 					} else {
-						// No prior select → just run the full sign logic inline
-						String json = computeOrderSignPayload(requestHandler, serviceId, patientId, mapper, logging);
+						// No prior select or different medication → ignore the cache
+						if (future == null) {
+							logging.logInfo("No cache hit due to order-select not being called for patient: " + patientId);
+							logging.logPerformanceInfo("No cache hit due to order-select not being called for patient: " + patientId);
+						} else {
+							logging.logInfo("No cache hit due to medication mismatch for patient: " + patientId);
+							logging.logPerformanceInfo("No cache hit due to medication mismatch for patient: " + patientId);
+						}
+						var json = computeOrderSignPayload(requestHandler, serviceId, patientId, mapper, logging);
 						writeJson(response, json);
 						asyncContext.complete();
 					}
@@ -263,7 +273,8 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		} catch (IOException ignored) {}
 	}
 
-	private String computeOrderSignPayload(CdsHooksRequestHandler cdsHooksRequestHandler, String serviceId, String patientId, ObjectMapper mapper, EpicLogging logging) {
+	private String computeOrderSignPayload(CdsHooksRequestHandler cdsHooksRequestHandler, String serviceId,
+														String patientId, ObjectMapper mapper, EpicLogging logging) {
 		// Prepare Library evaluation
 		configureLibraryAndTerminologyProviders();
 
@@ -282,14 +293,15 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		IdType primaryLibraryId = Ids.newId(Library.class, Canonicals.getIdPart(planDefinition.getLibrary().get(0)));
 		var cqlExecutionHandler = new CqlExecutionHandler(r4CqlExecution, libraryExecutionProvider, cqlExecutionProvider,
 			primaryLibraryId, cdsHooksRequestHandler.getDraftOrdersParameters(),
-			cdsHooksRequestHandler.useServerData(), cdsHooksRequestHandler.getPrefetchBundle(logging));
+			cdsHooksRequestHandler.useServerData(), cdsHooksRequestHandler.getPrefetchBundle());
 		var expressions = CdsHooksUtil.getExpressions(planDefinition);
 		var evaluationResults = cqlExecutionHandler.evaluateLibrary(patientId, expressions, null);
 
 		// Build cards
-		CardBuilder cardBuilder = new CardBuilder(patientId, evaluationResults, planDefinition, applyEvaluator, requestDetails, modelResolver, cqlExecutionHandler);
-		List<Card> cards = cardBuilder.buildCards();
-		Cards result = new Cards();
+		var cardBuilder = new CardBuilder(patientId, evaluationResults, planDefinition, applyEvaluator,
+			requestDetails, modelResolver, cqlExecutionHandler);
+		var cards = cardBuilder.buildCards();
+		var result = new Cards();
 		result.cards = cards.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
 		if (result.cards.isEmpty()) {
@@ -323,15 +335,17 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		return services;
 	}
 
+	// Should really be calling the CQL, but this maximizes performance
 	private Boolean ensureChronicOrSubacutePainOrder(CdsHooksRequestHandler requestHandler) {
 		var draftOrders = requestHandler.getDraftOrders();
-		boolean expectedSupply = false;
-		boolean validityPeriod = false;
-		boolean boundsPeriod = false;
+		var expectedSupply = false;
+		var validityPeriod = false;
+		var boundsPeriod = false;
 		if (draftOrders != null && draftOrders.isJsonObject()) {
 			var bundle = getFhirContext().newJsonParser().parseResource(draftOrders.toString());
 			if (bundle instanceof Bundle) {
-				var draftOrder = BundleUtil.toListOfResourcesOfType(getFhirContext(), (Bundle) bundle, MedicationRequest.class);
+				var draftOrder = BundleUtil.toListOfResourcesOfType(
+					getFhirContext(), (Bundle) bundle, MedicationRequest.class);
 				if (draftOrder.isEmpty()) {
 					return false;
 				} else {
@@ -370,8 +384,8 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 		var libraries = knowledgeArtifactCache.getLibraryCache();
 		this.libraryExecutionProvider.setLibraryLoader(new InMemoryLibraryLoader(libraries.values()));
 
-		var valuesets = knowledgeArtifactCache.getValueSetCache();
-		var terminologyProvider = new HapiTerminologyProvider(validationSupport, valuesets, requestDetails);
+		var valueSets = knowledgeArtifactCache.getValueSetCache();
+		var terminologyProvider = new HapiTerminologyProvider(validationSupport, valueSets, requestDetails);
 		this.libraryExecutionProvider.setTerminologyProvider(terminologyProvider);
 	}
 
@@ -382,11 +396,13 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 
 	private class CdsHooksRequestHandler {
 		private final CdsHooksRequest request;
+		private final EpicLogging logging;
 		private final Endpoint remoteDataEndpoint;
 		private String mrn;
 
-		public CdsHooksRequestHandler(CdsHooksRequest request) {
+		public CdsHooksRequestHandler(CdsHooksRequest request, EpicLogging logging) {
 			this.request = request;
+			this.logging = logging;
 			if (request.fhirServer != null && !request.fhirServer.equals(appProperties.getServer_address())) {
 				var ep = new Endpoint().setAddress(request.fhirServer);
 				if (request.fhirAuthorization != null) {
@@ -422,14 +438,42 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 
 		public Parameters getDraftOrdersParameters() {
 			var draftOrders = getDraftOrders();
+			logging.logDraftOrders(draftOrders);
 			return draftOrders == null ? null : CdsHooksUtil.getParameters(draftOrders);
+		}
+
+		public Bundle getDraftOrdersBundle() {
+			var draftOrders = getDraftOrders();
+			return getFhirContext().newJsonParser().parseResource(Bundle.class, new Gson().toJson(draftOrders));
+		}
+
+		public List<String> getDraftOrderMedicationCodes() {
+			var medCodes = new ArrayList<String>();
+			var draftOrdersBundle = getDraftOrdersBundle();
+			var medReqs = BundleUtil.toListOfResourcesOfType(getFhirContext(), draftOrdersBundle, MedicationRequest.class);
+			var meds = BundleUtil.toListOfResourcesOfType(getFhirContext(), draftOrdersBundle, Medication.class);
+			for (var medReq : medReqs) {
+				if (medReq.hasMedicationReference()) {
+					// Making an assumption that the draftOrders bundle will contain the Medication resource - should be safe for EPIC
+					var match = meds.stream().filter(
+						med -> medReq.getMedicationReference().getReference().endsWith(med.getIdPart())).findFirst();
+					if (match.isPresent() && match.get().hasCode() && match.get().getCode().hasCoding()) {
+						medCodes.addAll(match.get().getCode().getCoding().stream()
+							.map(Coding::getCode).collect(Collectors.toList()));
+					}
+				} else if (medReq.hasMedicationCodeableConcept() && medReq.getMedicationCodeableConcept().hasCoding()) {
+					medCodes.addAll(medReq.getMedicationCodeableConcept().getCoding().stream()
+						.map(Coding::getCode).collect(Collectors.toList()));
+				}
+			}
+			return medCodes;
 		}
 
 		public BooleanType useServerData() {
 			return new BooleanType(false);
 		}
 
-		public Bundle getPrefetchBundle(EpicLogging logging) {
+		public Bundle getPrefetchBundle() {
 			var data = CdsHooksUtil.getPrefetchResources(request);
 			var draftOrders = getDraftOrders();
 			// Use prefetch resources if provided otherwise use MCL
@@ -454,6 +498,36 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 			}
 
 			return data;
+		}
+	}
+
+	private class OrderSelectMetadata {
+		private String response;
+		private Long startTime;
+		private List<String> medicationCodes;
+
+		public String getResponse() {
+			return response;
+		}
+
+		public void setResponse(String response) {
+			this.response = response;
+		}
+
+		public Long getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(Long startTime) {
+			this.startTime = startTime;
+		}
+
+		public List<String> getMedicationCodes() {
+			return medicationCodes;
+		}
+
+		public void setMedicationCodes(List<String> medicationCodes) {
+			this.medicationCodes = medicationCodes;
 		}
 	}
 }

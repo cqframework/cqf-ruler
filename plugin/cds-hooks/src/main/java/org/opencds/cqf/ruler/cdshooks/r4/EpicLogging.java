@@ -2,6 +2,8 @@ package org.opencds.cqf.ruler.cdshooks.r4;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.util.BundleUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
@@ -52,6 +54,25 @@ class EpicLogging {
 	void logInfo(String info) {
 		logger.info(info);
 		infoLogger.info(info);
+	}
+
+	void logDraftOrders(JsonObject draftOrders) {
+		var draftOrderBundle = fhirContext.newJsonParser().parseResource(Bundle.class, new Gson().toJson(draftOrders));
+		if (draftOrderBundle.hasEntry()) {
+			infoLogger.info("================== Draft Orders Start ==================");
+			for (var draftOrder : draftOrderBundle.getEntry()) {
+				if (draftOrder.hasResource()) {
+					var resourceJson = fhirContext.newJsonParser().encodeResourceToString(draftOrder.getResource());
+					infoLogger.info(resourceJson);
+				}
+			}
+			infoLogger.info("================== Draft Orders End ==================");
+		}
+	}
+
+	void logPerformanceInfo(String info) {
+		logger.info(info);
+		performanceLogger.info(info);
 	}
 
 	void logMclQueryPerformance(Map<String, Long> mclQueryPerformanceMap) {
