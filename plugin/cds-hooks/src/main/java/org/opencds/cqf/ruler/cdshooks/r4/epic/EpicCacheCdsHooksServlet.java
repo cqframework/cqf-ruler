@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4;
+package org.opencds.cqf.ruler.cdshooks.r4.epic;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.cr.common.HapiTerminologyProvider;
@@ -29,6 +29,10 @@ import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CDSHooksTransactionInterceptor;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.cdshooks.r4.CardBuilder;
+import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
+import org.opencds.cqf.ruler.cdshooks.r4.CqlExecutionHandler;
+import org.opencds.cqf.ruler.cdshooks.r4.R4CqlExecution;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
@@ -74,7 +78,7 @@ else run normally
 @Configurable
 public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
-	private static final Logger logger = LoggerFactory.getLogger(EpicCdsHooksServlet.class);
+	private static final Logger logger = LoggerFactory.getLogger(EpicCacheCdsHooksServlet.class);
 
 	private final DaoRegistry daoRegistry;
 	private final AppProperties appProperties;
@@ -480,7 +484,7 @@ public class EpicCacheCdsHooksServlet extends HttpServlet implements DaoRegistry
 			if (data == null) {
 				var configResolver = new EpicModuleConfigurationResolver(getFhirContext(), remoteDataEndpoint, request);
 				data = configResolver.getPrefetchBundle();
-				logging.logMclQueryPerformanceWithCount(configResolver.getPerformanceMap(), configResolver.getResourceCountMap());
+				logging.logMclQueryPerformanceResult(configResolver.getQueryResultMap());
 			}
 
 			if (draftOrders != null) {

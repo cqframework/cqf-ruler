@@ -100,4 +100,14 @@ public class CdsHooksProperties {
 			this.maxUriLength = maxUriLength;
 		}
 	}
+
+	private long requestTimeoutMs;
+
+	public long getRequestTimeoutMs() {
+		return requestTimeoutMs;
+	}
+
+	public void setRequestTimeoutMs(long requestTimeoutMs) {
+		this.requestTimeoutMs = requestTimeoutMs;
+	}
 }

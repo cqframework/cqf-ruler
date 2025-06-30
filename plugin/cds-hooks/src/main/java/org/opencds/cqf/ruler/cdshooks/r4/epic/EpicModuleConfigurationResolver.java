@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4;
+package org.opencds.cqf.ruler.cdshooks.r4.epic;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.i18n.Msg;
@@ -11,31 +11,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.jetbrains.annotations.NotNull;
+import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
+import org.openjdk.jol.info.GraphLayout;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class EpicModuleConfigurationResolver {
 	private static final String PATIENT = "Patient/{{context.patientId}}";
-	private static final String ACTIVE_MEDICATION_ORDERS = "MedicationRequest?patient={{context.patientId}}&date=ge{{today - 13 months - 1 day}}&status=active,completed,stopped&category=community&intent=order&_include=MedicationRequest:medication";
+	private static final String ACTIVE_MEDICATION_ORDERS = "MedicationRequest?patient={{context.patientId}}&date=ge{{today() - 1 year - 1 month - 1 day}}&status=active,completed,stopped&category=community&intent=order&_include=MedicationRequest:medication";
 	private static final String ACTIVE_CATEGORIZED_CONDITIONS = "Condition?patient={{context.patientId}}&category=health-concern,problem-list-item&clinical-status=active";
-	private static final String UDS_LABS_POST = "Observation?subject={{context.patientId}}&category=laboratory&date=ge{{today - 1 year}}";
+	private static final String UDS_LABS_POST = "Observation?subject={{context.patientId}}&category=laboratory&date=ge{{today() - 1 year}}";
+
+	private static final List<String> URL_LIST = Arrays.asList(PATIENT, ACTIVE_MEDICATION_ORDERS, ACTIVE_CATEGORIZED_CONDITIONS, UDS_LABS_POST);
+
 	private final IGenericClient prefetchClient;
 	private final String patientId;
 	private final List<String> medicationIds;
 
 	// Thread-safe map for performance stats
-	private final Map<String, Long> performanceMap;
-	private final Map<String, Integer> resourceCountMap;
+	private final Map<String, MCLQueryResult> queryResultMap;
 
 	private final FhirContext fhirContext;
-
-	// Reusable date format
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/**
 	 * A shared executor so we don't create a new pool per request.
@@ -56,8 +55,7 @@ public class EpicModuleConfigurationResolver {
 
 	public EpicModuleConfigurationResolver(FhirContext fhirContext, Endpoint prefetchEndpoint, CdsHooksRequest request) {
 		this.fhirContext = fhirContext;
-		this.performanceMap = new ConcurrentHashMap<>();  // thread-safe
-		this.resourceCountMap = new ConcurrentHashMap<>();
+		this.queryResultMap = new ConcurrentHashMap<>();
 
 		// Initialize client
 		this.prefetchClient = fhirContext.newRestfulGenericClient(prefetchEndpoint.getAddress());
@@ -105,9 +103,13 @@ public class EpicModuleConfigurationResolver {
 		// Keep track of which resource IDs we've added
 		var seenIds = new HashSet<String>();
 
-		var urls = normalizeUrls();
+		var qts = new QueryTokenSubstitution(patientId, URL_LIST);
+		var urls = qts.substituteTokens();
 		if (urls.isEmpty()) {
 			return prefetchBundle;
+		}
+		if (medicationIds != null && !medicationIds.isEmpty()) {
+			urls.addAll(medicationIds);
 		}
 
 		// 1) Submit concurrency tasks for each URL
@@ -160,56 +162,13 @@ public class EpicModuleConfigurationResolver {
 	}
 
 	/**
-	 * Build the list of URLs to query, replacing placeholders with actual dates/patient IDs.
-	 */
-	public List<String> normalizeUrls() {
-		var patientUrl = PATIENT.replace("{{context.patientId}}", patientId);
-
-		var now = LocalDate.now();
-		// 1 year ago
-		var oneYearAgo = now.minusYears(1);
-		var oneYearAgoStr = oneYearAgo.format(DATE_FORMAT);
-
-		// 13 months + 1 day ago
-		var thirteenMonthsOneDay = now.minusMonths(13).minusDays(1);
-		var thirteenMonthsOneDayStr = thirteenMonthsOneDay.format(DATE_FORMAT);
-
-		var activeMedsUrl = ACTIVE_MEDICATION_ORDERS
-			.replace("{{context.patientId}}", patientId)
-			.replace("{{today - 13 months - 1 day}}", thirteenMonthsOneDayStr);
-
-		var urls = getUrls(oneYearAgoStr, patientUrl, activeMedsUrl);
-
-		if (medicationIds != null && !medicationIds.isEmpty()) {
-			urls.addAll(medicationIds);
-		}
-		return urls;
-	}
-
-	@NotNull
-	private List<String> getUrls(String oneYearAgoStr, String patientUrl, String activeMedsUrl) {
-		var activeConditionsUrl = ACTIVE_CATEGORIZED_CONDITIONS
-			.replace("{{context.patientId}}", patientId);
-
-		var pastYearUdsLabsUrl = UDS_LABS_POST
-			.replace("{{context.patientId}}", patientId)
-			.replace("{{today - 1 year}}", oneYearAgoStr);
-
-		var urls = new ArrayList<String>();
-		urls.add(patientUrl);
-		urls.add(activeMedsUrl);
-		urls.add(activeConditionsUrl);
-		urls.add(pastYearUdsLabsUrl);
-		return urls;
-	}
-
-	/**
 	 * Retrieve a single resource or search bundle from the FHIR server for the given URL,
 	 * tracking execution time in performanceMap.
 	 */
 	public IBaseResource resourceFromUrl(String theUrl) {
 		var startTime = System.currentTimeMillis();
 		int count = 0;
+		var queryResult = new MCLQueryResult();
 		try {
 			var parts = UrlUtil.parseUrl(theUrl);
 			var resourceType = parts.getResourceType();
@@ -225,6 +184,7 @@ public class EpicModuleConfigurationResolver {
 				// Read a specific resource by ID
 				var resource =  prefetchClient.read().resource(resourceType).withId(resourceId).execute();
 				if (resource != null) {
+					queryResult.setBytes(GraphLayout.parseInstance(resource).totalSize());
 					count++;
 				}
 				return resource;
@@ -238,7 +198,7 @@ public class EpicModuleConfigurationResolver {
 					// Convert String[] -> List<String>
 					whereMap.put(key, Arrays.asList(valueArray));
 				});
-				var searchResult = searchWithPagination(resourceType, whereMap);
+				var searchResult = searchWithPagination(resourceType, whereMap, queryResult);
 				if (searchResult.hasEntry()) {
 					count = searchResult.getEntry().size();
 				}
@@ -250,8 +210,9 @@ public class EpicModuleConfigurationResolver {
 			}
 		} finally {
 			var duration = System.currentTimeMillis() - startTime;
-			performanceMap.put(theUrl, duration);
-			resourceCountMap.put(theUrl, count);
+			queryResult.setDuration(duration);
+			queryResult.setCount(count);
+			queryResultMap.put(theUrl, queryResult);
 		}
 	}
 
@@ -259,7 +220,7 @@ public class EpicModuleConfigurationResolver {
 	 * Demonstrates fetching all pages of a search, if the server returns a multi-page Bundle.
 	 * Combines them all into a single Bundle to return.
 	 */
-	private Bundle searchWithPagination(String resourceType, Map<String, List<String>> queryMap) {
+	private Bundle searchWithPagination(String resourceType, Map<String, List<String>> queryMap, MCLQueryResult queryResult) {
 		// Start the search
 		var search = prefetchClient.search().forResource(resourceType);
 
@@ -273,6 +234,8 @@ public class EpicModuleConfigurationResolver {
 
 		// Collect results across multiple pages
 		var allResources = new ArrayList<>(BundleUtil.toListOfResources(fhirContext, result));
+		var bytes = GraphLayout.parseInstance(allResources).totalSize();
+		queryResult.setBytes(bytes);
 
 		var current = result;
 		while (current.getLink(Bundle.LINK_NEXT) != null) {
@@ -303,12 +266,7 @@ public class EpicModuleConfigurationResolver {
 		return headerNameValuePairs;
 	}
 
-	public Map<String, Long> getPerformanceMap() {
-		return performanceMap;
-	}
-	public Map<String, Integer> getResourceCountMap() {
-		return resourceCountMap;
-	}
+	public Map<String, MCLQueryResult> getQueryResultMap() { return queryResultMap; }
 
 	/**
 	 * Optional: Shut down the shared executor if desired (e.g., on app shutdown).

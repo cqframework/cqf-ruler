@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4;
+package org.opencds.cqf.ruler.cdshooks.r4.epic;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.cr.common.HapiTerminologyProvider;
@@ -32,6 +32,11 @@ import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CDSHooksTransactionInterceptor;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.cdshooks.r4.CardBuilder;
+import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
+import org.opencds.cqf.ruler.cdshooks.r4.CqlExecutionHandler;
+import org.opencds.cqf.ruler.cdshooks.r4.ModuleConfigurationResolver;
+import org.opencds.cqf.ruler.cdshooks.r4.R4CqlExecution;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;

@@ -5,7 +5,6 @@ import ca.uhn.fhir.cr.common.ILibraryLoaderFactory;
 import ca.uhn.fhir.cr.config.CrProperties;
 import ca.uhn.fhir.cr.r4.activitydefinition.ActivityDefinitionOperationsProvider;
 import ca.uhn.fhir.interceptor.api.IInterceptorService;
-import ca.uhn.fhir.jpa.dao.ITransactionProcessorVersionAdapter;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -18,6 +17,8 @@ import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.providers.TranslatingLibraryLoader;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.EpicCacheCdsHooksServlet;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.EpicCacheTimeoutCdsHooksServlet;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
@@ -144,22 +145,45 @@ public class CdsHooksConfig {
 //		return registrationBean;
 //	}
 
+//	@Bean
+//	@Conditional(OnR4Condition.class)
+//	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
+//	public ServletRegistrationBean<EpicCacheCdsHooksServlet> cdsHooksRegistrationBeanR4(
+//		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
+//		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
+//		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
+//		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
+//		IValidationSupport validationSupport) {
+//		EpicCacheCdsHooksServlet cdsHooksServlet = new EpicCacheCdsHooksServlet(
+//			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
+//			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
+//			validationSupport);
+//		beanFactory.autowireBean(cdsHooksServlet);
+//
+//		ServletRegistrationBean<EpicCacheCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+//		registrationBean.setName("cds-hooks servlet");
+//		registrationBean.setServlet(cdsHooksServlet);
+//		registrationBean.addUrlMappings("/cds-services/*");
+//		registrationBean.setLoadOnStartup(1);
+//		return registrationBean;
+//	}
+
 	@Bean
 	@Conditional(OnR4Condition.class)
 	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
-	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet> cdsHooksRegistrationBeanR4(
+	public ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> cdsHooksRegistrationBeanR4(
 		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
 		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
 		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
 		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
-		IValidationSupport validationSupport) {
-		org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet(
+		CdsHooksProperties cdsHooksProperties, IValidationSupport validationSupport) {
+		EpicCacheTimeoutCdsHooksServlet cdsHooksServlet = new EpicCacheTimeoutCdsHooksServlet(
 			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
 			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
-			validationSupport);
+			cdsHooksProperties, validationSupport);
 		beanFactory.autowireBean(cdsHooksServlet);
 
-		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.EpicCacheCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
 		registrationBean.setName("cds-hooks servlet");
 		registrationBean.setServlet(cdsHooksServlet);
 		registrationBean.addUrlMappings("/cds-services/*");

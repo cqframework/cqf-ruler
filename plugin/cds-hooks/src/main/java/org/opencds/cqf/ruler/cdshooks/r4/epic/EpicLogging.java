@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4;
+package org.opencds.cqf.ruler.cdshooks.r4.epic;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.util.BundleUtil;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-class EpicLogging {
+public class EpicLogging {
 	private final FhirContext fhirContext = FhirContext.forR4Cached();
 	private final Logger logger;
 	private static final Logger performanceLogger =
@@ -83,14 +83,13 @@ class EpicLogging {
 		performanceLogger.info("================== MCL Query Performance Log End ==================");
 	}
 
-	void logMclQueryPerformanceWithCount(Map<String, Long> mclQueryPerformanceMap, Map<String, Integer> resourceCountMap) {
+	void logMclQueryPerformanceResult(Map<String, MCLQueryResult> mclQueryPerformanceMap) {
 		performanceLogger.info("================== MCL Query Performance Log Start ==================");
 		mclQueryPerformanceMap.forEach((k, v) -> {
-				int count = 0;
-				if (resourceCountMap.containsKey(k)) {
-					count = resourceCountMap.get(k);
-				}
-				performanceLogger.info("Time for query: {} took {} ms, resulting in {} resource(s)", k, v, count);
+				var count = v.getCount();
+				var duration = v.getDuration();
+				var bytes = v.getBytes();
+				performanceLogger.info("Time for query: {} took {} ms, resulting in {} resource(s) ({} bytes)", k, duration, count, bytes);
 			}
 		);
 		performanceLogger.info("================== MCL Query Performance Log End ==================");
