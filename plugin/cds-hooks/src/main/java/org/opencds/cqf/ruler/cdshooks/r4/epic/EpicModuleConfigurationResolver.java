@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 
 public class EpicModuleConfigurationResolver {
 	private static final String PATIENT = "Patient/{{context.patientId}}";
-	private static final String ACTIVE_MEDICATION_ORDERS = "MedicationRequest?patient={{context.patientId}}&date=ge{{today() - 1 year - 1 month - 1 day}}&status=active,completed,stopped&category=community&intent=order&_include=MedicationRequest:medication";
+	private static final String ACTIVE_MEDICATION_ORDERS = "MedicationRequest?patient={{context.patientId}}&date=ge{{today() - 7 months - 1 day}}&status=active,completed,stopped&category=community&intent=order&_include=MedicationRequest:medication";
 	private static final String ACTIVE_CATEGORIZED_CONDITIONS = "Condition?patient={{context.patientId}}&category=health-concern,problem-list-item&clinical-status=active";
-	private static final String UDS_LABS_POST = "Observation?subject={{context.patientId}}&category=laboratory&date=ge{{today() - 1 year}}";
+	private static final String UDS_LABS_POST = "Observation?subject={{context.patientId}}&category=laboratory&date=ge{{today() - 6 months}}";
 
 	private static final List<String> URL_LIST = Arrays.asList(PATIENT, ACTIVE_MEDICATION_ORDERS, ACTIVE_CATEGORIZED_CONDITIONS, UDS_LABS_POST);
 
