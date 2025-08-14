@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4.epic;
+package org.opencds.cqf.ruler.cdshooks.r4.epic.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.google.gson.JsonObject;

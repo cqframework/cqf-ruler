@@ -31,6 +31,7 @@ import org.opencds.cqf.ruler.cdshooks.r4.CardBuilder;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
 import org.opencds.cqf.ruler.cdshooks.r4.CqlExecutionHandler;
 import org.opencds.cqf.ruler.cdshooks.r4.R4CqlExecution;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.util.MUSCR4CdsHooksRequestHelper;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;

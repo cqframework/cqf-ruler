@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cdshooks.r4.epic;
+package org.opencds.cqf.ruler.cdshooks.r4.epic.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.util.BundleUtil;
@@ -9,6 +9,8 @@ import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.EpicLogging;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.MUSCModuleConfigurationResolver;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 
 public class MUSCR4CdsHooksRequestHelper extends AbstractCdsHooksRequestHelper {

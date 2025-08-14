@@ -1,23 +1,15 @@
-package org.opencds.cqf.ruler.cdshooks.r4.epic;
+package org.opencds.cqf.ruler.cdshooks.r4.epic.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.util.BundleUtil;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.EpicLogging;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.EpicModuleConfigurationResolver;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CdsHooksRequestHelper {
 
@@ -28,7 +20,7 @@ public class CdsHooksRequestHelper {
 	private final CdsHooksRequest request;
 	private final String serviceId;
 	private final String patientId;
-	private final JsonObject draftOrders;
+	private final DraftOrdersHelper draftOrdersHelper;
 	private final Endpoint remoteDataEndpoint;
 	private String mrn;
 
@@ -39,14 +31,13 @@ public class CdsHooksRequestHelper {
 
 		if (request instanceof CdsHooksRequest.OrderSelect) {
 			this.patientId = ((CdsHooksRequest.OrderSelect) request).context.patientId;
-			this.draftOrders = ((CdsHooksRequest.OrderSelect) request).context.draftOrders;
 		} else if (request instanceof CdsHooksRequest.OrderSign) {
 			this.patientId = ((CdsHooksRequest.OrderSign) request).context.patientId;
-			this.draftOrders = ((CdsHooksRequest.OrderSign) request).context.draftOrders;
 		} else {
 			this.patientId = request.context.patientId;
-			this.draftOrders = null;
 		}
+
+		this.draftOrdersHelper = new DraftOrdersHelper(request);
 
 		if (request.fhirServer != null && !request.fhirServer.equals(serverAddress)) {
 			var ep = new Endpoint().setAddress(request.fhirServer);
@@ -78,35 +69,8 @@ public class CdsHooksRequestHelper {
 		return this.mrn;
 	}
 
-	public Parameters getDraftOrdersParameters() {
-		return draftOrders == null ? null : CdsHooksUtil.getParameters(draftOrders);
-	}
-
-	public Bundle getDraftOrdersBundle() {
-		return draftOrders == null ? null : fhirContext.newJsonParser().parseResource(
-			Bundle.class, new Gson().toJson(draftOrders));
-	}
-
-	public List<String> getDraftOrderMedicationCodes() {
-		var medCodes = new ArrayList<String>();
-		var draftOrdersBundle = getDraftOrdersBundle();
-		var medReqs = BundleUtil.toListOfResourcesOfType(fhirContext, draftOrdersBundle, MedicationRequest.class);
-		var meds = BundleUtil.toListOfResourcesOfType(fhirContext, draftOrdersBundle, Medication.class);
-		for (var medReq : medReqs) {
-			if (medReq.hasMedicationReference()) {
-				// Making an assumption that the draftOrders bundle will contain the Medication resource - should be safe for EPIC
-				var match = meds.stream().filter(
-					med -> medReq.getMedicationReference().getReference().endsWith(med.getIdPart())).findFirst();
-				if (match.isPresent() && match.get().hasCode() && match.get().getCode().hasCoding()) {
-					medCodes.addAll(match.get().getCode().getCoding().stream()
-						.map(Coding::getCode).collect(Collectors.toList()));
-				}
-			} else if (medReq.hasMedicationCodeableConcept() && medReq.getMedicationCodeableConcept().hasCoding()) {
-				medCodes.addAll(medReq.getMedicationCodeableConcept().getCoding().stream()
-					.map(Coding::getCode).collect(Collectors.toList()));
-			}
-		}
-		return medCodes;
+	public DraftOrdersHelper getDraftOrdersHelper() {
+		return this.draftOrdersHelper;
 	}
 
 	public BooleanType useServerData() {
@@ -122,9 +86,9 @@ public class CdsHooksRequestHelper {
 			logging.logMclQueryPerformanceResult(configResolver.getQueryResultMap());
 		}
 
-		if (draftOrders != null) {
+		if (draftOrdersHelper.getDraftOrdersJson() != null) {
 			// Add non-request resources (e.g. referenced Medications) to bundle
-			CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(draftOrders, data);
+			CdsHooksUtil.addNonRequestResourcesFromContextToDataBundle(draftOrdersHelper.getDraftOrdersJson(), data);
 		}
 
 		// Get the patient MRN for logging
@@ -135,8 +99,13 @@ public class CdsHooksRequestHelper {
 				identifier -> identifier.hasType() && identifier.getType().hasText()
 					&& identifier.getType().getText().equals("EPICMRN")).findFirst();
 			mrn.ifPresent(identifier -> this.mrn = identifier.getValue());
+			logging.logInfo("Resolved prefetch for patient (MRN): " + this.mrn);
 		}
 
 		return data;
+	}
+
+	public String getCacheKey() {
+		return this.patientId + "|" + draftOrdersHelper.canonicalizeConcept();
 	}
 }

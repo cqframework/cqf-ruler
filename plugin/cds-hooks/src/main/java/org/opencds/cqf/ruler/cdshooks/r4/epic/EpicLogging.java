@@ -36,27 +36,27 @@ public class EpicLogging {
 		startTime = System.currentTimeMillis();
 	}
 
-	long getDuration() {
+	public long getDuration() {
 		var endTime = System.currentTimeMillis();
 		return endTime - startTime;
 	}
 
-	void logError(String error) {
+	public void logError(String error) {
 		logger.error(error);
 		errorLogger.error(error);
 	}
 
-	void logError(String error, Exception e) {
+	public void logError(String error, Exception e) {
 		logger.error(error, e);
 		errorLogger.error(error, e);
 	}
 
-	void logInfo(String info) {
+	public void logInfo(String info) {
 		logger.info(info);
 		infoLogger.info(info);
 	}
 
-	void logDraftOrders(JsonObject draftOrders) {
+	public void logDraftOrders(JsonObject draftOrders) {
 		var draftOrderBundle = fhirContext.newJsonParser().parseResource(Bundle.class, new Gson().toJson(draftOrders));
 		if (draftOrderBundle.hasEntry()) {
 			infoLogger.info("================== Draft Orders Start ==================");
@@ -70,12 +70,12 @@ public class EpicLogging {
 		}
 	}
 
-	void logPerformanceInfo(String info) {
+	public void logPerformanceInfo(String info) {
 		logger.info(info);
 		performanceLogger.info(info);
 	}
 
-	void logMclQueryPerformance(Map<String, Long> mclQueryPerformanceMap) {
+	public void logMclQueryPerformance(Map<String, Long> mclQueryPerformanceMap) {
 		performanceLogger.info("================== MCL Query Performance Log Start ==================");
 		mclQueryPerformanceMap.forEach((k, v) ->
 			performanceLogger.info("Time for query: {}, {} ms", k, v)
@@ -83,7 +83,7 @@ public class EpicLogging {
 		performanceLogger.info("================== MCL Query Performance Log End ==================");
 	}
 
-	void logMclQueryPerformanceResult(Map<String, MCLQueryResult> mclQueryPerformanceMap) {
+	public void logMclQueryPerformanceResult(Map<String, MCLQueryResult> mclQueryPerformanceMap) {
 		performanceLogger.info("================== MCL Query Performance Log Start ==================");
 		mclQueryPerformanceMap.forEach((k, v) -> {
 				var count = v.getCount();
@@ -95,7 +95,7 @@ public class EpicLogging {
 		performanceLogger.info("================== MCL Query Performance Log End ==================");
 	}
 
-	void logBundleResources(Bundle data) {
+	public void logBundleResources(Bundle data) {
 		logger.info("================== Resource Log Start ==================");
 		infoLogger.info("================== Resource Log Start ==================");
 
@@ -109,19 +109,19 @@ public class EpicLogging {
 		infoLogger.info("================== Resource Log End ==================");
 	}
 
-	void logNoGuidance(String patientId, String hookInstance) {
+	public void logNoGuidance(String patientId, String hookInstance) {
 		noGuidanceLogger.info(
 			"CDS Hook instance {} for patient {} produced no guidance", patientId, hookInstance
 		);
 	}
 
-	void logRequestDuration(String hookInstance) {
+	public void logRequestDuration(String hookInstance) {
 		performanceLogger.info(
 			"CDS Hook request for hook instance {} took {} ms", hookInstance, getDuration()
 		);
 	}
 
-	void logTimeBetweenRequests(String patientId, Long duration) {
+	public void logTimeBetweenRequests(String patientId, Long duration) {
 		performanceLogger.info("Time between order-select and order-sign requests for patient: {} took {} ms", patientId, duration);
 	}
 }

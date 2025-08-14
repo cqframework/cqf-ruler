@@ -35,6 +35,7 @@ import org.opencds.cqf.ruler.cdshooks.r4.CardBuilder;
 import org.opencds.cqf.ruler.cdshooks.r4.CdsHooksUtil;
 import org.opencds.cqf.ruler.cdshooks.r4.CqlExecutionHandler;
 import org.opencds.cqf.ruler.cdshooks.r4.R4CqlExecution;
+import org.opencds.cqf.ruler.cdshooks.r4.epic.util.CdsHooksRequestHelper;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
@@ -140,32 +141,50 @@ public class EpicCacheTimeoutCdsHooksServlet extends HttpServlet implements DaoR
 				var hookReq = mapper.readValue(raw, CdsHooksRequest.class);
 				var requestHelper = new CdsHooksRequestHelper(
 					hookReq, request.getPathInfo().replace("/", ""), appProperties.getServer_address(), logging);
+				var cacheKey = requestHelper.getCacheKey();
+
+				logging.logPerformanceInfo("Executing cacheKey: " + cacheKey);
 
 				// 2) Distinguish OrderSelect vs. OrderSign
 				if (hookReq instanceof CdsHooksRequest.OrderSelect) {
-					var future = new CompletableFuture<CacheMetadata>();
-					var startTime = System.currentTimeMillis();
-					orderSelectResponseCache.put(requestHelper.getPatientId(), future);
+					var inCache = orderSelectResponseCache.getIfPresent(cacheKey);
+					if (inCache != null) {
+						logging.logPerformanceInfo("order-select response cache hit for patient: " + requestHelper.getPatientId());
 
-					// Return empty cards immediately
-					writeJson(response, CdsHooksUtil.emptyCards());
-					// Complete this async context — response is done
-					asyncContext.complete();
+						// Return empty cards immediately
+						writeJson(response, CdsHooksUtil.emptyCards());
+						// Complete this async context — response is done
+						asyncContext.complete();
+						// Do not compute the order-sign payload as the cache is already populated for the patient + Medication
+					}
+					else {
+						logging.logPerformanceInfo("order-select response cache miss for patient: " + requestHelper.getPatientId());
 
-					// Meanwhile, in the background compute the *real* order‑sign payload
-					// Do not include the timeout here...
-					CompletableFuture
-						.supplyAsync(() ->
-							computeOrderSignPayload(requestHelper, mapper, logging), ForkJoinPool.commonPool())
-						.whenComplete((json, ex) -> {
-							if (ex != null) {
-								future.completeExceptionally(ex);
-							} else {
-								future.complete(new CacheMetadata(json, startTime));
-							}
-						});
+						var future = new CompletableFuture<CacheMetadata>();
+						var startTime = System.currentTimeMillis();
+						orderSelectResponseCache.put(cacheKey, future);
+
+						// Return empty cards immediately
+						writeJson(response, CdsHooksUtil.emptyCards());
+						// Complete this async context — response is done
+						asyncContext.complete();
+
+						// Meanwhile, in the background compute the *real* order‑sign payload
+						// Do not include the timeout here...
+						CompletableFuture
+							.supplyAsync(() ->
+								computeOrderSignPayload(requestHelper, mapper, logging), ForkJoinPool.commonPool())
+							.whenComplete((json, ex) -> {
+								if (ex != null) {
+									future.completeExceptionally(ex);
+									orderSelectResponseCache.invalidate(cacheKey);
+								} else {
+									future.complete(new CacheMetadata(requestHelper, json, startTime));
+								}
+							});
+					}
 				} else if (hookReq instanceof CdsHooksRequest.OrderSign) {
-					var future = orderSelectResponseCache.getIfPresent(requestHelper.getPatientId());
+					var future = orderSelectResponseCache.getIfPresent(cacheKey);
 					if (future != null) {
 						// Wait for order-select to finish
 						future.whenCompleteAsync((cachedMetaData, ex) -> {
@@ -284,7 +303,7 @@ public class EpicCacheTimeoutCdsHooksServlet extends HttpServlet implements DaoR
 		IdType primaryLibraryId = Ids.newId(Library.class, Canonicals.getIdPart(planDefinition.getLibrary().get(0)));
 		var cqlExecutionHandler = new CqlExecutionHandler(
 			r4CqlExecution, libraryExecutionProvider, cqlExecutionProvider,
-			primaryLibraryId, helper.getDraftOrdersParameters(),
+			primaryLibraryId, helper.getDraftOrdersHelper().getDraftOrdersParameters(),
 			helper.useServerData(), helper.getPrefetchBundle());
 		var expressions = CdsHooksUtil.getExpressions(planDefinition);
 
@@ -332,7 +351,7 @@ public class EpicCacheTimeoutCdsHooksServlet extends HttpServlet implements DaoR
 
 	// Should really be calling the CQL, but this maximizes performance
 	private Boolean ensureChronicOrSubacutePainOrder(CdsHooksRequestHelper helper) {
-		var draftOrders = helper.getDraftOrdersBundle();
+		var draftOrders = helper.getDraftOrdersHelper().getDraftOrdersBundle();
 		var expectedSupply = false;
 		var validityPeriod = false;
 		var boundsPeriod = false;
