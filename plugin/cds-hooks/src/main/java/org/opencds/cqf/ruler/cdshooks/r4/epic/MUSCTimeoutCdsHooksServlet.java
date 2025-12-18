@@ -188,7 +188,7 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 			// log as much context as possible
 			logging.logError("Order-sign evaluation **timed-out** after "
 				+ cdsHooksProperties.getRequestTimeoutMs() + " ms  "
-				+ "(patient="  + helper.getPatientId()
+				+ "(patient="  + helper.getMrn()
 				+ ", hookInstance=" + helper.getRequest().hookInstance
 				+ ", serviceId=" + helper.getServiceId() + ")");
 
@@ -203,17 +203,37 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 	private String computeOrderSignPayload(
 		MUSCR4CdsHooksRequestHelper helper, ObjectMapper mapper,
 		EpicLogging logging) {
+		var requestStart = System.currentTimeMillis();
+		long planDefMs = -1;
+		long prefetchMs = -1;
+		long cqlMs = -1;
+		long cardBuildMs = -1;
+		long serializeMs = -1;
+
 		// Prepare Library evaluation
 		configureLibraryAndTerminologyProviders();
 
 		// Prepare evaluation and card building
 		PlanDefinition planDefinition;
+		var planDefStart = System.currentTimeMillis();
 		try {
 			planDefinition = read(Ids.newId(PlanDefinition.class, helper.getServiceId()));
 		} catch (ResourceNotFoundException e) {
-			logging.logError(String.format("Could not resolve PlanDefinition/%s", helper.getServiceId()), e);
+			planDefMs = System.currentTimeMillis() - planDefStart;
+			logging.logInfo("Perf milestone=planDefinitionResolved "
+				+ "(hookInstance=" + helper.getRequest().hookInstance
+				+ ", serviceId=" + helper.getServiceId()
+				+ ", patient=" + helper.getMrn()
+				+ ", durationMs=" + planDefMs + ")");
 			throw e;
 		}
+		planDefMs = System.currentTimeMillis() - planDefStart;
+		logging.logInfo("Perf milestone=planDefinitionResolved "
+			+ "(hookInstance=" + helper.getRequest().hookInstance
+			+ ", serviceId=" + helper.getServiceId()
+			+ ", patient=" + helper.getMrn()
+			+ ", durationMs=" + planDefMs + ")");
+
 		if (!planDefinition.hasLibrary()) {
 			logging.logError(String.format(
 				"PlanDefinition for service %s does not specify a primary library", helper.getServiceId()));
@@ -221,49 +241,84 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 				"PlanDefinition for service %s does not specify a primary library", helper.getServiceId()));
 		}
 		IdType primaryLibraryId = Ids.newId(Library.class, Canonicals.getIdPart(planDefinition.getLibrary().get(0)));
+
+		var prefetchStart = System.currentTimeMillis();
+		var prefetchBundle = helper.getPrefetchBundle();
+		prefetchMs = System.currentTimeMillis() - prefetchStart;
+		logging.logInfo("Perf milestone=prefetchResolved "
+			+ "(hookInstance=" + helper.getRequest().hookInstance
+			+ ", serviceId=" + helper.getServiceId()
+			+ ", patient=" + helper.getMrn()
+			+ ", durationMs=" + prefetchMs + ")");
+
 		var cqlExecutionHandler = new CqlExecutionHandler(
 			r4CqlExecution, libraryExecutionProvider, cqlExecutionProvider,
 			primaryLibraryId, helper.getDraftOrdersParameters(),
-			helper.useServerData(), helper.getPrefetchBundle());
+			helper.useServerData(), prefetchBundle);
 		var expressions = CdsHooksUtil.getExpressions(planDefinition);
 
 		var cqlStart = System.currentTimeMillis();
 		var evaluationResults = cqlExecutionHandler.evaluateLibrary(
 			helper.getPatientId(), expressions, null);
-		var cqlDurationMs = System.currentTimeMillis() - cqlStart;
+		cqlMs = System.currentTimeMillis() - cqlStart;
+		var cqlDurationMs = cqlMs;
 		logging.logInfo("CQL execution completed "
 			+ "(hookInstance=" + helper.getRequest().hookInstance
 			+ ", serviceId=" + helper.getServiceId()
-			+ ", patient=" + helper.getPatientId()
+			+ ", patient=" + helper.getMrn()
 			+ ", durationMs=" + cqlDurationMs + ")");
 
 		// TODO: Log decision provenance (rationale extension -> expression reference(s))
 		// 	e.g. UDS Recommendation, No UDS Recommendation, Possible Unexpected Results
 
 		// Build cards
+		var cardBuildStart = System.currentTimeMillis();
 		var cardBuilder = new CardBuilder(
 			helper.getPatientId(), evaluationResults, planDefinition,
 			applyEvaluator, requestDetails, modelResolver, cqlExecutionHandler);
 		var cards = cardBuilder.buildCards();
+		cardBuildMs = System.currentTimeMillis() - cardBuildStart;
+		logging.logInfo("Perf milestone=buildCards "
+			+ "(hookInstance=" + helper.getRequest().hookInstance
+			+ ", serviceId=" + helper.getServiceId()
+			+ ", patient=" + helper.getMrn()
+			+ ", durationMs=" + cardBuildMs + ")");
+
 		var result = new Cards();
 		result.cards = cards.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
 		if (result.cards.isEmpty()) {
 			logging.logNoGuidance(helper.getMrn(), helper.getRequest().hookInstance);
+			var totalMs = System.currentTimeMillis() - requestStart;
+			logging.logNoGuidance(String.format(
+				"No guidance performance summary (mrn=%s, hookInstance=%s, serviceId=%s, patient=%s): planDefMs=%d, prefetchMs=%d, cqlMs=%d, cardBuildMs=%d, serializeMs=%d, totalMs=%d",
+				helper.getMrn(), helper.getRequest().hookInstance, helper.getServiceId(), helper.getMrn(),
+				planDefMs, prefetchMs, cqlMs, cardBuildMs, serializeMs, totalMs));
 		}
 
 		// Serialize cards into response
+		var serializeStart = System.currentTimeMillis();
 		String jsonResponse = null;
 		try {
 			jsonResponse = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
 				.toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
 			logging.logInfo(jsonResponse);
-			logging.logRequestDuration(helper.getRequest().hookInstance);
-			return jsonResponse;
+			serializeMs = System.currentTimeMillis() - serializeStart;
+			logging.logInfo("Perf milestone=serializeResponse "
+				+ "(hookInstance=" + helper.getRequest().hookInstance
+				+ ", serviceId=" + helper.getServiceId()
+				+ ", patient=" + helper.getMrn()
+				+ ", durationMs=" + serializeMs + ")");
 		} catch (JsonProcessingException | JsonSyntaxException jpe) {
+			serializeMs = System.currentTimeMillis() - serializeStart;
 			logging.logError("Error serializing CDS Hooks response: ", jpe);
 		}
-		logging.logRequestDuration(helper.getRequest().hookInstance);
+		var totalMs = System.currentTimeMillis() - requestStart;
+		logging.logInfo("Perf milestone=total "
+			+ "(hookInstance=" + helper.getRequest().hookInstance
+			+ ", serviceId=" + helper.getServiceId()
+			+ ", patient=" + helper.getMrn()
+			+ ", durationMs=" + totalMs + ")");
 		return jsonResponse;
 	}
 
