@@ -74,7 +74,7 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 	@Autowired
 	public MUSCTimeoutCdsHooksServlet(
 		DaoRegistry daoRegistry, AppProperties appProperties,
-		CqlExecutionProvider cqlExecutionProvider, LibraryEvaluationProvider libraryExecutionProvider,
+		CqlExecutionProvider cqlExecutionProvider, LibraryEvaluationProvider libraryEvaluationProvider,
 		ActivityDefinitionOperationsProvider applyEvaluator,
 		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
 		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
@@ -82,7 +82,7 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 		this.daoRegistry = daoRegistry;
 		this.appProperties = appProperties;
 		this.cqlExecutionProvider = cqlExecutionProvider;
-		this.libraryExecutionProvider = libraryExecutionProvider;
+		this.libraryExecutionProvider = libraryEvaluationProvider;
 		this.applyEvaluator = applyEvaluator;
 		this.modelResolver = modelResolver;
 		this.cdsServicesCache = cdsServicesCache;
@@ -111,8 +111,9 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		var logging = new EpicLogging(logger);
-		if (!"application/json".equals(request.getContentType())) {
-			logging.logError("Unsupported content type: " + request.getContentType());
+		var contentType = request.getContentType();
+		if (contentType == null || !contentType.startsWith("application/json")) {
+			logging.logError("Unsupported content type: " + contentType);
 			response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
 			return;
 		}
@@ -122,8 +123,21 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 			logging.logInfo(raw);
 			var mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 			var hookReq = mapper.readValue(raw, CdsHooksRequest.class);
+
+			var requestTimeoutMs = (int) cdsHooksProperties.getRequestTimeoutMs();
+			// Use a slightly smaller prefetch timeout to leave time for CQL evaluation and card building
+			var prefetchTimeoutMs = requestTimeoutMs > 500 ? requestTimeoutMs - 500 : requestTimeoutMs;
+
+			var serviceId = request.getPathInfo().replace("/", "");
+
+			logging.logInfo("MUSC CDS Hooks order-sign request received "
+				+ "(hookInstance=" + hookReq.hookInstance
+				+ ", serviceId=" + serviceId
+				+ ", timeoutMs=" + requestTimeoutMs
+				+ ", prefetchTimeoutMs=" + prefetchTimeoutMs + ")");
+
 			var requestHelper = new MUSCR4CdsHooksRequestHelper(
-				hookReq, request.getPathInfo().replace("/", ""), appProperties.getServer_address(), logging);
+				hookReq, serviceId, appProperties.getServer_address(), logging, prefetchTimeoutMs);
 			var json = computeOrderSignPayloadWithTimeout(requestHelper, mapper, logging);
 			writeJson(response, json);
 		} catch (Exception e) {
@@ -146,7 +160,9 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 					.toJson(JsonParser.parseString(new ObjectMapper().writeValueAsString(payload))));
 			}
 			resp.getWriter().flush();
-		} catch (IOException ignored) {}
+		} catch (IOException ioe) {
+			logger.error("Error writing CDS Hooks JSON response", ioe);
+		}
 	}
 
 	/**
@@ -211,8 +227,15 @@ public class MUSCTimeoutCdsHooksServlet extends HttpServlet implements DaoRegist
 			helper.useServerData(), helper.getPrefetchBundle());
 		var expressions = CdsHooksUtil.getExpressions(planDefinition);
 
+		var cqlStart = System.currentTimeMillis();
 		var evaluationResults = cqlExecutionHandler.evaluateLibrary(
 			helper.getPatientId(), expressions, null);
+		var cqlDurationMs = System.currentTimeMillis() - cqlStart;
+		logging.logInfo("CQL execution completed "
+			+ "(hookInstance=" + helper.getRequest().hookInstance
+			+ ", serviceId=" + helper.getServiceId()
+			+ ", patient=" + helper.getPatientId()
+			+ ", durationMs=" + cqlDurationMs + ")");
 
 		// TODO: Log decision provenance (rationale extension -> expression reference(s))
 		// 	e.g. UDS Recommendation, No UDS Recommendation, Possible Unexpected Results

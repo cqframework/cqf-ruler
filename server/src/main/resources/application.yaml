@@ -111,4 +111,4 @@ hapi:
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
-         requestTimeoutMs: 5000
+         requestTimeoutMs: 7000

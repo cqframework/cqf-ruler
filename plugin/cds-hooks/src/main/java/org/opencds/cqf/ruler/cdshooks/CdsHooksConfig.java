@@ -170,28 +170,28 @@ public class CdsHooksConfig {
 //		return registrationBean;
 //	}
 
-	@Bean
-	@Conditional(OnR4Condition.class)
-	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
-	public ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> cdsHooksRegistrationBeanR4(
-		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
-		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
-		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
-		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
-		CdsHooksProperties cdsHooksProperties, IValidationSupport validationSupport) {
-		EpicCacheTimeoutCdsHooksServlet cdsHooksServlet = new EpicCacheTimeoutCdsHooksServlet(
-			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
-			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
-			cdsHooksProperties, validationSupport);
-		beanFactory.autowireBean(cdsHooksServlet);
-
-		ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
-		registrationBean.setName("cds-hooks servlet");
-		registrationBean.setServlet(cdsHooksServlet);
-		registrationBean.addUrlMappings("/cds-services/*");
-		registrationBean.setLoadOnStartup(1);
-		return registrationBean;
-	}
+//	@Bean
+//	@Conditional(OnR4Condition.class)
+//	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
+//	public ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> cdsHooksRegistrationBeanR4(
+//		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
+//		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
+//		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
+//		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
+//		CdsHooksProperties cdsHooksProperties, IValidationSupport validationSupport) {
+//		EpicCacheTimeoutCdsHooksServlet cdsHooksServlet = new EpicCacheTimeoutCdsHooksServlet(
+//			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
+//			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
+//			cdsHooksProperties, validationSupport);
+//		beanFactory.autowireBean(cdsHooksServlet);
+//
+//		ServletRegistrationBean<EpicCacheTimeoutCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+//		registrationBean.setName("cds-hooks servlet");
+//		registrationBean.setServlet(cdsHooksServlet);
+//		registrationBean.addUrlMappings("/cds-services/*");
+//		registrationBean.setLoadOnStartup(1);
+//		return registrationBean;
+//	}
 
 //	@Bean
 //	@Conditional(OnR4Condition.class)
@@ -209,26 +209,26 @@ public class CdsHooksConfig {
 //		return registrationBean;
 //	}
 
-//	@Bean
-//	@Conditional(OnR4Condition.class)
-//	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
-//	public ServletRegistrationBean<MUSCTimeoutCdsHooksServlet> cdsHooksRegistrationBeanR4(
-//		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
-//		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
-//		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
-//		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
-//		CdsHooksProperties cdsHooksProperties, IValidationSupport validationSupport) {
-//		MUSCTimeoutCdsHooksServlet cdsHooksServlet = new MUSCTimeoutCdsHooksServlet(
-//			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
-//			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
-//			cdsHooksProperties, validationSupport);
-//		beanFactory.autowireBean(cdsHooksServlet);
-//
-//		ServletRegistrationBean<MUSCTimeoutCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
-//		registrationBean.setName("cds-hooks servlet");
-//		registrationBean.setServlet(cdsHooksServlet);
-//		registrationBean.addUrlMappings("/cds-services/*");
-//		registrationBean.setLoadOnStartup(1);
-//		return registrationBean;
-//	}
+	@Bean
+	@Conditional(OnR4Condition.class)
+	@DependsOn({ "r4CqlExecutionProvider", "r4LibraryEvaluationProvider" })
+	public ServletRegistrationBean<MUSCTimeoutCdsHooksServlet> cdsHooksRegistrationBeanR4(
+		DaoRegistry daoRegistry, AppProperties appProperties, CqlExecutionProvider cqlExecution,
+		LibraryEvaluationProvider libraryExecution, ActivityDefinitionOperationsProvider applyEvaluator,
+		ModelResolver modelResolver, CdsServicesCache cdsServicesCache,
+		CDSHooksTransactionInterceptor knowledgeArtifactCache, RestfulServer restfulServer,
+		CdsHooksProperties cdsHooksProperties, IValidationSupport validationSupport) {
+		MUSCTimeoutCdsHooksServlet cdsHooksServlet = new MUSCTimeoutCdsHooksServlet(
+			daoRegistry, appProperties, cqlExecution, libraryExecution, applyEvaluator,
+			modelResolver, cdsServicesCache, knowledgeArtifactCache, restfulServer,
+			cdsHooksProperties, validationSupport);
+		beanFactory.autowireBean(cdsHooksServlet);
+
+		ServletRegistrationBean<MUSCTimeoutCdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		registrationBean.setName("cds-hooks servlet");
+		registrationBean.setServlet(cdsHooksServlet);
+		registrationBean.addUrlMappings("/cds-services/*");
+		registrationBean.setLoadOnStartup(1);
+		return registrationBean;
+	}
 }

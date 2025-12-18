@@ -16,11 +16,21 @@ import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 public class MUSCR4CdsHooksRequestHelper extends AbstractCdsHooksRequestHelper {
 
 	private final EpicLogging logging;
+	private final int prefetchTimeoutMs;
 	private String mrn;
 
 	public MUSCR4CdsHooksRequestHelper(CdsHooksRequest request, String serviceId, String serverAddress, EpicLogging logging) {
+		this(request, serviceId, serverAddress, logging, 0);
+	}
+
+	public MUSCR4CdsHooksRequestHelper(CdsHooksRequest request,
+	                                   String serviceId,
+	                                   String serverAddress,
+	                                   EpicLogging logging,
+	                                   int prefetchTimeoutMs) {
 		super(FhirContext.forR4Cached(), request, serviceId, serverAddress);
 		this.logging = logging;
+		this.prefetchTimeoutMs = prefetchTimeoutMs;
 	}
 
 	public String getMrn() {
@@ -56,10 +66,15 @@ public class MUSCR4CdsHooksRequestHelper extends AbstractCdsHooksRequestHelper {
 
 	@Override
 	public Bundle getPrefetchBundle() {
+		MUSCModuleConfigurationResolver configResolver = null;
 		var data = CdsHooksUtil.getPrefetchResources(getRequest());
 		// Use prefetch resources if provided otherwise use MCL
 		if (data == null) {
-			var configResolver = new MUSCModuleConfigurationResolver(getFhirContext(), getRemoteDataEndpoint(), getRequest());
+			if (prefetchTimeoutMs > 0) {
+				configResolver = new MUSCModuleConfigurationResolver(getFhirContext(), getRemoteDataEndpoint(), getRequest(), prefetchTimeoutMs);
+			} else {
+				configResolver = new MUSCModuleConfigurationResolver(getFhirContext(), getRemoteDataEndpoint(), getRequest());
+			}
 			data = configResolver.getPrefetchBundle();
 			logging.logMclQueryPerformanceResult(configResolver.getQueryResultMap());
 		}
@@ -77,6 +92,25 @@ public class MUSCR4CdsHooksRequestHelper extends AbstractCdsHooksRequestHelper {
 				identifier -> identifier.hasType() && identifier.getType().hasText()
 					&& identifier.getType().getText().equals("EPICMRN")).findFirst();
 			mrn.ifPresent(identifier -> this.mrn = identifier.getValue());
+		}
+
+		// Log prefetch timeout events (no-guidance log)
+		if (prefetchTimeoutMs > 0) {
+			try {
+				if (configResolver != null) {
+					var results = configResolver.getQueryResultMap();
+					var anyTimeout = results.values().stream()
+						.anyMatch(r -> r.getDuration() >= prefetchTimeoutMs);
+					if (anyTimeout) {
+						logging.logNoGuidance(String.format(
+							"Prefetch timeout encountered for patient MRN=%s (prefetchTimeoutMs=%d)",
+							this.mrn, prefetchTimeoutMs));
+					}
+				}
+			} catch (Exception ex) {
+				// fail-safe: do not break evaluation if logging inspection fails
+				logging.logNoGuidance("Prefetch timeout check failed for MRN=" + this.mrn);
+			}
 		}
 
 		return data;

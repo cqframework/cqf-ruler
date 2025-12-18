@@ -109,9 +109,13 @@ public class EpicLogging {
 		infoLogger.info("================== Resource Log End ==================");
 	}
 
+	public void logNoGuidance(String message) {
+		noGuidanceLogger.info(message);
+	}
+
 	public void logNoGuidance(String patientId, String hookInstance) {
 		noGuidanceLogger.info(
-			"CDS Hook instance {} for patient {} produced no guidance", patientId, hookInstance
+			"CDS Hook instance {} for patient {} produced no guidance", hookInstance, patientId
 		);
 	}
 
